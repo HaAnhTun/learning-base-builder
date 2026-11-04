@@ -22,7 +22,7 @@ When all files are written, reply with one line only: `done <written>/<total>`.
 | `term_type` | `acronym`, `abbreviation`, `technical_term` (domain term/product/protocol), `collocation` (natural multi-word phrase), `phrasal_verb`, `academic` (formal/academic general word), `general` (other single word). Fix the preliminary `type` if wrong. |
 | `importance` | Integer 0–100, rubric below. Give unselected terms a low score (≤ 30). |
 | `reason` | ≤ 15 English words: why selected or not. |
-| `vietnamese_meaning` | Short Vietnamese meaning **as used in this course** (keep technical terms in English inside the Vietnamese, e.g. "lời gọi công cụ (tool call)"). Required when selected; may be `null` otherwise. |
+| `vietnamese_meaning` | Short Vietnamese meaning **as used in this course** (keep technical terms in English inside the Vietnamese, e.g. "lời gọi công cụ (tool call)"), following `translation-vi.md` next to this file. Required when selected; may be `null` otherwise. |
 | `english_definition` | One concise English definition in this course's context. Required when selected; may be `null` otherwise. |
 | `expansion` | Full form for acronyms/abbreviations you are sure of (e.g. MCP → "Model Context Protocol"); otherwise `null`. |
 | `cefr_level` | Only for `general`/`academic` single words when reasonably certain (A1–C2); otherwise `null`. |

@@ -3,7 +3,7 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 4
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS course (
@@ -120,6 +120,11 @@ CREATE TABLE IF NOT EXISTS vocab_entry (
     reviewed_at           TEXT,
     prompt_version        TEXT,
     task_id               TEXT,
+    part_of_speech        TEXT,             -- vocab_enrich: learning details for exported terms
+    definition_vi         TEXT,
+    example_vi            TEXT,
+    usage_note            TEXT,
+    enrich_hash           TEXT,             -- hash of the enrich input the details were made from
     UNIQUE (course_id, term_id)
 );
 
@@ -154,7 +159,10 @@ CREATE TABLE IF NOT EXISTS knowledge_item (
     status         TEXT NOT NULL,
     confidence     REAL,
     review_notes   TEXT,
-    reviewed_at    TEXT
+    reviewed_at    TEXT,
+    importance     INTEGER,                 -- knowledge_enrich: learning details
+    question_json  TEXT,
+    enrich_hash    TEXT                     -- hash of the enrich input the details were made from
 );
 
 CREATE TABLE IF NOT EXISTS concept (
@@ -190,6 +198,19 @@ CREATE TABLE IF NOT EXISTS review_log (
 """
 
 
+# In-place upgrades from older schema versions (applied in order before the CREATE script).
+MIGRATIONS = {
+    2: ["ALTER TABLE vocab_entry ADD COLUMN part_of_speech TEXT",
+        "ALTER TABLE vocab_entry ADD COLUMN definition_vi TEXT",
+        "ALTER TABLE vocab_entry ADD COLUMN example_vi TEXT",
+        "ALTER TABLE vocab_entry ADD COLUMN usage_note TEXT",
+        "ALTER TABLE vocab_entry ADD COLUMN enrich_hash TEXT"],
+    3: ["ALTER TABLE knowledge_item ADD COLUMN importance INTEGER",
+        "ALTER TABLE knowledge_item ADD COLUMN question_json TEXT",
+        "ALTER TABLE knowledge_item ADD COLUMN enrich_hash TEXT"],
+}
+
+
 class SchemaError(RuntimeError):
     pass
 
@@ -205,6 +226,12 @@ def connect(path: Path) -> sqlite3.Connection:
     conn.execute("PRAGMA foreign_keys = ON")
     version = conn.execute("PRAGMA user_version").fetchone()[0]
     has_tables = conn.execute("SELECT COUNT(*) FROM sqlite_master WHERE type='table'").fetchone()[0]
+    while has_tables and version in MIGRATIONS:
+        with conn:
+            for statement in MIGRATIONS[version]:
+                conn.execute(statement)
+            version += 1
+            conn.execute(f"PRAGMA user_version = {version}")
     if has_tables and version != SCHEMA_VERSION:
         conn.close()
         raise SchemaError(

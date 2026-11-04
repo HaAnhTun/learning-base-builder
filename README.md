@@ -76,11 +76,11 @@ Chỉ dùng cho khóa học bạn đã đăng ký, phục vụ học tập cá n
 
 ## Trích xuất từ vựng và kiến thức (AI, trong Claude Code)
 
-Trong Claude Code: `/learning-base-builder vocab evaluate <slug>` và `/learning-base-builder knowledge extract <slug>` — skill tạo task, giao cho subagent Haiku, rồi kiểm tra và lưu kết quả. Xuất file:
+Trong Claude Code: `/learning-base-builder vocab evaluate <slug>`, `/learning-base-builder vocab enrich <slug>` (dịch định nghĩa, câu ví dụ, từ loại cho danh sách học), `/learning-base-builder knowledge extract <slug>` và `/learning-base-builder knowledge enrich <slug>` (mức quan trọng, câu hỏi gợi nhớ, dịch lại tự nhiên) — skill tạo task, giao cho subagent Haiku, rồi kiểm tra và lưu kết quả. Xuất file:
 
 ```bash
 python -m engine vocab candidates <slug>       # trích ứng viên (không AI)
-python -m engine vocab export <slug>           # data/export/vocabulary/<slug>/: .csv (đầy đủ), .json/.md (300 từ quan trọng nhất)
+python -m engine vocab export <slug>           # data/export/vocabulary/<slug>/: .csv (đầy đủ), .json/.md (danh sách học: quan trọng ≥ 70)
 python -m engine knowledge export <slug>       # data/export/knowledge/<slug>/knowledge.json, .md
 python -m engine review list <slug> --mode vocab   # các mục cần duyệt
 ```

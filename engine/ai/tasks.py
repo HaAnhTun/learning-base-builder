@@ -5,7 +5,7 @@ from pathlib import Path
 
 from engine.database import now
 
-MODES = ("vocab_eval", "knowledge_extract")
+MODES = ("vocab_eval", "vocab_enrich", "knowledge_extract", "knowledge_enrich")
 
 
 def compute_hash(payload) -> str:
@@ -141,6 +141,31 @@ def mark_invalid(conn, cfg: dict, task_id: str, error: str) -> str:
     conn.execute("UPDATE ai_task SET status = ?, attempts = ?, error = ?, updated_at = ? WHERE id = ?",
                  (status, attempts, error[:2000], now(), task_id))
     return status
+
+
+def settle_invalid(conn, cfg: dict, mode: str, course_id: int, prompt_version: str, still_needed) -> None:
+    """Re-arm invalid tasks that still cover needed work (keeping their retry count), retire the others.
+
+    still_needed(packet) -> bool tells whether any of the task's input still needs processing.
+    """
+    for row in conn.execute("SELECT * FROM ai_task WHERE mode = ? AND course_id = ? AND status = 'invalid'",
+                            (mode, course_id)).fetchall():
+        if row["attempts"] > cfg["ai"]["max_retries"]:
+            status = "failed"
+        elif row["prompt_version"] == prompt_version and still_needed(load_packet(cfg, row)):
+            status = "pending"
+            (cfg["root"] / row["result_path"]).unlink(missing_ok=True)
+        else:
+            status = "superseded"  # its work was done by later tasks
+        with conn:
+            conn.execute("UPDATE ai_task SET status = ?, updated_at = ? WHERE id = ?", (status, now(), row["id"]))
+
+
+def retire_stale(conn, mode: str, course_id: int, prompt_version: str) -> None:
+    """Supersede pending tasks made with an older prompt version, so their work is planned again."""
+    with conn:
+        conn.execute("UPDATE ai_task SET status = 'superseded', updated_at = ? WHERE mode = ? AND course_id = ? "
+                     "AND status = 'pending' AND prompt_version != ?", (now(), mode, course_id, prompt_version))
 
 
 def batches(rows, size: int) -> list[list[str]]:

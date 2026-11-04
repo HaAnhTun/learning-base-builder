@@ -8,18 +8,22 @@ playwright = pytest.importorskip("playwright.sync_api")
 STUDY = Path(__file__).resolve().parent.parent / "study" / "index.html"
 
 VOCAB = {"kind": "vocabulary", "course": "Demo", "slug": "demo", "level": "B2", "total_selected": 2, "terms": [
-    {"rank": 1, "term": "context window", "type": "collocation", "importance": 92, "vi": "cửa sổ ngữ cảnh",
-     "en": "Max tokens a model reads at once.", "expansion": None, "cefr": None, "frequency": 9, "lessons": 3,
-     "example": {"text": "The context window fills up.", "lesson": 2}},
+    {"rank": 1, "term": "context window", "type": "collocation", "pos": "noun phrase", "importance": 92,
+     "vi": "cửa sổ ngữ cảnh", "en": "Max tokens a model reads at once.",
+     "definition_vi": "Số token tối đa mà mô hình đọc được một lần.", "expansion": None, "cefr": None,
+     "note": "thường đi với: fill up", "frequency": 9, "lessons": 3,
+     "example": {"text": "The context window fills up.", "vi": "Cửa sổ ngữ cảnh bị đầy.", "lesson": 2}},
     {"rank": 2, "term": "MCP", "type": "acronym", "importance": 87, "vi": "giao thức MCP", "en": "A protocol.",
      "expansion": "Model Context Protocol", "cefr": None, "frequency": 5, "lessons": 2, "example": None},
 ]}
 KNOWLEDGE = {"kind": "knowledge", "course": "Demo", "slug": "demo", "languages": ["en", "vi"], "concepts": [],
              "relations": [], "lessons": [{"n": 1, "title": "Intro", "chapter": "Chapter 1: Basics", "topics": [
                  {"title": {"en": "Setup", "vi": "Cài đặt"}, "items": [
-                     {"type": "process", "title": {"en": "Add a server", "vi": "Thêm server"},
+                     {"type": "process", "title": {"en": "Add a server", "vi": "Thêm server"}, "importance": 60,
+                      "question": {"en": "How to add a server?", "vi": "Các bước thêm server?"},
                       "content": {"en": ["Install", "Register"], "vi": ["Cài đặt", "Đăng ký"]}},
-                     {"type": "warning", "title": {"en": "No secrets", "vi": "Không lộ bí mật"},
+                     {"type": "warning", "title": {"en": "No secrets", "vi": "Không lộ bí mật"}, "importance": 95,
+                      "question": {"en": "What must never be exposed?", "vi": "Điều gì không được để lộ?"},
                       "content": {"en": "Never expose keys.", "vi": "Không để lộ khóa."}, "subtopic": {
                           "en": "Safety", "vi": "An toàn"}}]}]}]}
 
@@ -46,7 +50,10 @@ def page(tmp_path):
 
 def test_bilingual_process_card_and_persistence(page):
     page.click("#tabs button:has-text('Kiến thức')")
+    assert "Điều gì không được để lộ?" in page.inner_text("#front")  # most important first, question on the front
+    page.locator("#filters select").nth(2).select_option("lesson")
     page.locator("#filters select").nth(1).select_option("both")
+    assert "How to add a server? / Các bước thêm server?" in page.inner_text("#front")  # lesson order, bilingual
     page.keyboard.press("Space")
     back = page.inner_text("#back")
     assert "[object" not in back and "Install" in back and "Cài đặt" in back
@@ -63,5 +70,7 @@ def test_vocabulary_card(page):
     page.keyboard.press("Space")
     back = page.inner_text("#back")
     assert "cửa sổ ngữ cảnh" in back and "bài 2" in back
+    assert "Số token tối đa" in back and "Cửa sổ ngữ cảnh bị đầy." in back and "thường đi với" in back
+    assert "noun phrase" in page.inner_text("#front")
     page.keyboard.press("ArrowLeft")  # "Chưa nhớ" → next card
     assert "MCP" in page.inner_text("#front") and "Model Context Protocol" in page.inner_text("#front")

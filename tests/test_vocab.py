@@ -114,21 +114,54 @@ def test_prepare_ingest_rank_export_and_incremental(conn, cfg, course):
     folder = mode.export(conn, "aws-mini", cfg)
     model = json.loads((folder / "vocabulary.json").read_text(encoding="utf-8"))
     ec2 = next(t for t in model["terms"] if t["term"] == "EC2")
-    assert ec2["example"] == {"text": ec2["example"]["text"], "lesson": 1}  # no timestamps in exports
+    assert ec2["example"] == {"text": ec2["example"]["text"], "vi": None, "lesson": 1}  # no timestamps in exports
     assert ec2["example"]["text"].startswith("We spin up EC2")
-    assert set(ec2) == {"rank", "term", "type", "importance", "vi", "en", "expansion", "cefr", "frequency",
-                        "lessons", "example"}  # lean: no sources/status/confidence
-    assert (model["kind"], model["total_selected"]) == ("vocabulary", n - 1)
+    assert set(ec2) == {"rank", "term", "type", "pos", "importance", "vi", "en", "definition_vi", "expansion", "cefr",
+                        "note", "frequency", "lessons", "example"}  # no sources/status/confidence
+    assert (model["kind"], model["total_selected"], model["count"]) == ("vocabulary", n - 1, n - 1)
+    # equal importance → longer terms first
+    words = [len(t["term"].replace("-", " ").split()) for t in model["terms"]]
+    assert words == sorted(words, reverse=True)
     rows = list(csv.DictReader((folder / "vocabulary.csv").open(encoding="utf-8-sig")))
     assert len(rows) == n - 1 and "region" not in {r["term"] for r in rows}
     assert "## 1." in (folder / "vocabulary.md").read_text(encoding="utf-8")
 
-    cfg["vocabulary"]["export_max_terms"] = 2  # json/md are capped, csv keeps everything
+    with conn:  # study list = importance >= export_min_importance (70); csv keeps every selected term
+        conn.execute("UPDATE vocab_entry SET importance = 50 WHERE term_id = "
+                     "(SELECT id FROM vocab_term WHERE normalized_term = 'EC2')")
+        mode.rerank(conn, course["id"])
     mode.export(conn, "aws-mini", cfg)
     model = json.loads((folder / "vocabulary.json").read_text(encoding="utf-8"))
-    assert [t["rank"] for t in model["terms"]] == [1, 2]
-    assert (folder / "vocabulary.md").read_text(encoding="utf-8").count("\n## ") == 2
+    assert "EC2" not in {t["term"] for t in model["terms"]} and model["count"] == n - 2
+    assert "## " + "1." in (folder / "vocabulary.md").read_text(encoding="utf-8")
     assert len(list(csv.DictReader((folder / "vocabulary.csv").open(encoding="utf-8-sig")))) == n - 1
+
+
+def test_enrich_adds_learning_details_to_exported_terms(conn, cfg, course):
+    from engine.vocab import enrich
+
+    extract_course_candidates(conn, course["id"], cfg)
+    mode.prepare(conn, "aws-mini", cfg)
+    run_all_tasks(conn, cfg, course)
+    mode.ingest(conn, "aws-mini", cfg)
+    r = enrich.prepare(conn, "aws-mini", cfg)
+    assert r["terms_todo"] == r["exported_terms"] > 0 and r["pending"] >= 1
+    for row in tasks.pending_tasks(conn, enrich.MODE, course["id"]):
+        packet = tasks.load_packet(cfg, row)
+        results = [{"key": t["key"], "vi": f"nghĩa {t['key']}", "part_of_speech": "noun", "definition_vi": f"định nghĩa {t['key']}",
+                    "example_vi": "câu ví dụ" if t["example"] else None, "usage_note": None}
+                   for t in packet["input"]["terms"]]
+        results[0]["example_vi"] = None if packet["input"]["terms"][0]["example"] else results[0]["example_vi"]
+        (cfg["root"] / packet["result_path"]).write_text(json.dumps({"results": results}), encoding="utf-8")
+    s = enrich.ingest(conn, "aws-mini", cfg)
+    assert s["enriched"] + s["skipped"] == r["exported_terms"]
+    assert enrich.prepare(conn, "aws-mini", cfg)["terms_todo"] == s["skipped"]  # only the incomplete one again
+    folder = mode.export(conn, "aws-mini", cfg)
+    model = json.loads((folder / "vocabulary.json").read_text(encoding="utf-8"))
+    ec2 = next(t for t in model["terms"] if t["term"] == "EC2")
+    assert ec2["pos"] == "noun" and ec2["definition_vi"] == "định nghĩa EC2" and ec2["example"]["vi"] == "câu ví dụ"
+    assert ec2["vi"] == "nghĩa EC2"  # corrected short meaning replaces the eval one
+    assert "Định nghĩa:" in (folder / "vocabulary.md").read_text(encoding="utf-8")
 
 
 def test_invalid_result_is_not_stored_and_retried(conn, cfg, course):

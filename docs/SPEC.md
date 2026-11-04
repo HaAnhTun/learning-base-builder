@@ -280,7 +280,14 @@ Dùng spaCy + `en_core_web_sm` trên từng câu của Clean Dataset:
 - **Gom lô:** chỉ các ứng viên `kept` **chưa có đánh giá hợp lệ** cho `prompt_version` hiện tại, hoặc có tập câu ngữ cảnh đã thay đổi; sắp xếp xác định (tần suất giảm dần, rồi theo `normalized_term`) và chia lô `vocabulary.batch_size` (mặc định 100). Nhờ vậy thêm bài mới chỉ tạo task cho ứng viên mới/thay đổi.
 - Input mỗi ứng viên: dạng hiển thị, loại sơ bộ, tần suất, số bài, câu ngữ cảnh (kèm id câu); input của lô còn có tên khóa, trình độ người học.
 - AI quyết định chọn/loại (`selected`) và chấm `importance` 0–100 theo: mức liên quan đến nội dung khóa, tầm quan trọng trong lĩnh vực, tần suất và ý nghĩa trong ngữ cảnh, giá trị ứng dụng thực tế; đồng thời bổ sung thông tin học tập (mục 7.5). Hướng dẫn `vocab-eval.md` có thang điểm mốc (rubric kèm ví dụ) để điểm giữa các lô so sánh được.
-- **Xếp hạng cuối (Python, xác định):** trong các mục `selected = true` của khóa: `importance` giảm dần → `lesson_count` giảm dần → `frequency` giảm dần → `normalized_term`. Tính lại sau mỗi lần ingest.
+- **Xếp hạng cuối (Python, xác định) = thứ tự học:** trong các mục `selected = true` của khóa: `importance` giảm dần → từ/cụm dài hơn trước (số từ, rồi số ký tự, giảm dần) → `lesson_count` giảm dần → `frequency` giảm dần → `normalized_term`. Tính lại sau mỗi lần ingest.
+
+### 7.4b. Bổ sung chi tiết học (task `vocab_enrich`)
+
+- Chỉ chạy cho các từ trong danh sách học (mục 7.5 Export), không cho toàn bộ ứng viên — giữ chi phí AI thấp.
+- Mỗi từ thêm: `part_of_speech`, `definition_vi` (bản dịch đầy đủ của định nghĩa tiếng Anh), `example_vi` (bản dịch câu ví dụ gốc), `usage_note` (tùy chọn, ≤ 25 từ: collocation, từ dễ nhầm, mẫu câu).
+- Cache theo hash của input từng từ (term, nghĩa, định nghĩa, câu ví dụ, prompt_version): đổi định nghĩa hoặc câu ví dụ thì bổ sung lại. Mục thiếu trường bắt buộc bị bỏ riêng và vào lô sau.
+- Lệnh: `vocab enrich-prepare` → runner → `vocab enrich-ingest` (cùng giao thức mục 9.2); hướng dẫn `references/vocab-enrich.md`.
 
 ### 7.5. Output mỗi mục từ vựng
 
@@ -303,8 +310,8 @@ Một thuật ngữ là một bản ghi `vocab_term` duy nhất trên toàn hệ
 
 **Export** (chỉ mục `selected = true`, không `rejected`, đánh giá khớp ngữ cảnh hiện tại):
 - `vocabulary.csv`: toàn bộ từ được chọn (tra cứu bằng Excel/Sheets).
-- `vocabulary.json` và `vocabulary.md`: chỉ `vocabulary.export_max_terms` từ quan trọng nhất (mặc định 300 — vài nghìn từ là quá nhiều để học, kể cả với B1).
-- Định dạng gọn cho người và app học: mỗi từ chỉ gồm `rank, term, type, importance, vi, en, expansion, cefr, frequency, lessons` và **một** câu ví dụ gốc `{text, lesson}`; JSON ghi mỗi mục một dòng. File export không ghi mốc thời gian (yêu cầu người dùng 2026-11-05); timestamp vẫn ở Clean Dataset/SQLite. Nguồn chi tiết (mọi lần xuất hiện, id câu) ở lại SQLite.
+- `vocabulary.json` và `vocabulary.md` = **danh sách học**: các từ có `importance` ≥ `vocabulary.export_min_importance` (mặc định 70 — mốc "thuật ngữ quan trọng lặp lại / cụm từ rất hữu ích" của rubric). Số lượng co giãn theo nội dung khóa (khóa CCAR: ~520 từ) thay vì cố định; vài nghìn từ là quá nhiều để học, kể cả với B1.
+- Định dạng cho người và app học: mỗi từ gồm `rank, term, type, pos, importance, vi, en, definition_vi, expansion, cefr, note, frequency, lessons` và **một** câu ví dụ gốc `{text, vi, lesson}` (bản dịch từ `vocab_enrich`); JSON ghi mỗi mục một dòng. File export không ghi mốc thời gian (yêu cầu người dùng 2026-11-05); timestamp vẫn ở Clean Dataset/SQLite. Nguồn chi tiết (mọi lần xuất hiện, id câu) ở lại SQLite.
 
 ## 8. Hướng 3 — Knowledge Extraction Mode
 
@@ -373,15 +380,27 @@ Topic/subtopic có `title` theo cùng cấu trúc đa ngôn ngữ và `source` r
 - Từ vựng và khái niệm cùng tên chuẩn hóa được liên kết khi export (`vocab_term.normalized_term = concept.normalized_name`), không cần bảng riêng. Lần xuất hiện của từ vựng có thể ánh xạ về topic qua khoảng id câu.
 - Cây chủ đề cấp khóa (gom topic xuyên bài) và liên kết sâu: Future.
 
-**Export:** không xuất mục `rejected` và bài đang `stale`.
-- `knowledge.json` dạng gọn: `{kind, course, slug, languages, concepts[{name, lessons}], relations[{from, to, type}], lessons[{n, title, chapter, topics[{title, items[{type, title, content, subtopic?, concept?, relation?}]}]}]}` (không có mốc thời gian) — subtopic trở thành nhãn của item; id, khoảng câu, độ tin cậy, trạng thái ở lại SQLite. Ví dụ JSON đầy đủ ở mục 8.3 là mô hình lưu trữ, không phải file export.
-- `knowledge.md`: ghi chú phân cấp chapter → lesson → topic → item; có thể đưa lên NotebookLM.
+### 8.4b. Bổ sung chi tiết học (task `knowledge_enrich`)
+
+Thêm theo yêu cầu người dùng (2026-11-05): JSON kiến thức phải giúp học được, có thứ tự quan trọng, đủ nhưng không thừa, và tiếng Việt không dịch từng chữ.
+- Chạy trên item đã lưu (chỉ phần tiếng Anh), không đọc lại transcript, nên rẻ hơn nhiều so với trích lại. Task gom nguyên bài, khoảng `knowledge.enrich_batch_size` item (mặc định 60).
+- Mỗi item thêm `importance` (0–100: 90+ cốt lõi/bẫy thi, 70+ ý hỗ trợ quan trọng, 50+ chi tiết/ví dụ hữu ích, < 50 thủ tục khóa học, giai thoại, lặp ý) và `question` (câu hỏi gợi nhớ, mỗi ngôn ngữ một câu, đáp án là nội dung item). Tiêu đề/nội dung ngôn ngữ khác tiếng Anh và tiêu đề topic được **dịch lại từ tiếng Anh** theo `references/translation-vi.md`; mục đã duyệt tay giữ nguyên tiêu đề/nội dung.
+- Cache theo hash phần tiếng Anh của item (+ ngôn ngữ, prompt_version); trích lại bài thì item mới được bổ sung lại. Item thiếu/hỏng bị bỏ riêng, cả bài được gửi lại ở lần `enrich-prepare` sau.
+- Lệnh: `knowledge enrich-prepare` → runner → `knowledge enrich-ingest`; hướng dẫn `references/knowledge-enrich.md`.
+
+### 8.4c. Hướng dẫn dịch tiếng Việt
+
+`references/translation-vi.md` là nguồn duy nhất cho mọi mode sinh tiếng Việt (vocab_eval, vocab_enrich, knowledge_extract, knowledge_enrich): dịch theo nghĩa rồi viết lại theo trật tự tiếng Việt, giữ thuật ngữ kỹ thuật bằng tiếng Anh, bảng từ có nghĩa chuyên ngành kèm bẫy nghĩa thường ("agent" ≠ "đại lý", "noise" ≠ "tiếng ồn", "business rules" = "quy tắc nghiệp vụ"), quy tắc câu (chủ động, bỏ "của nó", trật tự bổ ngữ) và ví dụ dịch từng chữ → tự nhiên. Prompt subagent luôn yêu cầu đọc file này (thêm 2026-11-05 vì bản dịch Haiku bị word-by-word).
+
+**Export:** không xuất mục `rejected`, bài đang `stale` và item đã bổ sung có `importance` < `knowledge.export_min_importance` (mặc định 50); topic/bài không còn item bị bỏ.
+- `knowledge.json` dạng gọn: `{kind, course, slug, languages, concepts[{name, lessons}], relations[{from, to, type}], min_importance, lessons[{n, title, chapter, topics[{title, items[{type, title, content, importance?, question?, subtopic?, concept?, relation?}]}]}]}` (không có mốc thời gian; bài theo thứ tự khóa, item theo thứ tự trong bài — app học sắp "quan trọng trước") — subtopic trở thành nhãn của item; id, khoảng câu, độ tin cậy, trạng thái ở lại SQLite. Ví dụ JSON đầy đủ ở mục 8.3 là mô hình lưu trữ, không phải file export.
+- `knowledge.md`: ghi chú phân cấp chapter → lesson → topic → item, item cốt lõi (importance ≥ 80) đánh dấu ★; có thể đưa lên NotebookLM.
 
 ## 9. Thành phần dùng chung: AI Orchestrator
 
 ### 9.1. Task packet
 
-Python tạo task, AI chỉ thực thi. `mode` ∈ {`vocab_eval`, `knowledge_extract`}.
+Python tạo task, AI chỉ thực thi. `mode` ∈ {`vocab_eval`, `vocab_enrich`, `knowledge_extract`, `knowledge_enrich`}.
 
 ```json
 {
@@ -425,9 +444,10 @@ Trạng thái `ai_task`: `pending` → `done` (hợp lệ) hoặc `invalid` (sai
 ### 9.4. Validate và kiểm duyệt
 
 - **Sửa lỗi xác định trước khi validate** (rút ra từ benchmark Haiku — lỗi lệch biên nhỏ không đáng chạy lại cả task; mục được sửa luôn thành `needs_review`):
-  - Knowledge: topic chồng nhau được cắt (topic bị phủ hoàn toàn gộp vào topic trước); khoảng câu của subtopic/item bị kẹp vào node cha; `item_type` lạ → `key_point`; `concept`/`definition` thiếu `concept_name` → dùng tiêu đề tiếng Anh.
-  - Vocabulary: `key` mà model chép nhầm dạng hiển thị được ánh xạ về key chuẩn; câu ví dụ ngoài các câu ngữ cảnh được giao bị bỏ; ứng viên thiếu kết quả không làm hỏng lô — phần có được lưu, phần thiếu được `prepare` gom vào lô sau.
-- **Validate cứng** (sai → task `invalid`, không lưu gì): JSON đọc được; đúng JSON Schema (sau khi sửa); khoảng câu hợp lệ và nằm trong bài/phần được giao; topic không chồng nhau; enum đúng; đủ các ngôn ngữ trong `output_languages` cho mọi `title`/`content`; mục từ vựng được chọn phải có nghĩa tiếng Việt và định nghĩa tiếng Anh.
+  - Knowledge: topic chồng nhau được cắt (topic bị phủ hoàn toàn gộp vào topic trước); khoảng câu của subtopic/item bị kẹp vào node cha; thiếu một đầu khoảng câu → lấy đầu còn lại; `item_type` lạ → `key_point`; `concept`/`definition` thiếu `concept_name` → dùng tiêu đề tiếng Anh; `process` viết thành chuỗi → một bước; nội dung dạng danh sách ở item khác `process` → nối thành chuỗi; khóa thừa trong item bị bỏ; item thiếu loại hoặc thiếu một ngôn ngữ ở tiêu đề/nội dung bị bỏ (phần còn lại của bài vẫn được lưu).
+  - Vocabulary: `key` mà model chép nhầm dạng hiển thị được ánh xạ về key chuẩn; câu ví dụ ngoài các câu ngữ cảnh được giao bị bỏ; key lạ/trùng hoặc mục được chọn mà thiếu nghĩa bị bỏ riêng; ứng viên thiếu kết quả không làm hỏng lô — phần có được lưu, phần thiếu được `prepare` gom vào lô sau.
+  - Runner: subagent tự kiểm tra file kết quả parse được bằng `json.load` trước khi trả về (giảm mạnh lỗi JSON lệch ngoặc).
+- **Validate cứng** (sai → task `invalid`, không lưu gì): JSON đọc được; đúng JSON Schema (sau khi sửa); khoảng câu hợp lệ và nằm trong bài/phần được giao; topic không chồng nhau; enum đúng; tiêu đề topic/subtopic đủ các ngôn ngữ trong `output_languages`; Knowledge: phần có ≥ 30 câu phải có ≥ 2 topic và ≥ 4 item (chống kết quả quá mỏng).
 - **Kiểm tra mềm** (sai → mục đó `needs_review`): term không thực sự xuất hiện (theo dạng chuẩn) trong câu ví dụ đã chọn; câu ví dụ nằm ngoài các câu ngữ cảnh được giao (bị bỏ, không làm hỏng cả lô); `confidence` < `ai.review_threshold` (mặc định 0,7); topic chồng nhau, hoặc các topic bỏ sót > 20% số câu của bài; topic tại ranh giới phần của bài quá dài không gộp được.
 - **Trạng thái kết quả:**
   - `auto_approved`: qua cả validate cứng và mềm.
@@ -551,8 +571,10 @@ Bỏ khỏi V1: `chunk`, `vocabulary`, `vocabulary_meaning`, `knowledge_source`,
 | `export notebooklm <course> [--by chapter\|course\|lesson] [--lang]` | `export notebooklm` | Xuất Markdown cho NotebookLM | Mới |
 | `vocab candidates <course> [--level]` | `vocab candidates` | Trích + lọc ứng viên (không AI) | Mới |
 | `vocab evaluate <course> [--limit N]` | `vocab prepare` → runner → `vocab ingest` | Đánh giá ứng viên bằng AI; `--limit` = số task tối đa mỗi vòng | Mới |
+| `vocab enrich <course> [--limit N]` | `vocab enrich-prepare` → runner → `vocab enrich-ingest` | Chi tiết học cho danh sách học (mục 7.4b) | Mới |
 | `vocab export <course>` | `vocab export` | JSON/CSV/Markdown | Mới |
 | `knowledge extract <course> [--lessons 1-10,15] [--limit N]` | `knowledge prepare` → runner → `knowledge ingest` | Trích kiến thức theo bài; `--lessons` = danh sách/khoảng `position` | Mới |
+| `knowledge enrich <course> [--limit N]` | `knowledge enrich-prepare` → runner → `knowledge enrich-ingest` | Mức quan trọng, câu hỏi gợi nhớ, dịch lại tự nhiên (mục 8.4b) | Mới |
 | `knowledge export <course>` | `knowledge export` | JSON/Markdown | Mới |
 | `review <course> --mode vocab\|knowledge` | `review` | Duyệt mục `needs_review` | Mới |
 | `stats` | `stats` | Thống kê dữ liệu và tiến trình từng hướng (clean, task AI theo trạng thái, số từ vựng/khái niệm) | Có, cần mở rộng |
@@ -560,8 +582,8 @@ Bỏ khỏi V1: `chunk`, `vocabulary`, `vocabulary_meaning`, `knowledge_source`,
 ### 12.3. App học flashcard (`study/`)
 
 Thêm theo yêu cầu người dùng (2026-11-05). Thư mục `study/` gồm `index.html`, `style.css`, `app.js` thuần, không build, không server: mở `index.html`, chọn/kéo thả `vocabulary.json` hoặc `knowledge.json`.
-- Từ vựng: mặt trước là từ (loại, CEFR, dạng đầy đủ), mặt sau là nghĩa Việt, định nghĩa Anh, câu ví dụ gốc kèm số bài. Lọc theo số từ đầu bảng và loại.
-- Kiến thức: mỗi item là một thẻ; mặt trước là loại + tiêu đề + ngữ cảnh (bài, topic), mặt sau là nội dung (quy trình hiển thị theo bước). Lọc theo chương, loại, ngôn ngữ (Việt/Anh/song ngữ).
+- Từ vựng: mặt trước là từ (loại, từ loại, CEFR, dạng đầy đủ), mặt sau là nghĩa Việt, định nghĩa Anh + bản dịch, câu ví dụ gốc + bản dịch kèm số bài, ghi chú cách dùng. Lọc theo số từ đầu bảng và loại.
+- Kiến thức: mỗi item là một thẻ; mặt trước là loại + mức quan trọng + câu hỏi gợi nhớ (hoặc tiêu đề nếu chưa bổ sung) + ngữ cảnh (bài, topic), mặt sau là tiêu đề + nội dung (quy trình hiển thị theo bước). Lọc theo chương, loại, ngôn ngữ (Việt/Anh/song ngữ), thứ tự (quan trọng trước — mặc định / theo bài).
 - Nút/phím: Space lật thẻ, → "Đã nhớ", ← "Chưa nhớ" (thẻ quay lại sau vài thẻ); tiến độ và bộ thẻ lưu trong `localStorage` của trình duyệt.
 
 ## 13. Cấu hình (`config.yaml`)
@@ -585,14 +607,17 @@ vocabulary:
   zipf_threshold_by_level: {A2: 5.0, B1: 4.5, B2: 4.0, C1: 3.5}   # heuristic, cần benchmark
   keyness_min: 4.0                                                # benchmark CCAR
   phrase_min_frequency: 3
-  export_max_terms: 300
+  export_min_importance: 70
+  enrich_batch_size: 50
 knowledge:
   max_lesson_words: 8000
   output_languages: [en, vi]
+  enrich_batch_size: 60
+  export_min_importance: 50
 ai:
   runner: claude_code         # Future: claude_api
   subagent_model: haiku       # model của subagent trích xuất
-  tasks_per_subagent: {knowledge_extract: 5, vocab_eval: 2}
+  tasks_per_subagent: {knowledge_extract: 5, vocab_eval: 2, vocab_enrich: 4, knowledge_enrich: 3}
   max_parallel_subagents: 4
   max_retries: 2
   review_threshold: 0.7
@@ -623,7 +648,7 @@ Thay đổi so với Giai đoạn 1: bỏ `chunking.max_words`; thêm `paths.cle
 | 2. Clean Dataset + NotebookLM | Parser trả cue có timestamp; cleaner (rolling caption theo mục 5.1, câu, đoạn); Clean JSON; schema mới + migration; `clean`, `export notebooklm`; viết lại test parser/rolling/cue trùng theo quy tắc mới; cập nhật `.gitignore`, `config.yaml`, SKILL.md, README | Khóa CCAR có Clean JSON; xuất theo chapter vừa giới hạn Free 50 nguồn; người dùng upload thử 1 file lên NotebookLM | Tiếp theo |
 | 3. AI Orchestrator + Vocabulary Mode | Task packet, giao thức prepare/ingest, Claude Code runner (subagent Haiku), cache, validate; normalizer; spaCy candidates, danh sách tần suất, keyness, đánh giá AI, xếp hạng, export; `review` cơ bản | Benchmark 5 bài đại diện của khóa CCAR để chốt prompt, rubric, ngưỡng và đo usage; rồi chạy trọn khóa CCAR | |
 | 4. Knowledge Mode | Task theo bài, pre-split, phân cấp, item, gom khái niệm, export | Benchmark 5 bài CCAR, rồi chạy trọn khóa CCAR | |
-| 5. Hoàn thiện V1 | `review` đầy đủ, `stats` theo hướng, bộ đánh giá `evaluations/`, tài liệu | Tiêu chí mục 16 đạt | |
+| 5. Hoàn thiện V1 | `review` cho cả hai mode, `stats` theo hướng, `evaluations/report.py` (báo cáo chất lượng + bộ benchmark 5 bài), app `study/`, tài liệu | Tiêu chí mục 16 đạt | |
 
 Điều chỉnh so với thứ tự đề xuất ban đầu: AI Orchestrator được xây cùng Vocabulary Mode (người dùng đầu tiên của nó) thay vì tách riêng; "lưu trữ kiến thức có cấu trúc và liên kết" ở mức cơ bản nằm trong Giai đoạn 4, mức sâu thuộc Future.
 

@@ -102,6 +102,7 @@ function renderFilters() {
     parts.push(select("chapter", "Chương", [["all", "Tất cả"], ...chapters.map((c) => [c, c])]));
     const langs = deck.languages || ["en"];
     parts.push(select("lang", "Ngôn ngữ", [...langs.map((l) => [l, l.toUpperCase()]), ["both", "Song ngữ"]]));
+    parts.push(select("order", "Thứ tự", [["importance", "Quan trọng trước"], ["lesson", "Theo bài"]]));
   }
   parts.push(select("type", "Loại", typeOptions), el("label", {}, onlyNew, "Chỉ thẻ chưa nhớ"));
   $("filters").replaceChildren(...parts);
@@ -115,6 +116,9 @@ function rebuild() {
   if (state.kind === "vocabulary" && Number(f.top) > 0) cards = cards.slice(0, Number(f.top));
   if (state.kind === "knowledge" && f.chapter !== "all") cards = cards.filter((c) => c.lesson.chapter === f.chapter);
   if (f.type !== "all") cards = cards.filter((c) => c.type === f.type);
+  if (state.kind === "knowledge" && f.order !== "lesson") {
+    cards = [...cards].sort((a, b) => (b.importance ?? 0) - (a.importance ?? 0)); // stable: lesson order within ties
+  }
   state.pool = cards;
   state.queue = f.onlyNew ? cards.filter((c) => !known.has(c.key)) : [...cards];
   renderFilters();
@@ -127,6 +131,7 @@ function selectKind(kind) {
   const deck = state.decks[kind];
   state.filters = load(`lbb:filters:${kind}`, null) || {
     top: 100, chapter: "all", type: "all", onlyNew: true, lang: deck.languages?.includes("vi") ? "vi" : "both",
+    order: "importance",
   };
   $("empty").hidden = true;
   $("study").hidden = false;
@@ -152,12 +157,16 @@ function contentNode(value, lang) {
 
 function renderVocab(c) {
   const front = [
-    el("span", { class: "tag" }, TYPE_LABELS[c.type] || c.type), c.cefr && el("span", { class: "tag" }, c.cefr),
+    el("span", { class: "tag" }, TYPE_LABELS[c.type] || c.type), c.pos && el("span", { class: "tag" }, c.pos),
+    c.cefr && el("span", { class: "tag" }, c.cefr),
     el("p", { class: "term" }, c.term), c.expansion && el("p", { class: "muted" }, c.expansion),
   ];
   const back = [
-    el("p", { class: "big" }, c.vi), el("p", {}, c.en),
-    c.example && el("p", { class: "example" }, `“${c.example.text}” — bài ${c.example.lesson}`),
+    el("p", { class: "big" }, c.vi),
+    el("p", {}, c.en), c.definition_vi && el("p", {}, c.definition_vi),
+    c.example && el("div", { class: "example" }, el("p", {}, `“${c.example.text}” — bài ${c.example.lesson}`),
+      c.example.vi && el("p", {}, c.example.vi)),
+    c.note && el("p", {}, el("strong", {}, "Ghi chú: "), c.note),
     el("p", { class: "muted" }, `#${c.rank} · quan trọng ${c.importance}/100 · ${c.frequency} lần trong ${c.lessons} bài`),
   ];
   return [front, back];
@@ -167,9 +176,10 @@ function renderKnowledge(c) {
   const lang = state.filters.lang;
   const where = `Bài ${c.lesson.n}: ${c.lesson.title} · ${text(c.topic.title, lang)}`
     + (c.subtopic ? ` › ${text(c.subtopic, lang)}` : "");
-  const front = [
+  const front = [ // active recall: ask the question when knowledge_enrich made one
     el("span", { class: "tag" }, TYPE_LABELS[c.type] || c.type),
-    el("p", { class: "big" }, text(c.title, lang)), el("p", { class: "muted" }, where),
+    c.importance !== undefined && el("span", { class: "tag" }, `quan trọng ${c.importance}`),
+    el("p", { class: "big" }, text(c.question || c.title, lang)), el("p", { class: "muted" }, where),
   ];
   const back = [el("p", { class: "big" }, text(c.title, lang)), contentNode(c.content, lang),
     c.relation && el("p", { class: "muted" }, `${c.relation.from} → ${c.relation.type} → ${c.relation.to}`)];

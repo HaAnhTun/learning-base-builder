@@ -78,22 +78,6 @@ def _needs_eval(r, override_reviewed: bool) -> bool:
     return r["e_pv"] != PROMPT_VERSION
 
 
-def _settle_invalid_tasks(conn, cfg: dict, course_id: int, todo_keys: set[str]) -> None:
-    """Re-arm invalid tasks that still cover work (keeping their retry count); otherwise retire them."""
-    for row in conn.execute("SELECT * FROM ai_task WHERE mode = ? AND course_id = ? AND status = 'invalid'",
-                            (MODE, course_id)).fetchall():
-        keys = {c["key"] for c in tasks.load_packet(cfg, row)["input"]["candidates"]}
-        if row["attempts"] > cfg["ai"]["max_retries"]:
-            status = "failed"
-        elif keys & todo_keys and row["prompt_version"] == PROMPT_VERSION:
-            status = "pending"
-            (cfg["root"] / row["result_path"]).unlink(missing_ok=True)
-        else:
-            status = "superseded"  # its candidates were evaluated by later batches
-        with conn:
-            conn.execute("UPDATE ai_task SET status = ?, updated_at = ? WHERE id = ?", (status, now(), row["id"]))
-
-
 def prepare(conn, course_slug: str, cfg: dict, limit: int | None = None, override_reviewed: bool = False) -> dict:
     course = database.course_by_slug(conn, course_slug)
     _require_fresh(conn, course, cfg)
@@ -105,7 +89,9 @@ def prepare(conn, course_slug: str, cfg: dict, limit: int | None = None, overrid
            WHERE c.course_id = ? AND c.filter_status = 'kept'
            ORDER BY c.frequency DESC, t.normalized_term""", (course["id"],)).fetchall()
     needing = [r for r in rows if _needs_eval(r, override_reviewed)]
-    _settle_invalid_tasks(conn, cfg, course["id"], {r["normalized_term"] for r in needing})
+    needed_keys = {r["normalized_term"] for r in needing}
+    tasks.settle_invalid(conn, cfg, MODE, course["id"], PROMPT_VERSION,
+                         lambda packet: any(c["key"] in needed_keys for c in packet["input"]["candidates"]))
     in_flight = _pending_keys(conn, cfg, course["id"])
     todo = [r for r in needing if r["normalized_term"] not in in_flight]
     level = cfg["learner"]["cefr_level"]
@@ -248,15 +234,24 @@ def _store_entry(conn, course_id, key, item, candidate_input, task_id, threshold
 
 
 def rerank(conn, course_id: int) -> None:
-    """Deterministic course-wide rank (SPEC 7.4): importance ↓, lesson_count ↓, frequency ↓, normalized_term."""
+    """Deterministic course-wide rank (SPEC 7.4): importance ↓, then longer terms first (words ↓, characters ↓),
+    then lesson_count ↓, frequency ↓, normalized_term."""
     conn.execute("UPDATE vocab_entry SET rank = NULL WHERE course_id = ?", (course_id,))
     rows = conn.execute(
         """SELECT e.id FROM vocab_entry e JOIN vocab_term t ON t.id = e.term_id
            JOIN vocab_candidate c ON c.course_id = e.course_id AND c.term_id = e.term_id AND c.filter_status = 'kept'
            WHERE e.course_id = ? AND e.selected = 1 AND e.status != 'rejected'
-           ORDER BY e.importance DESC, c.lesson_count DESC, c.frequency DESC, t.normalized_term""",
+           ORDER BY e.importance DESC,
+                    LENGTH(t.normalized_term) - LENGTH(REPLACE(REPLACE(t.normalized_term, ' ', ''), '-', '')) DESC,
+                    LENGTH(t.normalized_term) DESC, c.lesson_count DESC, c.frequency DESC, t.normalized_term""",
         (course_id,)).fetchall()
     conn.executemany("UPDATE vocab_entry SET rank = ? WHERE id = ?", [(i, r["id"]) for i, r in enumerate(rows, 1)])
+
+
+def export_entries(conn, course_id: int, cfg: dict) -> list:
+    """The terms exported to study: ranked entries with importance >= vocabulary.export_min_importance."""
+    floor = cfg["vocabulary"]["export_min_importance"]
+    return [r for r in export_rows(conn, course_id) if r["importance"] >= floor]
 
 
 def export_rows(conn, course_id: int) -> list:
@@ -280,13 +275,16 @@ def build_export(conn, course_slug: str, cfg: dict) -> dict:
         example = next(iter(_sentences(cfg, conn, refs, cache).values()), None)
         # Lean model for people and the study app; full sources stay in SQLite (vocab_occurrence).
         terms.append({
-            "rank": r["rank"], "term": r["display_term"], "type": r["term_type"], "importance": r["importance"],
-            "vi": r["vietnamese_meaning"], "en": r["english_definition"], "expansion": r["expansion"],
-            "cefr": r["cefr_level"], "frequency": r["frequency"], "lessons": r["lesson_count"],
-            "example": {"text": example["text"], "lesson": example["lesson_position"]} if example else None,
+            "rank": r["rank"], "term": r["display_term"], "type": r["term_type"], "pos": r["part_of_speech"],
+            "importance": r["importance"], "vi": r["vietnamese_meaning"], "en": r["english_definition"],
+            "definition_vi": r["definition_vi"], "expansion": r["expansion"], "cefr": r["cefr_level"],
+            "note": r["usage_note"], "frequency": r["frequency"], "lessons": r["lesson_count"],
+            "example": {"text": example["text"], "vi": r["example_vi"], "lesson": example["lesson_position"]}
+            if example else None,
         })
     return {"kind": "vocabulary", "course": course["title"], "slug": course["slug"],
-            "level": cfg["learner"]["cefr_level"], "terms": terms}
+            "level": cfg["learner"]["cefr_level"], "min_importance": cfg["vocabulary"]["export_min_importance"],
+            "terms": terms}
 
 
 def export(conn, course_slug: str, cfg: dict) -> Path:
@@ -294,7 +292,7 @@ def export(conn, course_slug: str, cfg: dict) -> Path:
 
     model = build_export(conn, course_slug, cfg)
     folder = cfg["root"] / cfg["paths"]["export_dir"] / "vocabulary" / course_slug
-    write_vocabulary(model, folder, cfg["vocabulary"]["export_max_terms"])
+    write_vocabulary(model, folder)
     return folder
 
 

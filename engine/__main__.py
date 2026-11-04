@@ -150,6 +150,18 @@ def cmd_vocab(cfg, args) -> None:
         print(f"[{args.course}] task xong: {r['done']}, không hợp lệ: {r['invalid']}, thất bại: {r['failed']}, "
               f"chưa có kết quả: {r['waiting']}, mục từ vựng: {r['entries']}, thiếu (chờ lô sau): {r['missing']}, "
               f"bỏ (ứng viên đã đổi): {r['dropped']}")
+    elif args.action == "enrich-prepare":
+        from engine.vocab import enrich
+
+        r = _with_db(cfg, lambda conn: enrich.prepare(conn, args.course, cfg, limit=args.limit))
+        print(f"[{args.course}] từ xuất ra để học: {r['exported_terms']}, cần bổ sung chi tiết: {r['terms_todo']}, "
+              f"task mới: {r['tasks_created']}, task đang chờ: {r['pending']}")
+    elif args.action == "enrich-ingest":
+        from engine.vocab import enrich
+
+        r = _with_db(cfg, lambda conn: enrich.ingest(conn, args.course, cfg))
+        print(f"[{args.course}] task xong: {r['done']}, không hợp lệ: {r['invalid']}, thất bại: {r['failed']}, "
+              f"chưa có kết quả: {r['waiting']}, từ đã bổ sung: {r['enriched']}, bỏ (chờ lô sau): {r['skipped']}")
     elif args.action == "export":
         folder = _with_db(cfg, lambda conn: mode.export(conn, args.course, cfg))
         print(f"Đã xuất vocabulary.json/.csv/.md vào {folder}")
@@ -166,6 +178,18 @@ def cmd_knowledge(cfg, args) -> None:
         r = _with_db(cfg, lambda conn: mode.ingest(conn, args.course, cfg))
         print(f"[{args.course}] task xong: {r['done']}, không hợp lệ: {r['invalid']}, thất bại: {r['failed']}, "
               f"chưa có kết quả: {r['waiting']}, bài đã lưu: {r['lessons']}, mục kiến thức: {r['items']}")
+    elif args.action == "enrich-prepare":
+        from engine.knowledge import enrich
+
+        r = _with_db(cfg, lambda conn: enrich.prepare(conn, args.course, cfg, limit=args.limit))
+        print(f"[{args.course}] bài đã trích: {r['lessons']}, bài cần bổ sung: {r['lessons_todo']}, "
+              f"mục cần bổ sung: {r['items_todo']}, task mới: {r['tasks_created']}, task đang chờ: {r['pending']}")
+    elif args.action == "enrich-ingest":
+        from engine.knowledge import enrich
+
+        r = _with_db(cfg, lambda conn: enrich.ingest(conn, args.course, cfg))
+        print(f"[{args.course}] task xong: {r['done']}, không hợp lệ: {r['invalid']}, thất bại: {r['failed']}, "
+              f"chưa có kết quả: {r['waiting']}, mục đã bổ sung: {r['enriched']}, bỏ (chờ lô sau): {r['skipped']}")
     elif args.action == "export":
         folder = _with_db(cfg, lambda conn: mode.export(conn, args.course, cfg))
         print(f"Đã xuất knowledge.json/.md vào {folder}")
@@ -224,19 +248,19 @@ def main(argv=None) -> int:
     p.add_argument("--by", choices=["chapter", "course", "lesson"], help="đơn vị file (mặc định theo config)")
     p.add_argument("--lang", help="en (mặc định default_lang), en_US, en,vi, hoặc all")
     p = sub.add_parser("vocab", help="Vocabulary Mode")
-    p.add_argument("action", choices=["candidates", "prepare", "ingest", "export"])
+    p.add_argument("action", choices=["candidates", "prepare", "ingest", "enrich-prepare", "enrich-ingest", "export"])
     p.add_argument("course", help="slug khóa học")
     p.add_argument("--level", choices=["A2", "B1", "B2", "C1"], help="trình độ người học (ghi đè config)")
     p.add_argument("--limit", type=int, help="prepare: số task mới tối đa")
     p.add_argument("--override-reviewed", action="store_true", help="prepare/ingest: đánh giá lại và ghi đè cả mục đã duyệt")
     p = sub.add_parser("knowledge", help="Knowledge Mode")
-    p.add_argument("action", choices=["prepare", "ingest", "export"])
+    p.add_argument("action", choices=["prepare", "ingest", "enrich-prepare", "enrich-ingest", "export"])
     p.add_argument("course", help="slug khóa học")
     p.add_argument("--lessons", help="prepare: vị trí bài, ví dụ 1-10,15")
-    p.add_argument("--limit", type=int, help="prepare: số bài mới tối đa")
+    p.add_argument("--limit", type=int, help="prepare: số bài mới tối đa; enrich-prepare: số task mới tối đa")
     p = sub.add_parser("ai", help="Task AI đang chờ, chia nhóm cho subagent (JSON)")
     p.add_argument("action", choices=["batches"])
-    p.add_argument("mode", choices=["vocab_eval", "knowledge_extract"])
+    p.add_argument("mode", choices=["vocab_eval", "vocab_enrich", "knowledge_extract", "knowledge_enrich"])
     p.add_argument("course", help="slug khóa học")
     p.add_argument("--size", type=int, help="số task mỗi subagent (mặc định ai.tasks_per_subagent)")
     p = sub.add_parser("review", help="Duyệt kết quả AI cần xem lại")
