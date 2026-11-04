@@ -1,6 +1,6 @@
-"""Gọi API nội bộ api-2.0 của Udemy bằng curl_cffi (giả lập TLS Chrome để qua Cloudflare).
+"""Call Udemy's internal api-2.0 with curl_cffi (Chrome TLS impersonation to get past Cloudflare).
 
-Token chỉ được gửi tới base_url; URL caption (CDN) được tải không kèm token.
+The token is only ever sent to base_url; caption URLs (CDN) are downloaded without it.
 """
 import re
 import threading
@@ -52,7 +52,7 @@ class UdemyClient:
 
         kwargs = {"params": params, "timeout": 30}
         if auth:
-            # Không theo redirect: curl vẫn chuyển header tùy biến (X-Udemy-Authorization) sang host mới.
+            # No redirects: curl would forward custom headers (X-Udemy-Authorization) to the new host.
             kwargs["allow_redirects"] = False
             kwargs["headers"] = {
                 "Authorization": f"Bearer {self._token}",
@@ -102,7 +102,7 @@ class UdemyClient:
         )
 
     def resolve_course(self, ref: str) -> dict:
-        """ref: course id, slug, hoặc URL https://.../course/<slug>/... (API nhận cả id lẫn slug)."""
+        """ref: course id, slug, or URL https://.../course/<slug>/... (the API accepts both id and slug)."""
         ref = ref.strip()
         m = re.search(r"/course/([^/?#]+)", ref)
         key = m.group(1) if m else ref.strip("/")
@@ -127,5 +127,5 @@ class UdemyClient:
         return (data.get("asset") or {}).get("captions") or []
 
     def download_text(self, url: str) -> str:
-        """Tải file caption từ CDN — không gửi token."""
+        """Download a caption file from the CDN — never sends the token."""
         return self._get(url, auth=False).content.decode("utf-8-sig", errors="replace")

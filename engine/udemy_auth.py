@@ -1,4 +1,4 @@
-"""Lệnh login: mở Chrome/Edge có sẵn bằng Playwright, chờ người dùng đăng nhập Udemy, lưu access_token."""
+"""`login` command: open the installed Chrome/Edge via Playwright, wait for the user to sign in, save access_token."""
 import time
 from pathlib import Path
 
@@ -21,7 +21,7 @@ def login(base_url: str, profile_dir: Path, root: Path) -> Path:
             try:
                 context = p.chromium.launch_persistent_context(str(profile_dir), channel=channel, headless=False)
                 break
-            except Exception as exc:  # trình duyệt chưa cài
+            except Exception as exc:  # browser not installed
                 errors.append(f"{channel}: {exc.__class__.__name__}")
         if context is None:
             raise SystemExit("Không mở được Chrome hoặc Edge (" + "; ".join(errors) + ").")
@@ -36,7 +36,7 @@ def login(base_url: str, profile_dir: Path, root: Path) -> Path:
             while token is None and time.monotonic() < deadline:
                 try:
                     cookies = context.cookies(base_url)
-                except Exception:  # cửa sổ trình duyệt đã bị đóng
+                except Exception:  # browser window was closed
                     break
                 token = next((c["value"] for c in cookies if c["name"] == "access_token" and c["value"]), None)
                 if token is None:
@@ -44,7 +44,7 @@ def login(base_url: str, profile_dir: Path, root: Path) -> Path:
         finally:
             try:
                 context.close()
-            except Exception:  # người dùng đã tự đóng cửa sổ
+            except Exception:  # user already closed the window
                 pass
 
     if token is None:

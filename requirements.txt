@@ -1,5 +1,6 @@
 PyYAML>=6.0
 curl_cffi>=0.17
+spacy>=3.8,<3.9   # + model en_core_web_sm 3.8.0 (xem README)
 pytest>=8.0
 # Tùy chọn — chỉ cần cho `python -m engine login`:
 playwright>=1.64

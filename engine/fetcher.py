@@ -1,4 +1,4 @@
-"""Lệnh fetch: tải caption của một khóa Udemy vào data/input/<slug>/ kèm _manifest.json."""
+"""`fetch` command: download a Udemy course's captions into data/input/<slug>/<locale>/ with _manifest.json."""
 import hashlib
 import json
 import re
@@ -17,12 +17,12 @@ def parse_langs(value: str) -> list[str]:
 
 
 def _rank(caption: dict) -> tuple:
-    # manual trước auto; trong cùng loại ưu tiên en_US rồi theo alphabet.
+    # manual before auto; within the same kind prefer en_US, then alphabetical.
     return (caption.get("source") == "auto", caption["locale_id"] != "en_US", caption["locale_id"])
 
 
 def select_captions(captions: list[dict], langs: list[str]) -> list[dict]:
-    """Mỗi ngôn ngữ yêu cầu lấy đúng một track tốt nhất."""
+    """Pick exactly one best track per requested language."""
     usable = [c for c in captions if c.get("url") and c.get("locale_id")]
     if langs == ["all"]:
         groups: dict[str, list[dict]] = {}
@@ -51,14 +51,14 @@ def slugify(title: str, fallback: str, max_len: int = 60) -> str:
 
 def fetch_course(client, course: dict, langs: list[str], input_dir: Path, max_concurrency: int = 4,
                  progress=lambda message: None) -> list[Path]:
-    """Tải caption theo langs vào <input_dir>/<slug>/<locale>/; trả về các thư mục ngôn ngữ đã ghi.
+    """Download captions for langs into <input_dir>/<slug>/<locale>/; return the locale folders written.
 
-    Mỗi thư mục ngôn ngữ có _manifest.json riêng; ngôn ngữ không được yêu cầu không bị đụng tới.
+    Each locale folder has its own _manifest.json; languages not requested are left untouched.
     Lỗi xác thực dừng toàn bộ. progress(message) nhận thông báo tiến độ.
     """
     course_id = course["id"]
     slug = course["published_title"]
-    # Udemy dựng danh sách caption phía server ở lần gọi đầu: khóa ~400 bài mất 1–2 phút, lần sau vài giây.
+    # Udemy builds the caption list server-side on the first call: ~1–2 min for ~400 lectures, seconds afterwards.
     progress("Đang lấy danh sách bài giảng (lần đầu với khóa lớn có thể mất 1–2 phút)...")
     items = client.get_curriculum(course_id)
 

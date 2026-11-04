@@ -4,14 +4,15 @@ Biến transcript khóa học Udemy thành kho kiến thức cá nhân (SQLite).
 
 Ba hướng sử dụng (SPEC 2.0): xuất dữ liệu sạch cho NotebookLM, trích xuất từ vựng, trích xuất kiến thức.
 
-Trạng thái hiện tại (giai đoạn 1 — Ingestion): đăng nhập Udemy, tải transcript, import `.vtt/.txt/.md`, lưu SQLite, thống kê. Clean Dataset + xuất NotebookLM là giai đoạn tiếp theo.
+Trạng thái hiện tại (giai đoạn 2): đăng nhập Udemy, tải transcript, import `.vtt/.txt/.md`, Clean Dataset (câu + timestamp + đoạn), xuất Markdown cho NotebookLM, thống kê.
 
 ## Cài đặt
 
-Yêu cầu Python 3.10+.
+Yêu cầu Python 3.10–3.14.
 
 ```bash
 pip install -r requirements.txt
+pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 ```
 
 Playwright chỉ cần cho lệnh `login` và dùng Chrome hoặc Edge đã cài sẵn trên máy — không cần `playwright install`.
@@ -54,7 +55,9 @@ Hoặc đặt biến môi trường `UDEMY_ACCESS_TOKEN` (ghi đè giá trị tr
 python -m engine fetch                         # liệt kê khóa học đã đăng ký
 python -m engine fetch <url|slug|id>           # tải caption tiếng Anh rồi import
 python -m engine fetch <url> --lang en,vi      # nhiều ngôn ngữ; --lang all = tất cả
-python -m engine import data/input/<khóa>      # import file .vtt/.txt/.md tự đặt
+python -m engine import data/input/<khóa>      # import file .vtt/.txt/.md tự đặt (tự làm sạch)
+python -m engine clean <slug> [--force]        # làm sạch lại
+python -m engine export notebooklm <slug>      # Markdown cho NotebookLM (--by chapter|course|lesson)
 python -m engine stats
 ```
 
@@ -65,6 +68,9 @@ Chỉ ngôn ngữ trong `--lang` (mặc định `en`) được tải; thư mục
 
 File tự đặt: `data/input/<khóa>/<lang>/bai-01.vtt` (hoặc đặt phẳng trong `data/input/<khóa>/`).
 Chạy lại `fetch`/`import` không tạo bản ghi trùng.
+
+Dữ liệu: `data/input` (raw, không bao giờ sửa) → `data/clean` (Clean Dataset JSON) → `data/export` (Markdown/JSON/CSV).
+Upload các file trong `data/export/notebooklm/<slug>/<lang>/` lên NotebookLM (Gemini Notebook).
 
 Chỉ dùng cho khóa học bạn đã đăng ký, phục vụ học tập cá nhân.
 

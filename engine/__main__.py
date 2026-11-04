@@ -1,4 +1,4 @@
-"""CLI: python -m engine <login|fetch|import|stats>."""
+"""CLI: python -m engine <command> — see `python -m engine --help`."""
 import argparse
 import sys
 from pathlib import Path
@@ -9,11 +9,14 @@ from engine.config import load_config, path_of
 
 def _print_import(result) -> None:
     print(f"[{result.course_slug}] mới: {result.imported}, cập nhật: {result.updated}, "
-          f"không đổi: {result.unchanged}")
+          f"không đổi: {result.unchanged}, làm sạch: {result.cleaned}")
+    for warning in result.warnings:
+        print(f"  Cảnh báo: {warning}")
     if result.empty:
         print(f"  Cảnh báo — file không có nội dung: {', '.join(result.empty)}")
     if result.ignored:
-        print(f"  Bỏ qua {len(result.ignored)} file (ngoài _manifest.json hoặc trùng bài + ngôn ngữ): {', '.join(result.ignored[:5])}"
+        print(f"  Bỏ qua {len(result.ignored)} file (ngoài _manifest.json, trùng bài + ngôn ngữ, "
+              f"hoặc file tự đặt trong khóa đã fetch): {', '.join(result.ignored[:5])}"
               + (" ..." if len(result.ignored) > 5 else ""))
 
 
@@ -22,8 +25,7 @@ def _import(cfg, folder: Path) -> None:
 
     conn = database.connect(path_of(cfg, "database"))
     try:
-        result = import_folder(conn, folder, default_lang=cfg["default_lang"],
-                               max_words=cfg["chunking"]["max_words"])
+        result = import_folder(conn, folder, cfg)
     finally:
         conn.close()
     _print_import(result)
@@ -33,20 +35,56 @@ def cmd_import(cfg, args) -> None:
     _import(cfg, Path(args.folder))
 
 
+def _fmt(group: dict) -> str:
+    return ", ".join(f"{k}: {v}" for k, v in group.items()) or "-"
+
+
 def cmd_stats(cfg, args) -> None:
     conn = database.connect(path_of(cfg, "database"))
     try:
         s = database.stats(conn)
     finally:
         conn.close()
-    by_status = ", ".join(f"{k}: {v}" for k, v in s["transcripts_by_status"].items()) or "-"
-    print(f"Khóa học:    {s['courses']}")
-    print(f"Bài học:     {s['lessons']}")
-    print(f"Transcript:  {s['transcripts']} ({by_status})")
-    print(f"Chunk:       {s['chunks']} ({s['words']} từ)")
-    print(f"Từ vựng:     {s['vocabulary']}")
-    print(f"Khái niệm:   {s['concepts']}")
-    print(f"Flashcard:   {s['flashcards']}")
+    print(f"Khóa học:        {s['courses']}")
+    print(f"Bài học:         {s['lessons']}")
+    print(f"Transcript:      {s['transcripts']} (đã làm sạch: {s['cleaned']}, {s['sentences']} câu, {s['words']} từ)")
+    print(f"Task AI:         {_fmt(s['ai_tasks'])}")
+    print(f"Ứng viên từ:     {_fmt(s['vocab_candidates'])}")
+    print(f"Từ vựng:         {_fmt(s['vocab_entries'])}")
+    print(f"Kiến thức:       {s['knowledge_nodes']} topic, item {_fmt(s['knowledge_items'])}")
+    print(f"Khái niệm:       {s['concepts']}")
+
+
+def cmd_clean(cfg, args) -> None:
+    from engine.cleaner import clean_course
+
+    conn = database.connect(path_of(cfg, "database"))
+    try:
+        course = database.course_by_slug(conn, args.course)
+        r = clean_course(conn, course["id"], cfg, force=args.force)
+    finally:
+        conn.close()
+    print(f"[{args.course}] làm sạch: {r['cleaned']}, cập nhật metadata: {r['refreshed']}, không đổi: {r['unchanged']}")
+    if r["empty"]:
+        print(f"  Cảnh báo — transcript rỗng: {', '.join(r['empty'])}")
+
+
+def cmd_export(cfg, args) -> None:
+    from engine.export_notebooklm import course_languages, export_course
+    from engine.fetcher import parse_langs
+
+    conn = database.connect(path_of(cfg, "database"))
+    try:
+        langs = parse_langs(args.lang or cfg["default_lang"])
+        if langs == ["all"]:
+            langs = course_languages(conn, database.course_by_slug(conn, args.course)["id"])
+        for lang in langs:
+            r = export_course(conn, args.course, cfg, by=args.by, lang=lang)
+            print(f"Đã xuất {r.lessons} bài thành {len(r.files)} file + index.md vào {r.folder}")
+            for warning in r.warnings:
+                print(f"  Cảnh báo: {warning}")
+    finally:
+        conn.close()
 
 
 def cmd_login(cfg, args) -> None:
@@ -91,16 +129,26 @@ def main(argv=None) -> int:
     p.add_argument("--lang", help="en (mặc định), en,vi, en_GB, hoặc all")
     p = sub.add_parser("import", help="Nhập thư mục .vtt/.txt/.md vào SQLite")
     p.add_argument("folder")
+    p = sub.add_parser("clean", help="Làm sạch lại transcript của một khóa (Clean Dataset)")
+    p.add_argument("course", help="slug khóa học")
+    p.add_argument("--force", action="store_true", help="làm sạch lại toàn bộ dù không đổi")
+    p = sub.add_parser("export", help="Xuất dữ liệu")
+    exp = p.add_subparsers(dest="target", required=True)
+    p = exp.add_parser("notebooklm", help="Markdown cho NotebookLM")
+    p.add_argument("course", help="slug khóa học")
+    p.add_argument("--by", choices=["chapter", "course", "lesson"], help="đơn vị file (mặc định theo config)")
+    p.add_argument("--lang", help="en (mặc định default_lang), en_US, en,vi, hoặc all")
     sub.add_parser("stats", help="Thống kê dữ liệu")
     args = parser.parse_args(argv)
 
     from engine.udemy_client import UdemyError
 
     cfg = load_config()
-    handlers = {"login": cmd_login, "fetch": cmd_fetch, "import": cmd_import, "stats": cmd_stats}
+    handlers = {"login": cmd_login, "fetch": cmd_fetch, "import": cmd_import, "stats": cmd_stats,
+                "clean": cmd_clean, "export": cmd_export}
     try:
         handlers[args.command](cfg, args)
-    except (UdemyError, FileNotFoundError) as exc:
+    except (UdemyError, FileNotFoundError, LookupError, database.SchemaError) as exc:
         print(f"Lỗi: {exc}", file=sys.stderr)
         return 1
     return 0

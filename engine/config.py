@@ -1,4 +1,4 @@
-"""Đọc cấu hình: config.yaml -> config.local.yaml -> biến môi trường."""
+"""Load configuration: config.yaml -> config.local.yaml -> environment variables."""
 import os
 from pathlib import Path
 
@@ -39,7 +39,7 @@ def path_of(cfg: dict, key: str) -> Path:
 
 
 def save_token(token: str, root: Path = ROOT) -> Path:
-    """Ghi access_token vào config.local.yaml, giữ nguyên các khóa khác."""
+    """Write access_token into config.local.yaml, keeping every other key."""
     path = root / LOCAL_FILE
     data = _read_yaml(path)
     data.setdefault("udemy", {})["access_token"] = token

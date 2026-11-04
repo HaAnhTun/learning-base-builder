@@ -102,10 +102,10 @@ def test_fetch_course_writes_one_folder_per_locale(tmp_path):
 
     course_dir = tmp_path / "py-course"
     assert folders == [course_dir / "en_GB", course_dir / "en_US"]
-    assert sorted(p.name for p in course_dir.iterdir()) == ["en_GB", "en_US"]  # không có vi_VN
+    assert sorted(p.name for p in course_dir.iterdir()) == ["en_GB", "en_US"]  # no vi_VN
     assert sorted(p.name for p in (course_dir / "en_US").iterdir()) == ["001-gioi-thieu.vtt", "_manifest.json"]
     assert (course_dir / "en_US" / "001-gioi-thieu.vtt").read_text(encoding="utf-8") == "WEBVTT\n\nA"
-    assert client.downloaded == ["u/en_us", "u/en_gb"]  # chỉ tải ngôn ngữ được yêu cầu
+    assert client.downloaded == ["u/en_us", "u/en_gb"]  # only requested languages are downloaded
 
     m = manifest_of(course_dir / "en_US")
     assert (m["course_id"], m["slug"], m["host"], m["locale_id"], m["requested_langs"]) == (
@@ -140,13 +140,13 @@ VTT = "WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nHello there.\n"
 TEXTS = {"u/en_us": VTT, "u/vi": VTT, "u/en_gb": VTT}
 
 
-def test_fetched_course_folder_imports_all_languages(tmp_path):
+def test_fetched_course_folder_imports_all_languages(tmp_path, cfg):
     from engine import database
     from engine.importer import import_folder
 
     fetch_course(FakeClient(curriculum(), TEXTS, {102: [EN_GB]}), COURSE, ["en", "vi"], tmp_path)
     conn = database.connect(tmp_path / "db.sqlite")
-    r = import_folder(conn, tmp_path / "py-course", default_lang="en", max_words=2500)
+    r = import_folder(conn, tmp_path / "py-course", cfg)
     assert (r.course_slug, r.imported, r.ignored) == ("py-course", 4, [])  # 100: en_US+vi_VN, 102: en_GB, 103: vi_VN
     assert database.stats(conn)["lessons"] == 3
     files = {row[0] for row in conn.execute("SELECT filename FROM transcript")}
@@ -154,18 +154,18 @@ def test_fetched_course_folder_imports_all_languages(tmp_path):
     conn.close()
 
 
-def test_refetch_other_language_leaves_existing_folder_untouched(tmp_path):
-    """fetch en,vi rồi fetch en: thư mục vi_VN giữ nguyên, import không tạo lesson trùng."""
+def test_refetch_other_language_leaves_existing_folder_untouched(tmp_path, cfg):
+    """fetch en,vi then fetch en: vi_VN folder untouched, import creates no duplicate lessons."""
     from engine import database
     from engine.importer import import_folder
 
     conn = database.connect(tmp_path / "db.sqlite")
     fetch_course(FakeClient(curriculum(), TEXTS, {102: [EN_GB]}), COURSE, ["en", "vi"], tmp_path)
     vi_manifest = (tmp_path / "py-course" / "vi_VN" / "_manifest.json").read_text(encoding="utf-8")
-    import_folder(conn, tmp_path / "py-course", default_lang="en", max_words=2500)
+    import_folder(conn, tmp_path / "py-course", cfg)
 
     for folder in fetch_course(FakeClient(curriculum(), TEXTS, {102: [EN_GB]}), COURSE, ["en"], tmp_path):
-        r = import_folder(conn, folder, default_lang="en", max_words=2500)
+        r = import_folder(conn, folder, cfg)
         assert (r.imported, r.ignored) == (0, [])
     assert (tmp_path / "py-course" / "vi_VN" / "_manifest.json").read_text(encoding="utf-8") == vi_manifest
     assert database.stats(conn)["lessons"] == 3

@@ -1,1 +1,1 @@
-"""Python engine của Personal Learning Base Builder."""
+"""Python engine of Personal Learning Base Builder."""

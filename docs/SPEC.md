@@ -143,7 +143,7 @@ data/                                            # toàn bộ gitignored
   work/tasks/<mode>/<task_id>.json               # task packet gửi AI
   work/tasks/<mode>/<task_id>.result.json        # kết quả AI thô (trước validate)
   export/
-    notebooklm/<course>/<locale>/index.md, *.md
+    notebooklm/<course>/<lang>/index.md, *.md
     vocabulary/<course>/vocabulary.json|.csv|.md
     knowledge/<course>/knowledge.json, knowledge.md
   learning.db                                    # metadata, index, kết quả trích xuất
@@ -217,7 +217,7 @@ Không dùng AI. NotebookLM là công cụ bên ngoài, không phải thành ph�
 
 - Mọi file vượt `notebooklm.max_words_per_file` (mặc định 200.000 từ) được tách thành `<tên> (part N).md`, cắt tại ranh giới bài.
 - File tự đặt không có chapter: coi cả khóa là một chapter.
-- `--lang` chọn ngôn ngữ (mặc định `default_lang`, khớp như `fetch`); mỗi bài lấy một transcript theo thứ tự ưu tiên mục 3.1; mỗi locale được xuất vào thư mục riêng.
+- `--lang` chọn ngôn ngữ (mặc định `default_lang`; nhận danh sách và `all` như `fetch`, không phân biệt hoa/thường); mỗi bài lấy một transcript theo thứ tự ưu tiên mục 3.1; mỗi giá trị `--lang` được xuất vào thư mục riêng `notebooklm/<course>/<lang>/`.
 - Tên file bỏ ký tự không hợp lệ trên Windows/macOS/Linux.
 
 **Nội dung:** file chapter/course dùng H1 cho chapter, H2 cho bài; file theo bài dùng H1 cho bài.
@@ -235,7 +235,8 @@ Không dùng AI. NotebookLM là công cụ bên ngoài, không phải thành ph�
 ```
 
 - Mỗi đoạn (mục 5.2) bắt đầu bằng mốc `[mm:ss]` (hoặc `[h:mm:ss]`) để trích dẫn trỏ về đúng phút; TXT/MD không có mốc.
-- `index.md`: tên khóa, nguồn, ngày xuất, ngôn ngữ, danh sách file → chapter → các bài (số thứ tự, tiêu đề).
+- `index.md`: tên khóa, nguồn, ngôn ngữ, đơn vị xuất, danh sách file → chapter → các bài (số thứ tự, tiêu đề). Không ghi ngày xuất để giữ tính xác định.
+- Dòng transcript bắt đầu bằng `#` hoặc `>` được escape để không thành heading/quote. `Lesson N/T` dùng `T` = vị trí bài lớn nhất của khóa.
 - Xuất lại ghi đè thư mục export của khóa/locale đó; nội dung xác định (cùng input → cùng output).
 
 ## 7. Hướng 2 — Vocabulary Extraction Mode

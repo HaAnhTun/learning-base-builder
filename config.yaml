@@ -1,14 +1,45 @@
-# Cấu hình chung. Token Udemy KHÔNG đặt ở đây — dùng config.local.yaml (gitignored).
+# Cấu hình chung (SPEC 2.0 mục 13). Token Udemy KHÔNG đặt ở đây — dùng config.local.yaml (gitignored).
 paths:
   input_dir: data/input
+  clean_dir: data/clean
+  work_dir: data/work
+  export_dir: data/export
   database: data/learning.db
   auth_dir: data/.auth
 
-# Ngôn ngữ mặc định khi tải caption và khi file import không có hậu tố locale.
+# Ngôn ngữ mặc định khi tải caption, khi xuất, và khi file tự đặt không có hậu tố locale.
 default_lang: en
 
-chunking:
-  max_words: 2500
+learner:
+  cefr_level: B2              # A2 | B1 | B2 | C1; null → skill hỏi người dùng
+
+clean:
+  paragraph_pause_seconds: 1.5
+  max_sentences_per_paragraph: 6
+
+notebooklm:
+  by: chapter                 # chapter | course | lesson
+  max_sources: 45
+  max_words_per_file: 200000
+
+vocabulary:
+  batch_size: 100
+  contexts_per_candidate: 3
+  zipf_threshold_by_level: {A2: 5.0, B1: 4.5, B2: 4.0, C1: 3.5}   # heuristic, cần benchmark
+  keyness_min: 4.0            # benchmark CCAR: 2.0 giữ cả use/run/actually
+  phrase_min_frequency: 3     # cụm nhiều từ / phrasal verb xuất hiện < 3 lần → low_frequency
+
+knowledge:
+  max_lesson_words: 8000
+  output_languages: [en, vi]
+
+ai:
+  runner: claude_code         # Future: claude_api
+  subagent_model: haiku
+  tasks_per_subagent: {knowledge_extract: 15, vocab_eval: 3}
+  max_parallel_subagents: 4
+  max_retries: 2
+  review_threshold: 0.7
 
 udemy:
   base_url: https://www.udemy.com
