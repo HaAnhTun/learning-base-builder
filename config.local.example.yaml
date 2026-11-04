@@ -1,0 +1,6 @@
+# Sao chép thành config.local.yaml (file này không được commit).
+# Cách dễ nhất: chạy `python -m engine login` — token sẽ tự được ghi vào đây.
+udemy:
+  # https://www.udemy.com hoặc portal Udemy Business, ví dụ https://acme.udemy.com
+  base_url: https://www.udemy.com
+  access_token: ""

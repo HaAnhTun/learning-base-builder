@@ -1,0 +1,15 @@
+# Cấu hình chung. Token Udemy KHÔNG đặt ở đây — dùng config.local.yaml (gitignored).
+paths:
+  input_dir: data/input
+  database: data/learning.db
+  auth_dir: data/.auth
+
+# Ngôn ngữ mặc định khi tải caption và khi file import không có hậu tố locale.
+default_lang: en
+
+chunking:
+  max_words: 2500
+
+udemy:
+  base_url: https://www.udemy.com
+  max_concurrency: 4
