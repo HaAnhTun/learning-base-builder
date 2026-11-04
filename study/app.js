@@ -123,6 +123,7 @@ function rebuild() {
 
 function selectKind(kind) {
   state.kind = kind;
+  save("lbb:kind", kind);
   const deck = state.decks[kind];
   state.filters = load(`lbb:filters:${kind}`, null) || {
     top: 100, chapter: "all", type: "all", onlyNew: true, lang: deck.languages?.includes("vi") ? "vi" : "both",
@@ -190,8 +191,8 @@ function show() {
     return;
   }
   const [front, back] = state.kind === "vocabulary" ? renderVocab(card) : renderKnowledge(card);
-  $("front").replaceChildren(...front.filter(Boolean));
-  $("back").replaceChildren(...back.filter(Boolean));
+  $("front").replaceChildren(...front.flat().filter(Boolean)); // bilingual content yields a list of nodes
+  $("back").replaceChildren(...back.flat().filter(Boolean));
 }
 
 // --- actions ---
@@ -260,5 +261,6 @@ for (const kind of Object.keys(KINDS)) {
   const data = load(`lbb:deck:${kind}`, null);
   if (data) { try { state.decks[kind] = buildDeck(data); } catch { /* ignore stale data */ } }
 }
-const first = Object.keys(state.decks)[0];
+const last = load("lbb:kind", null);
+const first = state.decks[last] ? last : Object.keys(state.decks)[0];
 if (first) selectKind(first);
