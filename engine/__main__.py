@@ -118,6 +118,91 @@ def cmd_fetch(cfg, args) -> None:
         _import(cfg, folder)
 
 
+def _with_db(cfg, fn):
+    conn = database.connect(path_of(cfg, "database"))
+    try:
+        return fn(conn)
+    finally:
+        conn.close()
+
+
+def cmd_vocab(cfg, args) -> None:
+    from engine.vocab import mode
+    from engine.vocab.candidates import extract_course_candidates
+
+    if args.level:
+        cfg["learner"]["cefr_level"] = args.level
+    if args.action == "candidates":
+        def run(conn):
+            course = database.course_by_slug(conn, args.course)
+            print(f"Trích ứng viên (trình độ {cfg['learner']['cefr_level']})...", flush=True)
+            return extract_course_candidates(conn, course["id"], cfg, progress=lambda m: print(m, flush=True))
+        r = _with_db(cfg, run)
+        print(f"[{args.course}] {r['transcripts']} bài, {r['words']} từ → giữ {r['kept']} ứng viên, "
+              f"lọc {r['filtered']}, xóa {r['removed']} ứng viên cũ")
+    elif args.action == "prepare":
+        r = _with_db(cfg, lambda conn: mode.prepare(conn, args.course, cfg, limit=args.limit,
+                                                    override_reviewed=args.override_reviewed))
+        print(f"[{args.course}] ứng viên cần đánh giá: {r['candidates_todo']}, task mới: {r['tasks_created']}, "
+              f"task đang chờ: {r['pending']}")
+    elif args.action == "ingest":
+        r = _with_db(cfg, lambda conn: mode.ingest(conn, args.course, cfg, override_reviewed=args.override_reviewed))
+        print(f"[{args.course}] task xong: {r['done']}, không hợp lệ: {r['invalid']}, thất bại: {r['failed']}, "
+              f"chưa có kết quả: {r['waiting']}, mục từ vựng: {r['entries']}, thiếu (chờ lô sau): {r['missing']}, "
+              f"bỏ (ứng viên đã đổi): {r['dropped']}")
+    elif args.action == "export":
+        folder = _with_db(cfg, lambda conn: mode.export(conn, args.course, cfg))
+        print(f"Đã xuất vocabulary.json/.csv/.md vào {folder}")
+
+
+def cmd_knowledge(cfg, args) -> None:
+    from engine.knowledge import mode
+
+    if args.action == "prepare":
+        r = _with_db(cfg, lambda conn: mode.prepare(conn, args.course, cfg, limit=args.limit, lessons=args.lessons))
+        print(f"[{args.course}] bài cần trích: {r['lessons_todo']}, task mới: {r['tasks_created']}, "
+              f"task đang chờ: {r['pending']}")
+    elif args.action == "ingest":
+        r = _with_db(cfg, lambda conn: mode.ingest(conn, args.course, cfg))
+        print(f"[{args.course}] task xong: {r['done']}, không hợp lệ: {r['invalid']}, thất bại: {r['failed']}, "
+              f"chưa có kết quả: {r['waiting']}, bài đã lưu: {r['lessons']}, mục kiến thức: {r['items']}")
+    elif args.action == "export":
+        folder = _with_db(cfg, lambda conn: mode.export(conn, args.course, cfg))
+        print(f"Đã xuất knowledge.json/.md vào {folder}")
+
+
+def cmd_ai(cfg, args) -> None:
+    import json
+
+    from engine.ai import tasks
+
+    def run(conn):
+        course = database.course_by_slug(conn, args.course)
+        rows = tasks.pending_tasks(conn, args.mode, course["id"])
+        size = args.size or cfg["ai"]["tasks_per_subagent"][args.mode]
+        return tasks.batches(rows, size)
+    groups = _with_db(cfg, run)
+    print(json.dumps({"model": cfg["ai"]["subagent_model"], "max_parallel": cfg["ai"]["max_parallel_subagents"],
+                      "batches": groups}, ensure_ascii=False, indent=1))
+
+
+def cmd_review(cfg, args) -> None:
+    import json
+
+    if args.mode == "vocab":
+        from engine.vocab import mode
+    else:
+        from engine.knowledge import mode
+    if args.action == "list":
+        items = _with_db(cfg, lambda conn: mode.review_list(conn, args.course, cfg))
+        print(json.dumps(items, ensure_ascii=False, indent=1))
+        print(f"{len(items)} mục cần duyệt.")
+    else:
+        edits = json.loads(args.edits) if args.edits else None
+        _with_db(cfg, lambda conn: mode.review_decide(conn, args.course, args.id, args.action, edits))
+        print(f"Đã ghi quyết định '{args.action}' cho mục {args.id}.")
+
+
 def main(argv=None) -> int:
     for stream in (sys.stdout, sys.stderr):
         stream.reconfigure(encoding="utf-8", errors="replace")
@@ -138,6 +223,28 @@ def main(argv=None) -> int:
     p.add_argument("course", help="slug khóa học")
     p.add_argument("--by", choices=["chapter", "course", "lesson"], help="đơn vị file (mặc định theo config)")
     p.add_argument("--lang", help="en (mặc định default_lang), en_US, en,vi, hoặc all")
+    p = sub.add_parser("vocab", help="Vocabulary Mode")
+    p.add_argument("action", choices=["candidates", "prepare", "ingest", "export"])
+    p.add_argument("course", help="slug khóa học")
+    p.add_argument("--level", choices=["A2", "B1", "B2", "C1"], help="trình độ người học (ghi đè config)")
+    p.add_argument("--limit", type=int, help="prepare: số task mới tối đa")
+    p.add_argument("--override-reviewed", action="store_true", help="prepare/ingest: đánh giá lại và ghi đè cả mục đã duyệt")
+    p = sub.add_parser("knowledge", help="Knowledge Mode")
+    p.add_argument("action", choices=["prepare", "ingest", "export"])
+    p.add_argument("course", help="slug khóa học")
+    p.add_argument("--lessons", help="prepare: vị trí bài, ví dụ 1-10,15")
+    p.add_argument("--limit", type=int, help="prepare: số bài mới tối đa")
+    p = sub.add_parser("ai", help="Task AI đang chờ, chia nhóm cho subagent (JSON)")
+    p.add_argument("action", choices=["batches"])
+    p.add_argument("mode", choices=["vocab_eval", "knowledge_extract"])
+    p.add_argument("course", help="slug khóa học")
+    p.add_argument("--size", type=int, help="số task mỗi subagent (mặc định ai.tasks_per_subagent)")
+    p = sub.add_parser("review", help="Duyệt kết quả AI cần xem lại")
+    p.add_argument("action", choices=["list", "approved", "rejected"])
+    p.add_argument("course", help="slug khóa học")
+    p.add_argument("--mode", choices=["vocab", "knowledge"], required=True)
+    p.add_argument("--id", type=int, help="id mục (approved/rejected)")
+    p.add_argument("--edits", help='JSON các trường sửa, ví dụ {"vietnamese_meaning": "..."}')
     sub.add_parser("stats", help="Thống kê dữ liệu")
     args = parser.parse_args(argv)
 
@@ -145,10 +252,11 @@ def main(argv=None) -> int:
 
     cfg = load_config()
     handlers = {"login": cmd_login, "fetch": cmd_fetch, "import": cmd_import, "stats": cmd_stats,
-                "clean": cmd_clean, "export": cmd_export}
+                "clean": cmd_clean, "export": cmd_export, "vocab": cmd_vocab, "knowledge": cmd_knowledge, "ai": cmd_ai,
+                "review": cmd_review}
     try:
         handlers[args.command](cfg, args)
-    except (UdemyError, FileNotFoundError, LookupError, database.SchemaError) as exc:
+    except (UdemyError, FileNotFoundError, LookupError, ValueError, database.SchemaError) as exc:
         print(f"Lỗi: {exc}", file=sys.stderr)
         return 1
     return 0

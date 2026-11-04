@@ -249,14 +249,15 @@ Chế độ độc lập với Knowledge Mode. V1 chỉ xử lý transcript ti�
 
 Dùng spaCy + `en_core_web_sm` trên từng câu của Clean Dataset:
 - **Acronym / chữ viết tắt / ký hiệu kỹ thuật:** regex cho token viết hoa hoặc chữ-số (`S3`, `EC2`, `IAM`, `API`, `DNS`, `SQL`) và token kỹ thuật có chữ số (`k8s`). Không lọc theo độ dài ký tự.
-- **Cụm danh từ / thuật ngữ nhiều từ:** từ noun chunk, bỏ mạo từ/đại từ/từ hạn định đầu cụm (`an S3 bucket` → `S3 bucket`, `Kinesis Data Streams`).
+- **Cụm danh từ / thuật ngữ nhiều từ:** từ noun chunk, bỏ mạo từ/đại từ/từ định lượng đầu cụm và phần sở hữu (`an S3 bucket` → `S3 bucket`, `the model's output` → `output`); giữ các từ nội dung mà spaCy coi là stopword (`least privilege`, `front end`).
+- **Từ ghép có gạch nối:** dò trực tiếp trên token (`sub-agent`, `multi-agent`, `few-shot`, `state-of-the-art`); các mảnh của từ ghép không thành ứng viên riêng.
 - **Phrasal verb:** động từ + tiểu từ (`dep = prt`), ví dụ `spin up`, `scale out`, `set up`.
 - **Từ đơn:** danh từ, động từ, tính từ, trạng từ có nội dung.
 - Ghi lại mọi lần xuất hiện: `(transcript_id, sentence_id)`.
 
 ### 7.2. Chuẩn hóa và gộp (Normalizer dùng chung)
 
-- Dạng chuẩn: lemma, chữ thường (giữ nguyên dạng viết hoa của acronym và tên riêng), chuẩn hóa khoảng trắng và gạch nối. Cùng hàm chuẩn hóa này được Knowledge Mode dùng cho tên khái niệm.
+- Dạng chuẩn: chữ thường (giữ nguyên dạng viết hoa của acronym), chuẩn hóa khoảng trắng và gạch nối; với cụm nhiều từ chỉ lemma từ chính (từ cuối). Token bị gắn nhãn tên riêng (PROPN) được lemma như danh từ (`Tokens` → `token`). Từ đơn chỉ khác hoa/thường gộp về dạng acronym (`json` → `JSON`). Cùng hàm chuẩn hóa này được Knowledge Mode dùng cho tên khái niệm.
 - Gộp các biến thể cùng dạng chuẩn trên **toàn khóa**; giữ dạng hiển thị phổ biến nhất.
 - Không gộp các từ chỉ vì viết gần giống nhau.
 - Mỗi ứng viên có: tần suất, số bài xuất hiện, các lần xuất hiện, và `vocabulary.contexts_per_candidate` (mặc định 3) câu ngữ cảnh tiêu biểu, chọn xác định (ưu tiên các bài khác nhau, theo thứ tự bài).
@@ -267,10 +268,11 @@ Dùng spaCy + `en_core_web_sm` trên từng câu của Clean Dataset:
 - **Ngưỡng phổ thông** theo trình độ `learner.cefr_level` (cấu hình, tham số `--level`, hoặc skill hỏi người dùng khi chưa đặt): `vocabulary.zipf_threshold_by_level`.
 - **Keyness** của từ trong khóa: `keyness = log2((f_khóa + 1) / (f_chung + 1))`, với `f_khóa` = số lần xuất hiện trên một triệu từ của khóa và `f_chung = 10^(Zipf − 3)` (tần suất trên một triệu từ tiếng Anh chung).
 - Một ứng viên **bị loại** (`filter_reason`) khi:
-  - `common_word`: là từ đơn, Zipf ≥ ngưỡng **và** keyness < `vocabulary.keyness_min` (mặc định 2,0 — tức không phổ biến trong khóa hơn ~4 lần so với tiếng Anh chung). Nhờ vậy từ phổ thông mang nghĩa chuyên ngành trong khóa (`region`, `instance`, `bucket`) vẫn được giữ.
+  - `common_word`: là từ đơn, Zipf ≥ ngưỡng **và** keyness < `vocabulary.keyness_min` (mặc định 4,0 sau benchmark khóa CCAR — 2,0 giữ cả `use`, `run`, `actually`). Nhờ vậy từ phổ thông mang nghĩa chuyên ngành trong khóa (`region`, `instance`, `bucket`) vẫn được giữ.
   - `stopword`: thuộc danh sách stopword của spaCy.
   - `noise`: chỉ gồm số/ký hiệu, từ đệm khi nói (`um`, `uh`, `okay`, `alright`), hoặc nhãn caption (`[music]`, `[laughter]`). Không bao giờ dùng độ dài ký tự làm tiêu chí.
-- Acronym và cụm nhiều từ không bị lọc bởi tần suất tổng quát.
+  - `low_frequency`: cụm nhiều từ hoặc phrasal verb xuất hiện ít hơn `vocabulary.phrase_min_frequency` lần (mặc định 3; benchmark: 5.981/7.547 cụm danh từ chỉ xuất hiện 1 lần, phần lớn là nhiễu).
+- Acronym và cụm nhiều từ không bị lọc bởi tần suất tổng quát (chỉ bởi `low_frequency`).
 - Ứng viên bị loại vẫn được lưu kèm lý do để kiểm tra lại.
 
 ### 7.4. AI đánh giá
@@ -401,12 +403,12 @@ Engine tách thành các bước để runner nào cũng cắm vào được:
 3. `python -m engine <mode> ingest <course>` — với mọi task `pending` đã có file result: validate (mục 9.4), lưu kết quả, chuyển trạng thái; tính lại xếp hạng (vocab) hoặc gom khái niệm (knowledge).
 4. Lặp 1–3 đến khi không còn task `pending`.
 
-Trạng thái `ai_task`: `pending` → `done` (hợp lệ) hoặc `invalid` (sai validate cứng). Task `invalid` có `attempts` < `ai.max_retries` được đưa lại `pending` (xóa file result cũ) ở lần `prepare` sau; quá số lần thì `failed` và được báo lại.
+Trạng thái `ai_task`: `pending` → `done` (hợp lệ) hoặc `invalid` (sai validate cứng). Ở lần `prepare` sau, task `invalid` còn lượt thử (`attempts` ≤ `ai.max_retries`) được đưa lại `pending` (xóa file result cũ); quá số lần thì `failed` và được báo lại; task vocab có toàn bộ ứng viên đã được lô khác đánh giá thì thành `superseded`. File kết quả JSON lệch ngoặc (lỗi hay gặp khi model tự viết JSON lồng nhiều tầng) được cân lại ngoặc trước khi parse; nội dung chuỗi không bị đụng tới.
 
 - **V1 — Claude Code runner:** skill (`/learning-base-builder vocab evaluate` hoặc `knowledge extract`) chạy vòng lặp trên, phân phối task `pending` cho subagent Claude Code (dùng subscription), song song tối đa `ai.max_parallel_subagents`. Không gọi Anthropic API, không cần API key. Claude Code không chạy model local hay GPU local.
 - **Tiết kiệm usage gói Claude** (chỉ bước 2 tốn usage; Clean, NotebookLM, Candidate Extraction chạy bằng Python):
   - Subagent trích xuất chạy model `ai.subagent_model` (mặc định **Haiku**) — dữ liệu đầu vào đã được làm sạch và chuẩn hóa nên tác vụ đủ đơn giản cho model nhỏ. Phiên chính chỉ điều phối.
-  - Mỗi subagent nhận nhiều task (`ai.tasks_per_subagent`) để chia nhỏ chi phí khởi động subagent (system prompt, công cụ, hướng dẫn ~10–20 nghìn token): Knowledge 15 bài/subagent; Vocabulary 3 lô/subagent (mỗi lô 100 ứng viên có output lớn, giữ tổng ngữ cảnh subagent dưới giới hạn của Haiku).
+  - Mỗi subagent nhận nhiều task (`ai.tasks_per_subagent`) để chia nhỏ chi phí khởi động subagent (system prompt, công cụ, hướng dẫn ~10–20 nghìn token): Knowledge 5 bài/subagent (benchmark: với 15 bài/subagent, Haiku giữ chất lượng ở ~5 bài đầu rồi giảm còn 1 topic/1 item mỗi bài; kết quả quá mỏng — bài ≥ 30 câu mà < 2 topic hoặc < 4 item — bị loại ở validate cứng); Vocabulary 2 lô/subagent (benchmark: một lô 100 ứng viên ≈ 70 nghìn token với Haiku; giữ tổng ngữ cảnh subagent dưới giới hạn của Haiku).
   - Subagent đọc hướng dẫn một lần, ghi kết quả ra `result_path` và chỉ trả về một dòng tóm tắt (ví dụ `done 15/15, invalid 0`); nội dung kết quả không đi qua ngữ cảnh phiên chính.
 - **Future — Claude API runner:** thực thi bước 2 bằng Claude API (batch, concurrency, retry, theo dõi chi phí); bước 1 và 3 giữ nguyên.
 
@@ -417,8 +419,11 @@ Trạng thái `ai_task`: `pending` → `done` (hợp lệ) hoặc `invalid` (sai
 
 ### 9.4. Validate và kiểm duyệt
 
-- **Validate cứng** (sai → task `invalid`, không lưu gì): đúng JSON Schema; mọi id câu/transcript tồn tại; khoảng câu hợp lệ và nằm trong bài/phần được giao; enum đúng; đủ các ngôn ngữ trong `output_languages` cho mọi `title`/`content`; mọi ứng viên trong lô đều có kết quả (vocab).
-- **Kiểm tra mềm** (sai → mục đó `needs_review`): term không thực sự xuất hiện (theo dạng chuẩn) trong câu ví dụ đã chọn; `confidence` < `ai.review_threshold` (mặc định 0,7); topic chồng nhau, hoặc các topic bỏ sót > 20% số câu của bài; topic tại ranh giới phần của bài quá dài không gộp được.
+- **Sửa lỗi xác định trước khi validate** (rút ra từ benchmark Haiku — lỗi lệch biên nhỏ không đáng chạy lại cả task; mục được sửa luôn thành `needs_review`):
+  - Knowledge: topic chồng nhau được cắt (topic bị phủ hoàn toàn gộp vào topic trước); khoảng câu của subtopic/item bị kẹp vào node cha; `item_type` lạ → `key_point`; `concept`/`definition` thiếu `concept_name` → dùng tiêu đề tiếng Anh.
+  - Vocabulary: `key` mà model chép nhầm dạng hiển thị được ánh xạ về key chuẩn; câu ví dụ ngoài các câu ngữ cảnh được giao bị bỏ; ứng viên thiếu kết quả không làm hỏng lô — phần có được lưu, phần thiếu được `prepare` gom vào lô sau.
+- **Validate cứng** (sai → task `invalid`, không lưu gì): JSON đọc được; đúng JSON Schema (sau khi sửa); khoảng câu hợp lệ và nằm trong bài/phần được giao; topic không chồng nhau; enum đúng; đủ các ngôn ngữ trong `output_languages` cho mọi `title`/`content`; mục từ vựng được chọn phải có nghĩa tiếng Việt và định nghĩa tiếng Anh.
+- **Kiểm tra mềm** (sai → mục đó `needs_review`): term không thực sự xuất hiện (theo dạng chuẩn) trong câu ví dụ đã chọn; câu ví dụ nằm ngoài các câu ngữ cảnh được giao (bị bỏ, không làm hỏng cả lô); `confidence` < `ai.review_threshold` (mặc định 0,7); topic chồng nhau, hoặc các topic bỏ sót > 20% số câu của bài; topic tại ranh giới phần của bài quá dài không gộp được.
 - **Trạng thái kết quả:**
   - `auto_approved`: qua cả validate cứng và mềm.
   - `needs_review`: không qua kiểm tra mềm.
@@ -565,14 +570,15 @@ vocabulary:
   batch_size: 100
   contexts_per_candidate: 3
   zipf_threshold_by_level: {A2: 5.0, B1: 4.5, B2: 4.0, C1: 3.5}   # heuristic, cần benchmark
-  keyness_min: 2.0                                                # heuristic, cần benchmark
+  keyness_min: 4.0                                                # benchmark CCAR
+  phrase_min_frequency: 3
 knowledge:
   max_lesson_words: 8000
   output_languages: [en, vi]
 ai:
   runner: claude_code         # Future: claude_api
   subagent_model: haiku       # model của subagent trích xuất
-  tasks_per_subagent: {knowledge_extract: 15, vocab_eval: 3}
+  tasks_per_subagent: {knowledge_extract: 5, vocab_eval: 2}
   max_parallel_subagents: 4
   max_retries: 2
   review_threshold: 0.7
