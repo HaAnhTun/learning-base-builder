@@ -156,8 +156,7 @@ function renderVocab(c) {
   ];
   const back = [
     el("p", { class: "big" }, c.vi), el("p", {}, c.en),
-    c.example && el("p", { class: "example" }, `“${c.example.text}” — bài ${c.example.lesson}`
-      + (c.example.time ? ` [${c.example.time}]` : "")),
+    c.example && el("p", { class: "example" }, `“${c.example.text}” — bài ${c.example.lesson}`),
     el("p", { class: "muted" }, `#${c.rank} · quan trọng ${c.importance}/100 · ${c.frequency} lần trong ${c.lessons} bài`),
   ];
   return [front, back];
@@ -166,7 +165,7 @@ function renderVocab(c) {
 function renderKnowledge(c) {
   const lang = state.filters.lang;
   const where = `Bài ${c.lesson.n}: ${c.lesson.title} · ${text(c.topic.title, lang)}`
-    + (c.subtopic ? ` › ${text(c.subtopic, lang)}` : "") + (c.time ? ` [${c.time}]` : "");
+    + (c.subtopic ? ` › ${text(c.subtopic, lang)}` : "");
   const front = [
     el("span", { class: "tag" }, TYPE_LABELS[c.type] || c.type),
     el("p", { class: "big" }, text(c.title, lang)), el("p", { class: "muted" }, where),

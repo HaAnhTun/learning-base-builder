@@ -114,7 +114,8 @@ def test_prepare_ingest_rank_export_and_incremental(conn, cfg, course):
     folder = mode.export(conn, "aws-mini", cfg)
     model = json.loads((folder / "vocabulary.json").read_text(encoding="utf-8"))
     ec2 = next(t for t in model["terms"] if t["term"] == "EC2")
-    assert ec2["example"]["text"].startswith("We spin up EC2") and ec2["example"]["lesson"] == 1
+    assert ec2["example"] == {"text": ec2["example"]["text"], "lesson": 1}  # no timestamps in exports
+    assert ec2["example"]["text"].startswith("We spin up EC2")
     assert set(ec2) == {"rank", "term", "type", "importance", "vi", "en", "expansion", "cefr", "frequency",
                         "lessons", "example"}  # lean: no sources/status/confidence
     assert (model["kind"], model["total_selected"]) == ("vocabulary", n - 1)

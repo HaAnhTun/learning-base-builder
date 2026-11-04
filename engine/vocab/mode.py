@@ -6,7 +6,6 @@ from engine import database
 from engine.ai import tasks
 from engine.ai.validate import ValidationError, mentions, soft_status, validate
 from engine.cleaner import load_document
-from engine.exporter import fmt_time
 from engine.database import now
 from engine.vocab.candidates import candidates_fresh, context_hash
 
@@ -284,8 +283,7 @@ def build_export(conn, course_slug: str, cfg: dict) -> dict:
             "rank": r["rank"], "term": r["display_term"], "type": r["term_type"], "importance": r["importance"],
             "vi": r["vietnamese_meaning"], "en": r["english_definition"], "expansion": r["expansion"],
             "cefr": r["cefr_level"], "frequency": r["frequency"], "lessons": r["lesson_count"],
-            "example": {"text": example["text"], "lesson": example["lesson_position"],
-                        "time": fmt_time(example["start"])} if example else None,
+            "example": {"text": example["text"], "lesson": example["lesson_position"]} if example else None,
         })
     return {"kind": "vocabulary", "course": course["title"], "slug": course["slug"],
             "level": cfg["learner"]["cefr_level"], "terms": terms}

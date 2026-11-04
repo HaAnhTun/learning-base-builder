@@ -4,15 +4,6 @@ import json
 from pathlib import Path
 
 
-def fmt_time(seconds) -> str | None:
-    if seconds is None:
-        return None
-    total = int(seconds)
-    h, rem = divmod(total, 3600)
-    m, s = divmod(rem, 60)
-    return f"{h}:{m:02d}:{s:02d}" if h else f"{m:02d}:{s:02d}"
-
-
 def write_compact_json(path: Path, model: dict, list_key: str) -> None:
     """Compact JSON with one list entry per line: small files that are still diff/grep friendly."""
     head = {k: v for k, v in model.items() if k != list_key}
@@ -35,7 +26,7 @@ def write_vocabulary(model: dict, folder: Path, max_terms: int) -> None:
             ex = t["example"]
             writer.writerow({**{k: t.get(k) for k in CSV_FIELDS if k in t},
                              "example": ex["text"] if ex else "",
-                             "example_lesson": f"{ex['lesson']} @ {ex['time']}" if ex and ex["time"] else ""})
+                             "example_lesson": ex["lesson"] if ex else ""})
 
     top = {**model, "total_selected": len(model["terms"]), "terms": model["terms"][:max_terms]}
     write_compact_json(folder / "vocabulary.json", top, "terms")
@@ -50,7 +41,7 @@ def write_vocabulary(model: dict, folder: Path, max_terms: int) -> None:
         out += [head, "", meta, "", f"- **Nghĩa:** {t['vi']}", f"- **Definition:** {t['en']}"]
         ex = t["example"]
         if ex:
-            out.append(f"- *\"{ex['text']}\"* — bài {ex['lesson']}" + (f" [{ex['time']}]" if ex["time"] else ""))
+            out.append(f"- *\"{ex['text']}\"* — bài {ex['lesson']}")
         out.append("")
     (folder / "vocabulary.md").write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
 
@@ -76,7 +67,7 @@ def write_knowledge(model: dict, folder: Path, languages: list[str]) -> None:
             out += [f"## {chapter}", ""]
         out += [f"### {lesson['n']}. {lesson['title']}", ""]
         for topic in lesson["topics"]:
-            out += [f"#### {text(topic['title'])}" + (f" [{topic['time']}]" if topic["time"] else ""), ""]
+            out += [f"#### {text(topic['title'])}", ""]
             subtopic = None
             for it in topic["items"]:
                 if it.get("subtopic") != subtopic:
@@ -90,8 +81,7 @@ def write_knowledge(model: dict, folder: Path, languages: list[str]) -> None:
                     body = "; ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
                 else:
                     body = text(content)
-                when = f" [{it['time']}]" if it["time"] else ""
-                out.append(f"{indent}- **{ITEM_LABELS.get(it['type'], it['type'])} — {text(it['title'])}**{when}: {body}")
+                out.append(f"{indent}- **{ITEM_LABELS.get(it['type'], it['type'])} — {text(it['title'])}**: {body}")
             out.append("")
     if model.get("concepts"):
         out += ["## Khái niệm dùng chung", ""]

@@ -304,7 +304,7 @@ Một thuật ngữ là một bản ghi `vocab_term` duy nhất trên toàn hệ
 **Export** (chỉ mục `selected = true`, không `rejected`, đánh giá khớp ngữ cảnh hiện tại):
 - `vocabulary.csv`: toàn bộ từ được chọn (tra cứu bằng Excel/Sheets).
 - `vocabulary.json` và `vocabulary.md`: chỉ `vocabulary.export_max_terms` từ quan trọng nhất (mặc định 300 — vài nghìn từ là quá nhiều để học, kể cả với B1).
-- Định dạng gọn cho người và app học: mỗi từ chỉ gồm `rank, term, type, importance, vi, en, expansion, cefr, frequency, lessons` và **một** câu ví dụ gốc `{text, lesson, time}`; JSON ghi mỗi mục một dòng. Nguồn chi tiết (mọi lần xuất hiện, id câu) ở lại SQLite.
+- Định dạng gọn cho người và app học: mỗi từ chỉ gồm `rank, term, type, importance, vi, en, expansion, cefr, frequency, lessons` và **một** câu ví dụ gốc `{text, lesson}`; JSON ghi mỗi mục một dòng. File export không ghi mốc thời gian (yêu cầu người dùng 2026-11-05); timestamp vẫn ở Clean Dataset/SQLite. Nguồn chi tiết (mọi lần xuất hiện, id câu) ở lại SQLite.
 
 ## 8. Hướng 3 — Knowledge Extraction Mode
 
@@ -374,8 +374,8 @@ Topic/subtopic có `title` theo cùng cấu trúc đa ngôn ngữ và `source` r
 - Cây chủ đề cấp khóa (gom topic xuyên bài) và liên kết sâu: Future.
 
 **Export:** không xuất mục `rejected` và bài đang `stale`.
-- `knowledge.json` dạng gọn: `{kind, course, slug, languages, concepts[{name, lessons}], relations[{from, to, type}], lessons[{n, title, chapter, topics[{title, time, items[{type, title, content, time, subtopic?, concept?, relation?}]}]}]}` — subtopic trở thành nhãn của item; id, khoảng câu, độ tin cậy, trạng thái ở lại SQLite. Ví dụ JSON đầy đủ ở mục 8.3 là mô hình lưu trữ, không phải file export.
-- `knowledge.md`: ghi chú phân cấp chapter → lesson → topic → item, kèm mốc thời gian; có thể đưa lên NotebookLM.
+- `knowledge.json` dạng gọn: `{kind, course, slug, languages, concepts[{name, lessons}], relations[{from, to, type}], lessons[{n, title, chapter, topics[{title, items[{type, title, content, subtopic?, concept?, relation?}]}]}]}` (không có mốc thời gian) — subtopic trở thành nhãn của item; id, khoảng câu, độ tin cậy, trạng thái ở lại SQLite. Ví dụ JSON đầy đủ ở mục 8.3 là mô hình lưu trữ, không phải file export.
+- `knowledge.md`: ghi chú phân cấp chapter → lesson → topic → item; có thể đưa lên NotebookLM.
 
 ## 9. Thành phần dùng chung: AI Orchestrator
 
@@ -560,8 +560,8 @@ Bỏ khỏi V1: `chunk`, `vocabulary`, `vocabulary_meaning`, `knowledge_source`,
 ### 12.3. App học flashcard (`study/`)
 
 Thêm theo yêu cầu người dùng (2026-11-05). Thư mục `study/` gồm `index.html`, `style.css`, `app.js` thuần, không build, không server: mở `index.html`, chọn/kéo thả `vocabulary.json` hoặc `knowledge.json`.
-- Từ vựng: mặt trước là từ (loại, CEFR, dạng đầy đủ), mặt sau là nghĩa Việt, định nghĩa Anh, câu ví dụ gốc kèm bài và mốc thời gian. Lọc theo số từ đầu bảng và loại.
-- Kiến thức: mỗi item là một thẻ; mặt trước là loại + tiêu đề + ngữ cảnh (bài, topic, mốc thời gian), mặt sau là nội dung (quy trình hiển thị theo bước). Lọc theo chương, loại, ngôn ngữ (Việt/Anh/song ngữ).
+- Từ vựng: mặt trước là từ (loại, CEFR, dạng đầy đủ), mặt sau là nghĩa Việt, định nghĩa Anh, câu ví dụ gốc kèm số bài. Lọc theo số từ đầu bảng và loại.
+- Kiến thức: mỗi item là một thẻ; mặt trước là loại + tiêu đề + ngữ cảnh (bài, topic), mặt sau là nội dung (quy trình hiển thị theo bước). Lọc theo chương, loại, ngôn ngữ (Việt/Anh/song ngữ).
 - Nút/phím: Space lật thẻ, → "Đã nhớ", ← "Chưa nhớ" (thẻ quay lại sau vài thẻ); tiến độ và bộ thẻ lưu trong `localStorage` của trình duyệt.
 
 ## 13. Cấu hình (`config.yaml`)
