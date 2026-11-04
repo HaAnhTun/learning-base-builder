@@ -4,7 +4,7 @@ Biến transcript khóa học Udemy thành kho kiến thức cá nhân (SQLite).
 
 Ba hướng sử dụng (SPEC 2.0): xuất dữ liệu sạch cho NotebookLM, trích xuất từ vựng, trích xuất kiến thức.
 
-Trạng thái hiện tại (giai đoạn 2): đăng nhập Udemy, tải transcript, import `.vtt/.txt/.md`, Clean Dataset (câu + timestamp + đoạn), xuất Markdown cho NotebookLM, thống kê.
+Trạng thái: đăng nhập Udemy, tải transcript, Clean Dataset, xuất Markdown cho NotebookLM, trích xuất từ vựng và kiến thức bằng AI (Claude Code, subagent Haiku), duyệt kết quả, app flashcard `study/`.
 
 ## Cài đặt
 
@@ -73,6 +73,21 @@ Dữ liệu: `data/input` (raw, không bao giờ sửa) → `data/clean` (Clean 
 Upload các file trong `data/export/notebooklm/<slug>/<lang>/` lên NotebookLM (Gemini Notebook).
 
 Chỉ dùng cho khóa học bạn đã đăng ký, phục vụ học tập cá nhân.
+
+## Trích xuất từ vựng và kiến thức (AI, trong Claude Code)
+
+Trong Claude Code: `/learning-base-builder vocab evaluate <slug>` và `/learning-base-builder knowledge extract <slug>` — skill tạo task, giao cho subagent Haiku, rồi kiểm tra và lưu kết quả. Xuất file:
+
+```bash
+python -m engine vocab candidates <slug>       # trích ứng viên (không AI)
+python -m engine vocab export <slug>           # data/export/vocabulary/<slug>/: .csv (đầy đủ), .json/.md (300 từ quan trọng nhất)
+python -m engine knowledge export <slug>       # data/export/knowledge/<slug>/knowledge.json, .md
+python -m engine review list <slug> --mode vocab   # các mục cần duyệt
+```
+
+## Học bằng flashcard
+
+Mở `study/index.html` bằng trình duyệt, chọn `vocabulary.json` và/hoặc `knowledge.json`. Space để lật thẻ, → đã nhớ, ← chưa nhớ. Tiến độ lưu trong trình duyệt.
 
 ## Test
 

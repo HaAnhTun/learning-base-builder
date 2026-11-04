@@ -114,10 +114,20 @@ def test_prepare_ingest_rank_export_and_incremental(conn, cfg, course):
     folder = mode.export(conn, "aws-mini", cfg)
     model = json.loads((folder / "vocabulary.json").read_text(encoding="utf-8"))
     ec2 = next(t for t in model["terms"] if t["term"] == "EC2")
-    assert ec2["examples"][0]["text"].startswith("We spin up EC2") and len(ec2["sources"]) == 5
+    assert ec2["example"]["text"].startswith("We spin up EC2") and ec2["example"]["lesson"] == 1
+    assert set(ec2) == {"rank", "term", "type", "importance", "vi", "en", "expansion", "cefr", "frequency",
+                        "lessons", "example"}  # lean: no sources/status/confidence
+    assert (model["kind"], model["total_selected"]) == ("vocabulary", n - 1)
     rows = list(csv.DictReader((folder / "vocabulary.csv").open(encoding="utf-8-sig")))
     assert len(rows) == n - 1 and "region" not in {r["term"] for r in rows}
     assert "## 1." in (folder / "vocabulary.md").read_text(encoding="utf-8")
+
+    cfg["vocabulary"]["export_max_terms"] = 2  # json/md are capped, csv keeps everything
+    mode.export(conn, "aws-mini", cfg)
+    model = json.loads((folder / "vocabulary.json").read_text(encoding="utf-8"))
+    assert [t["rank"] for t in model["terms"]] == [1, 2]
+    assert (folder / "vocabulary.md").read_text(encoding="utf-8").count("\n## ") == 2
+    assert len(list(csv.DictReader((folder / "vocabulary.csv").open(encoding="utf-8-sig")))) == n - 1
 
 
 def test_invalid_result_is_not_stored_and_retried(conn, cfg, course):

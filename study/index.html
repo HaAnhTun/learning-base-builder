@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Học từ vựng &amp; kiến thức</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Học từ vựng &amp; kiến thức</h1>
+    <label class="button primary">
+      Mở file JSON
+      <input id="file" type="file" accept=".json,application/json" multiple hidden>
+    </label>
+  </header>
+
+  <main>
+    <section id="empty" class="panel">
+      <p>Chọn hoặc kéo thả <code>vocabulary.json</code> / <code>knowledge.json</code> vào đây
+        (trong <code>data/export/vocabulary/&lt;khóa&gt;/</code> và <code>data/export/knowledge/&lt;khóa&gt;/</code>).</p>
+      <p class="muted">Dữ liệu chỉ nằm trong trình duyệt của bạn; tiến độ học được lưu tự động.</p>
+    </section>
+
+    <section id="study" hidden>
+      <nav id="tabs"></nav>
+      <div id="filters" class="filters"></div>
+      <p id="progress" class="muted"></p>
+
+      <article id="card" class="card" tabindex="0" aria-live="polite">
+        <div id="front" class="face"></div>
+        <div id="back" class="face back" hidden></div>
+        <p class="hint">Bấm vào thẻ hoặc phím Space để lật</p>
+      </article>
+
+      <div class="actions">
+        <button id="again" class="button">← Chưa nhớ</button>
+        <button id="flip" class="button">Lật thẻ</button>
+        <button id="known" class="button primary">Đã nhớ →</button>
+      </div>
+      <div class="actions small">
+        <button id="shuffle" class="button ghost">Xáo trộn</button>
+        <button id="reset" class="button ghost">Học lại từ đầu</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

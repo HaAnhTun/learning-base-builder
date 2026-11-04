@@ -35,7 +35,9 @@ Map the user's argument to one command, run it, and report the engine's output i
 
 1. `python -m engine vocab candidates <course>` — deterministic (spaCy, ~20–30 s per 140 lessons). Uses `learner.cefr_level` from config; if it is null, ask the user (A2/B1/B2/C1) and pass `--level`.
 2. **evaluate** = the runner loop below with mode `vocab_eval` and prepare command `python -m engine vocab prepare <course> [--limit N]`, ingest command `python -m engine vocab ingest <course>`.
-3. `python -m engine vocab export <course>` → `data/export/vocabulary/<course>/vocabulary.{json,csv,md}`.
+3. `python -m engine vocab export <course>` → `data/export/vocabulary/<course>/`: `vocabulary.csv` (all selected terms), `vocabulary.json`/`.md` (top `vocabulary.export_max_terms`, default 300).
+
+To study, tell the user to open `study/index.html` in a browser and load `vocabulary.json` / `knowledge.json`.
 
 ## knowledge
 
@@ -48,7 +50,7 @@ Repeat until `prepare` reports 0 pending tasks or a round makes no progress:
 1. Run the mode's prepare command.
 2. `python -m engine ai batches <mode> <course>` → JSON `{model, max_parallel, batches: [[task paths]]}`.
 3. For each batch spawn one Agent with `model` = the JSON's `model` (Haiku by default), at most `max_parallel` at a time, in the background. Prompt (fill in the reference file and paths):
-   > You are an extraction worker for the project at <project root>. Read the instructions file <project root>/.claude/skills/learning-base-builder/references/<vocab-eval.md | knowledge-extract.md>. Process these task files in order: <absolute paths>. For each, write the result JSON to the task's `result_path` (relative to the project root) with the Write tool, exactly as the instructions say. Do not read or modify other project files; do not run the engine. Reply with one line only: `done <written>/<total>`.
+   > You are an extraction worker for the project at <project root>. Read the instructions file <project root>/.claude/skills/learning-base-builder/references/<vocab-eval.md | knowledge-extract.md>. Process these task files in order: <absolute paths>. For each, write the result JSON to the task's `result_path` (relative to the project root) with the Write tool, exactly as the instructions say, then check it parses with `python -c "import json,sys; json.load(open(sys.argv[1], encoding='utf-8'))" <result_path>` and fix the file if it does not. Give every task the same care as the first one. Do not read or modify other project files; do not run the engine. Reply with one line only: `done <written>/<total>`.
 4. When all agents of the round finish, run the mode's ingest command. Tasks that failed validation are re-armed by the next prepare (max `ai.max_retries` retries) and then reported as failed.
 
 Keep task contents out of this conversation: never read task or result files yourself; only relay the engine's summaries.

@@ -296,12 +296,15 @@ Dùng spaCy + `en_core_web_sm` trên từng câu của Clean Dataset:
 | `expansion` | Dạng đầy đủ của acronym/chữ viết tắt (nếu có) |
 | `cefr_level` | Chỉ với từ phổ thông, khi xác định hợp lý |
 | `examples` | Câu gốc trong transcript (id câu do AI chọn trong số câu ngữ cảnh) — không tự bịa |
-| `sources` | Mọi lần xuất hiện: bài, id câu, timestamp |
+| `sources` | Mọi lần xuất hiện: bài, id câu, timestamp — lưu trong SQLite (`vocab_occurrence`), không đưa vào file export |
 | `status`, `confidence` | Mục 9.4 |
 
 Một thuật ngữ là một bản ghi `vocab_term` duy nhất trên toàn hệ thống; mọi thông tin do AI đánh giá (loại, nghĩa, định nghĩa, expansion, CEFR, điểm) gắn theo **từng khóa** (`vocab_entry`) nên các nghĩa khác nhau theo ngữ cảnh khóa được giữ lại.
 
-**Export:** `vocabulary.json` (đầy đủ), `vocabulary.csv` (mở bằng Excel/Sheets), `vocabulary.md` (glossary theo thứ hạng/loại). Mặc định chỉ xuất mục `selected = true` và không `rejected`.
+**Export** (chỉ mục `selected = true`, không `rejected`, đánh giá khớp ngữ cảnh hiện tại):
+- `vocabulary.csv`: toàn bộ từ được chọn (tra cứu bằng Excel/Sheets).
+- `vocabulary.json` và `vocabulary.md`: chỉ `vocabulary.export_max_terms` từ quan trọng nhất (mặc định 300 — vài nghìn từ là quá nhiều để học, kể cả với B1).
+- Định dạng gọn cho người và app học: mỗi từ chỉ gồm `rank, term, type, importance, vi, en, expansion, cefr, frequency, lessons` và **một** câu ví dụ gốc `{text, lesson, time}`; JSON ghi mỗi mục một dòng. Nguồn chi tiết (mọi lần xuất hiện, id câu) ở lại SQLite.
 
 ## 8. Hướng 3 — Knowledge Extraction Mode
 
@@ -370,7 +373,9 @@ Topic/subtopic có `title` theo cùng cấu trúc đa ngôn ngữ và `source` r
 - Từ vựng và khái niệm cùng tên chuẩn hóa được liên kết khi export (`vocab_term.normalized_term = concept.normalized_name`), không cần bảng riêng. Lần xuất hiện của từ vựng có thể ánh xạ về topic qua khoảng id câu.
 - Cây chủ đề cấp khóa (gom topic xuyên bài) và liên kết sâu: Future.
 
-**Export:** `knowledge.json` (cấu trúc ở trên, gồm cả danh sách khái niệm và quan hệ) và `knowledge.md` (ghi chú phân cấp chapter → lesson → topic → item, kèm mốc thời gian; có thể đưa lên NotebookLM). Mặc định không xuất mục `rejected` và mục thuộc transcript đang `stale`.
+**Export:** không xuất mục `rejected` và bài đang `stale`.
+- `knowledge.json` dạng gọn: `{kind, course, slug, languages, concepts[{name, lessons}], relations[{from, to, type}], lessons[{n, title, chapter, topics[{title, time, items[{type, title, content, time, subtopic?, concept?, relation?}]}]}]}` — subtopic trở thành nhãn của item; id, khoảng câu, độ tin cậy, trạng thái ở lại SQLite. Ví dụ JSON đầy đủ ở mục 8.3 là mô hình lưu trữ, không phải file export.
+- `knowledge.md`: ghi chú phân cấp chapter → lesson → topic → item, kèm mốc thời gian; có thể đưa lên NotebookLM.
 
 ## 9. Thành phần dùng chung: AI Orchestrator
 
@@ -484,6 +489,7 @@ learning-base-builder/
 │   ├── word_frequency_en.tsv      # xuất từ wordfreq
 │   └── ATTRIBUTION.md             # ghi công CC BY-SA 4.0
 ├── data/                          # xem mục 4 (gitignored)
+├── study/                         # app flashcard tĩnh (HTML/CSS/JS) đọc vocabulary.json / knowledge.json
 ├── tests/
 ├── evaluations/test_cases/        # bộ bài benchmark + kết quả mong đợi
 ├── docs/SPEC.md
@@ -551,6 +557,13 @@ Bỏ khỏi V1: `chunk`, `vocabulary`, `vocabulary_meaning`, `knowledge_source`,
 | `review <course> --mode vocab\|knowledge` | `review` | Duyệt mục `needs_review` | Mới |
 | `stats` | `stats` | Thống kê dữ liệu và tiến trình từng hướng (clean, task AI theo trạng thái, số từ vựng/khái niệm) | Có, cần mở rộng |
 
+### 12.3. App học flashcard (`study/`)
+
+Thêm theo yêu cầu người dùng (2026-11-05). Thư mục `study/` gồm `index.html`, `style.css`, `app.js` thuần, không build, không server: mở `index.html`, chọn/kéo thả `vocabulary.json` hoặc `knowledge.json`.
+- Từ vựng: mặt trước là từ (loại, CEFR, dạng đầy đủ), mặt sau là nghĩa Việt, định nghĩa Anh, câu ví dụ gốc kèm bài và mốc thời gian. Lọc theo số từ đầu bảng và loại.
+- Kiến thức: mỗi item là một thẻ; mặt trước là loại + tiêu đề + ngữ cảnh (bài, topic, mốc thời gian), mặt sau là nội dung (quy trình hiển thị theo bước). Lọc theo chương, loại, ngôn ngữ (Việt/Anh/song ngữ).
+- Nút/phím: Space lật thẻ, → "Đã nhớ", ← "Chưa nhớ" (thẻ quay lại sau vài thẻ); tiến độ và bộ thẻ lưu trong `localStorage` của trình duyệt.
+
 ## 13. Cấu hình (`config.yaml`)
 
 ```yaml
@@ -572,6 +585,7 @@ vocabulary:
   zipf_threshold_by_level: {A2: 5.0, B1: 4.5, B2: 4.0, C1: 3.5}   # heuristic, cần benchmark
   keyness_min: 4.0                                                # benchmark CCAR
   phrase_min_frequency: 3
+  export_max_terms: 300
 knowledge:
   max_lesson_words: 8000
   output_languages: [en, vi]
@@ -645,7 +659,7 @@ V1 hoàn thành khi:
 **Future (ngoài V1):**
 - Claude API runner (batch, concurrency, kiểm soát chi phí).
 - Cây chủ đề cấp khóa, liên kết kiến thức xuyên bài/xuyên khóa sâu hơn.
-- Flashcard và xuất Anki (dựa trên id ổn định của vocab/knowledge).
+- Xuất Anki và spaced repetition thật (V1 chỉ có app flashcard tĩnh `study/`, mục 12.3).
 - Thêm định dạng export/tích hợp; đầu vào PDF/DOCX.
 - Chế độ AI cho transcript không phải tiếng Anh.
 

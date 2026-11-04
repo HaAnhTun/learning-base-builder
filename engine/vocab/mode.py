@@ -6,6 +6,7 @@ from engine import database
 from engine.ai import tasks
 from engine.ai.validate import ValidationError, mentions, soft_status, validate
 from engine.cleaner import load_document
+from engine.exporter import fmt_time
 from engine.database import now
 from engine.vocab.candidates import candidates_fresh, context_hash
 
@@ -153,13 +154,11 @@ def _check(packet: dict, result) -> dict[str, dict]:
             if valid_refs != refs:  # drop refs outside the given contexts (and extras), flag the item
                 item = {**item, "example_refs": valid_refs, "_fixed": True}
         validate({k: v for k, v in item.items() if not k.startswith("_")}, ITEM_SCHEMA, f"$.results[{key!r}]")
-        if item["key"] in got:
-            raise ValidationError(f"duplicate key {item['key']!r}")
-        if item["key"] not in expected:
-            raise ValidationError(f"unknown key {item['key']!r}")
+        if item["key"] in got or item["key"] not in expected:
+            continue  # duplicate or invented key: ignored; a candidate left without result is re-batched
         if item["selected"] and not ((item["vietnamese_meaning"] or "").strip()
                                      and (item["english_definition"] or "").strip()):
-            raise ValidationError(f"{item['key']}: selected term needs vietnamese_meaning and english_definition")
+            continue  # incomplete item: ignored, its candidate is re-batched by the next prepare
         got[item["key"]] = item
     if not got:
         raise ValidationError("no results")
@@ -278,30 +277,18 @@ def build_export(conn, course_slug: str, cfg: dict) -> dict:
     cache: dict = {}
     terms = []
     for r in export_rows(conn, course["id"]):
-        examples = _sentences(cfg, conn, json.loads(r["example_sentence_refs"] or "[]"), cache)
-        occ = conn.execute(
-            """SELECT o.transcript_id, o.sentence_id, l.position FROM vocab_occurrence o
-               JOIN transcript tr ON tr.id = o.transcript_id JOIN lesson l ON l.id = tr.lesson_id
-               WHERE o.candidate_id = ? ORDER BY l.position, o.sentence_id""", (r["candidate_id"],)).fetchall()
-        times = {}
-        for o in occ:
-            if o["transcript_id"] not in times:
-                path = conn.execute("SELECT clean_path FROM transcript WHERE id = ?", (o["transcript_id"],)).fetchone()
-                times[o["transcript_id"]] = [s["start"] for s in load_document(cfg["root"], path[0])["sentences"]]
+        refs = json.loads(r["example_sentence_refs"] or "[]")[:1]  # one original sentence is enough to study
+        example = next(iter(_sentences(cfg, conn, refs, cache).values()), None)
+        # Lean model for people and the study app; full sources stay in SQLite (vocab_occurrence).
         terms.append({
-            "rank": r["rank"], "term": r["display_term"], "normalized_term": r["normalized_term"],
-            "term_type": r["term_type"], "importance": r["importance"], "reason": r["reason"],
-            "frequency": r["frequency"], "lesson_count": r["lesson_count"],
-            "vietnamese_meaning": r["vietnamese_meaning"], "english_definition": r["english_definition"],
-            "expansion": r["expansion"], "cefr_level": r["cefr_level"],
-            "examples": [{"text": e["text"], "lesson": e["lesson_position"], "lesson_title": e["lesson_title"],
-                          "start": e["start"]} for e in examples.values()],
-            "sources": [[o["position"], o["sentence_id"], times[o["transcript_id"]][o["sentence_id"]]] for o in occ],
-            "status": r["status"], "confidence": r["confidence"],
+            "rank": r["rank"], "term": r["display_term"], "type": r["term_type"], "importance": r["importance"],
+            "vi": r["vietnamese_meaning"], "en": r["english_definition"], "expansion": r["expansion"],
+            "cefr": r["cefr_level"], "frequency": r["frequency"], "lessons": r["lesson_count"],
+            "example": {"text": example["text"], "lesson": example["lesson_position"],
+                        "time": fmt_time(example["start"])} if example else None,
         })
-    return {"course": {"slug": course["slug"], "title": course["title"]},
-            "learner_level": cfg["learner"]["cefr_level"], "prompt_version": PROMPT_VERSION,
-            "sources_format": ["lesson_position", "sentence_id", "start_seconds"], "terms": terms}
+    return {"kind": "vocabulary", "course": course["title"], "slug": course["slug"],
+            "level": cfg["learner"]["cefr_level"], "terms": terms}
 
 
 def export(conn, course_slug: str, cfg: dict) -> Path:
@@ -309,7 +296,7 @@ def export(conn, course_slug: str, cfg: dict) -> Path:
 
     model = build_export(conn, course_slug, cfg)
     folder = cfg["root"] / cfg["paths"]["export_dir"] / "vocabulary" / course_slug
-    write_vocabulary(model, folder)
+    write_vocabulary(model, folder, cfg["vocabulary"]["export_max_terms"])
     return folder
 
 
