@@ -54,6 +54,11 @@ def main() -> None:
     print(f"- Loại: {dict(Counter(e['term_type'] for e in selected).most_common())}")
     for floor in (90, 80, 70, 60):
         print(f"- importance ≥ {floor}: {sum(e['importance'] >= floor for e in selected)}")
+    study = cfg["vocabulary"]["export_min_importance"]
+    enriched = q("SELECT COUNT(*) FROM vocab_entry WHERE course_id = ? AND selected = 1 AND importance >= ? "
+                 "AND definition_vi IS NOT NULL", cid, study)[0][0]
+    print(f"- Danh sách học (importance ≥ {study}): {sum(e['importance'] >= study for e in selected)}, "
+          f"đã bổ sung chi tiết (vocab_enrich): {enriched}")
 
     print("\n## Kiến thức")
     lessons = q("SELECT l.position, t.id, t.sentence_count FROM transcript t JOIN lesson l ON l.id = t.lesson_id "
@@ -81,6 +86,14 @@ def main() -> None:
               "JOIN transcript t ON t.id = n.transcript_id JOIN lesson l ON l.id = t.lesson_id "
               "WHERE l.course_id = ? GROUP BY 1 ORDER BY 2 DESC", cid)
     print(f"- Loại item: {dict(types)}")
+    scores = [r[0] for r in q("SELECT i.importance FROM knowledge_item i JOIN knowledge_node n ON n.id = i.node_id "
+                              "JOIN transcript t ON t.id = n.transcript_id JOIN lesson l ON l.id = t.lesson_id "
+                              "WHERE l.course_id = ? AND i.importance IS NOT NULL", cid)]
+    total_items = sum(items.values())
+    floor = cfg["knowledge"]["export_min_importance"]
+    print(f"- Đã bổ sung (knowledge_enrich): {pct(len(scores), total_items)}; importance theo chục: "
+          f"{dict(sorted(Counter(s // 10 * 10 for s in scores).items()))}; bị lọc khỏi export (< {floor}): "
+          f"{sum(s < floor for s in scores)}")
     print(f"- Khái niệm dùng chung: {q('SELECT COUNT(*) FROM concept')[0][0]}, "
           f"quan hệ: {q('SELECT COUNT(*) FROM concept_relation')[0][0]}")
 

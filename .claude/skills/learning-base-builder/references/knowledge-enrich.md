@@ -53,9 +53,13 @@ Example item (a `process` with three steps in `content_en`):
 Score by **comparing the items of the same lesson**: first pick the 2–4 items a learner must remember from it
 (85+), then rank the rest below them. In a typical lesson about a quarter of the items score 85+, half score 60–84,
 and the rest fall lower; an item that repeats another item's point scores below 50. Items below 50 are left out
-of the study files, so the score decides what the learner studies.
+of the study files by the engine, so the score decides what the learner studies — still return every item, low
+scores included.
 
 ## Language
+
+Every `vi` text is full Vietnamese with diacritics ("Bên gửi xác nhận bên nhận đã sẵn sàng…"); the engine rejects
+`vi` text written in English.
 
 Every non-English text follows `translation-vi.md`: translate the meaning, keep technical terms in English, then
 re-read the Vietnamese alone and rewrite anything that reads word by word. Keep the facts of `title_en`/`content_en`;

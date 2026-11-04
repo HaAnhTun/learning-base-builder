@@ -9,7 +9,7 @@ import json
 
 from engine import database
 from engine.ai import tasks
-from engine.ai.validate import ValidationError, validate
+from engine.ai.validate import ValidationError, language_ok, validate
 from engine.database import now
 
 MODE = "vocab_enrich"
@@ -70,6 +70,9 @@ def prepare(conn, course_slug: str, cfg: dict, limit: int | None = None) -> dict
                  for i in tasks.load_packet(cfg, row)["input"]["terms"]}
     todo = [item for item, _ in needing if item["key"] not in in_flight]
     size = cfg["vocabulary"]["enrich_batch_size"]
+    # A done task whose result skipped some terms has the same input as its retry; the round count keeps them apart.
+    rounds = conn.execute("SELECT COUNT(*) FROM ai_task WHERE mode = ? AND course_id = ? AND status = 'done'",
+                          (MODE, course["id"])).fetchone()[0]
     created = 0
     for i in range(0, len(todo), size):
         if limit is not None and created >= limit:
@@ -77,7 +80,7 @@ def prepare(conn, course_slug: str, cfg: dict, limit: int | None = None) -> dict
         task_input = {"course": course["title"], "learner_level": cfg["learner"]["cefr_level"],
                       "terms": todo[i:i + size]}
         if tasks.ensure_task(conn, cfg, mode=MODE, prompt_version=PROMPT_VERSION, course_id=course["id"],
-                             task_input=task_input, hash_extra={}, output_schema=OUTPUT_SCHEMA,
+                             task_input=task_input, hash_extra={"round": rounds}, output_schema=OUTPUT_SCHEMA,
                              instructions=INSTRUCTIONS):
             created += 1
     return {"exported_terms": len(targets), "terms_todo": len(todo), "tasks_created": created,
@@ -108,7 +111,8 @@ def ingest(conn, course_slug: str, cfg: dict) -> dict:
                     validate(item, ITEM_SCHEMA)
                 except ValidationError:
                     term = None
-                if term is None or (term["example"] and not (item["example_vi"] or "").strip()):
+                if term is None or (term["example"] and not (item["example_vi"] or "").strip()) or not (
+                        language_ok(item["definition_vi"], "vi") and language_ok(item["example_vi"] or "", "vi")):
                     summary["skipped"] += 1  # left without details → picked up by the next prepare
                     continue
                 conn.execute(

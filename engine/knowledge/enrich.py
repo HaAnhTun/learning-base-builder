@@ -9,7 +9,7 @@ import json
 
 from engine import database
 from engine.ai import tasks
-from engine.ai.validate import ValidationError, validate
+from engine.ai.validate import ValidationError, language_ok, validate
 from engine.knowledge.mode import REVIEWED, _languages, _transcripts, _version
 
 MODE = "knowledge_enrich"
@@ -56,7 +56,10 @@ def _item_hash(item: dict, targets: list[str]) -> str:
 
 
 def _lessons(conn, course, cfg: dict) -> list[tuple[dict, list[str]]]:
-    """(lesson input, hashes of its items still needing enrichment) for every extracted lesson."""
+    """(lesson input, keys of its items still needing enrichment) for every extracted lesson.
+
+    The input holds only those items (and the topics containing them), so a retry resends just the missing work.
+    """
     version, targets = _version(cfg), _targets(cfg)
     out = []
     for row in _transcripts(conn, course["id"], None):
@@ -69,10 +72,12 @@ def _lessons(conn, course, cfg: dict) -> list[tuple[dict, list[str]]]:
             items = []
             for r in conn.execute("SELECT * FROM knowledge_item WHERE node_id = ? ORDER BY position", (n["id"],)):
                 item = _item_input(r)
-                items.append(item)
                 if r["enrich_hash"] != _item_hash(item, targets):
+                    items.append(item)
                     todo.append(item["key"])
-            topics.append({"key": f"t{n['id']}", "title_en": json.loads(n["title_json"]).get("en"), "items": items})
+            if items:
+                topics.append({"key": f"t{n['id']}", "title_en": json.loads(n["title_json"]).get("en"),
+                               "items": items})
         out.append(({"lesson": row["position"], "title": row["lesson_title"], "topics": topics}, todo))
     return out
 
@@ -99,6 +104,9 @@ def prepare(conn, course_slug: str, cfg: dict, limit: int | None = None) -> dict
         count += n
     if current:
         groups.append(current)
+    # A done task whose result skipped some items has the same input as its retry; the round count keeps them apart.
+    rounds = conn.execute("SELECT COUNT(*) FROM ai_task WHERE mode = ? AND course_id = ? AND status = 'done'",
+                          (MODE, course["id"])).fetchone()[0]
     created = 0
     for group in groups:
         if limit is not None and created >= limit:
@@ -106,16 +114,31 @@ def prepare(conn, course_slug: str, cfg: dict, limit: int | None = None) -> dict
         task_input = {"course": course["title"], "learner_level": cfg["learner"]["cefr_level"],
                       "languages": _languages(cfg), "lessons": group}
         if tasks.ensure_task(conn, cfg, mode=MODE, prompt_version=PROMPT_VERSION, course_id=course["id"],
-                             task_input=task_input, hash_extra={}, output_schema=schema, instructions=INSTRUCTIONS):
+                             task_input=task_input, hash_extra={"round": rounds}, output_schema=schema, instructions=INSTRUCTIONS):
             created += 1
     return {"lessons": len(lessons), "lessons_todo": len(todo), "items_todo": len(needed), "tasks_created": created,
             "pending": len(tasks.pending_tasks(conn, MODE, course["id"]))}
 
 
-def _content_ok(value, english) -> bool:
+def _content_ok(value, english, lang: str) -> bool:
     if isinstance(english, list):
-        return isinstance(value, list) and bool(value) and all(isinstance(s, str) and s.strip() for s in value)
-    return isinstance(value, str) and bool(value.strip())
+        ok = isinstance(value, list) and bool(value) and all(isinstance(s, str) and s.strip() for s in value)
+        text = " ".join(value) if ok else ""
+    else:
+        ok, text = isinstance(value, str) and bool(value.strip()), value if isinstance(value, str) else ""
+    return ok and language_ok(text, lang)
+
+
+def _translated(text: str, english: str | None, lang: str) -> bool:
+    """A title of 3+ words copied unchanged from English was not translated (Haiku does this ~8% of the time)."""
+    english = english or ""
+    return lang == "en" or len(english.split()) < 3 or text.strip().lower() != english.strip().lower()
+
+
+def _names_concept(item: dict) -> bool:
+    """A concept/definition title that is the concept's name ("Model Context Protocol") may stay in English."""
+    concept, title = (item.get("concept") or "").lower(), (item.get("title_en") or "").lower()
+    return bool(concept) and concept in title
 
 
 def ingest(conn, course_slug: str, cfg: dict) -> dict:
@@ -136,14 +159,19 @@ def ingest(conn, course_slug: str, cfg: dict) -> dict:
                 summary[tasks.mark_invalid(conn, cfg, row["id"], str(exc))] += 1
             continue
         sent = {i["key"]: i for les in packet["input"]["lessons"] for t in les["topics"] for i in t["items"]}
-        sent_topics = {t["key"] for les in packet["input"]["lessons"] for t in les["topics"]}
+        sent_topics = {t["key"]: t["title_en"] for les in packet["input"]["lessons"] for t in les["topics"]}
         with conn:
             for topic in result["topics"]:
                 try:
                     validate(topic, schema["properties"]["topics"]["items"])
                 except ValidationError:
                     continue
-                if topic["key"] in sent_topics:
+                if topic["key"] not in sent_topics or not all(
+                        _translated(topic["title"][lang], sent_topics[topic["key"]], lang) for lang in targets):
+                    continue
+                node = conn.execute("SELECT title_json FROM knowledge_node WHERE id = ?",
+                                    (int(topic["key"][1:]),)).fetchone()
+                if node is not None and json.loads(node["title_json"]).get("en") == sent_topics[topic["key"]]:
                     _merge_texts(conn, "knowledge_node", int(topic["key"][1:]), {"title_json": topic["title"]})
             for item in result["items"]:
                 original = sent.get(item.get("key")) if isinstance(item, dict) else None
@@ -151,7 +179,10 @@ def ingest(conn, course_slug: str, cfg: dict) -> dict:
                     validate(item, schema["properties"]["items"]["items"])
                 except ValidationError:
                     original = None
-                if original is None or not all(_content_ok(item["content"].get(lang), original["content_en"])
+                if original is None or not all(_content_ok(item["content"].get(lang), original["content_en"], lang)
+                                               and language_ok(item["question"][lang], lang)
+                                               and (_translated(item["title"][lang], original["title_en"], lang)
+                                                    or _names_concept(original))
                                                for lang in targets):
                     summary["skipped"] += 1  # its lesson is sent again by the next prepare
                     continue

@@ -1,6 +1,15 @@
 """Minimal JSON-Schema subset validator for task results (no external dependency) and shared soft checks."""
 import re
 
+# Vietnamese prose always carries diacritics; Haiku has returned stripped English ("Step sender confirm receiver…").
+VI_MARKS = re.compile("[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]", re.IGNORECASE)
+
+
+def language_ok(text: str, lang: str) -> bool:
+    """Reject Vietnamese prose (6+ words) without a single diacritic: it is English, not a translation."""
+    return lang != "vi" or len(text.split()) < 6 or bool(VI_MARKS.search(text))
+
+
 TYPES = {"object": dict, "array": list, "string": str, "boolean": bool, "null": type(None)}
 
 

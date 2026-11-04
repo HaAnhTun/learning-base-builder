@@ -282,20 +282,26 @@ def test_enrich_scores_translates_and_filters_export(conn, cfg, course):
         for topic in lesson["topics"]:
             topics.append({"key": topic["key"], "title": {"vi": "Chủ đề " + topic["title_en"]}})
             for it in topic["items"]:
-                content = ["bước 1", "bước 2"] if isinstance(it["content_en"], list) else "nội dung"
+                content = ["bước 1", "bước 2"] if isinstance(it["content_en"], list) else "nội dung của mục"
                 items.append({"key": it["key"], "importance": 30 if it["type"] == "concept" else 85,
                               "question": {"en": "Why?", "vi": "Vì sao?"}, "title": {"vi": "tiêu đề"},
                               "content": {"vi": content}})
     items[0]["content"] = {"vi": ""}  # incomplete → skipped, sent again by the next prepare
+    items[1]["content"] = {"vi": "Step sender confirm receiver ready before let go"}  # English, not Vietnamese
+    topics[0]["title"] = {"vi": "MCP basics"}  # 2 words: may legitimately stay English
     (cfg["root"] / packet["result_path"]).write_text(json.dumps({"topics": topics, "items": items}),
                                                      encoding="utf-8")
     s = enrich.ingest(conn, "mcp-mini", cfg)
-    assert (s["done"], s["enriched"], s["skipped"]) == (1, 4, 1)
-    assert enrich.prepare(conn, "mcp-mini", cfg)["items_todo"] == 1
+    assert (s["done"], s["enriched"], s["skipped"]) == (1, 3, 2)
+    again = enrich.prepare(conn, "mcp-mini", cfg)
+    assert (again["items_todo"], again["tasks_created"]) == (2, 1)  # same lesson, new round → not blocked by cache
     model = mode.build_export(conn, "mcp-mini", cfg)
     assert [lesson["n"] for lesson in model["lessons"]] == [1]  # lesson 2 only had a 30-point item
     lesson = model["lessons"][0]
-    assert lesson["topics"][0]["title"] == {"en": "MCP basics", "vi": "Chủ đề MCP basics"}
+    assert lesson["topics"][0]["title"] == {"en": "MCP basics", "vi": "MCP basics"}
+    assert enrich._translated("Chủ đề", "Adding a server", "vi") and not enrich._translated("Adding a Server", "Adding a server", "vi")
+    assert enrich._names_concept({"concept": "Top P", "title_en": "Nucleus sampling (Top P)"})
+    assert not enrich._names_concept({"concept": None, "title_en": "Adding a server"})
     enriched = [it for topic in lesson["topics"] for it in topic["items"] if "importance" in it]
     assert enriched and all(it["question"]["vi"] == "Vì sao?" and it["title"]["en"] != "tiêu đề" for it in enriched)
     process = next(it for topic in lesson["topics"] for it in topic["items"] if it["type"] == "process")

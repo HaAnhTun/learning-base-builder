@@ -385,7 +385,8 @@ Topic/subtopic có `title` theo cùng cấu trúc đa ngôn ngữ và `source` r
 Thêm theo yêu cầu người dùng (2026-11-05): JSON kiến thức phải giúp học được, có thứ tự quan trọng, đủ nhưng không thừa, và tiếng Việt không dịch từng chữ.
 - Chạy trên item đã lưu (chỉ phần tiếng Anh), không đọc lại transcript, nên rẻ hơn nhiều so với trích lại. Task gom nguyên bài, khoảng `knowledge.enrich_batch_size` item (mặc định 60).
 - Mỗi item thêm `importance` (0–100: 90+ cốt lõi/bẫy thi, 70+ ý hỗ trợ quan trọng, 50+ chi tiết/ví dụ hữu ích, < 50 thủ tục khóa học, giai thoại, lặp ý) và `question` (câu hỏi gợi nhớ, mỗi ngôn ngữ một câu, đáp án là nội dung item). Tiêu đề/nội dung ngôn ngữ khác tiếng Anh và tiêu đề topic được **dịch lại từ tiếng Anh** theo `references/translation-vi.md`; mục đã duyệt tay giữ nguyên tiêu đề/nội dung.
-- Cache theo hash phần tiếng Anh của item (+ ngôn ngữ, prompt_version); trích lại bài thì item mới được bổ sung lại. Item thiếu/hỏng bị bỏ riêng, cả bài được gửi lại ở lần `enrich-prepare` sau.
+- Cache theo hash phần tiếng Anh của item (+ ngôn ngữ, prompt_version); trích lại bài thì item mới được bổ sung lại. Task chỉ chứa item còn thiếu (kèm topic chứa chúng); item thiếu/hỏng bị bỏ riêng và vào task của lần `enrich-prepare` sau (hash task có số vòng nên không bị cache chặn).
+- Kiểm tra cứng khi ingest (cả `vocab_enrich`): đoạn tiếng Việt ≥ 6 từ không có dấu = chưa dịch (Haiku từng trả tiếng Anh cụt chữ cho ~200 item); tiêu đề ≥ 3 từ giống hệt tiếng Anh = chưa dịch (~8% item ở lượt đầu); `process` phải là danh sách bước.
 - Lệnh: `knowledge enrich-prepare` → runner → `knowledge enrich-ingest`; hướng dẫn `references/knowledge-enrich.md`.
 
 ### 8.4c. Hướng dẫn dịch tiếng Việt
