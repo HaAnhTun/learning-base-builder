@@ -229,12 +229,12 @@ Không dùng AI. NotebookLM là công cụ bên ngoài, không phải thành ph�
 
 > Course: Ultimate AWS Certified Solutions Architect Associate 2026 · Lesson 12/384 · en_US · manual caption
 
-**[00:00]** So now let's talk about lifecycle rules. You can transition objects…
+So now let's talk about lifecycle rules. You can transition objects…
 
-**[01:42]** Expiration actions can be configured to delete…
+Expiration actions can be configured to delete…
 ```
 
-- Mỗi đoạn (mục 5.2) bắt đầu bằng mốc `[mm:ss]` (hoặc `[h:mm:ss]`) để trích dẫn trỏ về đúng phút; TXT/MD không có mốc.
+- Mỗi đoạn (mục 5.2) là một đoạn văn thuần, không có mốc thời gian (yêu cầu người dùng 2026-11-05); timestamp vẫn ở Clean Dataset.
 - `index.md`: tên khóa, nguồn, ngôn ngữ, đơn vị xuất, danh sách file → chapter → các bài (số thứ tự, tiêu đề). Không ghi ngày xuất để giữ tính xác định.
 - Dòng transcript bắt đầu bằng `#` hoặc `>` được escape để không thành heading/quote. `Lesson N/T` dùng `T` = vị trí bài lớn nhất của khóa.
 - Xuất lại ghi đè thư mục export của khóa/locale đó; nội dung xác định (cùng input → cùng output).
@@ -697,7 +697,7 @@ V1 hoàn thành khi:
 
 ## 18. Open Questions
 
-1. **Hiển thị Markdown trong NotebookLM:** Google không công bố cách viewer hiển thị heading/mốc thời gian. Cần người dùng upload thử 1 file xuất ở Giai đoạn 2 để chốt định dạng (có thể cần thêm tùy chọn `.txt`).
+1. **Hiển thị Markdown trong NotebookLM:** Google không công bố cách viewer hiển thị heading. Cần người dùng upload thử 1 file xuất ở Giai đoạn 2 để chốt định dạng (có thể cần thêm tùy chọn `.txt`).
 2. **Giới hạn Claude subscription:** chưa biết usage thực tế của một khóa (ước lượng thô cho CCAR: Knowledge ~10 subagent Haiku × 15 bài; Vocabulary vài lô); đo ở benchmark Giai đoạn 3 để chốt `ai.tasks_per_subagent`, `ai.max_parallel_subagents` và thời điểm cần Claude API runner.
 3. **Chất lượng Haiku:** Haiku là mặc định cho subagent trích xuất; nếu benchmark cho thấy tỉ lệ `invalid`/`needs_review` cao ở một mode, cân nhắc đổi `ai.subagent_model` cho riêng mode đó.
 4. **Ngưỡng lọc từ:** ánh xạ CEFR → Zipf, `keyness_min` và rubric điểm `importance` là heuristic; chốt sau benchmark.

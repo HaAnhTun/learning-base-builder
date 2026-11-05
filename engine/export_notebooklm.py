@@ -41,13 +41,6 @@ def safe_filename(name: str, max_len: int = 120) -> str:
     return f"_{name}" if WINDOWS_RESERVED.match(name) else name
 
 
-def fmt_time(seconds: float) -> str:
-    total = int(seconds)
-    h, rem = divmod(total, 3600)
-    m, s = divmod(rem, 60)
-    return f"{h}:{m:02d}:{s:02d}" if h else f"{m:02d}:{s:02d}"
-
-
 def _escape(text: str) -> str:
     """Keep transcript text from turning into Markdown headings/quotes."""
     return MARKDOWN_LEADER.sub(r"\\\1", text)
@@ -59,11 +52,8 @@ def render_lesson(doc: dict, total_lessons: int, heading: str) -> str:
             f"{doc['language']} · {doc['caption_source']} caption")
     out = [f"{heading} {lesson['position']}. {lesson['title']}", "", meta, ""]
     sentences = doc["sentences"]
-    for start, end in doc["paragraphs"]:
-        text = _escape(" ".join(s["text"] for s in sentences[start:end + 1]))
-        first = sentences[start]
-        prefix = f"**[{fmt_time(first['start'])}]** " if first["start"] is not None else ""
-        out += [prefix + text, ""]
+    for start, end in doc["paragraphs"]:  # no time markers (user request 2026-11-05); timestamps stay in Clean Dataset
+        out += [_escape(" ".join(s["text"] for s in sentences[start:end + 1])), ""]
     return "\n".join(out)
 
 

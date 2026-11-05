@@ -1,7 +1,6 @@
 import json
 
-from engine.export_notebooklm import (Chapter, build_files, export_course, fmt_time, normalize_lang, render_lesson,
-                                      safe_filename)
+from engine.export_notebooklm import Chapter, build_files, export_course, normalize_lang, render_lesson, safe_filename
 from engine.importer import import_folder
 
 
@@ -13,26 +12,20 @@ def doc(position, title, words=10, chapter=1, timed=True):
             "word_count": words * 2, "sentences": sentences, "paragraphs": [[0, 0], [1, 1]]}
 
 
-def test_fmt_time_and_safe_filename():
-    assert fmt_time(0) == "00:00"
-    assert fmt_time(102.7) == "01:42"
-    assert fmt_time(3725) == "1:02:05"
+def test_safe_filename_and_normalize_lang():
     assert safe_filename('S3: "Lifecycle" / Rules?. ') == "S3 Lifecycle Rules"
     assert safe_filename("CON") == "_CON"
     assert (normalize_lang("EN"), normalize_lang("en-us"), normalize_lang("vi_vn")) == ("en", "en_US", "vi_VN")
 
 
-def test_render_lesson_has_meta_and_timestamped_paragraphs():
+def test_render_lesson_has_meta_and_paragraphs_without_time_markers():
     text = render_lesson(doc(12, "S3 Lifecycle Rules"), 384, "##")
     lines = text.splitlines()
     assert lines[0] == "## 12. S3 Lifecycle Rules"
     assert lines[2] == "> Course: Course T · Lesson 12/384 · en_US · auto caption"
-    assert lines[4].startswith("**[00:00]** Sentence 0")
-    assert lines[6].startswith("**[00:10]** Sentence 1")
-
-
-def test_untimed_lessons_have_no_markers():
-    assert "**[" not in render_lesson(doc(1, "A", timed=False), 1, "#")
+    assert lines[4].startswith("Sentence 0")
+    assert lines[6].startswith("Sentence 1")
+    assert "**[" not in text
 
 
 def chapters(n, lessons_per=2):
@@ -94,7 +87,7 @@ def test_export_course_end_to_end_is_deterministic(conn, cfg, tmp_path):
     assert r.folder == out and r.lessons == 3
     assert sorted(p.name for p in out.iterdir()) == ["01 - Intro.md", "02 - Basics.md", "index.md"]
     intro = (out / "01 - Intro.md").read_text(encoding="utf-8")
-    assert "## 1. Lesson 1" in intro and "## 2. Lesson 2" in intro and "**[00:01]** Lesson 1 text." in intro
+    assert "## 1. Lesson 1" in intro and "## 2. Lesson 2" in intro and "\nLesson 1 text.\n" in intro
     index = (out / "index.md").read_text(encoding="utf-8")
     assert "# Py Course" in index and "- Chapter 2: Basics" in index and "  - 3. Lesson 3" in index
 
