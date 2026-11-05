@@ -646,10 +646,10 @@ Thay đổi so với Giai đoạn 1: bỏ `chunking.max_words`; thêm `paths.cle
 | Giai đoạn | Nội dung | Milestone / nghiệm thu | Trạng thái |
 |---|---|---|---|
 | 1. Ingestion | login, fetch, import, stats; manifest theo locale | 3 khóa (719 bài) tải và import, chạy lại không trùng | **Xong** |
-| 2. Clean Dataset + NotebookLM | Parser trả cue có timestamp; cleaner (rolling caption theo mục 5.1, câu, đoạn); Clean JSON; schema mới + migration; `clean`, `export notebooklm`; viết lại test parser/rolling/cue trùng theo quy tắc mới; cập nhật `.gitignore`, `config.yaml`, SKILL.md, README | Khóa CCAR có Clean JSON; xuất theo chapter vừa giới hạn Free 50 nguồn; người dùng upload thử 1 file lên NotebookLM | Tiếp theo |
-| 3. AI Orchestrator + Vocabulary Mode | Task packet, giao thức prepare/ingest, Claude Code runner (subagent Haiku), cache, validate; normalizer; spaCy candidates, danh sách tần suất, keyness, đánh giá AI, xếp hạng, export; `review` cơ bản | Benchmark 5 bài đại diện của khóa CCAR để chốt prompt, rubric, ngưỡng và đo usage; rồi chạy trọn khóa CCAR | |
-| 4. Knowledge Mode | Task theo bài, pre-split, phân cấp, item, gom khái niệm, export | Benchmark 5 bài CCAR, rồi chạy trọn khóa CCAR | |
-| 5. Hoàn thiện V1 | `review` cho cả hai mode, `stats` theo hướng, `evaluations/report.py` (báo cáo chất lượng + bộ benchmark 5 bài), app `study/`, tài liệu | Tiêu chí mục 16 đạt | |
+| 2. Clean Dataset + NotebookLM | Parser trả cue có timestamp; cleaner (rolling caption theo mục 5.1, câu, đoạn); Clean JSON; schema mới + migration; `clean`, `export notebooklm`; viết lại test parser/rolling/cue trùng theo quy tắc mới; cập nhật `.gitignore`, `config.yaml`, SKILL.md, README | Khóa CCAR có Clean JSON; xuất theo chapter vừa giới hạn Free 50 nguồn; người dùng upload thử 1 file lên NotebookLM | **Xong** (chờ người dùng upload thử) |
+| 3. AI Orchestrator + Vocabulary Mode | Task packet, giao thức prepare/ingest, Claude Code runner (subagent Haiku), cache, validate; normalizer; spaCy candidates, danh sách tần suất, keyness, đánh giá AI, xếp hạng, export; `review` cơ bản | Benchmark 5 bài đại diện của khóa CCAR để chốt prompt, rubric, ngưỡng và đo usage; rồi chạy trọn khóa CCAR | **Xong** |
+| 4. Knowledge Mode | Task theo bài, pre-split, phân cấp, item, gom khái niệm, export | Benchmark 5 bài CCAR, rồi chạy trọn khóa CCAR | **Xong** |
+| 5. Hoàn thiện V1 | `review` cho cả hai mode, `stats` theo hướng, `evaluations/report.py` (báo cáo chất lượng + bộ benchmark 5 bài), app `study/`, tài liệu | Tiêu chí mục 16 đạt | **Xong** (chờ nghiệm thu) |
 
 Điều chỉnh so với thứ tự đề xuất ban đầu: AI Orchestrator được xây cùng Vocabulary Mode (người dùng đầu tiên của nó) thay vì tách riêng; "lưu trữ kiến thức có cấu trúc và liên kết" ở mức cơ bản nằm trong Giai đoạn 4, mức sâu thuộc Future.
 
