@@ -252,9 +252,11 @@ def rerank(conn, course_id: int) -> None:
 
 
 def export_entries(conn, course_id: int, cfg: dict) -> list:
-    """The terms exported to study: ranked entries with importance >= vocabulary.export_min_importance."""
-    floor = cfg["vocabulary"]["export_min_importance"]
-    return [r for r in export_rows(conn, course_id) if r["importance"] >= floor]
+    """The terms exported to study (exporter.in_study_list)."""
+    from engine.exporter import in_study_list
+
+    level, floor = cfg["learner"]["cefr_level"], cfg["vocabulary"]["export_min_importance"]
+    return [r for r in export_rows(conn, course_id) if in_study_list(r["importance"], r["cefr_level"], level, floor)]
 
 
 def export_rows(conn, course_id: int) -> list:

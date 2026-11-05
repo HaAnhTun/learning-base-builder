@@ -16,9 +16,18 @@ CSV_FIELDS = ["rank", "term", "type", "pos", "importance", "vi", "en", "definiti
               "frequency", "lessons", "example", "example_vi", "example_lesson"]
 
 
+CEFR_ORDER = ["A1", "A2", "B1", "B2", "C1", "C2"]
+
+
+def in_study_list(importance: int, cefr: str | None, level: str | None, min_importance: int) -> bool:
+    """Important enough, and not an everyday word tagged below the learner's level (e.g. a B2 word for C1)."""
+    below = cefr in CEFR_ORDER and level in CEFR_ORDER and CEFR_ORDER.index(cefr) < CEFR_ORDER.index(level)
+    return importance >= min_importance and not below
+
+
 def write_vocabulary(model: dict, folder: Path) -> None:
-    """vocabulary.csv: every selected term; vocabulary.json/.md: terms with importance >= model['min_importance']
-    (the study list — sized by the course content, not a fixed count), most important and longest first."""
+    """vocabulary.csv: every selected term; vocabulary.json/.md: the study list (in_study_list — sized by the
+    course content, not a fixed count), most important and longest first."""
     folder.mkdir(parents=True, exist_ok=True)
     with (folder / "vocabulary.csv").open("w", encoding="utf-8-sig", newline="") as f:  # BOM so Excel reads UTF-8
         writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
@@ -29,13 +38,14 @@ def write_vocabulary(model: dict, folder: Path) -> None:
                              "example": ex["text"] if ex else "", "example_vi": (ex or {}).get("vi") or "",
                              "example_lesson": ex["lesson"] if ex else ""})
 
-    study = [t for t in model["terms"] if t["importance"] >= model["min_importance"]]
+    study = [t for t in model["terms"]
+             if in_study_list(t["importance"], t["cefr"], model["level"], model["min_importance"])]
     top = {**model, "total_selected": len(model["terms"]), "count": len(study), "terms": study}
     write_compact_json(folder / "vocabulary.json", top, "terms")
 
     out = [f"# Từ vựng — {model['course']}", "",
            f"> Trình độ người học: {model['level']} · {len(study)} từ cần học (mức quan trọng ≥ "
-           f"{model['min_importance']}; tổng {len(model['terms'])} từ được chọn nằm trong vocabulary.csv)", ""]
+           f"{model['min_importance']}, bỏ từ phổ thông dưới trình độ; tổng {len(model['terms'])} từ được chọn nằm trong vocabulary.csv)", ""]
     for t in study:
         head = f"## {t['rank']}. {t['term']}" + (f" ({t['expansion']})" if t.get("expansion") else "")
         meta = " · ".join(x for x in [

@@ -137,6 +137,13 @@ def test_prepare_ingest_rank_export_and_incremental(conn, cfg, course):
     assert len(list(csv.DictReader((folder / "vocabulary.csv").open(encoding="utf-8-sig")))) == n - 1
 
 
+def test_study_list_drops_everyday_words_below_level():
+    from engine.exporter import in_study_list
+    assert not in_study_list(90, "B2", "C1", 70)  # everyday word a C1 learner knows
+    assert in_study_list(90, "C1", "C1", 70) and in_study_list(90, None, "C1", 70)  # domain terms have no CEFR tag
+    assert in_study_list(90, "B2", "B2", 70) and not in_study_list(60, None, "C1", 70)
+
+
 def test_changed_learner_level_triggers_reevaluation(conn, cfg, course):
     cfg["learner"]["cefr_level"] = "B2"
     extract_course_candidates(conn, course["id"], cfg)

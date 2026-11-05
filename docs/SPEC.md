@@ -310,7 +310,7 @@ Một thuật ngữ là một bản ghi `vocab_term` duy nhất trên toàn hệ
 
 **Export** (chỉ mục `selected = true`, không `rejected`, đánh giá khớp ngữ cảnh hiện tại):
 - `vocabulary.csv`: toàn bộ từ được chọn (tra cứu bằng Excel/Sheets).
-- `vocabulary.json` và `vocabulary.md` = **danh sách học**: các từ có `importance` ≥ `vocabulary.export_min_importance` (mặc định 70 — mốc "thuật ngữ quan trọng lặp lại / cụm từ rất hữu ích" của rubric). Số lượng co giãn theo nội dung khóa (khóa CCAR: ~520 từ) thay vì cố định; vài nghìn từ là quá nhiều để học, kể cả với B1.
+- `vocabulary.json` và `vocabulary.md` = **danh sách học**: các từ có `importance` ≥ `vocabulary.export_min_importance` (mặc định 70 — mốc "thuật ngữ quan trọng lặp lại / cụm từ rất hữu ích" của rubric), trừ từ phổ thông có nhãn CEFR thấp hơn `learner.cefr_level` (vd. từ B2 khi học ở C1; thuật ngữ và cụm từ không có nhãn nên không bị ảnh hưởng). Số lượng co giãn theo nội dung khóa (khóa CCAR: ~520 từ) thay vì cố định; vài nghìn từ là quá nhiều để học, kể cả với B1.
 - Định dạng cho người và app học: mỗi từ gồm `rank, term, type, pos, importance, vi, en, definition_vi, expansion, cefr, note, frequency, lessons` và **một** câu ví dụ gốc `{text, vi, lesson}` (bản dịch từ `vocab_enrich`); JSON ghi mỗi mục một dòng. File export không ghi mốc thời gian (yêu cầu người dùng 2026-11-05); timestamp vẫn ở Clean Dataset/SQLite. Nguồn chi tiết (mọi lần xuất hiện, id câu) ở lại SQLite.
 
 ## 8. Hướng 3 — Knowledge Extraction Mode
