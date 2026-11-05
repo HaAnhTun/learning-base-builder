@@ -3,7 +3,7 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS course (
@@ -119,6 +119,7 @@ CREATE TABLE IF NOT EXISTS vocab_entry (
     review_notes          TEXT,
     reviewed_at           TEXT,
     prompt_version        TEXT,
+    learner_level         TEXT,             -- learner.cefr_level the term was evaluated for
     task_id               TEXT,
     part_of_speech        TEXT,             -- vocab_enrich: learning details for exported terms
     definition_vi         TEXT,
@@ -208,6 +209,7 @@ MIGRATIONS = {
     3: ["ALTER TABLE knowledge_item ADD COLUMN importance INTEGER",
         "ALTER TABLE knowledge_item ADD COLUMN question_json TEXT",
         "ALTER TABLE knowledge_item ADD COLUMN enrich_hash TEXT"],
+    4: ["ALTER TABLE vocab_entry ADD COLUMN learner_level TEXT"],
 }
 
 

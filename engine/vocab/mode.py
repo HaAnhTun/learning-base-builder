@@ -70,12 +70,12 @@ def _require_fresh(conn, course, cfg: dict) -> None:
                           f"`vocab candidates {course['slug']}` trước.")
 
 
-def _needs_eval(r, override_reviewed: bool) -> bool:
+def _needs_eval(r, level: str, override_reviewed: bool) -> bool:
     if r["e_status"] is None or r["e_hash"] != r["context_hash"]:
         return True  # never evaluated, or its context set changed (a review decision is re-applied on ingest)
     if r["e_status"] in REVIEWED:
         return override_reviewed
-    return r["e_pv"] != PROMPT_VERSION
+    return r["e_pv"] != PROMPT_VERSION or r["e_level"] != level
 
 
 def prepare(conn, course_slug: str, cfg: dict, limit: int | None = None, override_reviewed: bool = False) -> dict:
@@ -83,18 +83,19 @@ def prepare(conn, course_slug: str, cfg: dict, limit: int | None = None, overrid
     _require_fresh(conn, course, cfg)
     rows = conn.execute(
         """SELECT c.*, t.normalized_term, t.display_term, t.preliminary_type,
-                  e.prompt_version AS e_pv, e.context_hash AS e_hash, e.status AS e_status
+                  e.prompt_version AS e_pv, e.context_hash AS e_hash, e.status AS e_status,
+                  e.learner_level AS e_level
            FROM vocab_candidate c JOIN vocab_term t ON t.id = c.term_id
            LEFT JOIN vocab_entry e ON e.course_id = c.course_id AND e.term_id = c.term_id
            WHERE c.course_id = ? AND c.filter_status = 'kept'
            ORDER BY c.frequency DESC, t.normalized_term""", (course["id"],)).fetchall()
-    needing = [r for r in rows if _needs_eval(r, override_reviewed)]
+    level = cfg["learner"]["cefr_level"]
+    needing = [r for r in rows if _needs_eval(r, level, override_reviewed)]
     needed_keys = {r["normalized_term"] for r in needing}
     tasks.settle_invalid(conn, cfg, MODE, course["id"], PROMPT_VERSION,
                          lambda packet: any(c["key"] in needed_keys for c in packet["input"]["candidates"]))
     in_flight = _pending_keys(conn, cfg, course["id"])
     todo = [r for r in needing if r["normalized_term"] not in in_flight]
-    level = cfg["learner"]["cefr_level"]
     size = cfg["vocabulary"]["batch_size"]
     cache: dict = {}
     created = 0
@@ -172,7 +173,7 @@ def ingest(conn, course_slug: str, cfg: dict, override_reviewed: bool = False) -
         with conn:
             for key, item in items.items():
                 if _store_entry(conn, course["id"], key, item, candidates[key], row["id"], threshold,
-                                override_reviewed):
+                                override_reviewed, packet["input"]["learner_level"]):
                     summary["entries"] += 1
                 else:
                     summary["dropped"] += 1  # candidate no longer kept since the task was prepared
@@ -190,7 +191,8 @@ def _packet_context_hash(candidate_input: dict) -> str:
     return context_hash([[*map(int, c["ref"].split(":")), c["text"]] for c in candidate_input["contexts"]])
 
 
-def _store_entry(conn, course_id, key, item, candidate_input, task_id, threshold, override_reviewed) -> bool:
+def _store_entry(conn, course_id, key, item, candidate_input, task_id, threshold, override_reviewed,
+                 level) -> bool:
     """Store one evaluated term; False when its candidate is gone (removed/filtered since prepare)."""
     term = conn.execute("SELECT id FROM vocab_term WHERE normalized_term = ?", (key,)).fetchone()
     candidate = term and conn.execute("SELECT filter_status FROM vocab_candidate WHERE course_id = ? AND term_id = ?",
@@ -218,18 +220,19 @@ def _store_entry(conn, course_id, key, item, candidate_input, task_id, threshold
     conn.execute(
         """INSERT INTO vocab_entry (course_id, term_id, selected, term_type, importance, reason, vietnamese_meaning,
                english_definition, expansion, cefr_level, example_sentence_refs, context_hash, status, confidence,
-               reviewed_at, prompt_version, task_id)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               reviewed_at, prompt_version, learner_level, task_id)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
            ON CONFLICT(course_id, term_id) DO UPDATE SET selected = excluded.selected, term_type = excluded.term_type,
              importance = excluded.importance, reason = excluded.reason,
              vietnamese_meaning = excluded.vietnamese_meaning, english_definition = excluded.english_definition,
              expansion = excluded.expansion, cefr_level = excluded.cefr_level,
              example_sentence_refs = excluded.example_sentence_refs, context_hash = excluded.context_hash,
              status = excluded.status, confidence = excluded.confidence, reviewed_at = excluded.reviewed_at,
-             prompt_version = excluded.prompt_version, task_id = excluded.task_id""",
+             prompt_version = excluded.prompt_version, learner_level = excluded.learner_level,
+             task_id = excluded.task_id""",
         (course_id, term_id, int(fields["selected"]), fields["term_type"], fields["importance"], fields["reason"],
          fields["vietnamese_meaning"], fields["english_definition"], fields["expansion"], fields["cefr_level"],
-         json.dumps(refs), seen_hash, status, item["confidence"], reviewed_at, PROMPT_VERSION, task_id))
+         json.dumps(refs), seen_hash, status, item["confidence"], reviewed_at, PROMPT_VERSION, level, task_id))
     return True
 
 

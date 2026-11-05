@@ -11,7 +11,7 @@ paths:
 default_lang: en
 
 learner:
-  cefr_level: B2              # A2 | B1 | B2 | C1; null → skill hỏi người dùng
+  cefr_level: C1              # A2 | B1 | B2 | C1; null → skill hỏi người dùng
 
 clean:
   paragraph_pause_seconds: 1.5

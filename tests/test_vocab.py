@@ -137,6 +137,24 @@ def test_prepare_ingest_rank_export_and_incremental(conn, cfg, course):
     assert len(list(csv.DictReader((folder / "vocabulary.csv").open(encoding="utf-8-sig")))) == n - 1
 
 
+def test_changed_learner_level_triggers_reevaluation(conn, cfg, course):
+    cfg["learner"]["cefr_level"] = "B2"
+    extract_course_candidates(conn, course["id"], cfg)
+    mode.prepare(conn, "aws-mini", cfg)
+    run_all_tasks(conn, cfg, course)
+    mode.ingest(conn, "aws-mini", cfg)
+    assert mode.prepare(conn, "aws-mini", cfg)["candidates_todo"] == 0
+
+    cfg["learner"]["cefr_level"] = "C1"
+    extract_course_candidates(conn, course["id"], cfg)
+    r = mode.prepare(conn, "aws-mini", cfg)
+    assert r["candidates_todo"] == len(kept(conn)) > 0  # evaluations made for the old level are redone
+    run_all_tasks(conn, cfg, course)
+    mode.ingest(conn, "aws-mini", cfg)
+    assert {row[0] for row in conn.execute("SELECT DISTINCT learner_level FROM vocab_entry")} == {"C1"}
+    assert mode.prepare(conn, "aws-mini", cfg)["candidates_todo"] == 0
+
+
 def test_enrich_adds_learning_details_to_exported_terms(conn, cfg, course):
     from engine.vocab import enrich
 

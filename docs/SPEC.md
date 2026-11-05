@@ -462,7 +462,7 @@ Trạng thái `ai_task`: `pending` → `done` (hợp lệ) hoặc `invalid` (sai
 
 - `processing_state` theo từng transcript: `clean`, `vocab_occurrences`, `knowledge` (kèm hash input và version đã dùng).
 - **Transcript được làm sạch lại** (raw đổi hoặc `cleaner_version` đổi): xóa `vocab_occurrence` và `knowledge_node`/`knowledge_item` của transcript đó (dữ liệu sinh lại được; id câu có thể đã đổi), đặt stage `vocab_occurrences` và `knowledge` = `stale`. Mục `approved`/`rejected` do người dùng duyệt được lưu vết (term/tiêu đề + quyết định) để áp lại khi kết quả mới khớp.
-- **Tổng hợp từ vựng cấp khóa** (gộp, lọc, chọn ngữ cảnh) được tính lại toàn khóa khi có transcript thay đổi hoặc khi `learner.cefr_level` / ngưỡng lọc thay đổi; `vocab_entry` của term vẫn còn là ứng viên được giữ nếu tập câu ngữ cảnh không đổi, ngược lại được đánh giá lại ở lần `prepare` sau.
+- **Tổng hợp từ vựng cấp khóa** (gộp, lọc, chọn ngữ cảnh) được tính lại toàn khóa khi có transcript thay đổi hoặc khi `learner.cefr_level` / ngưỡng lọc thay đổi; `vocab_entry` của term vẫn còn là ứng viên được giữ nếu tập câu ngữ cảnh và trình độ đánh giá (`vocab_entry.learner_level`) không đổi, ngược lại được đánh giá lại ở lần `prepare` sau (quyết định duyệt của người dùng được giữ).
 - Export và `review` bỏ qua dữ liệu của transcript đang `stale`.
 
 ## 10. Kiến trúc hệ thống
@@ -534,7 +534,7 @@ Mới:
 - **vocab_term** (id, normalized_term UNIQUE, display_term, preliminary_type, zipf).
 - **vocab_candidate** (id, course_id, term_id, frequency, lesson_count, keyness, filter_status `kept`/`filtered`, filter_reason, context_sentence_refs (JSON danh sách `[transcript_id, sentence_id]`), context_hash; UNIQUE(course_id, term_id)).
 - **vocab_occurrence** (candidate_id, transcript_id, sentence_id; PK(candidate_id, transcript_id, sentence_id)).
-- **vocab_entry** (id, course_id, term_id, selected, term_type, importance, rank, reason, vietnamese_meaning, english_definition, expansion, cefr_level, example_sentence_refs (JSON), context_hash, status, confidence, reviewed_at, prompt_version, task_id; UNIQUE(course_id, term_id)).
+- **vocab_entry** (id, course_id, term_id, selected, term_type, importance, rank, reason, vietnamese_meaning, english_definition, expansion, cefr_level, example_sentence_refs (JSON), context_hash, status, confidence, reviewed_at, prompt_version, learner_level (trình độ lúc đánh giá; schema v5), task_id; UNIQUE(course_id, term_id)).
 - **knowledge_node** (id, transcript_id, parent_id, node_type `topic`/`subtopic`, title_json, position, sentence_start, sentence_end, status, confidence, reviewed_at, prompt_version, task_id).
 - **knowledge_item** (id, node_id, item_type, concept_name, title_json, content_json, relation_json, sentence_start, sentence_end, status, confidence, reviewed_at).
 - **concept** (id, normalized_name UNIQUE, name) và **concept_mention** (concept_id, knowledge_item_id; PK cả hai).
