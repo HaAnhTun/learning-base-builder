@@ -246,7 +246,6 @@ function reset() {
 // --- wiring ---
 
 $("file").addEventListener("change", (e) => readFiles(e.target.files));
-$("card").addEventListener("click", flip);
 $("flip").addEventListener("click", flip);
 $("known").addEventListener("click", markKnown);
 $("again").addEventListener("click", again);
