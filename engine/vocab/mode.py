@@ -270,22 +270,26 @@ def export_rows(conn, course_id: int) -> list:
 
 
 def build_export(conn, course_slug: str, cfg: dict) -> dict:
-    """Export model (SPEC 7.5): only selected, non-rejected entries; examples are original sentences."""
+    """Export model (SPEC 7.5): only selected, non-rejected entries, as study cards (vocab_enrich); course sentences
+    and sources stay in SQLite."""
+    from engine.vocab.enrich import POS_VI
+
     course = database.course_by_slug(conn, course_slug)
-    _require_fresh(conn, course, cfg)  # sentence ids must match the current Clean Dataset
-    cache: dict = {}
+    _require_fresh(conn, course, cfg)
     terms = []
     for r in export_rows(conn, course["id"]):
-        refs = json.loads(r["example_sentence_refs"] or "[]")[:1]  # one original sentence is enough to study
-        example = next(iter(_sentences(cfg, conn, refs, cache).values()), None)
-        # Lean model for people and the study app; full sources stay in SQLite (vocab_occurrence).
+        enriched = r["example_en"] is not None  # card written by vocab_enrich-v3
         terms.append({
-            "rank": r["rank"], "term": r["display_term"], "type": r["term_type"], "pos": r["part_of_speech"],
-            "importance": r["importance"], "vi": r["vietnamese_meaning"], "en": r["english_definition"],
-            "definition_vi": r["definition_vi"], "expansion": r["expansion"], "cefr": r["cefr_level"],
-            "note": r["usage_note"], "frequency": r["frequency"], "lessons": r["lesson_count"],
-            "example": {"text": example["text"], "vi": r["example_vi"], "lesson": example["lesson_position"]}
-            if example else None,
+            "rank": r["rank"], "term": r["display_term"], "ipa": r["ipa"] if enriched else None,
+            "meaning": r["vietnamese_meaning"],
+            "pos": POS_VI.get(r["part_of_speech"]) if enriched else None,
+            "domain": {"field": r["domain"], "text": r["usage_note"]} if enriched else None,
+            "example": {"en": r["example_en"], "vi": r["example_vi"]} if enriched else None,
+            "compare": r["compare_note"] if enriched else None,
+            "expansion": r["expansion"], "type": r["term_type"], "importance": r["importance"],
+            # CSV only (reference columns for every selected term)
+            "en": r["english_definition"], "cefr": r["cefr_level"], "frequency": r["frequency"],
+            "lessons": r["lesson_count"],
         })
     return {"kind": "vocabulary", "course": course["title"], "slug": course["slug"],
             "level": cfg["learner"]["cefr_level"], "min_importance": cfg["vocabulary"]["export_min_importance"],

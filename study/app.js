@@ -156,18 +156,18 @@ function contentNode(value, lang) {
 }
 
 function renderVocab(c) {
+  const line = (label, value) => value && el("p", {}, el("strong", {}, `${label}: `), value);
   const front = [
     el("span", { class: "tag" }, TYPE_LABELS[c.type] || c.type), c.pos && el("span", { class: "tag" }, c.pos),
-    c.cefr && el("span", { class: "tag" }, c.cefr),
-    el("p", { class: "term" }, c.term), c.expansion && el("p", { class: "muted" }, c.expansion),
+    el("p", { class: "term" }, c.term), c.ipa && el("p", { class: "muted" }, c.ipa),
+    c.expansion && el("p", { class: "muted" }, c.expansion),
   ];
   const back = [
-    el("p", { class: "big" }, c.vi),
-    el("p", {}, c.en), c.definition_vi && el("p", {}, c.definition_vi),
-    c.example && el("div", { class: "example" }, el("p", {}, `“${c.example.text}” — bài ${c.example.lesson}`),
-      c.example.vi && el("p", {}, c.example.vi)),
-    c.note && el("p", {}, el("strong", {}, "Ghi chú: "), c.note),
-    el("p", { class: "muted" }, `#${c.rank} · quan trọng ${c.importance}/100 · ${c.frequency} lần trong ${c.lessons} bài`),
+    el("p", { class: "big" }, c.meaning),
+    c.domain && line(`Trong ${c.domain.field}`, c.domain.text),
+    c.example && el("div", { class: "example" }, el("p", {}, c.example.en), el("p", {}, c.example.vi)),
+    line("Phân biệt", c.compare),
+    el("p", { class: "muted" }, `#${c.rank} · quan trọng ${c.importance}/100`),
   ];
   return [front, back];
 }

@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from engine import database  # noqa: E402
 from engine.config import load_config, path_of  # noqa: E402
 from engine.knowledge.mode import _version as knowledge_version  # noqa: E402
+from engine.vocab.mode import export_entries  # noqa: E402
 
 
 def pct(part: int, whole: int) -> str:
@@ -54,11 +55,10 @@ def main() -> None:
     print(f"- Loại: {dict(Counter(e['term_type'] for e in selected).most_common())}")
     for floor in (90, 80, 70, 60):
         print(f"- importance ≥ {floor}: {sum(e['importance'] >= floor for e in selected)}")
-    study = cfg["vocabulary"]["export_min_importance"]
-    enriched = q("SELECT COUNT(*) FROM vocab_entry WHERE course_id = ? AND selected = 1 AND importance >= ? "
-                 "AND definition_vi IS NOT NULL", cid, study)[0][0]
-    print(f"- Danh sách học (importance ≥ {study}): {sum(e['importance'] >= study for e in selected)}, "
-          f"đã bổ sung chi tiết (vocab_enrich): {enriched}")
+    study = export_entries(conn, cid, cfg)
+    print(f"- Danh sách học (importance ≥ {cfg['vocabulary']['export_min_importance']}, bỏ từ dưới trình độ "
+          f"{cfg['learner']['cefr_level']}): {len(study)}, có thẻ học (vocab_enrich): "
+          f"{sum(r['example_en'] is not None for r in study)}")
 
     print("\n## Kiến thức")
     lessons = q("SELECT l.position, t.id, t.sentence_count FROM transcript t JOIN lesson l ON l.id = t.lesson_id "

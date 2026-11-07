@@ -40,7 +40,7 @@ knowledge:
 ai:
   runner: claude_code         # Future: claude_api
   subagent_model: haiku
-  tasks_per_subagent: {knowledge_extract: 5, vocab_eval: 2, vocab_enrich: 4, knowledge_enrich: 3}   # benchmark: Haiku xuống chất lượng sau ~5 bài; 1 lô vocab ≈ 70k token
+  tasks_per_subagent: {knowledge_extract: 5, vocab_eval: 2, vocab_enrich: 2, knowledge_enrich: 3}   # benchmark: Haiku xuống chất lượng sau ~5 bài; 1 lô vocab ≈ 70k token
   max_parallel_subagents: 4
   max_retries: 2
   review_threshold: 0.7

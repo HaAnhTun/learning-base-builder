@@ -8,13 +8,13 @@ playwright = pytest.importorskip("playwright.sync_api")
 STUDY = Path(__file__).resolve().parent.parent / "study" / "index.html"
 
 VOCAB = {"kind": "vocabulary", "course": "Demo", "slug": "demo", "level": "B2", "total_selected": 2, "terms": [
-    {"rank": 1, "term": "context window", "type": "collocation", "pos": "noun phrase", "importance": 92,
-     "vi": "cửa sổ ngữ cảnh", "en": "Max tokens a model reads at once.",
-     "definition_vi": "Số token tối đa mà mô hình đọc được một lần.", "expansion": None, "cefr": None,
-     "note": "thường đi với: fill up", "frequency": 9, "lessons": 3,
-     "example": {"text": "The context window fills up.", "vi": "Cửa sổ ngữ cảnh bị đầy.", "lesson": 2}},
-    {"rank": 2, "term": "MCP", "type": "acronym", "importance": 87, "vi": "giao thức MCP", "en": "A protocol.",
-     "expansion": "Model Context Protocol", "cefr": None, "frequency": 5, "lessons": 2, "example": None},
+    {"rank": 1, "term": "Malformed", "ipa": "/ˌmælˈfɔːrmd/", "meaning": "Sai định dạng, bị lỗi cấu trúc.",
+     "pos": "Tính từ", "domain": {"field": "IT", "text": "Malformed JSON = JSON sai cấu trúc."},
+     "example": {"en": "The request is malformed.", "vi": "Yêu cầu có định dạng không hợp lệ."},
+     "compare": "Invalid = Không hợp lệ; Malformed = Sai cấu trúc.", "expansion": None, "type": "general",
+     "importance": 92},
+    {"rank": 2, "term": "MCP", "ipa": None, "meaning": "Giao thức MCP.", "pos": "Từ viết tắt", "domain": None,
+     "example": None, "compare": None, "expansion": "Model Context Protocol", "type": "acronym", "importance": 87},
 ]}
 KNOWLEDGE = {"kind": "knowledge", "course": "Demo", "slug": "demo", "languages": ["en", "vi"], "concepts": [],
              "relations": [], "lessons": [{"n": 1, "title": "Intro", "chapter": "Chapter 1: Basics", "topics": [
@@ -66,11 +66,14 @@ def test_bilingual_process_card_and_persistence(page):
 
 def test_vocabulary_card(page):
     page.click("#tabs button:has-text('Từ vựng')")
-    assert page.inner_text("#front").strip().endswith("context window")
+    front = page.inner_text("#front")
+    assert "Malformed" in front and "/ˌmælˈfɔːrmd/" in front and "Tính từ" in front
     page.keyboard.press("Space")
     back = page.inner_text("#back")
-    assert "cửa sổ ngữ cảnh" in back and "bài 2" in back
-    assert "Số token tối đa" in back and "Cửa sổ ngữ cảnh bị đầy." in back and "thường đi với" in back
-    assert "noun phrase" in page.inner_text("#front")
+    assert "Sai định dạng" in back and "Trong IT: Malformed JSON = JSON sai cấu trúc." in back
+    assert "The request is malformed." in back and "Yêu cầu có định dạng không hợp lệ." in back
+    assert "Phân biệt: Invalid" in back and "[object" not in back and "null" not in back
     page.keyboard.press("ArrowLeft")  # "Chưa nhớ" → next card
     assert "MCP" in page.inner_text("#front") and "Model Context Protocol" in page.inner_text("#front")
+    page.keyboard.press("Space")
+    assert "Giao thức MCP." in page.inner_text("#back")  # a card without the optional lines still renders

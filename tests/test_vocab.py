@@ -1,5 +1,6 @@
 import csv
 import json
+import re
 
 import pytest
 
@@ -114,17 +115,16 @@ def test_prepare_ingest_rank_export_and_incremental(conn, cfg, course):
     folder = mode.export(conn, "aws-mini", cfg)
     model = json.loads((folder / "vocabulary.json").read_text(encoding="utf-8"))
     ec2 = next(t for t in model["terms"] if t["term"] == "EC2")
-    assert ec2["example"] == {"text": ec2["example"]["text"], "vi": None, "lesson": 1}  # no timestamps in exports
-    assert ec2["example"]["text"].startswith("We spin up EC2")
-    assert set(ec2) == {"rank", "term", "type", "pos", "importance", "vi", "en", "definition_vi", "expansion", "cefr",
-                        "note", "frequency", "lessons", "example"}  # no sources/status/confidence
+    assert set(ec2) == {"rank", "term", "ipa", "meaning", "pos", "domain", "example", "compare", "expansion", "type",
+                        "importance"}  # study card only: no sources/status/confidence/course sentences
+    assert ec2["meaning"] == "nghĩa" and ec2["example"] is None  # card details come from vocab_enrich
     assert (model["kind"], model["total_selected"], model["count"]) == ("vocabulary", n - 1, n - 1)
     # equal importance → longer terms first
     words = [len(t["term"].replace("-", " ").split()) for t in model["terms"]]
     assert words == sorted(words, reverse=True)
     rows = list(csv.DictReader((folder / "vocabulary.csv").open(encoding="utf-8-sig")))
     assert len(rows) == n - 1 and "region" not in {r["term"] for r in rows}
-    assert "## 1." in (folder / "vocabulary.md").read_text(encoding="utf-8")
+    assert "EC2" in re.findall(r"^## (.+)$", (folder / "vocabulary.md").read_text(encoding="utf-8"), re.M)
 
     with conn:  # study list = importance >= export_min_importance (70); csv keeps every selected term
         conn.execute("UPDATE vocab_entry SET importance = 50 WHERE term_id = "
@@ -133,7 +133,7 @@ def test_prepare_ingest_rank_export_and_incremental(conn, cfg, course):
     mode.export(conn, "aws-mini", cfg)
     model = json.loads((folder / "vocabulary.json").read_text(encoding="utf-8"))
     assert "EC2" not in {t["term"] for t in model["terms"]} and model["count"] == n - 2
-    assert "## " + "1." in (folder / "vocabulary.md").read_text(encoding="utf-8")
+    assert "EC2" not in re.findall(r"^## (.+)$", (folder / "vocabulary.md").read_text(encoding="utf-8"), re.M)
     assert len(list(csv.DictReader((folder / "vocabulary.csv").open(encoding="utf-8-sig")))) == n - 1
 
 
@@ -162,7 +162,15 @@ def test_changed_learner_level_triggers_reevaluation(conn, cfg, course):
     assert mode.prepare(conn, "aws-mini", cfg)["candidates_todo"] == 0
 
 
-def test_enrich_adds_learning_details_to_exported_terms(conn, cfg, course):
+def enrich_card(t: dict) -> dict:
+    from engine.vocab import enrich
+    return {"key": t["key"], "ipa": "/ɪˈɡzæmpəl/" if enrich._needs_ipa(t) else None, "meaning": f"nghĩa của {t['key']}.",
+            "part_of_speech": "noun", "domain": "IT", "domain_usage": "Dùng khi mô tả hạ tầng đám mây.",
+            "example_en": f"We use {t['term']} every day.", "example_vi": "Chúng tôi dùng nó mỗi ngày.",
+            "compare": None}
+
+
+def test_enrich_writes_study_cards(conn, cfg, course):
     from engine.vocab import enrich
 
     extract_course_candidates(conn, course["id"], cfg)
@@ -170,23 +178,48 @@ def test_enrich_adds_learning_details_to_exported_terms(conn, cfg, course):
     run_all_tasks(conn, cfg, course)
     mode.ingest(conn, "aws-mini", cfg)
     r = enrich.prepare(conn, "aws-mini", cfg)
-    assert r["terms_todo"] == r["exported_terms"] > 0 and r["pending"] >= 1
+    assert r["terms_todo"] == r["exported_terms"] > 2 and r["pending"] >= 1
+    bad = 0
     for row in tasks.pending_tasks(conn, enrich.MODE, course["id"]):
         packet = tasks.load_packet(cfg, row)
-        results = [{"key": t["key"], "vi": f"nghĩa {t['key']}", "part_of_speech": "noun", "definition_vi": f"định nghĩa {t['key']}",
-                    "example_vi": "câu ví dụ" if t["example"] else None, "usage_note": None}
-                   for t in packet["input"]["terms"]]
-        results[0]["example_vi"] = None if packet["input"]["terms"][0]["example"] else results[0]["example_vi"]
+        terms = packet["input"]["terms"]
+        assert all("context" in t and "example" not in t for t in terms)  # course sentence is context only
+        results = [enrich_card(t) for t in terms]
+        if not bad:
+            results[0]["meaning"] = "the meaning in English"  # not Vietnamese → rejected
+            results[1]["example_en"] = "This sentence forgets the word."  # example must use the term
+            bad = 2
         (cfg["root"] / packet["result_path"]).write_text(json.dumps({"results": results}), encoding="utf-8")
     s = enrich.ingest(conn, "aws-mini", cfg)
-    assert s["enriched"] + s["skipped"] == r["exported_terms"]
-    assert enrich.prepare(conn, "aws-mini", cfg)["terms_todo"] == s["skipped"]  # only the incomplete one again
+    assert (s["enriched"], s["skipped"]) == (r["exported_terms"] - 2, 2)
+    assert enrich.prepare(conn, "aws-mini", cfg)["terms_todo"] == 2  # only the rejected ones again
+
     folder = mode.export(conn, "aws-mini", cfg)
     model = json.loads((folder / "vocabulary.json").read_text(encoding="utf-8"))
     ec2 = next(t for t in model["terms"] if t["term"] == "EC2")
-    assert ec2["pos"] == "noun" and ec2["definition_vi"] == "định nghĩa EC2" and ec2["example"]["vi"] == "câu ví dụ"
-    assert ec2["vi"] == "nghĩa EC2"  # corrected short meaning replaces the eval one
-    assert "Định nghĩa:" in (folder / "vocabulary.md").read_text(encoding="utf-8")
+    assert ec2 == {**ec2, "meaning": "nghĩa của EC2.", "pos": "Danh từ", "ipa": None, "compare": None,
+                   "domain": {"field": "IT", "text": "Dùng khi mô tả hạ tầng đám mây."},
+                   "example": {"en": "We use EC2 every day.", "vi": "Chúng tôi dùng nó mỗi ngày."}}
+    md = (folder / "vocabulary.md").read_text(encoding="utf-8")
+    assert ("## EC2\n\n- Nghĩa: nghĩa của EC2.\n- Từ loại: Danh từ.\n- Trong IT: Dùng khi mô tả hạ tầng đám mây.\n"
+            "- Ví dụ: We use EC2 every day. (Chúng tôi dùng nó mỗi ngày.)\n") in md
+    row = next(r for r in csv.DictReader((folder / "vocabulary.csv").open(encoding="utf-8-sig")) if r["term"] == "EC2")
+    assert row["example"] == "We use EC2 every day." and row["domain"] == "IT" and row["en"] == "meaning"
+
+
+def test_enrich_card_checks():
+    from engine.vocab.enrich import _card_ok
+
+    word = {"key": "malformed", "term": "malformed", "type": "general"}
+    card = enrich_card(word)
+    assert _card_ok(card, word)
+    assert not _card_ok({**card, "ipa": None}, word)  # a single word needs its pronunciation
+    assert not _card_ok({**card, "ipa": "ˈmælfɔːrmd"}, word)  # IPA goes between slashes
+    for other in ({"key": "MCP", "term": "MCP", "type": "acronym"},  # letter by letter
+                  {"key": "few-shot", "term": "few-shot", "type": "collocation"},  # hyphenated compound
+                  {"key": "createMessageRequest", "term": "createMessageRequest", "type": "technical_term"}):
+        assert _card_ok({**enrich_card(other), "ipa": None}, other)
+    assert not _card_ok({**card, "example_vi": "We use it every day."}, word)  # untranslated example
 
 
 def test_invalid_result_is_not_stored_and_retried(conn, cfg, course):

@@ -35,7 +35,7 @@ Map the user's argument to one command, run it, and report the engine's output i
 
 1. `python -m engine vocab candidates <course>` — deterministic (spaCy, ~20–30 s per 140 lessons). Uses `learner.cefr_level` from config; if it is null, ask the user (A2/B1/B2/C1) and pass `--level`.
 2. **evaluate** = the runner loop below with mode `vocab_eval` and prepare command `python -m engine vocab prepare <course> [--limit N]`, ingest command `python -m engine vocab ingest <course>`.
-3. **enrich** = the runner loop below with mode `vocab_enrich`, prepare command `python -m engine vocab enrich-prepare <course>`, ingest command `python -m engine vocab enrich-ingest <course>` (instructions file `vocab-enrich.md`). Adds part of speech, Vietnamese translations of the definition and example, and a usage note to the study list only.
+3. **enrich** = the runner loop below with mode `vocab_enrich`, prepare command `python -m engine vocab enrich-prepare <course>`, ingest command `python -m engine vocab enrich-ingest <course>` (instructions file `vocab-enrich.md`). Writes a study card (IPA, Vietnamese meaning, part of speech, IT/AI usage, a new example with its translation, optional contrast) for the study list only.
 4. `python -m engine vocab export <course>` → `data/export/vocabulary/<course>/`: `vocabulary.csv` (all selected terms), `vocabulary.json`/`.md` (study list: importance ≥ `vocabulary.export_min_importance`, most important and longest first).
 
 To study, tell the user to open `study/index.html` in a browser and load `vocabulary.json` / `knowledge.json`.

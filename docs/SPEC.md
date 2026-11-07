@@ -285,8 +285,9 @@ Dùng spaCy + `en_core_web_sm` trên từng câu của Clean Dataset:
 ### 7.4b. Bổ sung chi tiết học (task `vocab_enrich`)
 
 - Chỉ chạy cho các từ trong danh sách học (mục 7.5 Export), không cho toàn bộ ứng viên — giữ chi phí AI thấp.
-- Mỗi từ thêm: `part_of_speech`, `definition_vi` (bản dịch đầy đủ của định nghĩa tiếng Anh), `example_vi` (bản dịch câu ví dụ gốc), `usage_note` (tùy chọn, ≤ 25 từ: collocation, từ dễ nhầm, mẫu câu).
-- Cache theo hash của input từng từ (term, nghĩa, định nghĩa, câu ví dụ, prompt_version): đổi định nghĩa hoặc câu ví dụ thì bổ sung lại. Mục thiếu trường bắt buộc bị bỏ riêng và vào lô sau.
+- Mỗi từ thành một **thẻ học** (`vocab_enrich-v3`, định dạng người dùng chọn 2026-11-08): `ipa` (phiên âm Mỹ; bắt buộc với từ đơn, tùy chọn với cụm từ, không có với acronym đọc từng chữ), `meaning` (1–3 nghĩa tiếng Việt theo ngữ cảnh khóa), `part_of_speech`, `domain` (`IT`/`AI`/`AI/IT`) + `domain_usage` (cách dùng trong lĩnh vực, vd. "Malformed JSON = JSON sai cấu trúc."), `example_en` (câu ví dụ **mới**, ngắn, có chứa từ) + `example_vi`, `compare` (tùy chọn: phân biệt với từ dễ nhầm). Câu gốc trong bài chỉ là ngữ cảnh đầu vào cho AI, không đưa vào file export.
+- Kiểm tra cứng khi ingest: `meaning`/`example_vi`/`domain_usage` phải là tiếng Việt có dấu; `example_en` phải chứa từ; từ đơn phải có IPA dạng `/…/`. Thẻ sai bị bỏ riêng và vào lô sau.
+- Cache theo hash của input từng từ (term, loại, định nghĩa, câu ngữ cảnh, prompt_version): đổi định nghĩa hoặc câu ngữ cảnh thì làm lại thẻ. Mục thiếu trường bắt buộc bị bỏ riêng và vào lô sau.
 - Lệnh: `vocab enrich-prepare` → runner → `vocab enrich-ingest` (cùng giao thức mục 9.2); hướng dẫn `references/vocab-enrich.md`.
 
 ### 7.5. Output mỗi mục từ vựng
@@ -302,7 +303,7 @@ Dùng spaCy + `en_core_web_sm` trên từng câu của Clean Dataset:
 | `english_definition` | Định nghĩa tiếng Anh theo ngữ cảnh khóa |
 | `expansion` | Dạng đầy đủ của acronym/chữ viết tắt (nếu có) |
 | `cefr_level` | Chỉ với từ phổ thông, khi xác định hợp lý |
-| `examples` | Câu gốc trong transcript (id câu do AI chọn trong số câu ngữ cảnh) — không tự bịa |
+| `examples` | Câu gốc trong transcript (id câu do AI chọn trong số câu ngữ cảnh) — không tự bịa; chỉ lưu trong SQLite và làm ngữ cảnh cho `vocab_enrich` |
 | `sources` | Mọi lần xuất hiện: bài, id câu, timestamp — lưu trong SQLite (`vocab_occurrence`), không đưa vào file export |
 | `status`, `confidence` | Mục 9.4 |
 
@@ -311,7 +312,7 @@ Một thuật ngữ là một bản ghi `vocab_term` duy nhất trên toàn hệ
 **Export** (chỉ mục `selected = true`, không `rejected`, đánh giá khớp ngữ cảnh hiện tại):
 - `vocabulary.csv`: toàn bộ từ được chọn (tra cứu bằng Excel/Sheets).
 - `vocabulary.json` và `vocabulary.md` = **danh sách học**: các từ có `importance` ≥ `vocabulary.export_min_importance` (mặc định 70 — mốc "thuật ngữ quan trọng lặp lại / cụm từ rất hữu ích" của rubric), trừ từ phổ thông có nhãn CEFR thấp hơn `learner.cefr_level` (vd. từ B2 khi học ở C1; thuật ngữ và cụm từ không có nhãn nên không bị ảnh hưởng). Số lượng co giãn theo nội dung khóa (khóa CCAR: ~520 từ) thay vì cố định; vài nghìn từ là quá nhiều để học, kể cả với B1.
-- Định dạng cho người và app học: mỗi từ gồm `rank, term, type, pos, importance, vi, en, definition_vi, expansion, cefr, note, frequency, lessons` và **một** câu ví dụ gốc `{text, vi, lesson}` (bản dịch từ `vocab_enrich`); JSON ghi mỗi mục một dòng. File export không ghi mốc thời gian (yêu cầu người dùng 2026-11-05); timestamp vẫn ở Clean Dataset/SQLite. Nguồn chi tiết (mọi lần xuất hiện, id câu) ở lại SQLite.
+- `vocabulary.json`: mỗi từ là một thẻ `{rank, term, ipa, meaning, pos, domain: {field, text}, example: {en, vi}, compare, expansion, type, importance}` (`pos` bằng tiếng Việt, vd. "Tính từ"); JSON ghi mỗi mục một dòng. `vocabulary.md` cùng nội dung theo mẫu: `## Malformed /ˌmælˈfɔːrmd/` rồi các dòng `- Nghĩa:`, `- Từ loại:`, `- Trong IT:`, `- Ví dụ: … (…)`, `- Phân biệt:`. `vocabulary.csv` có thêm cột tra cứu `en, cefr, frequency, lessons`. File export không ghi mốc thời gian (yêu cầu người dùng 2026-11-05); timestamp vẫn ở Clean Dataset/SQLite. Nguồn chi tiết (mọi lần xuất hiện, id câu) ở lại SQLite.
 
 ## 8. Hướng 3 — Knowledge Extraction Mode
 
@@ -618,7 +619,7 @@ knowledge:
 ai:
   runner: claude_code         # Future: claude_api
   subagent_model: haiku       # model của subagent trích xuất
-  tasks_per_subagent: {knowledge_extract: 5, vocab_eval: 2, vocab_enrich: 4, knowledge_enrich: 3}
+  tasks_per_subagent: {knowledge_extract: 5, vocab_eval: 2, vocab_enrich: 2, knowledge_enrich: 3}
   max_parallel_subagents: 4
   max_retries: 2
   review_threshold: 0.7

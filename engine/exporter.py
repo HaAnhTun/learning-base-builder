@@ -12,8 +12,10 @@ def write_compact_json(path: Path, model: dict, list_key: str) -> None:
     path.write_text(f'{head_json},"{list_key}":[\n{rows}\n]}}\n', encoding="utf-8")
 
 
-CSV_FIELDS = ["rank", "term", "type", "pos", "importance", "vi", "en", "definition_vi", "expansion", "cefr", "note",
-              "frequency", "lessons", "example", "example_vi", "example_lesson"]
+CSV_FIELDS = ["rank", "term", "ipa", "meaning", "pos", "domain", "domain_usage", "example", "example_vi", "compare",
+              "expansion", "type", "importance", "en", "cefr", "frequency", "lessons"]
+CARD_FIELDS = ["rank", "term", "ipa", "meaning", "pos", "domain", "example", "compare", "expansion", "type",
+               "importance"]  # vocabulary.json: the study card only (format asked by the user 2026-11-08)
 
 
 CEFR_ORDER = ["A1", "A2", "B1", "B2", "C1", "C2"]
@@ -26,43 +28,43 @@ def in_study_list(importance: int, cefr: str | None, level: str | None, min_impo
 
 
 def write_vocabulary(model: dict, folder: Path) -> None:
-    """vocabulary.csv: every selected term; vocabulary.json/.md: the study list (in_study_list — sized by the
-    course content, not a fixed count), most important and longest first."""
+    """vocabulary.csv: every selected term; vocabulary.json/.md: study cards for the study list (in_study_list —
+    sized by the course content, not a fixed count), most important and longest first."""
     folder.mkdir(parents=True, exist_ok=True)
     with (folder / "vocabulary.csv").open("w", encoding="utf-8-sig", newline="") as f:  # BOM so Excel reads UTF-8
         writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
         writer.writeheader()
         for t in model["terms"]:
-            ex = t["example"]
-            writer.writerow({**{k: t.get(k) for k in CSV_FIELDS if k in t},
-                             "example": ex["text"] if ex else "", "example_vi": (ex or {}).get("vi") or "",
-                             "example_lesson": ex["lesson"] if ex else ""})
+            domain, ex = t["domain"] or {}, t["example"] or {}
+            writer.writerow({**{k: t.get(k) for k in CSV_FIELDS if k in t}, "domain": domain.get("field"),
+                             "domain_usage": domain.get("text"), "example": ex.get("en"), "example_vi": ex.get("vi")})
 
-    study = [t for t in model["terms"]
+    study = [{k: t[k] for k in CARD_FIELDS} for t in model["terms"]
              if in_study_list(t["importance"], t["cefr"], model["level"], model["min_importance"])]
     top = {**model, "total_selected": len(model["terms"]), "count": len(study), "terms": study}
     write_compact_json(folder / "vocabulary.json", top, "terms")
 
     out = [f"# Từ vựng — {model['course']}", "",
            f"> Trình độ người học: {model['level']} · {len(study)} từ cần học (mức quan trọng ≥ "
-           f"{model['min_importance']}, bỏ từ phổ thông dưới trình độ; tổng {len(model['terms'])} từ được chọn nằm trong vocabulary.csv)", ""]
-    for t in study:
-        head = f"## {t['rank']}. {t['term']}" + (f" ({t['expansion']})" if t.get("expansion") else "")
-        meta = " · ".join(x for x in [
-            f"*{t['pos'] or t['type']}*", f"quan trọng {t['importance']}/100",
-            f"{t['frequency']} lần trong {t['lessons']} bài", f"CEFR {t['cefr']}" if t.get("cefr") else ""] if x)
-        out += [head, "", meta, "", f"- **Nghĩa:** {t['vi']}", f"- **Definition:** {t['en']}"]
-        if t.get("definition_vi"):
-            out.append(f"- **Định nghĩa:** {t['definition_vi']}")
-        ex = t["example"]
-        if ex:
-            out.append(f"- *\"{ex['text']}\"* — bài {ex['lesson']}")
-            if ex.get("vi"):
-                out.append(f"  - {ex['vi']}")
-        if t.get("note"):
-            out.append(f"- **Ghi chú:** {t['note']}")
-        out.append("")
+           f"{model['min_importance']}, bỏ từ phổ thông dưới trình độ; tổng {len(model['terms'])} từ được chọn nằm "
+           f"trong vocabulary.csv)", ""]
+    out += [line for t in study for line in vocabulary_card(t)]
     (folder / "vocabulary.md").write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
+
+
+def vocabulary_card(t: dict) -> list[str]:
+    """One term in the card format: heading with IPA, then Nghĩa / Từ loại / Trong IT / Ví dụ / Phân biệt."""
+    head = t["term"] + (f" ({t['expansion']})" if t.get("expansion") else "") + (f" {t['ipa']}" if t.get("ipa") else "")
+    out = [f"## {head}", "", f"- Nghĩa: {t['meaning']}"]
+    if t.get("pos"):
+        out.append(f"- Từ loại: {t['pos']}.")
+    if t.get("domain"):
+        out.append(f"- Trong {t['domain']['field']}: {t['domain']['text']}")
+    if t.get("example"):
+        out.append(f"- Ví dụ: {t['example']['en']} ({t['example']['vi']})")
+    if t.get("compare"):
+        out.append(f"- Phân biệt: {t['compare']}")
+    return out + [""]
 
 
 ITEM_LABELS = {"definition": "Định nghĩa", "concept": "Khái niệm", "key_point": "Ý chính", "process": "Quy trình",
