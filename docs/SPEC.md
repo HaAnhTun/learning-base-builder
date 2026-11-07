@@ -2,6 +2,10 @@
 
 > Phiên bản spec: 2.0 (2026-11-04). Thay thế spec 1.x (định hướng flashcard/Anki).
 > Giai đoạn 1 (Ingestion) đã triển khai xong và được giữ nguyên trong spec này.
+>
+> **Cập nhật 2026-11-08 (spec 3.0):** hướng 2 (Vocabulary) và hướng 3 (Knowledge) cùng AI Orchestrator đã **lưu trữ** vào `archive/` — người dùng thấy
+> Markdown NotebookLM đưa thẳng vào LLM là đủ. Các mục 7, 8, 9, 12.3 và phần AI của mục 10, 11, 13 chỉ còn là tài liệu lịch sử (khôi phục: `archive/README.md`).
+> Phạm vi hiện hành: Ingestion (mục 3, nay tải thêm quiz và tài liệu), Clean Dataset (mục 5), xuất NotebookLM (mục 6) và **đóng gói skill (mục 6b)**.
 
 ## 1. Tổng quan sản phẩm
 
@@ -238,6 +242,21 @@ Expiration actions can be configured to delete…
 - `index.md`: tên khóa, nguồn, ngôn ngữ, đơn vị xuất, danh sách file → chapter → các bài (số thứ tự, tiêu đề). Không ghi ngày xuất để giữ tính xác định.
 - Dòng transcript bắt đầu bằng `#` hoặc `>` được escape để không thành heading/quote. `Lesson N/T` dùng `T` = vị trí bài lớn nhất của khóa.
 - Xuất lại ghi đè thư mục export của khóa/locale đó; nội dung xác định (cùng input → cùng output).
+
+## 6b. Quiz, bài kiểm tra, tài liệu đính kèm và đóng gói skill *(spec 3.0)*
+
+**Luồng:** `Udemy → fetch → data/input/<slug>/{quizzes,materials}/ → export skill → data/export/skills/<slug>/` — không dùng AI.
+
+**Tải về (`fetch`, cùng lệnh với caption).** Một lần gọi curriculum (không kèm caption nên nhanh, ~1 giây) lấy chapter, bài giảng, quiz và tài liệu đính kèm; sau đó mỗi quiz một lần gọi lấy câu hỏi.
+- `quizzes/<NN>-<tên>.json`: dữ liệu gốc của một quiz hoặc bài kiểm tra (`assessments`: câu hỏi HTML, 4 đáp án, `correct_response`, `feedbacks` giải thích từng đáp án, `section` là miền kiến thức D1–D5 ở bài kiểm tra) cùng chapter và số bài giảng đứng trước nó. Chỉ mục `_quizzes.json` ghi thứ tự, số câu, sha256 và mục bị bỏ qua. Quiz đánh số theo thứ tự trong curriculum.
+- `materials/<LLL>-<file>`: file đính kèm (`File`) tải từ CDN không kèm token; `_materials.json` ghi thêm link ngoài (`ExternalLink`, chỉ ghi lại, **không mở**) và mô tả bài giảng. Loại tài liệu khác và mục `practice` (bài tập code) bị bỏ qua có ghi lý do.
+- Hai thư mục này không có `_manifest.json`, nên `import` không nhầm với thư mục ngôn ngữ. Lỗi một quiz không chặn việc tải; lỗi xác thực dừng toàn bộ.
+- Khóa CCAR: 20 quiz (18 quiz theo phần + 2 Practice Exam), 342 câu trắc nghiệm một đáp án đúng, mỗi câu đều có giải thích; 1 file ảnh đính kèm, 1 link quảng cáo.
+
+**Xuất skill (`export skill <course> [--lang]`).** Tạo thư mục `<export_dir>/skills/<slug>/` (xuất lại thì thay toàn bộ `references/`, nội dung xác định):
+- `SKILL.md`: front matter `name` (= slug, ≤ 64 ký tự) và `description`; bảng chương → file transcript → file quiz → số câu; hướng dẫn bốn việc (trả lời câu hỏi về khóa, ra quiz từng câu, làm bài kiểm tra thử có điểm theo miền, ôn điểm yếu) và các quy tắc (không lộ đáp án trước khi người học trả lời, trả lời theo ngôn ngữ người học, transcript là caption tự động còn lỗi nhận dạng). Khóa không có quiz thì bỏ phần quiz.
+- `references/course/`: một file transcript mỗi chương, cùng định dạng file NotebookLM. `references/quizzes/<NN> - <tên>.md`: câu hỏi, bốn lựa chọn A–D, `**Answer:**`, `**Explanation:**` và `**Why not X:**` cho đáp án sai có giải thích; thẻ `[D1]`… khi câu có `section`. `references/materials/`: file đính kèm và `index.md`.
+- Việc cài đặt skill (chép vào `.claude/skills/` hoặc `~/.claude/skills/`) do người dùng làm; engine không tự cài.
 
 ## 7. Hướng 2 — Vocabulary Extraction Mode
 
@@ -571,6 +590,7 @@ Bỏ khỏi V1: `chunk`, `vocabulary`, `vocabulary_meaning`, `knowledge_source`,
 | `import <folder>` | `import` | Đăng ký dữ liệu + làm sạch | Có, cần thêm bước clean |
 | `clean <course> [--force]` | `clean` | Làm sạch lại phần đổi; `--force` làm sạch lại toàn bộ dù hash/version không đổi | Mới |
 | `export notebooklm <course> [--by chapter\|course\|lesson] [--lang]` | `export notebooklm` | Xuất Markdown cho NotebookLM | Mới |
+| `export skill <course> [--lang]` | `export skill` | Đóng gói transcript + quiz + tài liệu thành Claude skill (mục 6b) | Mới |
 | `vocab candidates <course> [--level]` | `vocab candidates` | Trích + lọc ứng viên (không AI) | Mới |
 | `vocab evaluate <course> [--limit N]` | `vocab prepare` → runner → `vocab ingest` | Đánh giá ứng viên bằng AI; `--limit` = số task tối đa mỗi vòng | Mới |
 | `vocab enrich <course> [--limit N]` | `vocab enrich-prepare` → runner → `vocab enrich-ingest` | Chi tiết học cho danh sách học (mục 7.4b) | Mới |
@@ -651,6 +671,7 @@ Thay đổi so với Giai đoạn 1: bỏ `chunking.max_words`; thêm `paths.cle
 | 3. AI Orchestrator + Vocabulary Mode | Task packet, giao thức prepare/ingest, Claude Code runner (subagent Haiku), cache, validate; normalizer; spaCy candidates, danh sách tần suất, keyness, đánh giá AI, xếp hạng, export; `review` cơ bản | Benchmark 5 bài đại diện của khóa CCAR để chốt prompt, rubric, ngưỡng và đo usage; rồi chạy trọn khóa CCAR | **Xong** |
 | 4. Knowledge Mode | Task theo bài, pre-split, phân cấp, item, gom khái niệm, export | Benchmark 5 bài CCAR, rồi chạy trọn khóa CCAR | **Xong** |
 | 5. Hoàn thiện V1 | `review` cho cả hai mode, `stats` theo hướng, `evaluations/report.py` (báo cáo chất lượng + bộ benchmark 5 bài), app `study/`, tài liệu | Tiêu chí mục 16 đạt | **Xong** (chờ nghiệm thu) |
+| 6. Quiz, tài liệu, skill (spec 3.0) | `fetch` tải quiz/bài kiểm tra/tài liệu; `export skill`; lưu trữ hướng 2–3 vào `archive/` | Khóa CCAR: 20 quiz (342 câu) + 1 tài liệu; skill có đủ 21 chương, mọi đường dẫn trong SKILL.md tồn tại | **Xong** |
 
 Điều chỉnh so với thứ tự đề xuất ban đầu: AI Orchestrator được xây cùng Vocabulary Mode (người dùng đầu tiên của nó) thay vì tách riêng; "lưu trữ kiến thức có cấu trúc và liên kết" ở mức cơ bản nằm trong Giai đoạn 4, mức sâu thuộc Future.
 

@@ -16,6 +16,17 @@ CURRICULUM_PARAMS = {
     "caching_intent": "True",
 }
 COURSE_FIELDS = "id,title,published_title,url"
+# Curriculum with quizzes and lecture attachments; no captions, so it is fast (~1 s even for a large course).
+MATERIALS_PARAMS = {
+    "page_size": "200",
+    "curriculum_types": "chapter,lecture,quiz,practice",
+    "fields[lecture]": "title,object_index,asset,supplementary_assets,description",
+    "fields[chapter]": "title,object_index",
+    "fields[quiz]": "title,object_index,type,version,pass_percent,description",
+    "fields[asset]": "asset_type,title,filename,download_urls,external_url",
+    "caching_intent": "True",
+}
+ASSESSMENT_FIELDS = "id,assessment_type,prompt,correct_response,section,question_plain,related_lectures"
 
 
 class UdemyError(Exception):
@@ -119,6 +130,15 @@ class UdemyClient:
             {**CURRICULUM_PARAMS, "curriculum_types": "chapter,lecture"},
         )
 
+    def get_course_items(self, course_id: int) -> list[dict]:
+        """Chapters, lectures (with attachments), quizzes and practice items in curriculum order."""
+        return self._paginate(f"/courses/{course_id}/subscriber-curriculum-items/", MATERIALS_PARAMS)
+
+    def get_quiz_assessments(self, quiz_id: int, version: int = 1) -> list[dict]:
+        """The questions of one quiz, with correct answers and per-answer explanations."""
+        return self._paginate(f"/quizzes/{quiz_id}/assessments/", {
+            "version": str(version), "page_size": "250", "fields[assessment]": ASSESSMENT_FIELDS})
+
     def get_lecture_captions(self, course_id: int, lecture_id: int) -> list[dict]:
         data = self._get_json(
             f"/users/me/subscribed-courses/{course_id}/lectures/{lecture_id}/",
@@ -126,6 +146,10 @@ class UdemyClient:
         )
         return (data.get("asset") or {}).get("captions") or []
 
+    def download_bytes(self, url: str) -> bytes:
+        """Download a file from the CDN — never sends the token."""
+        return self._get(url, auth=False).content
+
     def download_text(self, url: str) -> str:
         """Download a caption file from the CDN — never sends the token."""
-        return self._get(url, auth=False).content.decode("utf-8-sig", errors="replace")
+        return self.download_bytes(url).decode("utf-8-sig", errors="replace")

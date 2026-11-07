@@ -2,9 +2,9 @@
 
 Biến transcript khóa học Udemy thành kho kiến thức cá nhân (SQLite). Đặc tả: [docs/SPEC.md](docs/SPEC.md).
 
-Ba hướng sử dụng (SPEC 2.0): xuất dữ liệu sạch cho NotebookLM, trích xuất từ vựng, trích xuất kiến thức.
+Hai hướng sử dụng: xuất Markdown sạch cho NotebookLM/LLM, và đóng gói khóa học (transcript, quiz, bài kiểm tra, tài liệu) thành Claude skill. Phần trích xuất từ vựng/kiến thức bằng AI đã chuyển vào [archive/](archive/README.md).
 
-Trạng thái: đăng nhập Udemy, tải transcript, Clean Dataset, xuất Markdown cho NotebookLM, trích xuất từ vựng và kiến thức bằng AI (Claude Code, subagent Haiku), duyệt kết quả, app flashcard `study/`.
+Trạng thái: đăng nhập Udemy, tải transcript + quiz + bài kiểm tra + tài liệu đính kèm, Clean Dataset, xuất Markdown cho NotebookLM, đóng gói skill. Toàn bộ chạy bằng Python, không cần AI.
 
 ## Cài đặt
 
@@ -12,7 +12,6 @@ Yêu cầu Python 3.10–3.14.
 
 ```bash
 pip install -r requirements.txt
-pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 ```
 
 Playwright chỉ cần cho lệnh `login` và dùng Chrome hoặc Edge đã cài sẵn trên máy — không cần `playwright install`.
@@ -53,17 +52,18 @@ Hoặc đặt biến môi trường `UDEMY_ACCESS_TOKEN` (ghi đè giá trị tr
 
 ```bash
 python -m engine fetch                         # liệt kê khóa học đã đăng ký
-python -m engine fetch <url|slug|id>           # tải caption tiếng Anh rồi import
+python -m engine fetch <url|slug|id>           # tải caption tiếng Anh + quiz + bài kiểm tra + tài liệu đính kèm, rồi import
 python -m engine fetch <url> --lang en,vi      # nhiều ngôn ngữ; --lang all = tất cả
 python -m engine import data/input/<khóa>      # import file .vtt/.txt/.md tự đặt (tự làm sạch)
 python -m engine clean <slug> [--force]        # làm sạch lại
 python -m engine export notebooklm <slug>      # Markdown cho NotebookLM (--by chapter|course|lesson)
+python -m engine export skill <slug>           # Claude skill: data/export/skills/<slug>/ (chép vào .claude/skills/ hoặc ~/.claude/skills/)
 python -m engine stats
 ```
 
 Trong Claude Code: `/learning-base-builder fetch <url>` …
 
-File tải về nằm ở `data/input/<slug>/<locale>/NNN-<tên-bài>.vtt`, mỗi thư mục ngôn ngữ có `_manifest.json` riêng.
+File tải về nằm ở `data/input/<slug>/<locale>/NNN-<tên-bài>.vtt`, mỗi thư mục ngôn ngữ có `_manifest.json` riêng. Quiz và bài kiểm tra ở `data/input/<slug>/quizzes/NN-<tên>.json` (câu hỏi gốc, đáp án, giải thích; chỉ mục `_quizzes.json`); tài liệu đính kèm ở `data/input/<slug>/materials/` (link ngoài chỉ được ghi lại, không mở).
 Chỉ ngôn ngữ trong `--lang` (mặc định `en`) được tải; thư mục ngôn ngữ khác không bị đụng tới.
 
 File tự đặt: `data/input/<khóa>/<lang>/bai-01.vtt` (hoặc đặt phẳng trong `data/input/<khóa>/`).
@@ -74,20 +74,15 @@ Upload các file trong `data/export/notebooklm/<slug>/<lang>/` lên NotebookLM (
 
 Chỉ dùng cho khóa học bạn đã đăng ký, phục vụ học tập cá nhân.
 
-## Trích xuất từ vựng và kiến thức (AI, trong Claude Code)
+## Skill của khóa học
 
-Trong Claude Code: `/learning-base-builder vocab evaluate <slug>`, `/learning-base-builder vocab enrich <slug>` (thẻ học cho danh sách học: phiên âm IPA, nghĩa, từ loại, cách dùng trong IT/AI, câu ví dụ mới kèm bản dịch, phân biệt từ dễ nhầm), `/learning-base-builder knowledge extract <slug>` và `/learning-base-builder knowledge enrich <slug>` (mức quan trọng, câu hỏi gợi nhớ, dịch lại tự nhiên) — skill tạo task, giao cho subagent Haiku, rồi kiểm tra và lưu kết quả. Xuất file:
+`python -m engine export skill <slug>` tạo thư mục skill gồm `SKILL.md` (mục lục chương, quiz và cách dùng) và `references/`:
+`course/` (transcript từng chương), `quizzes/` (mọi quiz và bài kiểm tra kèm đáp án, giải thích), `materials/` (file đính kèm).
+Chép thư mục đó vào `.claude/skills/` (một dự án) hoặc `~/.claude/skills/` (mọi dự án), rồi hỏi Claude về khóa học, nhờ ra quiz hoặc làm bài kiểm tra thử.
 
-```bash
-python -m engine vocab candidates <slug>       # trích ứng viên (không AI)
-python -m engine vocab export <slug>           # data/export/vocabulary/<slug>/: .csv (đầy đủ), .json/.md (thẻ học: quan trọng ≥ 70, bỏ từ dưới trình độ)
-python -m engine knowledge export <slug>       # data/export/knowledge/<slug>/knowledge.json, .md
-python -m engine review list <slug> --mode vocab   # các mục cần duyệt
-```
+## Archive
 
-## Học bằng flashcard
-
-Mở `study/index.html` bằng trình duyệt, chọn `vocabulary.json` và/hoặc `knowledge.json`. Space để lật thẻ, → đã nhớ, ← chưa nhớ. Tiến độ lưu trong trình duyệt.
+Trích xuất từ vựng/kiến thức bằng AI, app flashcard và báo cáo chất lượng nằm ở [archive/](archive/README.md) (có hướng dẫn khôi phục).
 
 ## Test
 

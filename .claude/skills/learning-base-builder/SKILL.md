@@ -1,7 +1,7 @@
 ---
 name: learning-base-builder
-description: Personal learning base from Udemy transcripts. Use to log in to Udemy, fetch or import course transcripts, export clean Markdown for NotebookLM, extract and rank course vocabulary, extract structured knowledge, review AI results, or show learning-base stats.
-argument-hint: "login | fetch [<url|slug|id>] | import <folder> | clean <course> | export notebooklm <course> | vocab candidates|evaluate|enrich|export <course> | knowledge extract|enrich|export <course> | review <course> --mode vocab|knowledge | stats"
+description: Personal learning base from Udemy courses. Use to log in to Udemy, fetch a course (transcripts, quizzes, practice exams, attachments), export clean Markdown for NotebookLM, package a course as a Claude skill, or show stats.
+argument-hint: "login | fetch [<url|slug|id>] | import <folder> | clean <course> | export notebooklm <course> | export skill <course> | stats"
 ---
 
 Engine CLI: run `python -m engine <command>` from the project root. `python -m engine <command> --help` is the source of truth for arguments. Spec: `docs/SPEC.md`.
@@ -15,8 +15,8 @@ Map the user's argument to one command, run it, and report the engine's output i
 ## fetch
 
 1. No course given: run `python -m engine fetch`, show the enrolled-course list, ask which one.
-2. Run `python -m engine fetch <course> [--lang ...]`. It downloads only the requested languages into `data/input/<slug>/<locale>/` (one `_manifest.json` per locale folder), then imports each. Default language is `en`; pass `--lang` only when the user names other languages.
-3. Done when the import line prints. Report counts plus `skipped` reasons from each locale's manifest when any lectures were skipped.
+2. Run `python -m engine fetch <course> [--lang ...]`. It downloads only the requested languages into `data/input/<slug>/<locale>/` (one `_manifest.json` per locale folder), then imports each. Default language is `en`; pass `--lang en,vi` or `--lang all` only when the user asks. It also saves the course's quizzes and practice exams to `data/input/<slug>/quizzes/` (raw questions, one file per quiz, index `_quizzes.json`) and lecture attachments to `data/input/<slug>/materials/` (`_materials.json`; external links are recorded, never opened).
+3. Done when the import line prints. Report counts, the quiz/question/attachment counts, plus `skipped` reasons from each locale's manifest when any lectures were skipped.
 4. On "Token Udemy hết hạn" → run the **login** step, then retry fetch once. On "Bị chặn ... Cloudflare" → report it; retrying immediately rarely helps.
 
 ## import
@@ -31,35 +31,9 @@ Map the user's argument to one command, run it, and report the engine's output i
 
 `python -m engine export notebooklm <course> [--by chapter|course|lesson] [--lang en]` — no AI. Writes Markdown + `index.md` to `data/export/notebooklm/<course>/<lang>/`. Default one file per chapter (fits NotebookLM's 50-source free tier). Tell the user the folder path and to upload the `.md` files themselves; relay any source-limit warnings.
 
-## vocab
+## export skill
 
-1. `python -m engine vocab candidates <course>` — deterministic (spaCy, ~20–30 s per 140 lessons). Uses `learner.cefr_level` from config; if it is null, ask the user (A2/B1/B2/C1) and pass `--level`.
-2. **evaluate** = the runner loop below with mode `vocab_eval` and prepare command `python -m engine vocab prepare <course> [--limit N]`, ingest command `python -m engine vocab ingest <course>`.
-3. **enrich** = the runner loop below with mode `vocab_enrich`, prepare command `python -m engine vocab enrich-prepare <course>`, ingest command `python -m engine vocab enrich-ingest <course>` (instructions file `vocab-enrich.md`). Writes a study card (IPA, Vietnamese meaning, part of speech, IT/AI usage, a new example with its translation, optional contrast) for the study list only.
-4. `python -m engine vocab export <course>` → `data/export/vocabulary/<course>/`: `vocabulary.csv` (all selected terms), `vocabulary.json`/`.md` (study list: importance ≥ `vocabulary.export_min_importance`, most important and longest first).
-
-To study, tell the user to open `study/index.html` in a browser and load `vocabulary.json` / `knowledge.json`.
-
-## knowledge
-
-1. **extract** = the runner loop below with mode `knowledge_extract`, prepare command `python -m engine knowledge prepare <course> [--lessons 1-10,15] [--limit N]`, ingest command `python -m engine knowledge ingest <course>`. One task per lesson (long lessons are pre-split into parts).
-2. **enrich** = the runner loop below with mode `knowledge_enrich`, prepare command `python -m engine knowledge enrich-prepare <course>`, ingest command `python -m engine knowledge enrich-ingest <course>` (instructions file `knowledge-enrich.md`). Adds importance, a recall question and a natural re-translation to every item; run it after extract.
-3. `python -m engine knowledge export <course>` → `data/export/knowledge/<course>/knowledge.{json,md}` (items with importance ≥ `knowledge.export_min_importance`).
-
-## Runner loop (vocab evaluate|enrich / knowledge extract|enrich) — SPEC §9.2
-
-Repeat until `prepare` reports 0 pending tasks or a round makes no progress:
-1. Run the mode's prepare command.
-2. `python -m engine ai batches <mode> <course>` → JSON `{model, max_parallel, batches: [[task paths]]}`.
-3. For each batch spawn one Agent with `model` = the JSON's `model` (Haiku by default), at most `max_parallel` at a time, in the background. Prompt (fill in the reference file and paths):
-   > You are an extraction worker for the project at <project root>. Read the instructions file <project root>/.claude/skills/learning-base-builder/references/<vocab-eval.md | vocab-enrich.md | knowledge-extract.md | knowledge-enrich.md> and the Vietnamese guide <project root>/.claude/skills/learning-base-builder/references/translation-vi.md. Process these task files in order: <absolute paths>. For each, write the result JSON to the task's `result_path` (relative to the project root) with the Write tool, exactly as the instructions say, then check it parses with `python -c "import json,sys; json.load(open(sys.argv[1], encoding='utf-8'))" <result_path>` and fix the file if it does not. Every title and content needs every language listed in output_languages. Give every task the same care as the first one. Write every translation, question and score yourself — scripts that generate them (word lists, templates, rules) produce garbage. Judge each item from its own input; a default value for items you did not look at is rejected. Do not read or modify other project files; do not run the engine. Reply with one line only: `done <written>/<total>`.
-4. When all agents of the round finish, run the mode's ingest command. Tasks that failed validation are re-armed by the next prepare (max `ai.max_retries` retries) and then reported as failed.
-
-Keep task contents out of this conversation: never read task or result files yourself; only relay the engine's summaries.
-
-## review
-
-`python -m engine review list <course> --mode vocab|knowledge` prints items marked `needs_review` as JSON. Show them to the user in small groups; record each decision with `python -m engine review approved|rejected <course> --mode … --id <id> [--edits '{"field": "value"}']`. Decisions survive regeneration.
+`python -m engine export skill <course> [--lang en]` — no AI. Packages the course as a Claude skill in `data/export/skills/<course>/`: `SKILL.md` (index of chapters, quizzes and what to do) plus `references/course/` (one transcript file per chapter), `references/quizzes/` (every quiz and practice exam with answer key and explanations) and `references/materials/` (attachments). Needs `fetch` first for the quizzes. Tell the user the folder path and that installing is theirs to do: copy the folder to `.claude/skills/` (this project) or `~/.claude/skills/` (every project). Do not install it yourself.
 
 ## stats
 
