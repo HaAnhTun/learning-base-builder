@@ -368,9 +368,6 @@ def stats(conn) -> dict:
     def count(sql: str, *params) -> int:
         return conn.execute(sql, params).fetchone()[0]
 
-    def group(sql: str) -> dict:
-        return dict(conn.execute(sql).fetchall())
-
     return {
         "courses": count("SELECT COUNT(*) FROM course"),
         "lessons": count("SELECT COUNT(*) FROM lesson"),
@@ -378,13 +375,4 @@ def stats(conn) -> dict:
         "cleaned": count("SELECT COUNT(*) FROM processing_state WHERE stage = 'clean' AND status = 'done'"),
         "sentences": count("SELECT COALESCE(SUM(sentence_count), 0) FROM transcript"),
         "words": count("SELECT COALESCE(SUM(word_count), 0) FROM transcript"),
-        "ai_tasks": group("SELECT mode || ':' || status, COUNT(*) FROM ai_task GROUP BY mode, status ORDER BY 1"),
-        "vocab_candidates": group(
-            "SELECT filter_status, COUNT(*) FROM vocab_candidate GROUP BY filter_status ORDER BY 1"),
-        "vocab_entries": group(
-            "SELECT CASE selected WHEN 1 THEN 'selected' ELSE 'not_selected' END || ':' || status, COUNT(*) "
-            "FROM vocab_entry GROUP BY 1 ORDER BY 1"),
-        "knowledge_nodes": count("SELECT COUNT(*) FROM knowledge_node"),
-        "knowledge_items": group("SELECT status, COUNT(*) FROM knowledge_item GROUP BY status ORDER BY 1"),
-        "concepts": count("SELECT COUNT(*) FROM concept"),
     }

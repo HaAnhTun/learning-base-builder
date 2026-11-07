@@ -1,0 +1,26 @@
+# config.yaml blocks used by the archived vocabulary / knowledge extraction (copy back into config.yaml to restore)
+learner:
+  cefr_level: C1              # A2 | B1 | B2 | C1; null → skill hỏi người dùng
+
+vocabulary:
+  batch_size: 100
+  contexts_per_candidate: 3
+  zipf_threshold_by_level: {A2: 5.0, B1: 4.5, B2: 4.0, C1: 3.5}   # heuristic, cần benchmark
+  keyness_min: 4.0            # benchmark CCAR: 2.0 giữ cả use/run/actually
+  phrase_min_frequency: 3     # cụm nhiều từ / phrasal verb xuất hiện < 3 lần → low_frequency
+  export_min_importance: 70   # vocabulary.md/.json (danh sách học) chỉ lấy từ có mức quan trọng ≥ ngưỡng; .csv giữ toàn bộ
+  enrich_batch_size: 50       # số từ mỗi task vocab_enrich (dịch định nghĩa, câu ví dụ, từ loại)
+
+knowledge:
+  max_lesson_words: 8000
+  output_languages: [en, vi]
+  enrich_batch_size: 60        # knowledge_enrich: ~số mục mỗi task (gom nguyên bài)
+  export_min_importance: 50    # knowledge.json/.md chỉ giữ mục quan trọng ≥ ngưỡng (mục chưa bổ sung vẫn giữ)
+
+ai:
+  runner: claude_code         # Future: claude_api
+  subagent_model: haiku
+  tasks_per_subagent: {knowledge_extract: 5, vocab_eval: 2, vocab_enrich: 2, knowledge_enrich: 3}   # benchmark: Haiku xuống chất lượng sau ~5 bài; 1 lô vocab ≈ 70k token
+  max_parallel_subagents: 4
+  max_retries: 2
+  review_threshold: 0.7
