@@ -60,18 +60,7 @@ def cmd_clean(cfg, args) -> None:
         print(f"  Cảnh báo — transcript rỗng: {', '.join(r['empty'])}")
 
 
-def cmd_export_skill(cfg, args) -> None:
-    from engine.export_skill import export_skill
-
-    r = _with_db(cfg, lambda conn: export_skill(conn, args.course, cfg, lang=args.lang))
-    print(f"Đã tạo skill từ {r.chapters} chương ({r.words:,} từ transcript), {r.quizzes} quiz/bài kiểm tra "
-          f"({r.questions} câu), {r.attachments} file đính kèm vào {r.folder}")
-    print("Dùng: chép thư mục này vào .claude/skills/ (một dự án) hoặc ~/.claude/skills/ (mọi dự án).")
-
-
 def cmd_export(cfg, args) -> None:
-    if args.target == "skill":
-        return cmd_export_skill(cfg, args)
     from engine.export_notebooklm import course_languages, export_course
     from engine.fetcher import parse_langs
 
@@ -154,9 +143,6 @@ def main(argv=None) -> int:
     p.add_argument("course", help="slug khóa học")
     p.add_argument("--by", choices=["chapter", "course", "lesson"], help="đơn vị file (mặc định theo config)")
     p.add_argument("--lang", help="en (mặc định default_lang), en_US, en,vi, hoặc all")
-    p = exp.add_parser("skill", help="Đóng gói khóa học (transcript, quiz, bài kiểm tra, tài liệu) thành Claude skill")
-    p.add_argument("course", help="slug khóa học")
-    p.add_argument("--lang", help="ngôn ngữ transcript (mặc định default_lang)")
     sub.add_parser("stats", help="Thống kê dữ liệu")
     args = parser.parse_args(argv)
 

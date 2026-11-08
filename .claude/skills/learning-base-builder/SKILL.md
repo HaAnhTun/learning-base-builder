@@ -1,7 +1,7 @@
 ---
 name: learning-base-builder
-description: Personal learning base from Udemy courses. Use to log in to Udemy, fetch a course (transcripts, quizzes, practice exams, attachments), export clean Markdown for NotebookLM, package a course as a Claude skill, or show stats.
-argument-hint: "login | fetch [<url|slug|id>] | import <folder> | clean <course> | export notebooklm <course> | export skill <course> | stats"
+description: Personal learning base from Udemy courses. Use to log in to Udemy, fetch a course (transcripts, quizzes, practice exams, attachments), export clean Markdown for NotebookLM, or show stats.
+argument-hint: "login | fetch [<url|slug|id>] | import <folder> | clean <course> | export notebooklm <course> | stats"
 ---
 
 Engine CLI: run `python -m engine <command>` from the project root. `python -m engine <command> --help` is the source of truth for arguments. Spec: `docs/SPEC.md`.
@@ -30,10 +30,6 @@ Map the user's argument to one command, run it, and report the engine's output i
 ## export notebooklm
 
 `python -m engine export notebooklm <course> [--by chapter|course|lesson] [--lang en]` — no AI. Writes Markdown + `index.md` to `data/export/notebooklm/<course>/<lang>/`. Default one file per chapter (fits NotebookLM's 50-source free tier). Tell the user the folder path and to upload the `.md` files themselves; relay any source-limit warnings.
-
-## export skill
-
-`python -m engine export skill <course> [--lang en]` — no AI. Packages the course as a Claude skill in `data/export/skills/<course>/`: `SKILL.md` (index of chapters, quizzes and what to do) plus `references/course/` (one transcript file per chapter), `references/quizzes/` (every quiz and practice exam with answer key and explanations) and `references/materials/` (attachments). Needs `fetch` first for the quizzes. Tell the user the folder path and that installing is theirs to do: copy the folder to `.claude/skills/` (this project) or `~/.claude/skills/` (every project). Do not install it yourself.
 
 ## stats
 

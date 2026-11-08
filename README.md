@@ -2,9 +2,9 @@
 
 Biến transcript khóa học Udemy thành kho kiến thức cá nhân (SQLite). Đặc tả: [docs/SPEC.md](docs/SPEC.md).
 
-Hai hướng sử dụng: xuất Markdown sạch cho NotebookLM/LLM, và đóng gói khóa học (transcript, quiz, bài kiểm tra, tài liệu) thành Claude skill. Phần trích xuất từ vựng/kiến thức bằng AI đã chuyển vào [archive/](archive/README.md).
+Xuất Markdown sạch cho NotebookLM/LLM và tải thêm quiz, bài kiểm tra, tài liệu đính kèm của khóa. Phần trích xuất từ vựng/kiến thức bằng AI đã bỏ khỏi mã nguồn (bản cuối nằm trong lịch sử git, commit `a1d3bc5`).
 
-Trạng thái: đăng nhập Udemy, tải transcript + quiz + bài kiểm tra + tài liệu đính kèm, Clean Dataset, xuất Markdown cho NotebookLM, đóng gói skill. Toàn bộ chạy bằng Python, không cần AI.
+Trạng thái: đăng nhập Udemy, tải transcript + quiz + bài kiểm tra + tài liệu đính kèm, Clean Dataset, xuất Markdown cho NotebookLM. Toàn bộ chạy bằng Python, không cần AI.
 
 ## Cài đặt
 
@@ -57,7 +57,6 @@ python -m engine fetch <url> --lang en,vi      # nhiều ngôn ngữ; --lang all
 python -m engine import data/input/<khóa>      # import file .vtt/.txt/.md tự đặt (tự làm sạch)
 python -m engine clean <slug> [--force]        # làm sạch lại
 python -m engine export notebooklm <slug>      # Markdown cho NotebookLM (--by chapter|course|lesson)
-python -m engine export skill <slug>           # Claude skill: data/export/skills/<slug>/ (chép vào .claude/skills/ hoặc ~/.claude/skills/)
 python -m engine stats
 ```
 
@@ -73,16 +72,6 @@ Dữ liệu: `data/input` (raw, không bao giờ sửa) → `data/clean` (Clean 
 Upload các file trong `data/export/notebooklm/<slug>/<lang>/` lên NotebookLM (Gemini Notebook).
 
 Chỉ dùng cho khóa học bạn đã đăng ký, phục vụ học tập cá nhân.
-
-## Skill của khóa học
-
-`python -m engine export skill <slug>` tạo thư mục skill gồm `SKILL.md` (mục lục chương, quiz và cách dùng) và `references/`:
-`course/` (transcript từng chương), `quizzes/` (mọi quiz và bài kiểm tra kèm đáp án, giải thích), `materials/` (file đính kèm).
-Chép thư mục đó vào `.claude/skills/` (một dự án) hoặc `~/.claude/skills/` (mọi dự án), rồi hỏi Claude về khóa học, nhờ ra quiz hoặc làm bài kiểm tra thử.
-
-## Archive
-
-Trích xuất từ vựng/kiến thức bằng AI, app flashcard và báo cáo chất lượng nằm ở [archive/](archive/README.md) (có hướng dẫn khôi phục).
 
 ## Test
 
