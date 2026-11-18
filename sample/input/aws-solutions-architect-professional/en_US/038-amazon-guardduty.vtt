@@ -1,0 +1,326 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.610
+<v Instructor>So now let's talk about Amazon GuardDuty.</v>
+
+2
+00:00:02.610 --> 00:00:05.940
+GuardDuty helps you do intelligent threat discovery
+
+3
+00:00:05.940 --> 00:00:08.520
+to protect your AWS accounts.
+
+4
+00:00:08.520 --> 00:00:09.600
+How does it do it?
+
+5
+00:00:09.600 --> 00:00:11.550
+Well, it has machine learning algorithm,
+
+6
+00:00:11.550 --> 00:00:13.050
+performs anomaly detection,
+
+7
+00:00:13.050 --> 00:00:16.410
+and uses third-party data to find these threats.
+
+8
+00:00:16.410 --> 00:00:18.210
+So to enable it, it's just one click.
+
+9
+00:00:18.210 --> 00:00:19.800
+Then you have 30 days trial.
+
+10
+00:00:19.800 --> 00:00:21.990
+You don't need to install any software.
+
+11
+00:00:21.990 --> 00:00:24.540
+So GuardDuty is going to look at a lot of input data,
+
+12
+00:00:24.540 --> 00:00:26.340
+such as your CloudTrail event logs
+
+13
+00:00:26.340 --> 00:00:28.500
+to look for unusual API calls
+
+14
+00:00:28.500 --> 00:00:30.180
+or unauthorized deployments.
+
+15
+00:00:30.180 --> 00:00:32.460
+It's going to look at your management events
+
+16
+00:00:32.460 --> 00:00:33.990
+and your data events,
+
+17
+00:00:33.990 --> 00:00:36.270
+so for example, on the management side,
+
+18
+00:00:36.270 --> 00:00:39.000
+the create VPC subnet event, and so on
+
+19
+00:00:39.000 --> 00:00:41.010
+Whereas, on the S3 data events,
+
+20
+00:00:41.010 --> 00:00:43.290
+for example, get objects, list objects,
+
+21
+00:00:43.290 --> 00:00:45.030
+delete objects, and so on.
+
+22
+00:00:45.030 --> 00:00:47.100
+And then for VPC Flow Logs, it's going to look
+
+23
+00:00:47.100 --> 00:00:48.960
+at unusual internet traffic.
+
+24
+00:00:48.960 --> 00:00:52.590
+It's going to look at unusual IP addresses.
+
+25
+00:00:52.590 --> 00:00:56.580
+DNS logs to look at EC2 instances sending encoded data
+
+26
+00:00:56.580 --> 00:01:00.090
+within DNS queries, which would mean they're compromised,
+
+27
+00:01:00.090 --> 00:01:02.805
+and optional features to allow you to analyze, for example,
+
+28
+00:01:02.805 --> 00:01:06.090
+other input data sources, such as your EKS audit logs,
+
+29
+00:01:06.090 --> 00:01:08.670
+your RDS and Aurora login events,
+
+30
+00:01:08.670 --> 00:01:13.560
+your EBS, your Lambda, and your S3 data events.
+
+31
+00:01:13.560 --> 00:01:16.470
+So we can also set up EventBridge rules
+
+32
+00:01:16.470 --> 00:01:19.530
+to be notified automatically in case you have findings.
+
+33
+00:01:19.530 --> 00:01:20.700
+And then these rules can target
+
+34
+00:01:20.700 --> 00:01:22.710
+whatever EventBridge can target,
+
+35
+00:01:22.710 --> 00:01:26.250
+such as AWS Lambda or SNS topics.
+
+36
+00:01:26.250 --> 00:01:28.470
+Also, this can come up in the exam.
+
+37
+00:01:28.470 --> 00:01:31.350
+GuardDuty is a very good tool to protect you
+
+38
+00:01:31.350 --> 00:01:33.210
+against cryptocurrency attacks
+
+39
+00:01:33.210 --> 00:01:35.190
+because there is a dedicated finding for it,
+
+40
+00:01:35.190 --> 00:01:37.860
+so it knows how to analyze all these input data
+
+41
+00:01:37.860 --> 00:01:41.070
+and find that there is a cryptocurrency attack.
+
+42
+00:01:41.070 --> 00:01:43.110
+So to summarize, within GuardDuty,
+
+43
+00:01:43.110 --> 00:01:45.000
+we have several input data.
+
+44
+00:01:45.000 --> 00:01:46.530
+We have the VPC Flow Logs,
+
+45
+00:01:46.530 --> 00:01:49.080
+the CloudTrail logs, and the DNS logs
+
+46
+00:01:49.080 --> 00:01:51.300
+that will be no matter what into GuardDuty,
+
+47
+00:01:51.300 --> 00:01:53.760
+as well as some optional features you can enable,
+
+48
+00:01:53.760 --> 00:01:55.830
+such as your S3 logs, your EBS volumes,
+
+49
+00:01:55.830 --> 00:01:59.640
+your Lambda network activity, RDS and Aurora login activity,
+
+50
+00:01:59.640 --> 00:02:02.370
+and your EKS audit logs and runtime monitoring
+
+51
+00:02:02.370 --> 00:02:05.460
+as well as most likely more features over time
+
+52
+00:02:05.460 --> 00:02:06.660
+that I will not put here
+
+53
+00:02:06.660 --> 00:02:09.180
+because you get the idea of optional features.
+
+54
+00:02:09.180 --> 00:02:11.190
+And so from all these things,
+
+55
+00:02:11.190 --> 00:02:13.230
+then GuardDuty can generate findings,
+
+56
+00:02:13.230 --> 00:02:15.300
+and if these findings are detected,
+
+57
+00:02:15.300 --> 00:02:18.750
+an event is created in Amazon EventBridge.
+
+58
+00:02:18.750 --> 00:02:20.850
+And therefore, from Event Bridge, thanks to rules,
+
+59
+00:02:20.850 --> 00:02:22.110
+we can trigger automations,
+
+60
+00:02:22.110 --> 00:02:23.850
+for example, using Lambda functions,
+
+61
+00:02:23.850 --> 00:02:27.630
+or send notifications, for example, using SNS.
+
+62
+00:02:27.630 --> 00:02:28.800
+You need to know another feature
+
+63
+00:02:28.800 --> 00:02:31.890
+of GuardDuty called the Delegated Administrator.
+
+64
+00:02:31.890 --> 00:02:34.530
+So when you have an AWS Organization,
+
+65
+00:02:34.530 --> 00:02:37.230
+one of the member accounts can be designated
+
+66
+00:02:37.230 --> 00:02:39.870
+a GuardDuty Delegated Administrator.
+
+67
+00:02:39.870 --> 00:02:42.750
+The idea is that that one account has full permission
+
+68
+00:02:42.750 --> 00:02:45.540
+to enable and manage GuardDuty for all accounts
+
+69
+00:02:45.540 --> 00:02:47.070
+in the Organization.
+
+70
+00:02:47.070 --> 00:02:48.570
+So you have your Management accounts,
+
+71
+00:02:48.570 --> 00:02:50.250
+and you want to have GuardDuty enabled
+
+72
+00:02:50.250 --> 00:02:52.470
+for several member accounts.
+
+73
+00:02:52.470 --> 00:02:55.620
+Therefore, you're going to name one of these member accounts
+
+74
+00:02:55.620 --> 00:02:58.140
+a Delegated Administrator for GuardDuty,
+
+75
+00:02:58.140 --> 00:03:01.140
+and it will have the power to enable and manage GuardDuty
+
+76
+00:03:01.140 --> 00:03:04.230
+on all the accounts within the Organization.
+
+77
+00:03:04.230 --> 00:03:07.200
+Now to name a Delegated Administrator,
+
+78
+00:03:07.200 --> 00:03:08.730
+this can only be done using
+
+79
+00:03:08.730 --> 00:03:11.880
+the Organization Management Account.
+
+80
+00:03:11.880 --> 00:03:13.770
+Okay, so that's it for GuardDuty.
+
+81
+00:03:13.770 --> 00:03:16.770
+I hope you liked it, and I will see you in the next lecture.
+

@@ -1,0 +1,298 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.440
+In this lesson we'll spend a few minutes going over session continuity. What it takes for an
+
+2
+00:00:05.440 --> 00:00:10.960
+agent to pick up exactly where it left off after an interruption. We'll go through checkpoint
+
+3
+00:00:10.960 --> 00:00:16.639
+design, failure recovery, state versioning for handling conflicts, and memory hygiene
+
+4
+00:00:16.639 --> 00:00:24.000
+for keeping stored state clean. Let's get into it. An agent gets killed halfway through a long task.
+
+5
+00:00:24.000 --> 00:00:28.559
+What happens next is entirely determined by decisions you made before it started.
+
+6
+00:00:29.200 --> 00:00:34.080
+Session resumption is the ability to pick a task back up from a saved checkpoint
+
+7
+00:00:34.080 --> 00:00:40.720
+without repeating completed steps or losing prior results. A checkpoint is that saved snapshot,
+
+8
+00:00:40.720 --> 00:00:46.400
+a record of task progress written at a defined phase boundary, giving the agent a known good
+
+9
+00:00:46.400 --> 00:00:51.599
+state to recover to. State versioning is the practice of tracking which version of the
+
+10
+00:00:51.599 --> 00:00:56.560
+environment a checkpoint was written against, so the agent can tell when the world moved on
+
+11
+00:00:56.560 --> 00:01:02.000
+while it was down. Resumption depends on checkpoints, and checkpoints stay trustworthy
+
+12
+00:01:02.000 --> 00:01:08.080
+only when they carry version information. For session resumption to work, the agent needs three
+
+13
+00:01:08.080 --> 00:01:13.360
+things available when it restarts. First, it needs to know which steps have already been completed
+
+14
+00:01:13.360 --> 00:01:19.040
+and confirmed so it doesn't repeat work that already happened. Second, it needs the current
+
+15
+00:01:19.040 --> 00:01:25.279
+inputs that the next step requires to proceed. Without those, it can't continue even if it knows
+
+16
+00:01:25.279 --> 00:01:31.760
+where it is. Third, it needs the accumulated results from prior steps that downstream phases
+
+17
+00:01:31.760 --> 00:01:37.440
+still depend on. If any of these three are missing, the agent is stuck. It either has to repeat
+
+18
+00:01:37.440 --> 00:01:42.959
+completed work, which can cause duplicate side effects, or restart from the beginning entirely.
+
+19
+00:01:43.599 --> 00:01:48.959
+Designing session resumption means ensuring that all three of these are written to durable storage
+
+20
+00:01:48.959 --> 00:01:55.599
+before any interruption could plausibly occur. Checkpoint timing is its own decision, separate
+
+21
+00:01:55.599 --> 00:02:00.800
+from what you store in one. The right pattern is to save at the end of each major phase,
+
+22
+00:02:01.360 --> 00:02:07.440
+not after every individual tool call. Phase boundaries are natural resting points. The work
+
+23
+00:02:07.440 --> 00:02:13.759
+so far is coherent, and the next chunk has a clean place to start from. The second rule matters more
+
+24
+00:02:13.759 --> 00:02:20.000
+than people expect. Write the checkpoint before taking any irreversible action in the next phase,
+
+25
+00:02:20.000 --> 00:02:26.479
+never after. If you write it after, a failure and a restart can replay that action a second time,
+
+26
+00:02:26.479 --> 00:02:32.320
+and irreversible means exactly what it says. You don't get to undo the duplicate. Sending the email
+
+27
+00:02:32.320 --> 00:02:38.479
+twice, charging the card twice, get the ordering wrong, and recovery becomes the thing that causes
+
+28
+00:02:38.479 --> 00:02:46.320
+the damage. So what actually goes into a checkpoint? Four things, at minimum. A phase marker recording
+
+29
+00:02:46.320 --> 00:02:52.880
+which phase completed successfully, so that on resume the agent skips every phase before it,
+
+30
+00:02:52.880 --> 00:02:58.479
+rather than replaying them. The step outputs that downstream phases depend on, because a later phase
+
+31
+00:02:58.479 --> 00:03:06.160
+can't run on results it no longer has. The original task inputs, so the agent can rebuild full context
+
+32
+00:03:06.160 --> 00:03:10.880
+rather than inferring what it was asked to do. And a time stamp for when the checkpoint was
+
+33
+00:03:10.880 --> 00:03:16.320
+written, which gives you ordering when multiple checkpoints exist, and gives you a basis for
+
+34
+00:03:16.320 --> 00:03:22.720
+conflict detection later. Miss any one of these, and resumption becomes guesswork, which usually
+
+35
+00:03:22.720 --> 00:03:30.559
+means repeated work, or a silent gap in the result. The granularity of checkpointing is a real design
+
+36
+00:03:30.559 --> 00:03:36.960
+trade-off. Coarse checkpoints saved at phase boundaries are simpler. Fewer writes, less storage
+
+37
+00:03:36.960 --> 00:03:43.679
+complexity, easier to reason about. The downside is that on failure, the agent may have to redo some
+
+38
+00:03:43.679 --> 00:03:50.320
+work within the phase it was executing. For most workflows, that cost is acceptable. Fine-grained
+
+39
+00:03:50.320 --> 00:03:56.399
+checkpoints saved after every individual step minimize the repeated work on recovery, but they
+
+40
+00:03:56.399 --> 00:04:02.800
+require many more writes, produce more complex state to manage and validate, and add latency
+
+41
+00:04:02.800 --> 00:04:08.639
+throughout execution. Fine-grained checkpointing is justified when individual steps are expensive
+
+42
+00:04:08.639 --> 00:04:15.360
+to rerun, have external side effects, or involve writes to systems that don't support idempotent
+
+43
+00:04:15.360 --> 00:04:21.839
+retry. For everything else, coarse checkpoints are the better default. Don't add complexity you don't
+
+44
+00:04:21.839 --> 00:04:27.839
+need. Recovery starts with a consistent pattern on session start. Before beginning any fresh
+
+45
+00:04:27.839 --> 00:04:34.000
+execution, the agent checks whether an existing checkpoint is present. If one exists, it validates
+
+46
+00:04:34.000 --> 00:04:39.839
+the checkpoint's integrity before trusting it. A corrupt or incomplete checkpoint is worse than no
+
+47
+00:04:39.839 --> 00:04:45.200
+checkpoint, because it can cause the agent to resume from a broken state without realizing it.
+
+48
+00:04:45.200 --> 00:04:51.279
+Once integrity is confirmed, the agent loads the checkpoint and skips all phases already marked as
+
+49
+00:04:51.279 --> 00:04:57.519
+completed. Execution resumes at the first incomplete phase with the saved inputs and accumulated
+
+50
+00:04:57.519 --> 00:05:04.000
+results loaded into context. A session that skips this check restarts from scratch every time there's
+
+51
+00:05:04.000 --> 00:05:09.760
+a failure. And if the checkpoint only covers part of the work, resume from what it does cover and
+
+52
+00:05:09.760 --> 00:05:17.279
+flag the gap. Partial state is almost always better than no state. State versioning addresses a
+
+53
+00:05:17.279 --> 00:05:22.799
+specific problem. The world can change between when a checkpoint was saved and when it's read
+
+54
+00:05:22.799 --> 00:05:29.920
+back during recovery. A document might have been updated. An external resource might have changed.
+
+55
+00:05:29.920 --> 00:05:35.760
+A configuration value might have shifted. If the agent resumes from a checkpoint and acts on state
+
+56
+00:05:35.760 --> 00:05:41.600
+that no longer reflects reality, it can make incorrect decisions with high confidence. State
+
+57
+00:05:41.600 --> 00:05:46.480
+versioning prevents this by recording a time stamp and an environment hash at checkpoint
+
+58
+00:05:46.480 --> 00:05:52.320
+write time. On resume, the agent compares the current environment against the saved version.
+
+59
+00:05:52.320 --> 00:05:57.760
+If they don't match, the agent flags the conflict and waits for a decision rather than silently
+
+60
+00:05:57.760 --> 00:06:03.839
+proceeding. Silent resumption on stale state is a harder failure mode to diagnose than a detected
+
+61
+00:06:03.839 --> 00:06:11.040
+conflict that pauses execution for review. Memory hygiene is the practice of actively pruning state
+
+62
+00:06:11.040 --> 00:06:16.559
+that is no longer relevant to the task. In long-running agentic sessions, both the context
+
+63
+00:06:16.559 --> 00:06:24.160
+window and external stores accumulate content over time. Earlier tool results, prior conversation
+
+64
+00:06:24.160 --> 00:06:29.920
+turns, and intermediate outputs from completed phases all take up space. Some of it is still
+
+65
+00:06:29.920 --> 00:06:36.239
+needed. Some of it is stale and can mislead the agent if left in place. The pruning decision comes
+
+66
+00:06:36.239 --> 00:06:42.239
+down to a couple of checks. Is this state still relevant to current or future phases? And if it's
+
+67
+00:06:42.239 --> 00:06:48.160
+being removed from context, does it need to be archived to an external store first? Prune from
+
+68
+00:06:48.160 --> 00:06:54.720
+context to free up token budget. Prune from external stores to reduce retrieval noise. But
+
+69
+00:06:54.720 --> 00:07:00.239
+always confirm before removing that the content either has no future value or has been written
+
+70
+00:07:00.239 --> 00:07:07.440
+somewhere safe before deletion. An agent that crashes and restarts from turn zero doesn't just
+
+71
+00:07:07.440 --> 00:07:13.600
+lose time. It has to redo all the work that you already paid for, and it can repeat actions that
+
+72
+00:07:13.600 --> 00:07:18.880
+were only supposed to happen once. Checkpoints are what turn that restart into a resume.
+
+73
+00:07:19.440 --> 00:07:24.959
+Inversioning is what keeps the resume from redoing work or acting on things that moved
+
+74
+00:07:24.959 --> 00:07:29.440
+on without it. That closes out this lesson. I'll see you in the next one.
+

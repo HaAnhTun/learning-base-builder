@@ -1,0 +1,302 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.039
+When you're setting up Cloud Code on a real project, how you onboard it really matters.
+
+2
+00:00:05.599 --> 00:00:11.600
+For this video, we'll look at how it discovers project structure, what the slash init command
+
+3
+00:00:11.600 --> 00:00:18.079
+generates, why the output needs review before team adoption, and what to verify before running
+
+4
+00:00:18.079 --> 00:00:24.000
+Cloud Code on real production code. Let's get into it. Onboarding starts with knowing what
+
+5
+00:00:24.000 --> 00:00:30.239
+you're onboarding. Cloud Code is Anthropx's official agentic CLI. It's not a chat interface,
+
+6
+00:00:30.239 --> 00:00:37.279
+and it's not autocomplete. It operates as a loop of planning, tool use, and response until the task
+
+7
+00:00:37.279 --> 00:00:44.560
+is complete. The slash init command is a built-in slash command that analyzes the current repo and
+
+8
+00:00:44.560 --> 00:00:50.799
+auto generates a starter clod.md. The important framing is that it generates a starting point,
+
+9
+00:00:50.799 --> 00:00:57.759
+not a final configuration. And clod.md is the markdown file that provides persistent instructions
+
+10
+00:00:57.759 --> 00:01:03.759
+for a project. It's loaded at session start, and it counts against the context window. Brevity and
+
+11
+00:01:03.759 --> 00:01:10.319
+precision matter because verbose clod.md files consume space that would otherwise go to code
+
+12
+00:01:10.319 --> 00:01:16.080
+and tool output. Starting Cloud Code is straightforward. You run the clod command
+
+13
+00:01:16.080 --> 00:01:20.959
+from the project root directory. The root matters because it determines the default
+
+14
+00:01:20.959 --> 00:01:26.400
+scope of what Cloud Code can see. In a new project, it starts with minimal context and
+
+15
+00:01:26.400 --> 00:01:34.319
+reads whatever files already exist. In an existing project, it picks up any clod.md files at startup,
+
+16
+00:01:34.319 --> 00:01:39.839
+then reads the file tree and other files on demand as tasks require. There's no automatic
+
+17
+00:01:39.839 --> 00:01:45.040
+full directory scan at startup, and you don't need to manually list files or describe the structure
+
+18
+00:01:45.040 --> 00:01:50.720
+before you begin. But the quality of what Cloud Code finds depends entirely on what's in the
+
+19
+00:01:50.720 --> 00:01:57.199
+project. A well-structured repo with a clear readme and accurate configs gives Cloud Code
+
+20
+00:01:57.199 --> 00:02:02.800
+much more to work with than a repo that has none of those things. The starting directory is the
+
+21
+00:02:02.800 --> 00:02:09.360
+boundary. Cloud Code actively reads the project to orient itself rather than waiting for you to
+
+22
+00:02:09.360 --> 00:02:15.440
+describe it. It reads file trees to understand directory layout and how modules are organized.
+
+23
+00:02:15.440 --> 00:02:21.279
+It reads readme files for project purpose, setup instructions, and usage conventions.
+
+24
+00:02:21.279 --> 00:02:29.199
+It reads config files like package.json for node projects, pyproject.toml for Python,
+
+25
+00:02:29.199 --> 00:02:35.199
+and .env examples for expected environment variables. This automatic discovery is useful,
+
+26
+00:02:35.199 --> 00:02:40.880
+but it has limits. If the project has an outdated readme, incorrect configs, or no
+
+27
+00:02:40.880 --> 00:02:46.160
+documentation at all, Cloud Code will still try to orient based on what's there, but it gets a
+
+28
+00:02:46.160 --> 00:02:51.919
+less accurate picture. The value of good project documentation compounds when Cloud Code is in the
+
+29
+00:02:51.919 --> 00:02:59.919
+loop. The slash init command is the fastest way to give Cloud Code standing context on an unfamiliar
+
+30
+00:02:59.919 --> 00:03:05.360
+code base. You run it once inside the project, and it analyzes the repo, file structure,
+
+31
+00:03:05.360 --> 00:03:11.919
+programming languages, frameworks, and likely entry points. From that analysis, it auto-generates a
+
+32
+00:03:11.919 --> 00:03:18.960
+starter Cloud.md. The generated file includes the project name, key files and directories,
+
+33
+00:03:18.960 --> 00:03:25.119
+the detected technology stack, and suggested behavioral conventions based on patterns it found
+
+34
+00:03:25.119 --> 00:03:31.440
+in the code. The core benefit is that you're not starting from a blank Cloud.md and trying to
+
+35
+00:03:31.440 --> 00:03:37.600
+remember everything worth documenting. The slash init draft captures the structure automatically
+
+36
+00:03:37.600 --> 00:03:42.320
+and gives you something concrete to edit rather than something to create from scratch.
+
+37
+00:03:43.520 --> 00:03:48.960
+Let's look at the four things slash init generates. First, the project name detected from
+
+38
+00:03:48.960 --> 00:03:55.919
+the repo name, package config, or the readme header. Second, key files, entry points, main
+
+39
+00:03:55.919 --> 00:04:02.240
+config files, and primary source directories that Cloud Code should know about. Third, detected
+
+40
+00:04:02.240 --> 00:04:08.639
+languages and frameworks based on file extensions and dependency manifests. If your project uses
+
+41
+00:04:08.639 --> 00:04:16.000
+Python and FastAPI, slash init will typically detect both. Fourth, suggested rules, initial
+
+42
+00:04:16.000 --> 00:04:21.200
+coding conventions, and behavioral guidelines inferred from what it found. These might include
+
+43
+00:04:21.200 --> 00:04:26.720
+test patterns, import conventions, or formatting preferences. All four of these are starting points
+
+44
+00:04:26.720 --> 00:04:32.160
+derived from automated analysis. They're useful scaffolding, but the team needs to verify each
+
+45
+00:04:32.160 --> 00:04:39.040
+section before the file is used in practice. The gap between slash init output and a finished
+
+46
+00:04:39.040 --> 00:04:46.320
+Cloud.md is worth being explicit about. The slash init draft is broad and generic. It captures what's
+
+47
+00:04:46.320 --> 00:04:52.320
+detectable from file analysis, but it can't infer team conventions that aren't written in the code,
+
+48
+00:04:52.320 --> 00:04:59.119
+security constraints specific to the environment, or project rules that live only in team knowledge.
+
+49
+00:04:59.119 --> 00:05:04.000
+The reviewed version adds those things and removes anything the auto scan got wrong
+
+50
+00:05:04.000 --> 00:05:10.559
+or flagged as important when it isn't. The other critical difference is precision. Every line in
+
+51
+00:05:10.559 --> 00:05:17.920
+Cloud.md costs context window space. A verbose draft that includes filler reduces the space
+
+52
+00:05:17.920 --> 00:05:24.239
+available for actual code and tool output during sessions. The goal of refinement is a file that's
+
+53
+00:05:24.239 --> 00:05:29.600
+accurate, concise, and genuinely useful rather than comprehensive for its own sake.
+
+54
+00:05:30.559 --> 00:05:37.119
+Refining slash init output is a required step, not optional polish. Verify that the detected
+
+55
+00:05:37.119 --> 00:05:43.679
+frameworks and languages match the actual stack. Auto detection can misread dependency files,
+
+56
+00:05:43.679 --> 00:05:50.320
+especially in polyglot repos. Add explicit rules that the scan couldn't infer. Your branching
+
+57
+00:05:50.320 --> 00:05:57.279
+policy, test coverage requirements, security sensitive file paths. Remove noise, slash init
+
+58
+00:05:57.440 --> 00:06:03.359
+sometimes flags files that aren't actually important to day to day work, or includes
+
+59
+00:06:03.359 --> 00:06:09.359
+generic boilerplate that adds length without adding clarity. The review step is also where
+
+60
+00:06:09.359 --> 00:06:17.200
+you add anything domain specific that the code base doesn't make obvious. A Cloud.md that ships
+
+61
+00:06:17.200 --> 00:06:23.600
+as the raw slash init output is a liability because it may contain inaccuracies and will
+
+62
+00:06:23.600 --> 00:06:30.000
+almost certainly miss critical context. Before running Cloud code on a real code base,
+
+63
+00:06:30.000 --> 00:06:36.559
+three checks prevent the most common failures. First, Cloud.md exists and is accurate,
+
+64
+00:06:36.559 --> 00:06:42.000
+meaning not the raw slash init draft, but a reviewed version that reflects the actual project.
+
+65
+00:06:42.720 --> 00:06:49.760
+Second, permissions deny rules are configured in your settings dot json file. A deny rule on read
+
+66
+00:06:49.760 --> 00:06:56.239
+of your dot nv files, secrets, and large binaries stops Cloud code from ever reading them into
+
+67
+00:06:56.239 --> 00:07:03.040
+context. So, sensitive paths aren't exposed and the window isn't wasted. Third, entry points,
+
+68
+00:07:03.040 --> 00:07:10.239
+test commands, and build steps are documented in Cloud.md. So, Cloud code knows how to interact
+
+69
+00:07:10.239 --> 00:07:16.799
+with the project programmatically. These aren't bureaucratic check boxes. Each one directly
+
+70
+00:07:16.799 --> 00:07:22.480
+prevents a real failure mode, bad context, exposed credentials, or an agent that can't
+
+71
+00:07:22.480 --> 00:07:31.200
+run the project it's working on. The bad version of this shows up quietly. A generated Cloud.md
+
+72
+00:07:31.200 --> 00:07:37.119
+guesses the stack wrong. Nobody reads it and every session after that starts from a false premise.
+
+73
+00:07:37.920 --> 00:07:44.000
+That's why the scaffold from slash init is a draft and not a deliverable. It can read your
+
+74
+00:07:44.000 --> 00:07:50.559
+file tree, but it can't read the conversations your team never wrote down. You supply those.
+
+75
+00:07:51.119 --> 00:07:54.320
+And that brings this one to a close. I'll see you in the next one.
+

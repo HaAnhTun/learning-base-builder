@@ -1,0 +1,742 @@
+WEBVTT
+
+1
+00:00:00.270 --> 00:00:01.140
+<v Speaker>So now let's learn</v>
+
+2
+00:00:01.140 --> 00:00:03.300
+about encryption in Amazon S3.
+
+3
+00:00:03.300 --> 00:00:05.340
+So you have different methods to do so,
+
+4
+00:00:05.340 --> 00:00:07.590
+and we're going to learn about them in this lecture.
+
+5
+00:00:07.590 --> 00:00:10.320
+So you have server-side encryption SSC
+
+6
+00:00:10.320 --> 00:00:12.240
+and you have different flavors of it.
+
+7
+00:00:12.240 --> 00:00:15.180
+You have SSE-S3, which is enabled by default,
+
+8
+00:00:15.180 --> 00:00:18.355
+which is server-side encryption with Amazon S3 manage keys.
+
+9
+00:00:18.355 --> 00:00:22.170
+You have SSE-KMS where you use KMS keys
+
+10
+00:00:22.170 --> 00:00:24.874
+stored in AWS-KMS to do the encryption.
+
+11
+00:00:24.874 --> 00:00:28.494
+You have DSSE-KMS, which is a dual layer
+
+12
+00:00:28.494 --> 00:00:30.210
+server-side encryption.
+
+13
+00:00:30.210 --> 00:00:31.650
+So we'll learn about this as well.
+
+14
+00:00:31.650 --> 00:00:34.950
+We have SSE-C where the server side-encryption is done
+
+15
+00:00:34.950 --> 00:00:36.583
+with the customer provided keys
+
+16
+00:00:36.583 --> 00:00:38.513
+and then you have client-side encryption.
+
+17
+00:00:38.513 --> 00:00:40.500
+So you're supposed to understand which one is
+
+18
+00:00:40.500 --> 00:00:42.240
+for which at the exam,
+
+19
+00:00:42.240 --> 00:00:43.770
+but we're going to do a deep dive
+
+20
+00:00:43.770 --> 00:00:45.360
+into those in this lecture.
+
+21
+00:00:45.360 --> 00:00:47.730
+So don't worry right now if you don't understand
+
+22
+00:00:47.730 --> 00:00:49.050
+any of what I'm saying.
+
+23
+00:00:49.050 --> 00:00:51.336
+So let's go ahead and learn about the next one.
+
+24
+00:00:51.336 --> 00:00:55.767
+So the first one is Amazon S3 for SSE-S3 encryption.
+
+25
+00:00:55.767 --> 00:00:59.490
+So in this case, the encryption is using a key
+
+26
+00:00:59.490 --> 00:01:03.030
+that's handled, managed, and owned by AWS.
+
+27
+00:01:03.030 --> 00:01:04.920
+You never have access to this key.
+
+28
+00:01:04.920 --> 00:01:08.534
+The object is going to be encrypted server-side by AWS
+
+29
+00:01:08.534 --> 00:01:13.080
+and the security type of the encryption is AES-256.
+
+30
+00:01:13.080 --> 00:01:15.000
+Therefore, you must set the header
+
+31
+00:01:15.000 --> 00:01:20.000
+to X-amz-server-side-encryption AES256 to request Amazon S3
+
+32
+00:01:21.300 --> 00:01:25.650
+to encrypt the object for you using the SSE-S3 mechanism.
+
+33
+00:01:25.650 --> 00:01:28.110
+Now SSE-S3 is enabled by default
+
+34
+00:01:28.110 --> 00:01:30.572
+for new buckets and new objects.
+
+35
+00:01:30.572 --> 00:01:31.950
+So how does that work?
+
+36
+00:01:31.950 --> 00:01:34.003
+We have Amazon S3 and with our user,
+
+37
+00:01:34.003 --> 00:01:36.390
+the user you, you're going
+
+38
+00:01:36.390 --> 00:01:39.120
+to upload the file with the correct header
+
+39
+00:01:39.120 --> 00:01:42.000
+and then it will be an object under Amazon S3.
+
+40
+00:01:42.000 --> 00:01:46.020
+Amazon S3 will pair it with the S3 owned key, okay?
+
+41
+00:01:46.020 --> 00:01:48.600
+Because we're using the SSE-S3 mechanism
+
+42
+00:01:48.600 --> 00:01:51.510
+and then we'll perform encryption by mixing the key
+
+43
+00:01:51.510 --> 00:01:53.070
+and the object and that will be
+
+44
+00:01:53.070 --> 00:01:55.590
+what will be stored on your S3 buckets.
+
+45
+00:01:55.590 --> 00:01:58.290
+So that's for the simpler one SSE-S3.
+
+46
+00:01:58.290 --> 00:01:59.940
+Then we have SSE-KMS.
+
+47
+00:01:59.940 --> 00:02:02.352
+So this time instead of relying on the key that is owned
+
+48
+00:02:02.352 --> 00:02:05.430
+by AWS and the S3 service, you want
+
+49
+00:02:05.430 --> 00:02:09.094
+to manage your own keys yourself using the KMS service,
+
+50
+00:02:09.094 --> 00:02:11.460
+the key management service.
+
+51
+00:02:11.460 --> 00:02:13.320
+So the advantages of using KMS is
+
+52
+00:02:13.320 --> 00:02:15.240
+that you have user control over this key
+
+53
+00:02:15.240 --> 00:02:18.120
+so you can create keys yourself within KMS
+
+54
+00:02:18.120 --> 00:02:20.370
+and you can audit the key usage using CloudTrail.
+
+55
+00:02:20.370 --> 00:02:24.000
+So anytime someone uses a key in KMS, this is going
+
+56
+00:02:24.000 --> 00:02:26.460
+to be logged in a service that logs everything
+
+57
+00:02:26.460 --> 00:02:29.010
+that happens in AWS called CloudTrail.
+
+58
+00:02:29.010 --> 00:02:31.772
+So for this, we must have a header
+
+59
+00:02:31.772 --> 00:02:36.660
+called the X-amz-server-side-encryption AWS KMS
+
+60
+00:02:36.660 --> 00:02:39.300
+and then the object will be encrypted server-side.
+
+61
+00:02:39.300 --> 00:02:42.030
+So anything SSE, of course, is server-side.
+
+62
+00:02:42.030 --> 00:02:43.110
+So how does that work?
+
+63
+00:02:43.110 --> 00:02:45.300
+Again, we upload the object this time
+
+64
+00:02:45.300 --> 00:02:47.310
+with a different header and in the header,
+
+65
+00:02:47.310 --> 00:02:50.310
+we actually specify the KMS key we want to use.
+
+66
+00:02:50.310 --> 00:02:53.910
+Then the object is appearing in Amazon S3.
+
+67
+00:02:53.910 --> 00:02:55.800
+And this time the KMS key that's going
+
+68
+00:02:55.800 --> 00:03:00.060
+to be used is coming out of the AWS KMS.
+
+69
+00:03:00.060 --> 00:03:03.210
+So these two things together are going to be blended
+
+70
+00:03:03.210 --> 00:03:04.980
+and then you're going to get encryption
+
+71
+00:03:04.980 --> 00:03:06.060
+and that's the file that's going
+
+72
+00:03:06.060 --> 00:03:08.040
+to end up in the S3 buckets.
+
+73
+00:03:08.040 --> 00:03:09.982
+So now to read that file from the S3 bucket,
+
+74
+00:03:09.982 --> 00:03:12.922
+not only do you need access to the object itself,
+
+75
+00:03:12.922 --> 00:03:16.132
+but also to the underlying KMS key that was used
+
+76
+00:03:16.132 --> 00:03:17.760
+to encrypt this object.
+
+77
+00:03:17.760 --> 00:03:20.559
+So this is another level of security.
+
+78
+00:03:20.559 --> 00:03:23.081
+So SSE-KMS has some limitations
+
+79
+00:03:23.081 --> 00:03:25.770
+because well, now that you upload
+
+80
+00:03:25.770 --> 00:03:28.710
+and download files from Amazon S3, you need
+
+81
+00:03:28.710 --> 00:03:30.052
+to leverage a KMS key.
+
+82
+00:03:30.052 --> 00:03:32.880
+And the KMS key has its own APIs,
+
+83
+00:03:32.880 --> 00:03:34.227
+for example, generate data key.
+
+84
+00:03:34.227 --> 00:03:37.091
+And when you decrypt, you're going to use the decrypt API.
+
+85
+00:03:37.091 --> 00:03:38.940
+And so therefore, you're going
+
+86
+00:03:38.940 --> 00:03:41.743
+to do API calls into the KMS service.
+
+87
+00:03:41.743 --> 00:03:44.280
+And each of these API calls is going
+
+88
+00:03:44.280 --> 00:03:47.972
+to count towards the KMS quotas of API calls per second.
+
+89
+00:03:47.972 --> 00:03:50.773
+So based on the region, you have between 5,000
+
+90
+00:03:50.773 --> 00:03:52.800
+and 30,000 requests per second,
+
+91
+00:03:52.800 --> 00:03:54.089
+although they can be increased
+
+92
+00:03:54.089 --> 00:03:56.210
+using the service quotas console.
+
+93
+00:03:56.210 --> 00:04:00.569
+And so if you have a very, very high-throughput S3 bucket
+
+94
+00:04:00.569 --> 00:04:03.131
+and everything is encrypted using KMS keys,
+
+95
+00:04:03.131 --> 00:04:06.420
+you may go into a threat link kind of use case.
+
+96
+00:04:06.420 --> 00:04:09.180
+So this is something the exam may test you on.
+
+97
+00:04:09.180 --> 00:04:11.600
+So next, we have DSSE-KMS.
+
+98
+00:04:11.600 --> 00:04:13.920
+The idea is that it's DSSE
+
+99
+00:04:13.920 --> 00:04:16.094
+for dual-layer-server-side-encryption.
+
+100
+00:04:16.094 --> 00:04:19.170
+And the idea is that you're going to encrypt the four
+
+101
+00:04:19.170 --> 00:04:20.670
+because there's no word dual.
+
+102
+00:04:20.670 --> 00:04:23.040
+We're going to encrypt the object twice.
+
+103
+00:04:23.040 --> 00:04:25.641
+First with thanks to the KMS key service
+
+104
+00:04:25.641 --> 00:04:27.960
+and then S3 manage keys.
+
+105
+00:04:27.960 --> 00:04:30.120
+So the object is going to go through first level
+
+106
+00:04:30.120 --> 00:04:32.370
+of encryption, a second level of encryption,
+
+107
+00:04:32.370 --> 00:04:34.893
+and then it's going to be sent to the S3 bucket.
+
+108
+00:04:34.893 --> 00:04:38.054
+So the reason why we have this is sometimes at exam,
+
+109
+00:04:38.054 --> 00:04:41.400
+you will be required to have multilayer encryption
+
+110
+00:04:41.400 --> 00:04:44.730
+and then this is going to be the right answer, DSSE-KMS.
+
+111
+00:04:44.730 --> 00:04:46.620
+For this, you just send the object
+
+112
+00:04:46.620 --> 00:04:48.510
+with the header like this,
+
+113
+00:04:48.510 --> 00:04:51.932
+AWS KMS-DSSE, and you're good to go.
+
+114
+00:04:51.932 --> 00:04:55.996
+Next we have the SSE-C-type of encryption.
+
+115
+00:04:55.996 --> 00:05:00.540
+So this time the keys are managed outside of AWS,
+
+116
+00:05:00.540 --> 00:05:02.215
+but it's still server-side encryption
+
+117
+00:05:02.215 --> 00:05:05.610
+because we send the key to AWS.
+
+118
+00:05:05.610 --> 00:05:07.380
+But Amazon S3 will never store
+
+119
+00:05:07.380 --> 00:05:08.850
+the encryption key you provide.
+
+120
+00:05:08.850 --> 00:05:11.220
+After they're used, they're being discarded.
+
+121
+00:05:11.220 --> 00:05:14.820
+So in that case, because we transmit a key into Amazon S3,
+
+122
+00:05:14.820 --> 00:05:16.283
+we must use HTTPS
+
+123
+00:05:16.283 --> 00:05:19.560
+and we must pass the key as part of HTTP headers
+
+124
+00:05:19.560 --> 00:05:21.810
+for every request being made.
+
+125
+00:05:21.810 --> 00:05:22.830
+So how does that work?
+
+126
+00:05:22.830 --> 00:05:26.850
+The user is going to upload a file as well as the key,
+
+127
+00:05:26.850 --> 00:05:29.163
+but the user manages the key outside of AWS.
+
+128
+00:05:30.150 --> 00:05:33.450
+And then Amazon S3 will use the client's provided key
+
+129
+00:05:33.450 --> 00:05:36.180
+and the object to perform some encryption
+
+130
+00:05:36.180 --> 00:05:39.480
+and then put the file as encrypted into an S3 bucket.
+
+131
+00:05:39.480 --> 00:05:41.220
+And, of course, to read that file,
+
+132
+00:05:41.220 --> 00:05:43.140
+the user must again provide the key
+
+133
+00:05:43.140 --> 00:05:44.862
+that was used to encrypt that file.
+
+134
+00:05:44.862 --> 00:05:48.795
+Finally, we have the client-side encryption.
+
+135
+00:05:48.795 --> 00:05:51.510
+So this is easier to implement if we leverage
+
+136
+00:05:51.510 --> 00:05:52.410
+some client library
+
+137
+00:05:52.410 --> 00:05:55.260
+such as the client-side encryption library.
+
+138
+00:05:55.260 --> 00:05:57.090
+And the idea with client-side encryption is
+
+139
+00:05:57.090 --> 00:06:00.300
+that the clients must encrypt data themselves
+
+140
+00:06:00.300 --> 00:06:02.868
+before sending data to Amazon S3.
+
+141
+00:06:02.868 --> 00:06:05.870
+And also you can retrieve the data from Amazon S3
+
+142
+00:06:05.870 --> 00:06:09.210
+and then the decryption of the data happens on the client
+
+143
+00:06:09.210 --> 00:06:11.400
+outside of Amazon S3.
+
+144
+00:06:11.400 --> 00:06:13.539
+Therefore, the client fully manages the keys
+
+145
+00:06:13.539 --> 00:06:15.591
+and the encryption cycle.
+
+146
+00:06:15.591 --> 00:06:16.950
+So how does that work?
+
+147
+00:06:16.950 --> 00:06:18.030
+We have a file
+
+148
+00:06:18.030 --> 00:06:21.360
+and we have a client key that's outside of AWS.
+
+149
+00:06:21.360 --> 00:06:23.199
+The client itself is going to provide
+
+150
+00:06:23.199 --> 00:06:25.230
+and perform the encryption.
+
+151
+00:06:25.230 --> 00:06:27.120
+So now we have an encrypted file
+
+152
+00:06:27.120 --> 00:06:31.466
+and that file as is can be sent into Amazon S3 for upload.
+
+153
+00:06:31.466 --> 00:06:34.830
+So we've seen all the levels of encryption of objects,
+
+154
+00:06:34.830 --> 00:06:38.040
+but now let's talk about encryption in transit.
+
+155
+00:06:38.040 --> 00:06:39.360
+So encryption in transit
+
+156
+00:06:39.360 --> 00:06:42.541
+or in flight is also called SSL or TLS.
+
+157
+00:06:42.541 --> 00:06:46.290
+And basically, your Amazon S3 bucket has two endpoints,
+
+158
+00:06:46.290 --> 00:06:48.918
+the HTTP endpoint that is not encrypted
+
+159
+00:06:48.918 --> 00:06:53.010
+and the HTTPS endpoint that has encryption in flights.
+
+160
+00:06:53.010 --> 00:06:55.410
+So anytime you visit a website and you see that green lock
+
+161
+00:06:55.410 --> 00:06:58.110
+or lock, usually that means it's using encryption
+
+162
+00:06:58.110 --> 00:06:59.927
+in flights, meaning the connection between you
+
+163
+00:06:59.927 --> 00:07:03.870
+and the target server is secure and fully-encrypted.
+
+164
+00:07:03.870 --> 00:07:05.514
+And therefore, when you're using Amazon S3,
+
+165
+00:07:05.514 --> 00:07:08.460
+it's fully recommended to use HTTPS
+
+166
+00:07:08.460 --> 00:07:10.706
+to have secure transmission of data, of course.
+
+167
+00:07:10.706 --> 00:07:14.640
+And if you use the SSE-C-type of mechanism,
+
+168
+00:07:14.640 --> 00:07:18.030
+you must use the HTTPS protocol.
+
+169
+00:07:18.030 --> 00:07:20.160
+Now, this is not something to worry about in real-life
+
+170
+00:07:20.160 --> 00:07:23.767
+because well, most clients would use the HTTPS endpoint
+
+171
+00:07:23.767 --> 00:07:25.027
+by default.
+
+172
+00:07:25.027 --> 00:07:29.066
+Now, how would you go about forcing encryption in transit?
+
+173
+00:07:29.066 --> 00:07:31.776
+For this, we could use a bucket policy.
+
+174
+00:07:31.776 --> 00:07:34.566
+So you attach a bucket policy to your S3 bucket
+
+175
+00:07:34.566 --> 00:07:37.290
+and you attach this statement, which is saying
+
+176
+00:07:37.290 --> 00:07:40.216
+that you deny any get object operation
+
+177
+00:07:40.216 --> 00:07:45.216
+if the condition is AWS secure transport false.
+
+178
+00:07:45.600 --> 00:07:47.245
+So secure transport is going to be true
+
+179
+00:07:47.245 --> 00:07:49.320
+whenever you're using HTTPS and false
+
+180
+00:07:49.320 --> 00:07:51.775
+whenever you're not using an encrypted connection.
+
+181
+00:07:51.775 --> 00:07:54.960
+And so therefore, any user trying to use HTTP
+
+182
+00:07:54.960 --> 00:07:56.550
+on your bucket is going to be blocked,
+
+183
+00:07:56.550 --> 00:07:59.970
+but users using HTTPS may be allowed.
+
+184
+00:07:59.970 --> 00:08:02.280
+Okay, so that's it for encryption.
+
+185
+00:08:02.280 --> 00:08:05.553
+I hope you liked it and I will see you in the next lecture.
+

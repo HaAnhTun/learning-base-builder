@@ -1,0 +1,446 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.800
+Sub-agent design is where most multi-agent systems break down in practice.
+
+2
+00:00:04.800 --> 00:00:09.119
+For the next few minutes, we'll cover how to scope authority correctly,
+
+3
+00:00:09.119 --> 00:00:15.119
+manage context isolation, and write instructions that produce consistent and predictable output.
+
+4
+00:00:15.119 --> 00:00:20.959
+We'll also cover the most common anti-patterns that make sub-agents brittle and hard to debug.
+
+5
+00:00:20.959 --> 00:00:21.840
+Let's get into it.
+
+6
+00:00:23.200 --> 00:00:26.159
+Spawn a sub-agent and it wakes up knowing nothing.
+
+7
+00:00:26.719 --> 00:00:31.120
+Not your conversation, not the master plan, not what the other sub-agents are doing.
+
+8
+00:00:31.680 --> 00:00:36.319
+That's context isolation, and it's the single most misunderstood property
+
+9
+00:00:36.319 --> 00:00:38.880
+of the orchestrator's sub-agent model.
+
+10
+00:00:38.880 --> 00:00:44.080
+A sub-agent is a separate agent instance the orchestrator creates to handle
+
+11
+00:00:44.080 --> 00:00:50.080
+one delegated sub-task, with its own context window and its own tool permissions.
+
+12
+00:00:50.080 --> 00:00:53.680
+What it can do is bounded by an authority boundary,
+
+13
+00:00:53.680 --> 00:00:56.959
+the explicit set of actions it's permitted to take.
+
+14
+00:00:56.959 --> 00:00:59.439
+The principle there is least privilege.
+
+15
+00:00:59.439 --> 00:01:04.639
+A sub-agent should be able to do exactly what its task requires and nothing beyond it.
+
+16
+00:01:05.279 --> 00:01:11.120
+Isolation and least privilege together are what keeps sub-agents predictable and testable.
+
+17
+00:01:12.400 --> 00:01:16.319
+Context isolation is often stated but rarely fully understood.
+
+18
+00:01:16.879 --> 00:01:22.559
+When the orchestrator spawns a sub-agent, the sub-agent starts with a blank context window.
+
+19
+00:01:22.559 --> 00:01:25.760
+It doesn't inherit the orchestrator's conversation history.
+
+20
+00:01:25.760 --> 00:01:28.239
+It doesn't see what other sub-agents are doing.
+
+21
+00:01:28.239 --> 00:01:31.919
+It doesn't have access to the system prompt or the master plan
+
+22
+00:01:31.919 --> 00:01:37.599
+unless the orchestrator explicitly copies that information into the sub-agent's instructions.
+
+23
+00:01:37.599 --> 00:01:40.559
+This isn't a bug or a limitation of the architecture.
+
+24
+00:01:40.559 --> 00:01:43.199
+It's how the system is designed to work.
+
+25
+00:01:43.199 --> 00:01:45.919
+Every piece of context the sub-agent needs
+
+26
+00:01:45.919 --> 00:01:51.040
+has to be passed explicitly by the orchestrator at the time of task assignment.
+
+27
+00:01:51.040 --> 00:01:54.239
+If something isn't passed, the sub-agent simply doesn't have it.
+
+28
+00:01:55.519 --> 00:01:59.680
+Context isolation benefits the system in three concrete ways.
+
+29
+00:01:59.680 --> 00:02:02.319
+First, it prevents context bloat.
+
+30
+00:02:02.319 --> 00:02:06.480
+Sub-agents don't accumulate irrelevant history from other parts of the pipeline,
+
+31
+00:02:06.480 --> 00:02:10.559
+which keeps each sub-agent's context window focused and minimal.
+
+32
+00:02:10.559 --> 00:02:12.960
+Second, it limits information leakage.
+
+33
+00:02:12.960 --> 00:02:15.600
+If one sub-task involves sensitive data,
+
+34
+00:02:15.600 --> 00:02:19.279
+isolation prevents that data from bleeding into unrelated sub-tasks.
+
+35
+00:02:19.919 --> 00:02:22.320
+Third, it reduces token cost.
+
+36
+00:02:22.320 --> 00:02:26.880
+Every token in a sub-agent's context window costs money and latency.
+
+37
+00:02:26.880 --> 00:02:30.399
+Keeping that window minimal is a real optimization.
+
+38
+00:02:30.399 --> 00:02:31.839
+There's also a testing benefit.
+
+39
+00:02:31.839 --> 00:02:35.199
+Because sub-agents don't depend on hidden orchestrator state,
+
+40
+00:02:35.199 --> 00:02:37.199
+they can be tested in isolation.
+
+41
+00:02:37.199 --> 00:02:40.240
+You can validate a sub-agent's behavior independently
+
+42
+00:02:40.240 --> 00:02:42.559
+before integrating it into a live pipeline.
+
+43
+00:02:43.679 --> 00:02:46.479
+When designing what context to pass to a sub-agent,
+
+44
+00:02:46.479 --> 00:02:48.080
+the guiding question is,
+
+45
+00:02:48.080 --> 00:02:51.279
+what does this specific sub-task actually require?
+
+46
+00:02:52.080 --> 00:02:54.399
+Pass the task-specific instructions,
+
+47
+00:02:54.399 --> 00:02:57.520
+the data or content needed to complete the work,
+
+48
+00:02:57.520 --> 00:02:59.520
+the required output format,
+
+49
+00:02:59.520 --> 00:03:02.880
+and any constraints the sub-agent has to respect.
+
+50
+00:03:02.880 --> 00:03:04.880
+Withhold everything else by default.
+
+51
+00:03:04.880 --> 00:03:08.160
+That includes the orchestrator's full conversation history,
+
+52
+00:03:08.160 --> 00:03:10.240
+outputs from other sub-agents,
+
+53
+00:03:10.240 --> 00:03:13.119
+system prompts that aren't relevant to this task,
+
+54
+00:03:13.119 --> 00:03:16.479
+and credentials or permissions that aren't needed here.
+
+55
+00:03:16.479 --> 00:03:19.119
+The default should always be minimum necessary.
+
+56
+00:03:19.119 --> 00:03:22.080
+You can add context if the sub-agent needs it.
+
+57
+00:03:22.080 --> 00:03:26.000
+But starting broad and trimming down is harder and riskier
+
+58
+00:03:26.000 --> 00:03:29.199
+than starting minimal and adding deliberately.
+
+59
+00:03:30.399 --> 00:03:34.320
+Authority boundaries define what a sub-agent is allowed to do.
+
+60
+00:03:34.320 --> 00:03:36.559
+The design principle is least privilege.
+
+61
+00:03:36.559 --> 00:03:41.839
+Grant access only to the tools and data the sub-task actually requires.
+
+62
+00:03:41.839 --> 00:03:46.000
+If a sub-agent is summarizing text, it doesn't need file write permissions.
+
+63
+00:03:46.000 --> 00:03:50.479
+If it's querying a database, it doesn't need access to external APIs.
+
+64
+00:03:50.479 --> 00:03:54.720
+Stating explicit boundaries in the sub-agent's instructions also matters.
+
+65
+00:03:54.720 --> 00:03:57.679
+Telling the sub-agent what's in scope and what's out of scope
+
+66
+00:03:57.679 --> 00:04:01.520
+reduces the chance it makes a decision outside its intended role.
+
+67
+00:04:01.520 --> 00:04:04.880
+And sub-agents should avoid side effects by default.
+
+68
+00:04:04.880 --> 00:04:10.000
+If a sub-agent modifies shared state or takes actions outside its assigned scope,
+
+69
+00:04:10.000 --> 00:04:13.520
+those changes propagate in ways the orchestrator may not be tracking.
+
+70
+00:04:14.240 --> 00:04:20.959
+The quality of sub-agent instructions directly determines how predictable the output will be. Three elements.
+
+71
+00:04:20.959 --> 00:04:26.000
+Every sub-agent instruction set needs a narrow scope definition
+
+72
+00:04:26.000 --> 00:04:30.239
+that tells the sub-agent exactly what the task is and what it isn't.
+
+73
+00:04:30.239 --> 00:04:32.880
+A precise output format specification,
+
+74
+00:04:32.880 --> 00:04:36.239
+so the orchestrator can reliably aggregate what comes back,
+
+75
+00:04:36.239 --> 00:04:38.480
+and explicit success criteria,
+
+76
+00:04:38.480 --> 00:04:41.359
+so the sub-agent knows when the task is complete.
+
+77
+00:04:41.679 --> 00:04:44.959
+When any of these three elements is missing or vague,
+
+78
+00:04:44.959 --> 00:04:48.480
+output quality drops and becomes inconsistent.
+
+79
+00:04:48.480 --> 00:04:53.920
+Inconsistent sub-agent output is among the hardest things to debug in a multi-agent pipeline
+
+80
+00:04:53.920 --> 00:04:58.399
+because the failures look different each run and the root cause isn't obvious.
+
+81
+00:04:59.600 --> 00:05:04.320
+A well-designed sub-agent is independently testable and substitutable.
+
+82
+00:05:04.320 --> 00:05:09.839
+Independently testable means you can run the sub-agent with only its explicit inputs
+
+83
+00:05:09.839 --> 00:05:15.279
+and validate its output without needing the orchestrator or any other sub-agent in the loop.
+
+84
+00:05:16.000 --> 00:05:21.359
+Substitutable means you can swap one implementation of a sub-agent for another
+
+85
+00:05:21.359 --> 00:05:23.600
+without changing the rest of the system,
+
+86
+00:05:23.600 --> 00:05:27.440
+as long as the input and output contracts stay the same.
+
+87
+00:05:28.079 --> 00:05:31.119
+Both properties depend on the same design requirement.
+
+88
+00:05:31.119 --> 00:05:32.799
+No hidden dependencies.
+
+89
+00:05:32.799 --> 00:05:38.559
+If a sub-agent silently relies on something the orchestrator doesn't explicitly pass,
+
+90
+00:05:38.559 --> 00:05:42.399
+it can't be tested alone and it can't be swapped out cleanly.
+
+91
+00:05:42.399 --> 00:05:45.359
+If you can't test a sub-agent in isolation,
+
+92
+00:05:45.359 --> 00:05:50.079
+that's a strong signal it has too broad a scope or too many implicit dependencies.
+
+93
+00:05:51.359 --> 00:05:56.160
+Three anti-patterns show up repeatedly in sub-agent design failures.
+
+94
+00:05:56.160 --> 00:05:58.880
+Overly broad scope is the most common.
+
+95
+00:05:58.880 --> 00:06:01.679
+The sub-agent is asked to handle too much at once,
+
+96
+00:06:01.679 --> 00:06:05.760
+which makes instructions ambiguous and outputs harder to validate.
+
+97
+00:06:05.760 --> 00:06:08.160
+Underpowered context is the second.
+
+98
+00:06:08.160 --> 00:06:13.839
+The orchestrator didn't pass enough information for the sub-agent to complete the task correctly,
+
+99
+00:06:13.839 --> 00:06:18.000
+so it makes assumptions that may not align with the orchestrator's intent.
+
+100
+00:06:18.720 --> 00:06:21.839
+Unclear success criteria is the third.
+
+101
+00:06:21.839 --> 00:06:25.600
+The sub-agent doesn't know definitively when the task is done,
+
+102
+00:06:25.600 --> 00:06:30.320
+leading to incomplete outputs or outputs that need significant post-processing.
+
+103
+00:06:30.880 --> 00:06:34.320
+Each of these anti-patterns produces a different failure mode,
+
+104
+00:06:34.320 --> 00:06:38.000
+but all three are preventable with deliberate instruction design
+
+105
+00:06:38.000 --> 00:06:41.359
+and explicit context passing at the orchestrator level.
+
+106
+00:06:42.880 --> 00:06:46.880
+What a sub-agent is given and what it can reach for are two separate things.
+
+107
+00:06:47.440 --> 00:06:52.480
+Nothing is inherited, so anything you don't hand over simply isn't there for the sub-agent.
+
+108
+00:06:53.279 --> 00:06:56.559
+Treat that as the design rather than a gap,
+
+109
+00:06:56.559 --> 00:06:59.519
+and least privilege stops feeling like a restriction.
+
+110
+00:07:00.239 --> 00:07:04.720
+A sub-agent you can test on its own is a sub-agent you can swap out later.
+
+111
+00:07:05.679 --> 00:07:08.720
+That wraps up this lesson. I'll see you in the next one.
+

@@ -1,0 +1,722 @@
+WEBVTT
+
+1
+00:00:00.060 --> 00:00:01.710
+<v Narrator>So let's talk about Amazon Aurora</v>
+
+2
+00:00:01.710 --> 00:00:03.330
+because the exam is starting to ask you
+
+3
+00:00:03.330 --> 00:00:04.680
+a lot of question about it.
+
+4
+00:00:04.680 --> 00:00:06.810
+Now, you don't need deep knowledge on it,
+
+5
+00:00:06.810 --> 00:00:08.910
+but you need enough high-level overview
+
+6
+00:00:08.910 --> 00:00:10.380
+to understand exactly how it works,
+
+7
+00:00:10.380 --> 00:00:12.720
+so this is what I'm going to give you in this lecture.
+
+8
+00:00:12.720 --> 00:00:15.900
+Aurora is going to be a proprietary technology from AWS.
+
+9
+00:00:15.900 --> 00:00:17.580
+It's not open-sourced.
+
+10
+00:00:17.580 --> 00:00:19.680
+But they made it so it's going to be compatible
+
+11
+00:00:19.680 --> 00:00:21.540
+with PostgreSQL and MySQL.
+
+12
+00:00:21.540 --> 00:00:23.010
+And basically, your Aurora database
+
+13
+00:00:23.010 --> 00:00:24.420
+will have compatible drivers.
+
+14
+00:00:24.420 --> 00:00:25.860
+That means that if you connect
+
+15
+00:00:25.860 --> 00:00:27.360
+as if you were connecting to your PostgreSQL
+
+16
+00:00:27.360 --> 00:00:29.820
+or a MySQL database, then it will work.
+
+17
+00:00:29.820 --> 00:00:30.990
+Aurora is very special,
+
+18
+00:00:30.990 --> 00:00:32.970
+and I won't go too deep into the internals,
+
+19
+00:00:32.970 --> 00:00:34.560
+but they made it cloud-optimized.
+
+20
+00:00:34.560 --> 00:00:37.560
+And by doing a lot of optimization and smart stuff,
+
+21
+00:00:37.560 --> 00:00:39.990
+basically they get 5x performance improvements
+
+22
+00:00:39.990 --> 00:00:41.520
+over MySQL on the RDS,
+
+23
+00:00:41.520 --> 00:00:44.220
+or 3x extra performance of PostgreSQL on RDS.
+
+24
+00:00:44.220 --> 00:00:45.900
+Not just that, but in many different ways,
+
+25
+00:00:45.900 --> 00:00:47.850
+they also get more performance improvements.
+
+26
+00:00:47.850 --> 00:00:49.470
+To me, I watch it, it's really, really smart,
+
+27
+00:00:49.470 --> 00:00:51.390
+but I won't go into the details of it.
+
+28
+00:00:51.390 --> 00:00:53.490
+Now, Aurora storage automatically grows,
+
+29
+00:00:53.490 --> 00:00:55.275
+and I think this is one of the main features
+
+30
+00:00:55.275 --> 00:00:56.400
+that is quite awesome.
+
+31
+00:00:56.400 --> 00:00:57.690
+You start at 10 gigabytes,
+
+32
+00:00:57.690 --> 00:01:01.230
+but as you put more data into your database,
+
+33
+00:01:01.230 --> 00:01:04.620
+it grows automatically up to 256 terabytes.
+
+34
+00:01:04.620 --> 00:01:06.420
+Again, this has to do with how to design it,
+
+35
+00:01:06.420 --> 00:01:10.110
+but the awesome thing is that now as a DBA or a SysOps,
+
+36
+00:01:10.110 --> 00:01:12.720
+you don't need to worry about monitoring your disk,
+
+37
+00:01:12.720 --> 00:01:15.390
+you just know it will grow automatically with time.
+
+38
+00:01:15.390 --> 00:01:18.420
+Or I can have up to 15 read replicas,
+
+39
+00:01:18.420 --> 00:01:20.430
+and the replication process
+
+40
+00:01:20.430 --> 00:01:22.440
+is going to be faster than MySQL.
+
+41
+00:01:22.440 --> 00:01:26.100
+You will see sub-10-millisecond replica lag, typically.
+
+42
+00:01:26.100 --> 00:01:27.600
+Now, if you do failover in Aurora,
+
+43
+00:01:27.600 --> 00:01:29.520
+it was going to be instantaneous.
+
+44
+00:01:29.520 --> 00:01:31.620
+So it's going to be much faster than a failover
+
+45
+00:01:31.620 --> 00:01:34.170
+from Multi-AZ on MySQL or RDS.
+
+46
+00:01:34.170 --> 00:01:35.580
+And because it's cloud-native,
+
+47
+00:01:35.580 --> 00:01:38.670
+by default, you get high availability.
+
+48
+00:01:38.670 --> 00:01:40.740
+Now, although the cost is a little bit more than RDS,
+
+49
+00:01:40.740 --> 00:01:43.590
+about 20% more, it is so much more efficient
+
+50
+00:01:43.590 --> 00:01:46.740
+that at scale, it makes a lot more sense for savings.
+
+51
+00:01:46.740 --> 00:01:49.560
+So let's talk about the aspect that are super important,
+
+52
+00:01:49.560 --> 00:01:51.990
+which is high availability and read scaling.
+
+53
+00:01:51.990 --> 00:01:54.690
+So Aurora is special because it's going to store
+
+54
+00:01:54.690 --> 00:01:57.600
+six copies of your data anytime you write anything
+
+55
+00:01:57.600 --> 00:01:59.340
+across three AZ.
+
+56
+00:01:59.340 --> 00:02:01.950
+And so, Aurora is made such as it's available,
+
+57
+00:02:01.950 --> 00:02:04.920
+so it only needs four copies out of six for writes.
+
+58
+00:02:04.920 --> 00:02:07.620
+So that means that if one AZ is down, you're fine.
+
+59
+00:02:07.620 --> 00:02:09.090
+And it only needs you have three copies
+
+60
+00:02:09.090 --> 00:02:11.040
+out of six needed for reads.
+
+61
+00:02:11.040 --> 00:02:14.100
+So, again, that means that it's highly available for reads.
+
+62
+00:02:14.100 --> 00:02:16.200
+There is some kind of self-healing process that happens,
+
+63
+00:02:16.200 --> 00:02:18.300
+which is quite cool, which is that if some data
+
+64
+00:02:18.300 --> 00:02:21.450
+is corrupted or or bad, then it does self-healing
+
+65
+00:02:21.450 --> 00:02:23.430
+with peer-to-peer replication in the backend,
+
+66
+00:02:23.430 --> 00:02:24.360
+and it's quite cool.
+
+67
+00:02:24.360 --> 00:02:26.280
+And you don't rely on just one volume,
+
+68
+00:02:26.280 --> 00:02:27.630
+you rely on hundreds of volumes.
+
+69
+00:02:27.630 --> 00:02:29.160
+Again, not something for you to manage,
+
+70
+00:02:29.160 --> 00:02:30.420
+it happens in the backend,
+
+71
+00:02:30.420 --> 00:02:33.450
+but that means that you just reduce the risk by so much.
+
+72
+00:02:33.450 --> 00:02:35.820
+So if you look at it from the diagram perspective,
+
+73
+00:02:35.820 --> 00:02:38.670
+you have three AZ and you have a shared storage volume,
+
+74
+00:02:38.670 --> 00:02:40.110
+but it's a logical volume,
+
+75
+00:02:40.110 --> 00:02:41.730
+and it does replication, self-healing,
+
+76
+00:02:41.730 --> 00:02:44.130
+and auto-expanding, which is a lot of features.
+
+77
+00:02:44.130 --> 00:02:47.070
+So if you were to write some data, maybe blue data,
+
+78
+00:02:47.070 --> 00:02:50.310
+you'll see the six copies of it in three different AZ.
+
+79
+00:02:50.310 --> 00:02:51.780
+Then if you write some orange data,
+
+80
+00:02:51.780 --> 00:02:54.060
+again, six copies of it in different AZ.
+
+81
+00:02:54.060 --> 00:02:55.860
+And then as you write more and more data,
+
+82
+00:02:55.860 --> 00:02:58.380
+it's basically going to go, again, six copies of it
+
+83
+00:02:58.380 --> 00:02:59.580
+in three different AZ.
+
+84
+00:02:59.580 --> 00:03:01.440
+The cool thing is that it goes on different volumes
+
+85
+00:03:01.440 --> 00:03:04.020
+and it's striped and it works really, really well.
+
+86
+00:03:04.020 --> 00:03:06.690
+Now we need to know about storage and that's it.
+
+87
+00:03:06.690 --> 00:03:08.760
+But you don't actually interface with the storage,
+
+88
+00:03:08.760 --> 00:03:10.500
+it's just a design that Amazon made,
+
+89
+00:03:10.500 --> 00:03:12.060
+and I want to give it to you as well,
+
+90
+00:03:12.060 --> 00:03:14.940
+so you understand what Aurora takes.
+
+91
+00:03:14.940 --> 00:03:18.930
+Now, Aurora is like Multi-AZ for RDS.
+
+92
+00:03:18.930 --> 00:03:21.390
+Basically there's only one instance that takes writes,
+
+93
+00:03:21.390 --> 00:03:23.400
+so there is a master in Aurora,
+
+94
+00:03:23.400 --> 00:03:24.990
+and that's where we'll take writes.
+
+95
+00:03:24.990 --> 00:03:27.780
+And then if the master doesn't work,
+
+96
+00:03:27.780 --> 00:03:31.230
+the failover will happen in less than 30 seconds on average.
+
+97
+00:03:31.230 --> 00:03:33.270
+So it's really, really quick failover.
+
+98
+00:03:33.270 --> 00:03:34.680
+And on top of the master,
+
+99
+00:03:34.680 --> 00:03:37.590
+you can have up to 15 read replicas,
+
+100
+00:03:37.590 --> 00:03:38.730
+all serving reads.
+
+101
+00:03:38.730 --> 00:03:40.170
+So you can have a lot of them,
+
+102
+00:03:40.170 --> 00:03:42.210
+and this is how you scale your read workload.
+
+103
+00:03:42.210 --> 00:03:45.090
+And so any of these read replicas can become the master
+
+104
+00:03:45.090 --> 00:03:46.500
+in case the master fails,
+
+105
+00:03:46.500 --> 00:03:49.110
+so it's quite different from how RDS works.
+
+106
+00:03:49.110 --> 00:03:51.810
+But by default, you only have one master.
+
+107
+00:03:51.810 --> 00:03:53.280
+The cool thing about these read replicas
+
+108
+00:03:53.280 --> 00:03:56.190
+is that it supports cross-region replication.
+
+109
+00:03:56.190 --> 00:03:57.870
+So if you look at Aurora
+
+110
+00:03:57.870 --> 00:03:59.130
+on the right-hand side of the diagram,
+
+111
+00:03:59.130 --> 00:04:00.510
+this is what you should remember:
+
+112
+00:04:00.510 --> 00:04:02.520
+One master, multiple replicas,
+
+113
+00:04:02.520 --> 00:04:05.730
+and the storage is going to be replicated, self-healing,
+
+114
+00:04:05.730 --> 00:04:08.610
+auto-expanding, little blocks by little blocks.
+
+115
+00:04:08.610 --> 00:04:11.820
+Now, let's have a look at how Aurora is as a cluster.
+
+116
+00:04:11.820 --> 00:04:14.430
+So this is more around how Aurora works
+
+117
+00:04:14.430 --> 00:04:16.170
+when you have clients, how do you interface
+
+118
+00:04:16.170 --> 00:04:18.330
+with all these instances?
+
+119
+00:04:18.330 --> 00:04:20.340
+So as we said, we have a shared storage volume
+
+120
+00:04:20.340 --> 00:04:21.870
+that is auto-expanding.
+
+121
+00:04:21.870 --> 00:04:24.180
+Your master is the only thing that will write
+
+122
+00:04:24.180 --> 00:04:25.410
+to your storage.
+
+123
+00:04:25.410 --> 00:04:27.870
+And because the master can change and failover,
+
+124
+00:04:27.870 --> 00:04:31.200
+what Aurora provides you is what's called a writer endpoint.
+
+125
+00:04:31.200 --> 00:04:33.300
+So it's a DNS name, a writer endpoint,
+
+126
+00:04:33.300 --> 00:04:34.860
+and it's always pointing to the master.
+
+127
+00:04:34.860 --> 00:04:36.720
+So even if the master fails over,
+
+128
+00:04:36.720 --> 00:04:38.940
+your client still talks to the writer endpoint
+
+129
+00:04:38.940 --> 00:04:42.180
+and is automatically redirected to the right instance.
+
+130
+00:04:42.180 --> 00:04:43.380
+Now, as I said before,
+
+131
+00:04:43.380 --> 00:04:45.390
+you also have a lot of read replicas.
+
+132
+00:04:45.390 --> 00:04:47.670
+What I didn't say is that they can have
+
+133
+00:04:47.670 --> 00:04:49.740
+auto-scaling on top of these read replicas.
+
+134
+00:04:49.740 --> 00:04:52.350
+So you can have one up to 15 read replicas
+
+135
+00:04:52.350 --> 00:04:53.850
+and you can set up auto-scaling,
+
+136
+00:04:53.850 --> 00:04:57.450
+such as you always have the right number of read replicas.
+
+137
+00:04:57.450 --> 00:04:58.800
+Now, because you have auto-scaling,
+
+138
+00:04:58.800 --> 00:05:00.780
+it can be really, really hard for your applications
+
+139
+00:05:00.780 --> 00:05:03.450
+to keep track of where are your read replicas,
+
+140
+00:05:03.450 --> 00:05:05.700
+what's the URL, how do I connect to them.
+
+141
+00:05:05.700 --> 00:05:07.350
+So for it, you have to remember this
+
+142
+00:05:07.350 --> 00:05:09.030
+absolutely for going for the exam:
+
+143
+00:05:09.030 --> 00:05:11.400
+There is something called a reader endpoint.
+
+144
+00:05:11.400 --> 00:05:13.470
+And a reader endpoint has the exact same feature
+
+145
+00:05:13.470 --> 00:05:14.610
+as a writer endpoint.
+
+146
+00:05:14.610 --> 00:05:16.440
+It helps with connection load balancing,
+
+147
+00:05:16.440 --> 00:05:19.950
+and it connects automatically to all the read replicas.
+
+148
+00:05:19.950 --> 00:05:23.340
+So anytime the client connects to the reader endpoint,
+
+149
+00:05:23.340 --> 00:05:25.740
+it will get connected to one of the read replicas,
+
+150
+00:05:25.740 --> 00:05:28.383
+and they will be load balancing done this way.
+
+151
+00:05:29.370 --> 00:05:31.650
+Just notice that the load balancing
+
+152
+00:05:31.650 --> 00:05:33.330
+happens at the connection level,
+
+153
+00:05:33.330 --> 00:05:34.770
+not the statement level.
+
+154
+00:05:34.770 --> 00:05:36.840
+So this is how it works for Aurora.
+
+155
+00:05:36.840 --> 00:05:39.300
+Remember writer endpoint, reader endpoint.
+
+156
+00:05:39.300 --> 00:05:40.410
+Remember auto-scaling.
+
+157
+00:05:40.410 --> 00:05:42.810
+Remember shared storage volume that auto-expands.
+
+158
+00:05:42.810 --> 00:05:44.880
+Remember this diagram because once you get it,
+
+159
+00:05:44.880 --> 00:05:47.100
+you'll understand how Aurora works.
+
+160
+00:05:47.100 --> 00:05:49.170
+Now, if we go deep into the feature,
+
+161
+00:05:49.170 --> 00:05:50.820
+you get a lot of things I already told you,
+
+162
+00:05:50.820 --> 00:05:53.130
+automatic failover, backup and recovery,
+
+163
+00:05:53.130 --> 00:05:55.800
+isolation and security, industry compliance,
+
+164
+00:05:55.800 --> 00:05:58.170
+push-button scaling by auto-scaling.
+
+165
+00:05:58.170 --> 00:05:59.730
+Automated patching with zero downtime,
+
+166
+00:05:59.730 --> 00:06:02.430
+so it's kind of cool the magic they do in the backend.
+
+167
+00:06:02.430 --> 00:06:04.620
+Advanced monitoring, routine maintenance.
+
+168
+00:06:04.620 --> 00:06:06.150
+So all these things are handled for you.
+
+169
+00:06:06.150 --> 00:06:08.250
+And you also get this feature called backtrack,
+
+170
+00:06:08.250 --> 00:06:10.290
+which is giving you the ability to restore data
+
+171
+00:06:10.290 --> 00:06:11.820
+at any point of time,
+
+172
+00:06:11.820 --> 00:06:13.590
+and actually doesn't rely on backups,
+
+173
+00:06:13.590 --> 00:06:15.030
+it relies on something different.
+
+174
+00:06:15.030 --> 00:06:15.997
+But you can always say,
+
+175
+00:06:15.997 --> 00:06:17.880
+"I want to go back to yesterday at 4:00 PM."
+
+176
+00:06:17.880 --> 00:06:19.890
+And you say, "Oh, no, actually I wanted to do
+
+177
+00:06:19.890 --> 00:06:21.330
+yesterday at 5:00 PM."
+
+178
+00:06:21.330 --> 00:06:24.240
+And it will work as well, which is super, super neat.
+
+179
+00:06:24.240 --> 00:06:25.350
+So that's it for Aurora,
+
+180
+00:06:25.350 --> 00:06:27.300
+and I will see you in the next lecture.
+

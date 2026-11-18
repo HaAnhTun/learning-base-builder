@@ -1,0 +1,266 @@
+WEBVTT
+
+1
+00:00:00.450 --> 00:00:02.160
+<v Instructor>So now let's talk about AppSync.</v>
+
+2
+00:00:02.160 --> 00:00:03.810
+So AppSync is a managed service
+
+3
+00:00:03.810 --> 00:00:05.970
+that uses GraphQL in the backend.
+
+4
+00:00:05.970 --> 00:00:08.989
+So anytime you see GraphQL, think AppSync.
+
+5
+00:00:08.989 --> 00:00:10.020
+And GraphQL, what is it?
+
+6
+00:00:10.020 --> 00:00:12.150
+Well, it makes it easy for applications
+
+7
+00:00:12.150 --> 00:00:14.160
+to get exactly the data they need.
+
+8
+00:00:14.160 --> 00:00:16.620
+That includes if you wanna combine data from one
+
+9
+00:00:16.620 --> 00:00:17.730
+or more sources of data.
+
+10
+00:00:17.730 --> 00:00:20.733
+So it could be a NoSQL data store, a Relational database,
+
+11
+00:00:20.733 --> 00:00:24.480
+HTTP APIs, also has integration with Dynamo DB,
+
+12
+00:00:24.480 --> 00:00:26.310
+Aurora, Elasticsearch and others.
+
+13
+00:00:26.310 --> 00:00:29.850
+And you can even get data from custom sources using Lambda.
+
+14
+00:00:29.850 --> 00:00:32.850
+The idea is that this data is going to be retrieved together
+
+15
+00:00:32.850 --> 00:00:33.990
+and sent back to the clients.
+
+16
+00:00:33.990 --> 00:00:37.560
+And the particularity of AppSync is that the data
+
+17
+00:00:37.560 --> 00:00:40.410
+can be retrieved in real time with WebSockets
+
+18
+00:00:40.410 --> 00:00:42.510
+or MQTT on WebSockets.
+
+19
+00:00:42.510 --> 00:00:44.190
+So this real time aspect is very big
+
+20
+00:00:44.190 --> 00:00:46.650
+and something that the exam may test you on.
+
+21
+00:00:46.650 --> 00:00:49.080
+So for mobile applications, AppSync also gives you
+
+22
+00:00:49.080 --> 00:00:51.690
+local data access and data synchronization.
+
+23
+00:00:51.690 --> 00:00:54.060
+And just to get started, you need to upload one
+
+24
+00:00:54.060 --> 00:00:56.190
+GraphQL schema, and off you go.
+
+25
+00:00:56.190 --> 00:00:57.630
+So how does AppSync work?
+
+26
+00:00:57.630 --> 00:00:59.580
+Well, you have AppSync in here, and your clients
+
+27
+00:00:59.580 --> 00:01:01.800
+are accessing AppSync, very important,
+
+28
+00:01:01.800 --> 00:01:04.590
+mobile apps, web apps, realtime dashboards,
+
+29
+00:01:04.590 --> 00:01:06.870
+or even for offline synchronizations.
+
+30
+00:01:06.870 --> 00:01:09.900
+Within AppSync, you have GraphQL schema and then Resolvers.
+
+31
+00:01:09.900 --> 00:01:13.050
+And these resolvers know how to get the data
+
+32
+00:01:13.050 --> 00:01:14.880
+from the various sources of data.
+
+33
+00:01:14.880 --> 00:01:18.420
+So it could be DynamoDB, Aurora, ElasticSearch Service,
+
+34
+00:01:18.420 --> 00:01:20.010
+Lambda, which leads you to pretty much
+
+35
+00:01:20.010 --> 00:01:21.420
+any kind of source you want
+
+36
+00:01:21.420 --> 00:01:25.260
+or HTTP to lead to public HTTP APIs.
+
+37
+00:01:25.260 --> 00:01:27.510
+Finally, of course, you monitor AppSync
+
+38
+00:01:27.510 --> 00:01:29.340
+with CloudWatch Metrics and Logs.
+
+39
+00:01:29.340 --> 00:01:32.250
+So from an exam perspective, AppSync is going to
+
+40
+00:01:32.250 --> 00:01:34.770
+be used whenever you see GraphQL or whenever you need
+
+41
+00:01:34.770 --> 00:01:38.550
+to have access to realtime data as well for an API.
+
+42
+00:01:38.550 --> 00:01:41.670
+Next, we have an integration between AppSync and Cognito.
+
+43
+00:01:41.670 --> 00:01:44.880
+So we can perform authorization on Cognito users
+
+44
+00:01:44.880 --> 00:01:47.160
+based on the groups that they belong to.
+
+45
+00:01:47.160 --> 00:01:50.580
+So in the GraphQL schema, you specify the security
+
+46
+00:01:50.580 --> 00:01:52.920
+of your Cognito groups, just like this.
+
+47
+00:01:52.920 --> 00:01:56.580
+So you have a type and you have @aws_auth,
+
+48
+00:01:56.580 --> 00:01:58.980
+and then you define Cognito groups of bloggers and readers.
+
+49
+00:01:58.980 --> 00:02:02.130
+So, both bloggers and readers can do a query.
+
+50
+00:02:02.130 --> 00:02:04.650
+But on the type mutation to add a post,
+
+51
+00:02:04.650 --> 00:02:07.290
+only bloggers can actually add a post,
+
+52
+00:02:07.290 --> 00:02:09.840
+because they are authorized to do so.
+
+53
+00:02:09.840 --> 00:02:12.450
+So from a solution architecture perspective,
+
+54
+00:02:12.450 --> 00:02:15.900
+the client is going to authenticate with Cognito,
+
+55
+00:02:15.900 --> 00:02:20.640
+get a JWT token, and pass hat JSON Web token
+
+56
+00:02:20.640 --> 00:02:22.410
+into AppSync.
+
+57
+00:02:22.410 --> 00:02:24.300
+Then AppSync is going to verify the token
+
+58
+00:02:24.300 --> 00:02:27.330
+and make sure it's authorized with Cognito.
+
+59
+00:02:27.330 --> 00:02:29.010
+And then as you can see in the resolvers,
+
+60
+00:02:29.010 --> 00:02:31.380
+that I wrote right here, in your GraphQL schema,
+
+61
+00:02:31.380 --> 00:02:34.560
+the resolvers are going to look at the group
+
+62
+00:02:34.560 --> 00:02:37.290
+that the user in Cognito belongs to.
+
+63
+00:02:37.290 --> 00:02:40.410
+And then if it's all good, then access, for example,
+
+64
+00:02:40.410 --> 00:02:44.370
+your backend, it could be a DynamoDB database.
+
+65
+00:02:44.370 --> 00:02:45.810
+Okay, so that's it.
+
+66
+00:02:45.810 --> 00:02:48.760
+I hope you liked it and I will see you in the next lecture.
+

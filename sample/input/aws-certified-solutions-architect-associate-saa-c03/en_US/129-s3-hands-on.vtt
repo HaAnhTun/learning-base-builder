@@ -1,0 +1,742 @@
+WEBVTT
+
+1
+00:00:00.750 --> 00:00:02.790
+<v Stephane>So here I am in Amazon S3,</v>
+
+2
+00:00:02.790 --> 00:00:06.270
+and we're going to go ahead and create a bucket.
+
+3
+00:00:06.270 --> 00:00:07.380
+So as you can see,
+
+4
+00:00:07.380 --> 00:00:10.170
+this bucket is created in a specific region.
+
+5
+00:00:10.170 --> 00:00:13.620
+For example, Europe (Ireland) eu-west-1.
+
+6
+00:00:13.620 --> 00:00:15.090
+You can change the region selector
+
+7
+00:00:15.090 --> 00:00:17.400
+on the top right if you wanted to.
+
+8
+00:00:17.400 --> 00:00:18.600
+So next we have the bucket type.
+
+9
+00:00:18.600 --> 00:00:21.600
+So we have General purpose or Directory.
+
+10
+00:00:21.600 --> 00:00:23.940
+Directory is for low-latency use cases.
+
+11
+00:00:23.940 --> 00:00:25.200
+We're not going to use it.
+
+12
+00:00:25.200 --> 00:00:26.940
+General purpose is what we're going to use.
+
+13
+00:00:26.940 --> 00:00:29.400
+This is the most common
+
+14
+00:00:29.400 --> 00:00:32.670
+and recommended type of bucket for most access patterns.
+
+15
+00:00:32.670 --> 00:00:34.920
+Now here comes the namespace.
+
+16
+00:00:34.920 --> 00:00:36.360
+So it used to be only Global,
+
+17
+00:00:36.360 --> 00:00:39.360
+but now we have Global and Account Regional namespace.
+
+18
+00:00:39.360 --> 00:00:41.730
+So this is about naming your bucket.
+
+19
+00:00:41.730 --> 00:00:43.770
+So if you use the Global namespace
+
+20
+00:00:43.770 --> 00:00:47.190
+and you name your bucket bucket test for example,
+
+21
+00:00:47.190 --> 00:00:48.570
+you're going to have a problem.
+
+22
+00:00:48.570 --> 00:00:50.100
+So let's name it test,
+
+23
+00:00:50.100 --> 00:00:52.920
+and then scroll down and then create this bucket.
+
+24
+00:00:52.920 --> 00:00:55.920
+As you can see, a bucket with the same name already exists.
+
+25
+00:00:55.920 --> 00:00:58.860
+So someone created a bucket named test.
+
+26
+00:00:58.860 --> 00:00:59.850
+And so you need to make sure
+
+27
+00:00:59.850 --> 00:01:03.540
+that the bucket name here is going to be globally unique.
+
+28
+00:01:03.540 --> 00:01:07.783
+So for me, it would be for example, stephane-demo-s3-v6.
+
+29
+00:01:10.590 --> 00:01:12.030
+But as you can see, it already exists.
+
+30
+00:01:12.030 --> 00:01:13.440
+So I need to go to v7 and so on.
+
+31
+00:01:13.440 --> 00:01:16.080
+So someone already took it and it's not even me.
+
+32
+00:01:16.080 --> 00:01:19.080
+So how do we do then to find a bucket that's unique
+
+33
+00:01:19.080 --> 00:01:21.660
+while we can keep on increasing the versions
+
+34
+00:01:21.660 --> 00:01:23.820
+until one one will work,
+
+35
+00:01:23.820 --> 00:01:25.170
+or we can use now
+
+36
+00:01:25.170 --> 00:01:27.960
+what's called the Account Regional namespace,
+
+37
+00:01:27.960 --> 00:01:29.790
+and the idea is that you can do whatever you want.
+
+38
+00:01:29.790 --> 00:01:32.010
+You can name it test, you can name it demo,
+
+39
+00:01:32.010 --> 00:01:33.780
+you can name it whatever you want.
+
+40
+00:01:33.780 --> 00:01:34.613
+And it turns out
+
+41
+00:01:34.613 --> 00:01:37.560
+that there will be an Account Regional namepace suffix
+
+42
+00:01:37.560 --> 00:01:39.660
+that is added and so your full bucket name is going
+
+43
+00:01:39.660 --> 00:01:43.140
+to be this, but you have the guarantee that this is going
+
+44
+00:01:43.140 --> 00:01:44.430
+to be available no matter what
+
+45
+00:01:44.430 --> 00:01:45.750
+because this is your account number
+
+46
+00:01:45.750 --> 00:01:47.250
+and this is the region you're in.
+
+47
+00:01:47.250 --> 00:01:49.920
+And so this is the recommended way going forward
+
+48
+00:01:49.920 --> 00:01:52.980
+because you create a bucket named demo
+
+49
+00:01:52.980 --> 00:01:55.620
+and you can use this demo name across all your regions
+
+50
+00:01:55.620 --> 00:01:57.990
+and all your accounts if you wanted to.
+
+51
+00:01:57.990 --> 00:02:00.000
+But for the purpose of this demo,
+
+52
+00:02:00.000 --> 00:02:05.000
+I'm going to name my bucket stephane-demo-s3-v12,
+
+53
+00:02:05.040 --> 00:02:06.810
+which I know is available.
+
+54
+00:02:06.810 --> 00:02:09.390
+All right, so the bucket name is now available.
+
+55
+00:02:09.390 --> 00:02:11.670
+Okay, so next for Object Ownership,
+
+56
+00:02:11.670 --> 00:02:14.490
+right now you have ACL disabled, this is recommended.
+
+57
+00:02:14.490 --> 00:02:16.590
+This is a security setting. Don't worry about it.
+
+58
+00:02:16.590 --> 00:02:18.540
+We'll leave it as a default.
+
+59
+00:02:18.540 --> 00:02:21.030
+Now for blocking public access to this bucket,
+
+60
+00:02:21.030 --> 00:02:23.010
+we again, we'll leave this enabled.
+
+61
+00:02:23.010 --> 00:02:24.870
+So we'll block all public access
+
+62
+00:02:24.870 --> 00:02:27.000
+and we want to have maximum security in our buckets
+
+63
+00:02:27.000 --> 00:02:30.420
+so only us can upload files to it.
+
+64
+00:02:30.420 --> 00:02:32.460
+Next for Bucket Versioning,
+
+65
+00:02:32.460 --> 00:02:35.670
+so we want to disable Bucket Versioning right now
+
+66
+00:02:35.670 --> 00:02:38.580
+and we'll see later on how to enable it.
+
+67
+00:02:38.580 --> 00:02:40.170
+No tags are needed.
+
+68
+00:02:40.170 --> 00:02:41.970
+And for Default encryption,
+
+69
+00:02:41.970 --> 00:02:43.980
+I'm going to use server-side encryption
+
+70
+00:02:43.980 --> 00:02:45.180
+with Amazon S3 managed key.
+
+71
+00:02:45.180 --> 00:02:47.430
+So all my objects are going to be encrypted,
+
+72
+00:02:47.430 --> 00:02:48.780
+and then we'll choose the first option.
+
+73
+00:02:48.780 --> 00:02:50.790
+We'll talk about encryption later on.
+
+74
+00:02:50.790 --> 00:02:52.920
+And Bucket Key, I will enable it.
+
+75
+00:02:52.920 --> 00:02:55.770
+So we'll leave, as you can see, all the settings as default.
+
+76
+00:02:55.770 --> 00:02:59.370
+The only thing we have set really is the bucket name.
+
+77
+00:02:59.370 --> 00:03:01.270
+So I'll go ahead and create my bucket.
+
+78
+00:03:02.130 --> 00:03:04.380
+And now it has been successfully created.
+
+79
+00:03:04.380 --> 00:03:07.950
+And you will see here in this UI all your buckets.
+
+80
+00:03:07.950 --> 00:03:09.090
+If you have directory enabled,
+
+81
+00:03:09.090 --> 00:03:10.410
+you will see also directory buckets.
+
+82
+00:03:10.410 --> 00:03:11.670
+Right now I have none,
+
+83
+00:03:11.670 --> 00:03:13.830
+but your general purpose buckets are here.
+
+84
+00:03:13.830 --> 00:03:15.210
+Right now you should see one bucket
+
+85
+00:03:15.210 --> 00:03:16.230
+that you've just created this course.
+
+86
+00:03:16.230 --> 00:03:17.063
+For me, I have 33
+
+87
+00:03:17.063 --> 00:03:19.320
+because I've been using my account quite a lot.
+
+88
+00:03:19.320 --> 00:03:23.100
+And this will deploy buckets for all AWS regions,
+
+89
+00:03:23.100 --> 00:03:25.290
+not just the one you're in right now, but all regions.
+
+90
+00:03:25.290 --> 00:03:28.080
+As you can see, I have Ireland, London,
+
+91
+00:03:28.080 --> 00:03:31.650
+I scroll down and get us-east-1, Frankfurt and so on.
+
+92
+00:03:31.650 --> 00:03:34.050
+So all your buckets are going to be displayed here
+
+93
+00:03:34.050 --> 00:03:35.970
+and you can do a little search.
+
+94
+00:03:35.970 --> 00:03:39.210
+For example, stephane-demo, and here is my bucket.
+
+95
+00:03:39.210 --> 00:03:42.213
+So I'm going to click on it and have a look at it inside.
+
+96
+00:03:43.140 --> 00:03:44.190
+And now in my bucket,
+
+97
+00:03:44.190 --> 00:03:46.110
+I would like to start uploading objects
+
+98
+00:03:46.110 --> 00:03:48.240
+because currently, you have zero objects.
+
+99
+00:03:48.240 --> 00:03:52.110
+So let's click on Upload and then we can add files.
+
+100
+00:03:52.110 --> 00:03:55.440
+And navigate into your code, go into the s3 folder,
+
+101
+00:03:55.440 --> 00:03:57.960
+and then you will find a coffee.jpg file.
+
+102
+00:03:57.960 --> 00:04:00.030
+So choose this coffee.jpg file.
+
+103
+00:04:00.030 --> 00:04:02.160
+As you can see, it's an image JPEG,
+
+104
+00:04:02.160 --> 00:04:04.590
+it has 100 kilobytes in size,
+
+105
+00:04:04.590 --> 00:04:08.250
+and then the destination is s3://stephane-demo,
+
+106
+00:04:08.250 --> 00:04:09.360
+which is my bucket.
+
+107
+00:04:09.360 --> 00:04:11.493
+Okay, so let's upload this file.
+
+108
+00:04:12.570 --> 00:04:15.720
+We're done, so I can close this on the right-hand side.
+
+109
+00:04:15.720 --> 00:04:17.610
+And now back into my S3 bucket,
+
+110
+00:04:17.610 --> 00:04:21.690
+I can see the coffee.jpg file is under my Objects.
+
+111
+00:04:21.690 --> 00:04:23.520
+So what I can do is now click on it
+
+112
+00:04:23.520 --> 00:04:25.653
+and have more details around that file.
+
+113
+00:04:26.610 --> 00:04:29.130
+So now that we are in the Object page,
+
+114
+00:04:29.130 --> 00:04:31.410
+we can have a look at a bunch of overviews.
+
+115
+00:04:31.410 --> 00:04:33.870
+So a bunch of properties where it's been uploaded,
+
+116
+00:04:33.870 --> 00:04:36.810
+the size, the type, and there is an object URL here,
+
+117
+00:04:36.810 --> 00:04:38.430
+we'll be playing it in a moment.
+
+118
+00:04:38.430 --> 00:04:39.840
+So how do we do this?
+
+119
+00:04:39.840 --> 00:04:42.030
+So now we want to open this object
+
+120
+00:04:42.030 --> 00:04:44.040
+and see if we can open it.
+
+121
+00:04:44.040 --> 00:04:45.780
+We can view it because we have uploaded it
+
+122
+00:04:45.780 --> 00:04:47.940
+onto our Amazon S3 bucket.
+
+123
+00:04:47.940 --> 00:04:50.520
+Therefore, I'm going to click on Open.
+
+124
+00:04:50.520 --> 00:04:52.530
+And if I do click on Open, as you can see,
+
+125
+00:04:52.530 --> 00:04:54.300
+I can see my coffee.jpg file.
+
+126
+00:04:54.300 --> 00:04:55.980
+So this is the one I have uploaded
+
+127
+00:04:55.980 --> 00:04:57.450
+and it is on the internet.
+
+128
+00:04:57.450 --> 00:04:58.890
+Awesome, right?
+
+129
+00:04:58.890 --> 00:05:01.800
+But if I go back to my overview
+
+130
+00:05:01.800 --> 00:05:03.600
+and click on this object URL over here,
+
+131
+00:05:03.600 --> 00:05:06.900
+so I copy it, I paste it, and I enter it,
+
+132
+00:05:06.900 --> 00:05:08.943
+as you can see, I get an AccessDenied.
+
+133
+00:05:09.780 --> 00:05:11.940
+And this AccessDenied tells me
+
+134
+00:05:11.940 --> 00:05:14.580
+that I cannot access my object using
+
+135
+00:05:14.580 --> 00:05:15.840
+what's called the public URL.
+
+136
+00:05:15.840 --> 00:05:19.110
+So as you can see here, this public URL is not working,
+
+137
+00:05:19.110 --> 00:05:20.760
+but this URL is working.
+
+138
+00:05:20.760 --> 00:05:22.110
+So what's the difference?
+
+139
+00:05:22.110 --> 00:05:24.330
+Well, this URL right here, if you have a look at it,
+
+140
+00:05:24.330 --> 00:05:26.550
+the beginning is exactly the same,
+
+141
+00:05:26.550 --> 00:05:28.440
+but then the rest is a very,
+
+142
+00:05:28.440 --> 00:05:31.680
+very complicated and long URL
+
+143
+00:05:31.680 --> 00:05:36.120
+because it's called an S3 pre-signed URL, why?
+
+144
+00:05:36.120 --> 00:05:39.420
+Well, because this URL contains actually a signature
+
+145
+00:05:39.420 --> 00:05:42.150
+that verifies that I am the one making the request,
+
+146
+00:05:42.150 --> 00:05:44.160
+and therefore it has my credentials in it.
+
+147
+00:05:44.160 --> 00:05:48.420
+And so because my credentials are encoded in this URL,
+
+148
+00:05:48.420 --> 00:05:50.040
+then Amazon S3 says, "Well,
+
+149
+00:05:50.040 --> 00:05:52.740
+Stephane is allowed to view his own object,
+
+150
+00:05:52.740 --> 00:05:54.450
+therefore I will display it."
+
+151
+00:05:54.450 --> 00:05:56.730
+So this public URL does not work,
+
+152
+00:05:56.730 --> 00:05:59.700
+but this pre-signed URL with my own credentials works
+
+153
+00:05:59.700 --> 00:06:02.850
+and obviously this URL is only for me.
+
+154
+00:06:02.850 --> 00:06:07.170
+So we'll see how to make that object public later on
+
+155
+00:06:07.170 --> 00:06:09.693
+so that the public URL will function as well.
+
+156
+00:06:10.590 --> 00:06:14.670
+So let's go back into our bucket, the stephane-demo-s3,
+
+157
+00:06:14.670 --> 00:06:17.730
+and I have one object, but I can create a folder,
+
+158
+00:06:17.730 --> 00:06:20.910
+and this folder name may be called images.
+
+159
+00:06:20.910 --> 00:06:23.010
+So we scroll down and create this folder.
+
+160
+00:06:23.010 --> 00:06:26.220
+So now I have the images folder in my bucket.
+
+161
+00:06:26.220 --> 00:06:30.300
+I can click on it and within it, I can upload again a file,
+
+162
+00:06:30.300 --> 00:06:33.240
+and this time I will upload the beach.jpg file
+
+163
+00:06:33.240 --> 00:06:34.620
+into, as you can see,
+
+164
+00:06:34.620 --> 00:06:38.880
+the destination is my images folder within my S3 bucket.
+
+165
+00:06:38.880 --> 00:06:41.880
+So let's upload this, close this.
+
+166
+00:06:41.880 --> 00:06:44.610
+As you can see now we have the beach.jpg object
+
+167
+00:06:44.610 --> 00:06:46.560
+within the images folder.
+
+168
+00:06:46.560 --> 00:06:49.920
+And if I go one level up, we can see the folder here.
+
+169
+00:06:49.920 --> 00:06:51.360
+So this looks just like, you know,
+
+170
+00:06:51.360 --> 00:06:53.190
+the cloud storage service you used to know,
+
+171
+00:06:53.190 --> 00:06:56.880
+such as Google Drive or Dropbox or whatever you want.
+
+172
+00:06:56.880 --> 00:06:59.280
+Here, we have something very similar in terms
+
+173
+00:06:59.280 --> 00:07:02.340
+of the user experience on Amazon S3.
+
+174
+00:07:02.340 --> 00:07:04.230
+So of course, I can go to images
+
+175
+00:07:04.230 --> 00:07:06.750
+and I can delete this folder entirely.
+
+176
+00:07:06.750 --> 00:07:09.090
+So this will delete everything within the folder.
+
+177
+00:07:09.090 --> 00:07:10.260
+And to delete things,
+
+178
+00:07:10.260 --> 00:07:13.980
+I just type permanently delete into the text input,
+
+179
+00:07:13.980 --> 00:07:16.620
+delete my object, and I'm good to go.
+
+180
+00:07:16.620 --> 00:07:17.670
+So that's it for this lecture.
+
+181
+00:07:17.670 --> 00:07:21.210
+We've seen how we can upload objects into Amazon S3,
+
+182
+00:07:21.210 --> 00:07:23.700
+we've seen how we can open them in two different ways,
+
+183
+00:07:23.700 --> 00:07:26.220
+creating folders, deleting folders, and so on.
+
+184
+00:07:26.220 --> 00:07:27.450
+So I hope you liked it
+
+185
+00:07:27.450 --> 00:07:29.400
+and I will see you in the next lecture.
+

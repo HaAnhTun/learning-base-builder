@@ -1,0 +1,110 @@
+WEBVTT
+
+1
+00:00:00.180 --> 00:00:01.710
+<v Instructor>So here comes a brief lecture</v>
+
+2
+00:00:01.710 --> 00:00:04.500
+about AWS Service Quotas.
+
+3
+00:00:04.500 --> 00:00:07.440
+So it's a service that helps you get notifications
+
+4
+00:00:07.440 --> 00:00:11.910
+when you're close to using a service quota value threshold.
+
+5
+00:00:11.910 --> 00:00:14.940
+The idea is that you cannot abuse AWS services
+
+6
+00:00:14.940 --> 00:00:17.100
+and so there are safety quotas.
+
+7
+00:00:17.100 --> 00:00:19.740
+And when you approach them, so that you don't get throttled,
+
+8
+00:00:19.740 --> 00:00:21.330
+you can get notified.
+
+9
+00:00:21.330 --> 00:00:23.640
+For this, you can create CloudWatch alarms
+
+10
+00:00:23.640 --> 00:00:26.490
+directly on top of the Service Quotas console.
+
+11
+00:00:26.490 --> 00:00:30.000
+For example, you're looking for Lambda concurrent executions
+
+12
+00:00:30.000 --> 00:00:31.170
+and you want to get alerted
+
+13
+00:00:31.170 --> 00:00:35.640
+if you are about to approach a threshold, say of 100.
+
+14
+00:00:35.640 --> 00:00:37.410
+So it helps you know as well
+
+15
+00:00:37.410 --> 00:00:39.510
+if you need to request a quota increase
+
+16
+00:00:39.510 --> 00:00:42.270
+or shut down resources before the limit is reached.
+
+17
+00:00:42.270 --> 00:00:44.910
+So from the Service Quotas console,
+
+18
+00:00:44.910 --> 00:00:47.460
+you can create an alarm and it looks like this.
+
+19
+00:00:47.460 --> 00:00:50.070
+So the Service Quota is going to monitor
+
+20
+00:00:50.070 --> 00:00:52.650
+the AWS Lambda quota for concurrent executions
+
+21
+00:00:52.650 --> 00:00:53.910
+in this example.
+
+22
+00:00:53.910 --> 00:00:58.140
+And in case we arrive at 9,000, which is a threshold we set,
+
+23
+00:00:58.140 --> 00:00:59.880
+then we're going to trigger a CloudWatch alarm
+
+24
+00:00:59.880 --> 00:01:01.770
+and can get notified.
+
+25
+00:01:01.770 --> 00:01:03.750
+So that's it, very simple architecture,
+
+26
+00:01:03.750 --> 00:01:05.010
+but one you should know.
+
+27
+00:01:05.010 --> 00:01:07.960
+I hope you liked it and I will see you in the next lecture.
+

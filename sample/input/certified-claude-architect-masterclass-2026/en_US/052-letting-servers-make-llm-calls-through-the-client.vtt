@@ -1,0 +1,406 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.000
+Sampling is one of MCP's most advanced features, and it's worth a detour.
+
+2
+00:00:05.000 --> 00:00:12.000
+It lets a server ask the client to make an LLM inference call and send the results back.
+
+3
+00:00:12.000 --> 00:00:18.000
+Coming up in this video, we'll cover why this design choice keeps control where it belongs,
+
+4
+00:00:18.000 --> 00:00:22.000
+and how to implement a sampling handler in your own MCP client.
+
+5
+00:00:22.000 --> 00:00:24.000
+Let's jump into it.
+
+6
+00:00:24.000 --> 00:00:29.000
+Picture a server that needs a summary written, but has no model of its own, and no API key.
+
+7
+00:00:29.000 --> 00:00:32.000
+That is the problem sampling solves.
+
+8
+00:00:32.000 --> 00:00:37.000
+Sampling in MCP is the pattern where a server sends a create message request to the client,
+
+9
+00:00:37.000 --> 00:00:43.000
+the client calls an LLM on the server's behalf, and the result comes back over the MCP channel.
+
+10
+00:00:43.000 --> 00:00:47.000
+The piece that makes it work on the client side is the sampling handler,
+
+11
+00:00:47.000 --> 00:00:53.000
+a callback you register that receives the request, calls your LLM API, and returns the model's response.
+
+12
+00:00:53.000 --> 00:00:56.000
+And there's an optional human-in-the-loop gate,
+
+13
+00:00:56.000 --> 00:01:03.000
+an approval step where a user can review the request and accept or reject it before the model is ever called.
+
+14
+00:01:03.000 --> 00:01:06.000
+Why does sampling exist at all?
+
+15
+00:01:06.000 --> 00:01:09.000
+The answer is about separating concerns cleanly.
+
+16
+00:01:09.000 --> 00:01:14.000
+A well-designed MCP server is stateless and focused on its domain,
+
+17
+00:01:14.000 --> 00:01:18.000
+covering file operations, database queries, and web search.
+
+18
+00:01:18.000 --> 00:01:24.000
+It shouldn't need to hold its own LLM API credentials or worry about which model to use.
+
+19
+00:01:24.000 --> 00:01:27.000
+The client already has that relationship.
+
+20
+00:01:27.000 --> 00:01:30.000
+It has credentials, it knows the user's preferred model,
+
+21
+00:01:30.000 --> 00:01:34.000
+and it enforces policy about what data can go to the model.
+
+22
+00:01:34.000 --> 00:01:38.000
+Sampling reuses all of that existing infrastructure.
+
+23
+00:01:38.000 --> 00:01:42.000
+Instead of every server independently managing model access,
+
+24
+00:01:42.000 --> 00:01:48.000
+which multiplies credential sprawl and policy gaps, sampling centralizes that control.
+
+25
+00:01:48.000 --> 00:01:53.000
+The client becomes the single control point for all model calls in the system.
+
+26
+00:01:53.000 --> 00:01:57.000
+That's cleaner architecturally and much easier to audit.
+
+27
+00:01:57.000 --> 00:02:03.000
+Let's walk through the sampling flow step-by-step so it's clear what happens at each stage.
+
+28
+00:02:03.000 --> 00:02:07.000
+First, the server decides it needs LLM assistance
+
+29
+00:02:07.000 --> 00:02:12.000
+and sends a create message request to the client over the standard MCP channel.
+
+30
+00:02:12.000 --> 00:02:15.000
+That request includes the messages it wants processed,
+
+31
+00:02:15.000 --> 00:02:19.000
+an optional system prompt, and any model preference hints.
+
+32
+00:02:19.000 --> 00:02:22.000
+Second, the client receives the request.
+
+33
+00:02:22.000 --> 00:02:29.000
+If human in the loop is configured, it pauses and shows the user the pending request for approval.
+
+34
+00:02:29.000 --> 00:02:35.000
+Third, the client calls the API once approved, or immediately if no approval gate is set.
+
+35
+00:02:35.000 --> 00:02:38.000
+Fourth, the model's response comes back to the client,
+
+36
+00:02:38.000 --> 00:02:43.000
+which packages it as a standard MCP result and returns it to the server.
+
+37
+00:02:43.000 --> 00:02:48.000
+The server then uses that result just like any other tool response.
+
+38
+00:02:48.000 --> 00:02:51.000
+One of the most important things to understand about sampling
+
+39
+00:02:51.000 --> 00:02:56.000
+is the distinction between what the server controls and what the client controls.
+
+40
+00:02:56.000 --> 00:02:58.000
+The server owns the message content.
+
+41
+00:02:58.000 --> 00:03:04.000
+It decides what question to ask, what context to include, and what system prompt to use.
+
+42
+00:03:04.000 --> 00:03:06.000
+It can also express model preferences,
+
+43
+00:03:06.000 --> 00:03:11.000
+but the client owns the actual model selection, the credentials, and the data policies.
+
+44
+00:03:11.000 --> 00:03:13.000
+This division is intentional.
+
+45
+00:03:13.000 --> 00:03:17.000
+It means a server operator can't unilaterally choose an expensive model
+
+46
+00:03:17.000 --> 00:03:20.000
+or route-sensitive data to an unapproved endpoint.
+
+47
+00:03:20.000 --> 00:03:25.000
+The client owner, meaning the person deploying the agent, always has the final say.
+
+48
+00:03:25.000 --> 00:03:30.000
+That separation is what makes sampling safe to enable in production systems.
+
+49
+00:03:30.000 --> 00:03:36.000
+Implementing a sampling handler in Python is straightforward with the MCPSDK.
+
+50
+00:03:36.000 --> 00:03:41.000
+You define an async function that accepts a createMessageRequest object,
+
+51
+00:03:41.000 --> 00:03:46.000
+which contains the messages list, the optional system prompt, and the model preferences.
+
+52
+00:03:46.000 --> 00:03:50.000
+Inside that function, you call your LLM API.
+
+53
+00:03:50.000 --> 00:03:53.000
+In most cases, that means the Anthropic API.
+
+54
+00:03:53.000 --> 00:03:56.000
+Using the message content from the sampling request,
+
+55
+00:03:56.000 --> 00:04:01.000
+you then wrap the model's text response in a createMessageResult and return it.
+
+56
+00:04:01.000 --> 00:04:05.000
+You register this function on the client before connecting to any servers,
+
+57
+00:04:05.000 --> 00:04:10.000
+and the SDK automatically routes incoming createMessageRequests to it.
+
+58
+00:04:10.000 --> 00:04:13.000
+The handler is the only code you need to write.
+
+59
+00:04:13.000 --> 00:04:18.000
+The SDK handles all the serialization and protocol routing around it.
+
+60
+00:04:18.000 --> 00:04:24.000
+To make the difference concrete, compare sampling to giving a server its own API key.
+
+61
+00:04:24.000 --> 00:04:29.000
+With direct access, the server calls the LLM independently using its own credentials.
+
+62
+00:04:29.000 --> 00:04:34.000
+You lose visibility into those calls, you can't enforce model selection policy,
+
+63
+00:04:34.000 --> 00:04:38.000
+and credentials multiply across every server you deploy.
+
+64
+00:04:38.000 --> 00:04:40.000
+With sampling, all of that disappears.
+
+65
+00:04:40.000 --> 00:04:43.000
+The server never touches an API key.
+
+66
+00:04:43.000 --> 00:04:46.000
+Every inference request flows through the client,
+
+67
+00:04:46.000 --> 00:04:51.000
+which means every call is visible, logged, and subject to the same policies.
+
+68
+00:04:51.000 --> 00:04:55.000
+If you want to swap models, you change it in one place.
+
+69
+00:04:55.000 --> 00:05:00.000
+If you want to audit what's being sent to the LLM, you have a single choke point.
+
+70
+00:05:00.000 --> 00:05:06.000
+Sampling is simply the more secure and maintainable design for any non-trivial deployment.
+
+71
+00:05:06.000 --> 00:05:11.000
+When a server sends a createMessageRequest, it can include model preferences.
+
+72
+00:05:11.000 --> 00:05:14.000
+These aren't hard requirements, they're suggestions.
+
+73
+00:05:14.000 --> 00:05:18.000
+There are three priority values, each a number from 0 to 1.
+
+74
+00:05:18.000 --> 00:05:22.000
+Cost priority says how much minimizing spend matters.
+
+75
+00:05:22.000 --> 00:05:25.000
+Speed priority says how much low latency matters.
+
+76
+00:05:25.000 --> 00:05:29.000
+Intelligence priority says how capable the model needs to be.
+
+77
+00:05:29.000 --> 00:05:33.000
+The server can also send hints, which are model name substrings
+
+78
+00:05:33.000 --> 00:05:36.000
+The client matches flexibly and evaluates in order.
+
+79
+00:05:36.000 --> 00:05:42.000
+The key constraint is that the client is always free to honor, substitute, or ignore all of this.
+
+80
+00:05:42.000 --> 00:05:46.000
+If the user's policy says only one model is approved,
+
+81
+00:05:46.000 --> 00:05:49.000
+that's what gets used regardless of server preferences.
+
+82
+00:05:49.000 --> 00:05:53.000
+Preferences let servers communicate needs without demanding control,
+
+83
+00:05:53.000 --> 00:05:56.000
+which keeps the client firmly in charge.
+
+84
+00:05:56.000 --> 00:06:00.000
+Human-in-the-loop sampling is a practical safety feature,
+
+85
+00:06:00.000 --> 00:06:06.000
+especially during development or when servers are requesting access to sensitive content.
+
+86
+00:06:06.000 --> 00:06:11.000
+When it's enabled, the client doesn't immediately forward the sampling request to the LLM.
+
+87
+00:06:11.000 --> 00:06:16.000
+Instead, it surfaces the full request so the user can review and approve it,
+
+88
+00:06:16.000 --> 00:06:20.000
+including the messages the server wants to send to the model.
+
+89
+00:06:20.000 --> 00:06:24.000
+The user reviews it and either approves, edits, or rejects it.
+
+90
+00:06:24.000 --> 00:06:27.000
+Only approved requests move forward.
+
+91
+00:06:27.000 --> 00:06:32.000
+This means a misconfigured or malicious server can't silently pump sensitive data
+
+92
+00:06:32.000 --> 00:06:35.000
+into a model call without the user noticing.
+
+93
+00:06:35.000 --> 00:06:38.000
+For production systems handling regulated data,
+
+94
+00:06:38.000 --> 00:06:42.000
+human-in-the-loop can also serve as a compliance checkpoint,
+
+95
+00:06:42.000 --> 00:06:47.000
+giving you an auditable record of every approved model interaction.
+
+96
+00:06:47.000 --> 00:06:53.000
+It's easy to conflate a server having intelligence with a server having model access.
+
+97
+00:06:53.000 --> 00:06:55.000
+Sampling separates them.
+
+98
+00:06:55.000 --> 00:07:00.000
+The server asks for an inference, and the client is the one who picks the model,
+
+99
+00:07:00.000 --> 00:07:04.000
+spins the tokens, and decides whether a human sees it first.
+
+100
+00:07:04.000 --> 00:07:10.000
+That's why you can hand a server real reasoning power and still have exactly one piece to audit.
+
+101
+00:07:10.000 --> 00:07:13.000
+That's it for this lesson. I'll see you in the next one.
+

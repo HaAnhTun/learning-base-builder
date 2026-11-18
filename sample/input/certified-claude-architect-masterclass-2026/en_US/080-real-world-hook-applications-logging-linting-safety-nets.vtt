@@ -1,0 +1,290 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.400
+For the next few minutes, we'll dig into putting hooks to work in real engineering scenarios.
+
+2
+00:00:06.400 --> 00:00:10.800
+We'll walk through six patterns, starting with auto-formatting on file right
+
+3
+00:00:10.800 --> 00:00:15.439
+and blocking destructive bash commands, then logging tool calls for audit trails,
+
+4
+00:00:16.000 --> 00:00:22.959
+notifications on task completion, automatic test runs after edits, and API cost tracking.
+
+5
+00:00:22.959 --> 00:00:29.200
+Each pattern maps to a specific hook type. You finish a refactor and the pull request comes
+
+6
+00:00:29.200 --> 00:00:34.319
+back covered in comments about indentation. Nobody meant to skip the formatter, they just
+
+7
+00:00:34.319 --> 00:00:39.680
+forgot. That's exactly the gap hooks close, and a few of them do most of the work.
+
+8
+00:00:39.680 --> 00:00:46.080
+An auto-format hook is a post-tool use hook that runs a code formatter after any file is written,
+
+9
+00:00:46.080 --> 00:00:52.319
+so style is never a manual step. A safety net hook is a pre-tool use hook that inspects pending
+
+10
+00:00:52.319 --> 00:00:58.240
+bash commands for dangerous patterns and stops them before they execute. An audit log hook is a
+
+11
+00:00:58.240 --> 00:01:04.080
+post-tool use hook that records every tool call with a timestamp, leaving a traceable history of
+
+12
+00:01:04.080 --> 00:01:10.959
+what the session actually did. Which one you reach for follows from timing. The auto-format pattern
+
+13
+00:01:10.959 --> 00:01:16.080
+is one of the most common hook use cases. Developers forget to run formatters manually,
+
+14
+00:01:16.080 --> 00:01:21.599
+and inconsistent style creates noise in code reviews and slows down pull request cycles.
+
+15
+00:01:22.160 --> 00:01:27.519
+The solution is a post-tool use hook that fires after any write or edit call,
+
+16
+00:01:27.519 --> 00:01:33.919
+then immediately runs black, prettier, or whatever formatter the project requires. Post-tool use is
+
+17
+00:01:33.919 --> 00:01:40.239
+the write hook type here because the file already exists on disk when the hook fires. The formatter
+
+18
+00:01:40.239 --> 00:01:46.559
+edits the saved file and the result is style compliant code on every write with zero extra
+
+19
+00:01:46.559 --> 00:01:52.239
+effort from the developer or from Claude. It's one of the fastest wins a team can get from hooks.
+
+20
+00:01:53.440 --> 00:01:59.919
+The safety net pattern uses pre-tool use because pre-tool use fires before the command executes.
+
+21
+00:01:59.919 --> 00:02:05.599
+That timing is everything. The hook inspects the incoming bash command string and checks it
+
+22
+00:02:05.599 --> 00:02:12.800
+against a list of dangerous patterns like rm-rf, drop table, format disk, and similar destructive
+
+23
+00:02:12.800 --> 00:02:19.440
+operations. If a match is found, the hook returns exit code 2, and Claude's execution stops
+
+24
+00:02:19.440 --> 00:02:26.000
+immediately. Exit code 2 is the one that blocks. Exit code 1 and other non-zero codes are treated
+
+25
+00:02:26.000 --> 00:02:33.039
+as non-blocking errors, so the command still runs. A post-tool use hook can't help here because post-tool
+
+26
+00:02:33.039 --> 00:02:38.880
+use fires after the action is already done. Prevention requires pre-tool use. Knowing which
+
+27
+00:02:38.880 --> 00:02:44.639
+hook type to reach for based on timing is one of the most important hook concepts to internalize.
+
+28
+00:02:45.839 --> 00:02:50.639
+Audit logging has several implementation flavors depending on what the team needs.
+
+29
+00:02:50.639 --> 00:02:57.600
+A simple append-only log writes the tool name, arguments, and timestamp as plain text after each
+
+30
+00:02:57.600 --> 00:03:04.000
+tool call. It's easy to implement and readable without tooling. A structured JSON log stores
+
+31
+00:03:04.000 --> 00:03:08.880
+each entry as a JSON object, which makes it easy to filter and query programmatically.
+
+32
+00:03:09.440 --> 00:03:15.360
+Remote logging pushes entries to an external endpoint for centralized storage across many
+
+33
+00:03:15.360 --> 00:03:20.880
+sessions, which is useful in team environments. A stop hook adds a final summary entry when the
+
+34
+00:03:20.880 --> 00:03:26.960
+agent finishes its run, giving the log a clean end marker. The right format depends on whether
+
+35
+00:03:26.960 --> 00:03:31.919
+the log is consumed by humans reading a terminal or by machines running queries.
+
+36
+00:03:32.720 --> 00:03:38.559
+It's worth being clear about when pre-tool use versus post-tool use is the right choice for
+
+37
+00:03:38.559 --> 00:03:45.279
+logging. Pre-tool use logging records intent before execution. It captures what was attempted,
+
+38
+00:03:45.279 --> 00:03:51.039
+including actions that were subsequently blocked. That's useful for detecting policy violations
+
+39
+00:03:51.039 --> 00:03:57.440
+because a blocked action still leaves a record in a pre-tool use log. Post-tool use logging records
+
+40
+00:03:57.839 --> 00:04:03.759
+results after execution. It captures what actually succeeded, including output and
+
+41
+00:04:03.759 --> 00:04:10.160
+side effects. If you need a record of completed work, use post-tool use. If you need to catch
+
+42
+00:04:10.160 --> 00:04:15.759
+attempted violations, pre-tool use gives you visibility into blocked actions as well as
+
+43
+00:04:15.759 --> 00:04:21.519
+completed ones. Many teams run both hooks together to get a complete picture of agent
+
+44
+00:04:21.519 --> 00:04:27.760
+behavior from intent all the way through execution. Notification hooks use the stop
+
+45
+00:04:27.760 --> 00:04:32.799
+lifecycle event. Stop fires once when the agent reaches the end of its execution loop,
+
+46
+00:04:32.799 --> 00:04:38.480
+which makes it a natural trigger for completion signals. A typical implementation calls a slack
+
+47
+00:04:38.480 --> 00:04:44.799
+webhook, sends a system notification, or posts to a monitoring endpoint. The payload should include
+
+48
+00:04:44.799 --> 00:04:50.959
+the task name, elapsed time, and whether the session ended cleanly or with an error. This
+
+49
+00:04:50.959 --> 00:04:56.000
+pattern is most useful for long-running batch jobs, where the developer steps away and needs
+
+50
+00:04:56.000 --> 00:05:01.359
+to know when results are ready without pulling the terminal. It decouples the developer's attention
+
+51
+00:05:01.359 --> 00:05:07.040
+from Claude's execution time, which is especially valuable on tasks that take 10 or 20 minutes to
+
+52
+00:05:07.040 --> 00:05:13.279
+complete. Test run hooks close the feedback loop between writing code and confirming it works.
+
+53
+00:05:13.839 --> 00:05:19.679
+The hook fires post-tool use on write or edit calls, then checks the file path to decide whether
+
+54
+00:05:19.679 --> 00:05:25.839
+to run tests. You don't want the full test suite to execute every time Claude edits a documentation
+
+55
+00:05:25.839 --> 00:05:32.640
+file or a configuration comment. Scoping the hook to test relevant paths, like anything under SRC or
+
+56
+00:05:32.640 --> 00:05:40.079
+lib, limits execution to meaningful changes. When the path matches, the hook runs Pytest, Jest, or
+
+57
+00:05:40.079 --> 00:05:46.720
+whatever runner the project uses via a bash call. The developer sees test results immediately after
+
+58
+00:05:46.720 --> 00:05:52.880
+each code edit, with no context switch required. That tight feedback loop makes it much harder for
+
+59
+00:05:52.880 --> 00:05:59.839
+a broken test to slip through unnoticed. Cost tracking hooks monitor API usage at the session
+
+60
+00:05:59.839 --> 00:06:06.079
+level. A post-tool use hook parses usage from the tool and transcript output where it's available,
+
+61
+00:06:06.079 --> 00:06:10.959
+recording the model name, a timestamp, and any token counts the payload exposes.
+
+62
+00:06:11.519 --> 00:06:16.959
+It appends that record to a session cost file or pushes it to a local database for aggregation,
+
+63
+00:06:17.600 --> 00:06:22.079
+reviewing the data across a session, surfaces which prompts are expensive,
+
+64
+00:06:22.079 --> 00:06:28.079
+and whether overall usage is trending toward budget limits. Teams running automated pipelines
+
+65
+00:06:28.079 --> 00:06:33.519
+use this pattern to catch runaway sessions before they generate unexpected invoices.
+
+66
+00:06:33.519 --> 00:06:40.160
+It's a lightweight addition that pays off quickly on high-volume workflows. Without it, cost overruns
+
+67
+00:06:40.160 --> 00:06:44.320
+often go unnoticed until the billing cycle ends and the damage is already done.
+
+68
+00:06:46.000 --> 00:06:51.679
+Hooks allow you to attach your own deterministic behavior to fixed points in the agent's life cycle
+
+69
+00:06:51.679 --> 00:06:57.279
+and can be very powerful. It matters because formatting, test runs, and audit trails stop
+
+70
+00:06:57.279 --> 00:07:02.720
+depending on someone remembering to do them. One thing to watch, the event you pick decides whether
+
+71
+00:07:02.720 --> 00:07:08.880
+you're observing or intervening. Post-tool use can only report on what already happened.
+
+72
+00:07:08.880 --> 00:07:14.799
+Stopping something requires pre-tool use. That does it for this lesson. I'll see you in the next one.
+

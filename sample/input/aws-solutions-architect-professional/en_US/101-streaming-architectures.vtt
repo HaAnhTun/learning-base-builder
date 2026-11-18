@@ -1,0 +1,750 @@
+WEBVTT
+
+1
+00:00:00.363 --> 00:00:01.560
+<v Instructor>So let's talk about</v>
+
+2
+00:00:01.560 --> 00:00:03.450
+some real-time architectures
+
+3
+00:00:03.450 --> 00:00:05.310
+for your full data engineering pipeline.
+
+4
+00:00:05.310 --> 00:00:07.350
+So we can produce data, for example,
+
+5
+00:00:07.350 --> 00:00:09.420
+into Amazon Kinesis data streams,
+
+6
+00:00:09.420 --> 00:00:10.950
+and then we can build several things out of it.
+
+7
+00:00:10.950 --> 00:00:13.560
+We can build an Amazon EC2 based application
+
+8
+00:00:13.560 --> 00:00:14.850
+to read from your stream
+
+9
+00:00:14.850 --> 00:00:16.950
+and your full power over what you do.
+
+10
+00:00:16.950 --> 00:00:18.540
+You can also build an application
+
+11
+00:00:18.540 --> 00:00:20.670
+directly under Apache Flink
+
+12
+00:00:20.670 --> 00:00:21.900
+for the managed service.
+
+13
+00:00:21.900 --> 00:00:23.970
+So this is for streaming analytics,
+
+14
+00:00:23.970 --> 00:00:26.130
+lots of data transformations and so on.
+
+15
+00:00:26.130 --> 00:00:27.600
+It's a very great framework
+
+16
+00:00:27.600 --> 00:00:30.480
+and the managed version on AWS is very handy,
+
+17
+00:00:30.480 --> 00:00:33.225
+or you can just sync this data into various targets.
+
+18
+00:00:33.225 --> 00:00:34.230
+And for this,
+
+19
+00:00:34.230 --> 00:00:36.630
+the best is to use Amazon data Firehose
+
+20
+00:00:36.630 --> 00:00:39.060
+in which you can send, for example, to Amazon S3
+
+21
+00:00:39.060 --> 00:00:40.843
+and through Amazon S3.
+
+22
+00:00:40.843 --> 00:00:45.090
+A very popular target is Amazon Redshift,
+
+23
+00:00:45.090 --> 00:00:46.200
+but you can also send it,
+
+24
+00:00:46.200 --> 00:00:48.720
+for example, to Amazon open search service.
+
+25
+00:00:48.720 --> 00:00:50.400
+Finally, you should know
+
+26
+00:00:50.400 --> 00:00:53.550
+that you can also produce directly into Amazon Data Firehose
+
+27
+00:00:53.550 --> 00:00:54.383
+if you want to.
+
+28
+00:00:55.560 --> 00:00:58.320
+Another architectural discussion we may have is,
+
+29
+00:00:58.320 --> 00:01:00.870
+we have different things to do streaming in AWS.
+
+30
+00:01:00.870 --> 00:01:03.210
+Which one is going to be the more cost effective?
+
+31
+00:01:03.210 --> 00:01:04.110
+So let's say for example,
+
+32
+00:01:04.110 --> 00:01:06.750
+that you plan on receiving 3000 messages
+
+33
+00:01:06.750 --> 00:01:08.940
+of one kilobytes per second.
+
+34
+00:01:08.940 --> 00:01:10.320
+So this is all your data
+
+35
+00:01:10.320 --> 00:01:12.660
+going to be sent to your architecture.
+
+36
+00:01:12.660 --> 00:01:15.810
+So option number one is to use Kinesis data streams
+
+37
+00:01:15.810 --> 00:01:17.490
+with a Lambda function.
+
+38
+00:01:17.490 --> 00:01:21.390
+And option number two is going to be using a DynamoDB table
+
+39
+00:01:21.390 --> 00:01:24.330
+with a DynamoDB streams and a Lambda function.
+
+40
+00:01:24.330 --> 00:01:27.630
+So ask yourself what is going to be the most efficient
+
+41
+00:01:27.630 --> 00:01:29.610
+and what is going to be the most cost effective,
+
+42
+00:01:29.610 --> 00:01:31.440
+and what trade-offs are we going to have
+
+43
+00:01:31.440 --> 00:01:34.710
+between these two architectures because they both work.
+
+44
+00:01:34.710 --> 00:01:37.440
+Well for Kinesis, I did some computations for you.
+
+45
+00:01:37.440 --> 00:01:40.500
+So we have three shards because we need 3000 messages
+
+46
+00:01:40.500 --> 00:01:41.760
+of one kilobytes.
+
+47
+00:01:41.760 --> 00:01:44.310
+So three shards are gonna be three megabytes per second,
+
+48
+00:01:44.310 --> 00:01:49.140
+and the cost of three shards per hour is three times 0.015.
+
+49
+00:01:49.140 --> 00:01:52.260
+This is based on some numbers I found on the AWS websites,
+
+50
+00:01:52.260 --> 00:01:57.260
+and this gives you about $32 per month of cost.
+
+51
+00:01:57.450 --> 00:02:00.870
+Then to send the data into Lambda, this is very easy.
+
+52
+00:02:00.870 --> 00:02:02.790
+We can just use an event mapper
+
+53
+00:02:02.790 --> 00:02:06.210
+and if we wanted to send the data for long-term storage,
+
+54
+00:02:06.210 --> 00:02:08.670
+we would need to use something like Kinesis Data Firehose.
+
+55
+00:02:08.670 --> 00:02:12.300
+I'll put it into S3 and we would get long-term storage there
+
+56
+00:02:12.300 --> 00:02:16.050
+because can see the streams will have 24 hours to one year
+
+57
+00:02:16.050 --> 00:02:19.380
+of data retention, but after that, the data will be lost.
+
+58
+00:02:19.380 --> 00:02:21.540
+So this is a good combo to use KDF
+
+59
+00:02:21.540 --> 00:02:23.400
+to persist the data into S3
+
+60
+00:02:23.400 --> 00:02:25.920
+very cheaply for long-term storage.
+
+61
+00:02:25.920 --> 00:02:29.220
+Next, when you look at DynamoDB and DynamoDB streams,
+
+62
+00:02:29.220 --> 00:02:32.910
+we need to have 3000 writes of one kilobyte per second.
+
+63
+00:02:32.910 --> 00:02:37.830
+So if you remember, that is 3000 WCU, write capacity units,
+
+64
+00:02:37.830 --> 00:02:40.110
+and that gives you three megabytes per second.
+
+65
+00:02:40.110 --> 00:02:43.440
+Now, if you do a computation of how much that cost you,
+
+66
+00:02:43.440 --> 00:02:48.440
+this cost you about 1,450 US dollars per month
+
+67
+00:02:50.460 --> 00:02:52.470
+just for that DynamoDB table.
+
+68
+00:02:52.470 --> 00:02:54.120
+So the good thing is that yes,
+
+69
+00:02:54.120 --> 00:02:56.010
+we do get storage in DynamoDB,
+
+70
+00:02:56.010 --> 00:02:58.230
+so the data can be stored long term there,
+
+71
+00:02:58.230 --> 00:03:01.470
+but the streaming aspect of things is extremely expensive.
+
+72
+00:03:01.470 --> 00:03:04.312
+So there's a factor 50 of cost between Kinesis
+
+73
+00:03:04.312 --> 00:03:06.360
+and DynamoDB plus DynamoDB streams.
+
+74
+00:03:06.360 --> 00:03:08.100
+So this is something you have to realize
+
+75
+00:03:08.100 --> 00:03:09.270
+as a solution architect.
+
+76
+00:03:09.270 --> 00:03:10.830
+It's not because something works,
+
+77
+00:03:10.830 --> 00:03:12.600
+but it's going to be a great solution.
+
+78
+00:03:12.600 --> 00:03:16.230
+And so in this example, both solutions work for streaming,
+
+79
+00:03:16.230 --> 00:03:19.770
+but Kinesis is obviously going to be a much cheaper
+
+80
+00:03:19.770 --> 00:03:22.713
+and probably better choice for what you're trying to do.
+
+81
+00:03:23.610 --> 00:03:27.167
+Okay, so now let's look at all the technologies
+
+82
+00:03:27.167 --> 00:03:29.190
+we've seen so far for data exchange
+
+83
+00:03:29.190 --> 00:03:31.530
+and we can understand where are the different aspects
+
+84
+00:03:31.530 --> 00:03:34.800
+based on data retention, ordering, scalability,
+
+85
+00:03:34.800 --> 00:03:37.260
+the possible readers and latency.
+
+86
+00:03:37.260 --> 00:03:40.200
+So Kinesis data streams is immutable data,
+
+87
+00:03:40.200 --> 00:03:42.330
+so once it's inserted, we cannot change it
+
+88
+00:03:42.330 --> 00:03:44.820
+and the retention is up to one year.
+
+89
+00:03:44.820 --> 00:03:48.450
+We can export to S3 using Kinesis Data Firehose.
+
+90
+00:03:48.450 --> 00:03:50.250
+The ordering is going to be per shard,
+
+91
+00:03:50.250 --> 00:03:52.200
+and we have to provision the shards in advance.
+
+92
+00:03:52.200 --> 00:03:55.260
+And the readers for the shards can be EC2 instances,
+
+93
+00:03:55.260 --> 00:03:57.690
+Lambda function, Kinesis Data Firehose,
+
+94
+00:03:57.690 --> 00:04:00.870
+Kinesis Data analytics, and KCL, Kinesis Client Library
+
+95
+00:04:00.870 --> 00:04:02.700
+that has a checkpointing feature.
+
+96
+00:04:02.700 --> 00:04:05.880
+In terms of latency, if we're using Kinesis data streams,
+
+97
+00:04:05.880 --> 00:04:08.130
+then we have about 200 millisecond latency.
+
+98
+00:04:08.130 --> 00:04:09.930
+And if we're using Kinesis Data Firehose,
+
+99
+00:04:09.930 --> 00:04:11.303
+it's not latency, it's near real time,
+
+100
+00:04:11.303 --> 00:04:13.860
+so it's about going to be one minute minimum
+
+101
+00:04:13.860 --> 00:04:15.480
+to flush that buffer size
+
+102
+00:04:15.480 --> 00:04:18.720
+in that buffer into Amazon S3 for example.
+
+103
+00:04:18.720 --> 00:04:20.270
+Next, let's look at SQS.
+
+104
+00:04:20.270 --> 00:04:22.620
+So SQS, the data is also immutable,
+
+105
+00:04:22.620 --> 00:04:25.410
+once it's inserted, it cannot be removed,
+
+106
+00:04:25.410 --> 00:04:26.910
+and the data retention in SQS
+
+107
+00:04:26.910 --> 00:04:29.970
+is going to be between 1-14 days.
+
+108
+00:04:29.970 --> 00:04:32.340
+There is no ordering for SQS standard,
+
+109
+00:04:32.340 --> 00:04:34.890
+and the scalability is virtually unlimited.
+
+110
+00:04:34.890 --> 00:04:37.530
+There's a soft limit, but you can always increase it.
+
+111
+00:04:37.530 --> 00:04:41.880
+The readers of SQS is going to be EC2 or Lambda functions,
+
+112
+00:04:41.880 --> 00:04:44.190
+and the latency in this case is going to be quite low
+
+113
+00:04:44.190 --> 00:04:47.160
+between 10 to 100 milliseconds.
+
+114
+00:04:47.160 --> 00:04:50.160
+Then we have SQS FIFO, which is very similar to SQS,
+
+115
+00:04:50.160 --> 00:04:51.810
+but the data is still immutable.
+
+116
+00:04:51.810 --> 00:04:53.250
+We still have the same retention,
+
+117
+00:04:53.250 --> 00:04:55.860
+but now there's an ordering we can have thanks to FIFO,
+
+118
+00:04:55.860 --> 00:04:57.450
+which means "First In First Out."
+
+119
+00:04:57.450 --> 00:04:59.760
+And so we get ordering per group id.
+
+120
+00:04:59.760 --> 00:05:01.680
+Now, because we have this ordering constraints,
+
+121
+00:05:01.680 --> 00:05:04.410
+the scalability is going to be different.
+
+122
+00:05:04.410 --> 00:05:07.140
+So we have about 300 messages per second
+
+123
+00:05:07.140 --> 00:05:09.500
+or three thousands if we're using batching by batching
+
+124
+00:05:09.500 --> 00:05:11.070
+10 messages at a time.
+
+125
+00:05:11.070 --> 00:05:14.130
+The readers can also be EC2 and Lambda function,
+
+126
+00:05:14.130 --> 00:05:15.450
+and the latency will be quite low
+
+127
+00:05:15.450 --> 00:05:17.910
+between 10 to 100 milliseconds.
+
+128
+00:05:17.910 --> 00:05:21.090
+Then we have SNS, which is also going to be immutable data.
+
+129
+00:05:21.090 --> 00:05:23.486
+There's no data retention whatsoever, no ordering.
+
+130
+00:05:23.486 --> 00:05:26.370
+This is going to be also something that scales really well.
+
+131
+00:05:26.370 --> 00:05:28.830
+So there's a self limit, but you can always increase it.
+
+132
+00:05:28.830 --> 00:05:31.050
+And in terms of what can consume from SNS,
+
+133
+00:05:31.050 --> 00:05:32.370
+these are called subscribers.
+
+134
+00:05:32.370 --> 00:05:34.980
+So it can be an HTTP subscriber, Lambda function,
+
+135
+00:05:34.980 --> 00:05:38.136
+an email or SQSQ if we're using find out patterns,
+
+136
+00:05:38.136 --> 00:05:39.870
+this kind of stuff.
+
+137
+00:05:39.870 --> 00:05:41.460
+And the latency is going to be quite low
+
+138
+00:05:41.460 --> 00:05:43.967
+between 10 to 100 milliseconds.
+
+139
+00:05:43.967 --> 00:05:47.340
+DynamoDB now is going to be having mutable data,
+
+140
+00:05:47.340 --> 00:05:50.910
+so once we insert data into DynamoDB, we can override it.
+
+141
+00:05:50.910 --> 00:05:52.770
+The retention of the data can be infinite,
+
+142
+00:05:52.770 --> 00:05:56.130
+or we can implement a time to live on our rows.
+
+143
+00:05:56.130 --> 00:05:58.200
+There is no ordering in DynamoDB.
+
+144
+00:05:58.200 --> 00:06:02.790
+For scalability, we have to use either some WCU and RCU
+
+145
+00:06:02.790 --> 00:06:05.052
+to create and provision our database
+
+146
+00:06:05.052 --> 00:06:07.860
+and maybe have auto scaling on top of it,
+
+147
+00:06:07.860 --> 00:06:09.390
+or we can use on demand scaling
+
+148
+00:06:09.390 --> 00:06:11.850
+if we don't know our usage pattern in advance
+
+149
+00:06:11.850 --> 00:06:13.440
+and we have something very spiky,
+
+150
+00:06:13.440 --> 00:06:16.140
+very unpredictable, or very, very, very low.
+
+151
+00:06:16.140 --> 00:06:18.840
+Finally, in terms of what can read from a DynamoDB,
+
+152
+00:06:18.840 --> 00:06:19.920
+well, you have the SDK,
+
+153
+00:06:19.920 --> 00:06:21.810
+but you cannot read a stream using the SDK.
+
+154
+00:06:21.810 --> 00:06:23.760
+You need to create first a DynamoDB stream,
+
+155
+00:06:23.760 --> 00:06:25.680
+and then that DynamoDB stream
+
+156
+00:06:25.680 --> 00:06:27.510
+can be read from a Lambda function
+
+157
+00:06:27.510 --> 00:06:29.460
+or an EC2 instance, for example.
+
+158
+00:06:29.460 --> 00:06:31.020
+The latency is also quite low
+
+159
+00:06:31.020 --> 00:06:33.660
+between 10 to 100 milliseconds.
+
+160
+00:06:33.660 --> 00:06:36.960
+And finally, S3, yes, S3 is a way to stream data
+
+161
+00:06:36.960 --> 00:06:38.820
+if you wanted to, if you're a bit twisted.
+
+162
+00:06:38.820 --> 00:06:41.670
+So you can insert data in S3 and replace it.
+
+163
+00:06:41.670 --> 00:06:43.350
+So there is a mutable aspect,
+
+164
+00:06:43.350 --> 00:06:45.510
+but we've seen that there is S3 object logs
+
+165
+00:06:45.510 --> 00:06:47.760
+or versioning that can help against that.
+
+166
+00:06:47.760 --> 00:06:49.680
+The retention is going to be infinite,
+
+167
+00:06:49.680 --> 00:06:51.240
+but we can set up lifecycle policies
+
+168
+00:06:51.240 --> 00:06:53.130
+to transition between different tiers.
+
+169
+00:06:53.130 --> 00:06:57.510
+And we can also have a lifecycle policy to delete data.
+
+170
+00:06:57.510 --> 00:06:59.580
+There's no ordering in S3.
+
+171
+00:06:59.580 --> 00:07:03.060
+For scalability, we get about 3,500 puts per second
+
+172
+00:07:03.060 --> 00:07:05.550
+and 5,500 gets per second per prefix,
+
+173
+00:07:05.550 --> 00:07:07.920
+and the storage itself is infinite.
+
+174
+00:07:07.920 --> 00:07:10.650
+And then the readers of S3 can be the SDK
+
+175
+00:07:10.650 --> 00:07:13.560
+to get a specific object.
+
+176
+00:07:13.560 --> 00:07:14.850
+Or we can use S3 events
+
+177
+00:07:14.850 --> 00:07:18.510
+to get notified whenever an object is inserted into S3.
+
+178
+00:07:18.510 --> 00:07:20.550
+In terms of latency, it is quite low,
+
+179
+00:07:20.550 --> 00:07:23.310
+so between 10 to 100 milliseconds.
+
+180
+00:07:23.310 --> 00:07:24.143
+So that's it.
+
+181
+00:07:24.143 --> 00:07:24.976
+Hopefully that was helpful
+
+182
+00:07:24.976 --> 00:07:26.400
+from an architectural perspective.
+
+183
+00:07:26.400 --> 00:07:27.330
+Hopefully it's very clear
+
+184
+00:07:27.330 --> 00:07:29.760
+whether the differences between all these technologies
+
+185
+00:07:29.760 --> 00:07:31.770
+and you will be able to answer the questions
+
+186
+00:07:31.770 --> 00:07:33.600
+based on them at the exam.
+
+187
+00:07:33.600 --> 00:07:36.350
+Alright, that's it. I will see you in the next lecture.
+

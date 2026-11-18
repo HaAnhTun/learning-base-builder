@@ -1,0 +1,282 @@
+WEBVTT
+
+1
+00:00:00.540 --> 00:00:02.070
+<v Instructor>Okay, so let's have a little talk</v>
+
+2
+00:00:02.070 --> 00:00:04.860
+about the Route 53 Resolver.
+
+3
+00:00:04.860 --> 00:00:06.480
+So the idea is that by default,
+
+4
+00:00:06.480 --> 00:00:08.430
+when you have a Route 53 Resolver,
+
+5
+00:00:08.430 --> 00:00:10.920
+which is the basic thing you create in Route 53
+
+6
+00:00:10.920 --> 00:00:12.180
+when you start using it,
+
+7
+00:00:12.180 --> 00:00:14.040
+it will answer DNS queries
+
+8
+00:00:14.040 --> 00:00:17.010
+for the local domain names for your EC2 instances
+
+9
+00:00:17.010 --> 00:00:20.820
+for the records in your private hosted zones,
+
+10
+00:00:20.820 --> 00:00:23.790
+as well as for the records in your public name server.
+
+11
+00:00:23.790 --> 00:00:26.700
+So everything you create under Route 53
+
+12
+00:00:26.700 --> 00:00:29.550
+is going to be answered within your account.
+
+13
+00:00:29.550 --> 00:00:32.910
+But you may want to have a situation
+
+14
+00:00:32.910 --> 00:00:34.170
+where you want a hybrid DNS.
+
+15
+00:00:34.170 --> 00:00:37.050
+That means that you want this resolver to resolve
+
+16
+00:00:37.050 --> 00:00:40.500
+as well the DNS of your own network and vice versa.
+
+17
+00:00:40.500 --> 00:00:42.420
+So you want to establish connectivity
+
+18
+00:00:42.420 --> 00:00:44.910
+between your AWS Cloud DNS
+
+19
+00:00:44.910 --> 00:00:49.260
+and the DNS of your on-premises network.
+
+20
+00:00:49.260 --> 00:00:50.520
+And so how do we do this?
+
+21
+00:00:50.520 --> 00:00:51.900
+For this, we're going to use what's called
+
+22
+00:00:51.900 --> 00:00:52.920
+a Resolver endpoint.
+
+23
+00:00:52.920 --> 00:00:55.500
+So this is just a simplified version,
+
+24
+00:00:55.500 --> 00:00:56.850
+but the idea is that we're going
+
+25
+00:00:56.850 --> 00:00:58.680
+to create an inbound endpoint
+
+26
+00:00:58.680 --> 00:01:02.340
+that will allow the DNS resolvers of on-premises resources
+
+27
+00:01:02.340 --> 00:01:05.880
+to resolve domain names of AWS resources.
+
+28
+00:01:05.880 --> 00:01:06.713
+So how does that work?
+
+29
+00:01:06.713 --> 00:01:08.100
+Say we have established
+
+30
+00:01:08.100 --> 00:01:11.610
+our own Route 53 Resolver in our cloud
+
+31
+00:01:11.610 --> 00:01:14.610
+and we have an EC2 instance, a private hosted zone,
+
+32
+00:01:14.610 --> 00:01:16.800
+and we have our on-premises data center.
+
+33
+00:01:16.800 --> 00:01:19.350
+A server on it is going to be, first of all,
+
+34
+00:01:19.350 --> 00:01:20.280
+we need to establish of course,
+
+35
+00:01:20.280 --> 00:01:23.460
+connectivity between our data center and AWS
+
+36
+00:01:23.460 --> 00:01:26.310
+using a VPN or a direct connect connection.
+
+37
+00:01:26.310 --> 00:01:29.640
+And then this server is going to do a DNS query,
+
+38
+00:01:29.640 --> 00:01:31.890
+for example, to look for a domain name
+
+39
+00:01:31.890 --> 00:01:34.710
+that belongs to our private hosted zone,
+
+40
+00:01:34.710 --> 00:01:37.410
+is going to be passed to the closest DNS resolver,
+
+41
+00:01:37.410 --> 00:01:39.330
+so the on-premises resolver,
+
+42
+00:01:39.330 --> 00:01:42.210
+and these resolver are going to be set up to talk
+
+43
+00:01:42.210 --> 00:01:44.370
+to a resolver inbound endpoint,
+
+44
+00:01:44.370 --> 00:01:48.840
+and to pass on this DNS query into our AWS Cloud.
+
+45
+00:01:48.840 --> 00:01:51.120
+And this resolver knows how to talk
+
+46
+00:01:51.120 --> 00:01:52.920
+to the Route 53 Resolver.
+
+47
+00:01:52.920 --> 00:01:55.050
+So this is how you have the full chain
+
+48
+00:01:55.050 --> 00:01:59.400
+of lookups from your on-premises data center
+
+49
+00:01:59.400 --> 00:02:01.710
+to your cloud using an inbound endpoint.
+
+50
+00:02:01.710 --> 00:02:03.480
+And of course you can do it the other way
+
+51
+00:02:03.480 --> 00:02:06.870
+with an outbound endpoint in which your Route 53 Resolver
+
+52
+00:02:06.870 --> 00:02:10.710
+will forward DNS queries to your resolver on-premises.
+
+53
+00:02:10.710 --> 00:02:12.210
+So again, if we have a look,
+
+54
+00:02:12.210 --> 00:02:15.180
+we have the two infrastructures that are connected,
+
+55
+00:02:15.180 --> 00:02:18.150
+and then we're going to have a resolver outbound endpoint.
+
+56
+00:02:18.150 --> 00:02:20.970
+And this time whenever you EC2 instance queries
+
+57
+00:02:20.970 --> 00:02:24.630
+for a DNS query that is resolved on-premises,
+
+58
+00:02:24.630 --> 00:02:26.940
+for example, web.onpremise.private,
+
+59
+00:02:26.940 --> 00:02:30.390
+is going to be passed through the resolver outbound endpoint
+
+60
+00:02:30.390 --> 00:02:34.050
+to the DNS resolvers of the on-premises data center,
+
+61
+00:02:34.050 --> 00:02:35.640
+and we'll be good to go.
+
+62
+00:02:35.640 --> 00:02:36.473
+So that's it.
+
+63
+00:02:36.473 --> 00:02:39.090
+The idea behind this, I think, a bit complicated lecture
+
+64
+00:02:39.090 --> 00:02:40.890
+is that if you want to connect
+
+65
+00:02:40.890 --> 00:02:43.350
+your on-premises data center and AWS
+
+66
+00:02:43.350 --> 00:02:46.230
+and make sure the DNS queries are resolved both ways,
+
+67
+00:02:46.230 --> 00:02:49.830
+you must use the resolver inbound and outbound endpoint.
+
+68
+00:02:49.830 --> 00:02:51.810
+And that's about it. All you should know.
+
+69
+00:02:51.810 --> 00:02:52.860
+All right, that's it for this lecture.
+
+70
+00:02:52.860 --> 00:02:55.860
+I hope you liked it, and I will see you in the next lecture.
+

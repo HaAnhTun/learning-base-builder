@@ -1,0 +1,198 @@
+WEBVTT
+
+1
+00:00:02.070 --> 00:00:04.290
+<v Instructor>So let's go into Storage Gateway</v>
+
+2
+00:00:04.290 --> 00:00:07.590
+and we'll have a look at just how to create a gateway.
+
+3
+00:00:07.590 --> 00:00:09.660
+So here we have a gateway name.
+
+4
+00:00:09.660 --> 00:00:12.000
+So I'll call this one Demo Gateway,
+
+5
+00:00:12.000 --> 00:00:12.870
+and let's look at the options.
+
+6
+00:00:12.870 --> 00:00:15.690
+So we have the Amazon S3 file gateway,
+
+7
+00:00:15.690 --> 00:00:20.220
+which is to access files in Amazon S3 directly through NFS
+
+8
+00:00:20.220 --> 00:00:23.280
+or SMB file protocol and has local caching.
+
+9
+00:00:23.280 --> 00:00:25.290
+We have FSX, but this is grayed out
+
+10
+00:00:25.290 --> 00:00:27.690
+because this is going away, so forget about it.
+
+11
+00:00:27.690 --> 00:00:30.240
+Then, we have tape gateway and volume gateway.
+
+12
+00:00:30.240 --> 00:00:33.420
+So I just wanna show you the quick options of all of these.
+
+13
+00:00:33.420 --> 00:00:35.460
+So for Amazon S3 file gateway,
+
+14
+00:00:35.460 --> 00:00:37.410
+we can host it in several different ways.
+
+15
+00:00:37.410 --> 00:00:40.830
+We can host it on VMware, on Microsoft Hyper-V,
+
+16
+00:00:40.830 --> 00:00:43.680
+on Linux KVM, or on Amazon EC2.
+
+17
+00:00:43.680 --> 00:00:44.820
+And if you launch on Amazon EC2,
+
+18
+00:00:44.820 --> 00:00:48.090
+that means that your caching and your gateway
+
+19
+00:00:48.090 --> 00:00:50.370
+is going to be within your accounts of AWS,
+
+20
+00:00:50.370 --> 00:00:52.470
+which may or may not be desirable.
+
+21
+00:00:52.470 --> 00:00:54.960
+But if you use any of these, for example, VMware,
+
+22
+00:00:54.960 --> 00:00:57.510
+Microsoft Hyper-V, or Linux KVM,
+
+23
+00:00:57.510 --> 00:00:58.860
+that means that you can set up
+
+24
+00:00:58.860 --> 00:01:01.590
+the storage gateway directly on premises
+
+25
+00:01:01.590 --> 00:01:02.820
+in your data center.
+
+26
+00:01:02.820 --> 00:01:05.340
+And so therefore, the Amazon S3 data
+
+27
+00:01:05.340 --> 00:01:09.270
+is going to live closer to your servers.
+
+28
+00:01:09.270 --> 00:01:12.030
+So this may be more desirable or less based
+
+29
+00:01:12.030 --> 00:01:13.890
+on your use case.
+
+30
+00:01:13.890 --> 00:01:15.930
+For the other options, we have tape gateway.
+
+31
+00:01:15.930 --> 00:01:18.150
+Again, we have different platform options,
+
+32
+00:01:18.150 --> 00:01:20.443
+and this is to confirm to have
+
+33
+00:01:20.443 --> 00:01:24.937
+a tape archive using ISCI-VTL,
+
+34
+00:01:25.980 --> 00:01:29.880
+and to store these tapes in Amazon S3 Glacier.
+
+35
+00:01:29.880 --> 00:01:33.510
+And finally, volume gateway to have block storage volume,
+
+36
+00:01:33.510 --> 00:01:35.460
+but backed by Amazon S3.
+
+37
+00:01:35.460 --> 00:01:37.710
+So here we can see the two options that we like.
+
+38
+00:01:37.710 --> 00:01:40.800
+We have cached volume and stored volume.
+
+39
+00:01:40.800 --> 00:01:44.370
+So cache volume is your primary data is stored in Amazon S3,
+
+40
+00:01:44.370 --> 00:01:46.500
+and your frequently accessed data is retained locally
+
+41
+00:01:46.500 --> 00:01:48.540
+in the cache for low-latency access.
+
+42
+00:01:48.540 --> 00:01:51.480
+And stored volume, where your entire dataset
+
+43
+00:01:51.480 --> 00:01:54.780
+is stored locally, and then it's synced asynchronously
+
+44
+00:01:54.780 --> 00:01:56.070
+to Amazon S3.
+
+45
+00:01:56.070 --> 00:01:58.502
+So you have to choose, and for these,
+
+46
+00:01:58.502 --> 00:02:01.020
+you have different options, like waffle platforms.
+
+47
+00:02:01.020 --> 00:02:02.302
+But that's it, all the options
+
+48
+00:02:02.302 --> 00:02:03.840
+I wanted to show you for Storage Gateway.
+
+49
+00:02:03.840 --> 00:02:06.840
+I hope you liked it, and I will see you in the next lecture.
+

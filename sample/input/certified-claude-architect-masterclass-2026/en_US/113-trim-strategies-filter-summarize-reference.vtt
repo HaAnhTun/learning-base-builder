@@ -1,0 +1,294 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.360
+Verbose tool output has three practical fixes, and this lesson covers all three.
+
+2
+00:00:05.360 --> 00:00:10.560
+For this one, we'll look at field level filtering, model-driven summarization, and
+
+3
+00:00:10.560 --> 00:00:15.800
+reference indirection. When each one is the right call, the framework for
+
+4
+00:00:15.800 --> 00:00:19.239
+choosing between them, and the anti-pattern that can make trimming worse
+
+5
+00:00:19.239 --> 00:00:24.680
+than not trimming at all. Let's get into it. There is more than one way to cut a
+
+6
+00:00:24.680 --> 00:00:29.559
+payload down, and picking the wrong one costs you either money or reliability.
+
+7
+00:00:29.559 --> 00:00:35.040
+Field level filtering is deterministic. You declare a fixed allow list of fields
+
+8
+00:00:35.040 --> 00:00:38.799
+and drop everything else at the tool wrapper, which is the cheapest option
+
+9
+00:00:38.799 --> 00:00:44.080
+when the schema is stable. Model-driven summarization routes the raw output
+
+10
+00:00:44.080 --> 00:00:48.639
+through a small model that compresses it into what the main agent actually needs.
+
+11
+00:00:48.639 --> 00:00:54.159
+It's more flexible, but it adds one model call. Reference indirection stores the
+
+12
+00:00:54.159 --> 00:00:59.200
+full payload externally, and hands the agent only a compact identifier it can
+
+13
+00:00:59.200 --> 00:01:04.360
+use to fetch detail if and when the task requires it. Each has a distinct
+
+14
+00:01:04.360 --> 00:01:10.760
+cost profile, a distinct latency profile, and a distinct best-use case. Field level
+
+15
+00:01:10.760 --> 00:01:14.559
+filtering is the most straightforward trim you can apply, and it should be your
+
+16
+00:01:14.559 --> 00:01:19.160
+default when conditions allow. You configure the tool wrapper with an allow
+
+17
+00:01:19.160 --> 00:01:24.080
+list of the specific fields your agent needs for its task. When the tool returns
+
+18
+00:01:24.080 --> 00:01:28.400
+its response, the wrapper runs a deterministic JSON path extraction and
+
+19
+00:01:28.400 --> 00:01:34.720
+returns only those allow listed fields. No model is involved, no extra latency is
+
+20
+00:01:34.720 --> 00:01:39.720
+added, and the reduction is guaranteed every time. The key requirement is that
+
+21
+00:01:39.720 --> 00:01:44.720
+the tool schema has to be stable and versioned. If fields move, get renamed, or
+
+22
+00:01:44.720 --> 00:01:49.080
+get nested differently across API versions, a fixed allow list will
+
+23
+00:01:49.080 --> 00:01:53.599
+silently miss them, and your agent will start failing in ways that are hard to
+
+24
+00:01:53.599 --> 00:01:58.400
+trace. For predictable versioned APIs, filtering is the best and most
+
+25
+00:01:58.400 --> 00:02:02.760
+cost-effective starting point. The choice between filtering and
+
+26
+00:02:02.760 --> 00:02:07.519
+summarization comes down almost entirely to schema stability. When the tool's
+
+27
+00:02:07.519 --> 00:02:13.160
+response structure is predictable and versioned, filtering works perfectly. You
+
+28
+00:02:13.160 --> 00:02:17.600
+declare the fields once, the wrapper runs the same extraction every time, and
+
+29
+00:02:17.600 --> 00:02:23.240
+there's nothing to adapt to. But when the schema changes across providers, across
+
+30
+00:02:23.360 --> 00:02:29.279
+API versions, or when the tool produces dynamic output structures that vary by
+
+31
+00:02:29.279 --> 00:02:34.759
+call, a fixed field list breaks down. A field you relied on yesterday may be
+
+32
+00:02:34.759 --> 00:02:39.720
+renamed, moved to a nested object, or combined with another field today. In
+
+33
+00:02:39.720 --> 00:02:45.600
+that case, routing the raw output through a small summarization model gives you
+
+34
+00:02:45.600 --> 00:02:50.800
+the adaptability that a static allow list simply can't provide. The model
+
+35
+00:02:51.000 --> 00:02:56.000
+reads whatever structure arrives and returns what your agent needs. Model
+
+36
+00:02:56.000 --> 00:02:59.679
+driven summarization adds one lightweight step between the tool call
+
+37
+00:02:59.679 --> 00:03:04.240
+and the main agent. You route the raw payload through a small, inexpensive
+
+38
+00:03:04.240 --> 00:03:08.839
+model, along with a task scoped prompt that describes what the main agent is
+
+39
+00:03:08.839 --> 00:03:13.600
+trying to accomplish. That small model returns a compact, relevant summary
+
+40
+00:03:13.600 --> 00:03:19.000
+focused on the task at hand. The summary, not the raw payload, enters the main
+
+41
+00:03:19.080 --> 00:03:23.839
+agent's context. Yes, you're adding one model call and a small amount of
+
+42
+00:03:23.839 --> 00:03:29.000
+latency, but the arithmetic usually works out strongly in your favor. If the raw
+
+43
+00:03:29.000 --> 00:03:36.679
+payload is 2,000 tokens and the summary is 150, you've removed 1,850 tokens of
+
+44
+00:03:36.679 --> 00:03:42.199
+context pressure in exchange for one small model call. For schemas that change
+
+45
+00:03:42.199 --> 00:03:47.720
+frequently, that trade is worth it every time. Here's a simple decision framework
+
+46
+00:03:47.720 --> 00:03:51.679
+for choosing between the three strategies. If the schema is stable and
+
+47
+00:03:51.679 --> 00:03:56.360
+versioned, start with field level filtering. It's free to run, fully
+
+48
+00:03:56.360 --> 00:04:01.279
+deterministic, and requires no model involvement at all. If the schema is
+
+49
+00:04:01.279 --> 00:04:05.520
+dynamic or varies across providers or versions, use model driven
+
+50
+00:04:05.520 --> 00:04:10.559
+summarization. The small model call adapts to any structure the tool returns
+
+51
+00:04:10.559 --> 00:04:15.360
+and extracts what you need regardless. If the payload is very large and the
+
+52
+00:04:15.360 --> 00:04:19.519
+agent may not need most of it to complete its current task, reach for
+
+53
+00:04:19.519 --> 00:04:24.399
+reference in direction. Store the full response in an external cache, hand the
+
+54
+00:04:24.399 --> 00:04:29.600
+agent a compact identifier, and let it fetch only if the task actually requires
+
+55
+00:04:29.600 --> 00:04:35.359
+it. In practice, many agent tasks complete without that fetch ever happening, which
+
+56
+00:04:35.359 --> 00:04:39.279
+means the payload never touches the context window at all.
+
+57
+00:04:39.279 --> 00:04:43.160
+The Trim Audit Log deserves its own attention because it's easy to skip
+
+58
+00:04:43.160 --> 00:04:46.760
+during initial development and genuinely painful to add after a
+
+59
+00:04:46.760 --> 00:04:51.799
+production incident. The rule is simple. Every time you trim layer, the wrapper
+
+60
+00:04:51.799 --> 00:04:55.640
+component sitting between the raw tool response and the agent's context
+
+61
+00:04:55.640 --> 00:05:00.359
+discards a field. It should write a log entry recording the field name, the call
+
+62
+00:05:00.359 --> 00:05:05.119
+time stamp, and what was kept. When a downstream step fails or produces a
+
+63
+00:05:05.119 --> 00:05:10.040
+wrong answer, your first check is that log. Overtrimming, dropping a field the
+
+64
+00:05:10.040 --> 00:05:14.839
+agent later needs, forces an expensive recall, and the log is how you catch it
+
+65
+00:05:14.839 --> 00:05:19.279
+without guessing. Reviewing those logs over time also tells you when your
+
+66
+00:05:19.279 --> 00:05:24.160
+allow list has grown too narrow for a workflow that has changed around it. The
+
+67
+00:05:24.160 --> 00:05:27.920
+right trim strategy depends on how stable your schema is, how large the
+
+68
+00:05:27.920 --> 00:05:33.160
+payloads are, and how likely the agent is to need the full content. Filter when you
+
+69
+00:05:33.160 --> 00:05:38.359
+can, summarize when the structure varies, use indirection for the largest payloads,
+
+70
+00:05:38.480 --> 00:05:43.279
+and log every field you drop so an overtrim is something you can diagnose
+
+71
+00:05:43.279 --> 00:05:48.839
+rather than guess at later. Noise removed at the wrapper never costs you
+
+72
+00:05:48.839 --> 00:05:53.279
+downstream, which is the whole benefit here. And that's it for this lesson. I'll
+
+73
+00:05:53.279 --> 00:05:56.239
+see you in the next one.
+

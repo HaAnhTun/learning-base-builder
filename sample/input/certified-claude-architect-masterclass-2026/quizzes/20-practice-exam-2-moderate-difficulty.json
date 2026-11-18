@@ -1,0 +1,1634 @@
+{
+  "quiz_id": 7572307,
+  "title": "Practice Exam 2 - Moderate Difficulty",
+  "type": "practice-test",
+  "version": 3,
+  "pass_percent": 72,
+  "description": "",
+  "position": 20,
+  "chapter_index": 20,
+  "chapter_title": "Practice Exams",
+  "lectures_before": 134,
+  "assessments": [
+    {
+      "_class": "assessment",
+      "id": 181757089,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Customer Support Agent runs an action loop that reads a ticket, queries account tools, and replies. During a billing-system outage it began retrying the same failing balance lookup hundreds of times, never terminating, until it exhausted the rate limit. The architect must add the control that most directly prevents this class of failure while preserving autonomy. Which design BEST addresses the root cause?</p>",
+        "answers": [
+          "Lower the model temperature to zero so the loop behaves deterministically and stops generating varied retry attempts each cycle",
+          "Replace the agent with a fixed workflow so the retry behavior is hard-coded and the model can no longer choose to repeat the lookup, because removing runtime autonomy is the only sure way to guarantee a loop can never run away",
+          "Add explicit termination conditions plus exponential backoff that classifies the outage as a transient environment error and escalates after bounded retries",
+          "Switch the balance lookup to a parallel fan-out of three concurrent calls so a healthy replica answers before the loop repeats"
+        ],
+        "feedbacks": [
+          "Temperature controls token sampling, not loop termination. A deterministic loop with no stop condition still runs forever; this misdiagnoses a control-flow defect as a sampling problem.",
+          "Abandoning agentic architecture to fix a missing termination condition is overcorrection. A workflow could repeat the same bug; the real fix is bounding the loop, not removing autonomy.",
+          "Every agentic loop requires explicit termination conditions, the absence of which caused the runaway. Pairing a max-retry bound with exponential backoff (appropriate for transient environment errors) and an escalation trigger after the bound combines the action loop with error propagation and escalation design. This stops the storm while keeping the agent autonomous for normal cases.",
+          "Fan-out multiplies load against an already-failing system and still lacks a termination bound. Parallelizing a call that fails because the backend is down accelerates the rate-limit exhaustion."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1A: Agentic Loops and Core API<br><br>1A1 stresses that an agentic loop must have explicit termination conditions; a runaway loop is a defect, never a goal. Combining bounded retries, exponential backoff for transient environment errors (D5), and an escalation trigger preserves autonomy while preventing cascading failure. Lowering temperature or removing the agent misdiagnoses a control-flow problem."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D1",
+      "question_plain": "A Customer Support Agent runs an action loop that reads a ticket, queries account tools, and replies. During a billing-system outage it began retrying the same failing balance lookup hundreds of times, never terminating, until it exhausted the rate limit. The architect must add the control that most directly prevents this class of failure while preserving autonomy. Which design BEST addresses the root cause?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757091,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>Which of the following BEST captures the difference between tool use and an agentic loop in a Data Extraction context?</p>",
+        "answers": [
+          "Tool use is strictly read-only, whereas an agentic loop is what introduces the ability to write changes back to external systems and persist them",
+          "Tool use refers to a single tool invocation; an agentic loop is many tool invocations chained by the model based on observations",
+          "Tool use requires JSON schemas; an agentic loop accepts free-form output",
+          "Tool use is synchronous; an agentic loop is asynchronous"
+        ],
+        "feedbacks": [
+          "Read/write semantics do not distinguish tool use from agentic loops. Both can include read and write tools. The distinction is whether the model chooses sequence at runtime.",
+          "Tool use is the capability; the agentic loop is the architectural pattern where the model chains tool calls based on observations. A single tool call wired into a workflow is tool use without the loop; an agent chains tools at runtime.",
+          "Both tool use and agentic loops use structured tool schemas. Agentic loops are not less structured; they just iterate, which is orthogonal to schema requirements.",
+          "Synchrony is an implementation detail unrelated to the distinction. Both tool use and agentic loops can be implemented synchronously or asynchronously; the architectural property is iteration with runtime decisions."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1A: Agentic Loops and Core API<br><br>Tool use is the model&#x27;s capability to invoke external functions; an agentic loop is the pattern of chaining tool calls based on observations, with the model choosing the sequence at runtime. Conflating the capability with the pattern leads to misclassifying scripted tool-use workflows as agents."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D1",
+      "question_plain": "Which of the following BEST captures the difference between tool use and an agentic loop in a Data Extraction context?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757093,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Customer Support Agent handles long sessions where users iteratively refine their issue description over 15-20 turns. Engineers observe that by turn 12, Claude begins dropping references to details established in turns 2-4, causing repetitive questions to the user. The context window is not full. Which multi-turn design pattern MOST directly addresses this mid-conversation forgetting?</p>",
+        "answers": [
+          "Increase max_tokens to allow longer responses so Claude has more room to reference earlier turns.",
+          "Inject a structured summary of confirmed facts into the conversation before context degrades.",
+          "Reduce the number of turns by prompting users to submit a complete issue description upfront rather than iterating.",
+          "Enable extended thinking so Claude reasons more carefully about the full conversation before generating each response."
+        ],
+        "feedbacks": [
+          "max_tokens controls response output length, not how much of the conversation history is attended to; increasing it does not improve attention to early turns.",
+          "Proactive fact injection counters the lost-in-the-middle effect by surfacing key established facts near the current turn where attention is highest. This is a standard multi-turn design pattern for long sessions where early context risks being underweighted.",
+          "Changing the interaction model avoids the multi-turn design challenge rather than solving it; many support workflows require iterative clarification and cannot be collapsed to a single turn.",
+          "Extended thinking improves multi-step reasoning depth but does not specifically address the lost-in-the-middle effect, which is an attention-weighting phenomenon, not a reasoning depth issue."
+        ],
+        "explanation": "Domain 4: Prompt Engineering &amp; Structured Output<br>Subdomain 4B: Advanced Prompting Techniques<br><br>In long multi-turn conversations, early context can be underweighted due to the lost-in-the-middle effect even when the context window is not full. Periodically injecting structured summaries of confirmed facts near the current turn restores their salience. This is more robust than relying on the model to attend to distant early turns."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D4",
+      "question_plain": "A Customer Support Agent handles long sessions where users iteratively refine their issue description over 15-20 turns. Engineers observe that by turn 12, Claude begins dropping references to details established in turns 2-4, causing repetitive questions to the user. The context window is not full. Which multi-turn design pattern MOST directly addresses this mid-conversation forgetting?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757095,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research platform team is choosing whether to define a feature as a workflow or as an agentic system with workflow-like guardrails. The CTO asks for criteria that drive the choice. Which criteria MOST cleanly capture CCA-F guidance?</p>",
+        "answers": [
+          "Workflow when sequence is predetermined and enforcement is paramount; agentic with workflow-like guardrails when adaptation within bounds is needed",
+          "Use a workflow if the team likes structure and an agentic design if the team likes flexibility, since the choice ultimately comes down to which style the team is more comfortable with",
+          "Use a workflow for new features and an agentic design for the legacy ones",
+          "Always use a workflow, on the grounds that workflows are simpler"
+        ],
+        "feedbacks": [
+          "Workflow class fits predetermined sequence with strong enforcement; agentic-with-guardrails fits adaptation within defined bounds. CCA-F guidance favors this stake-vs-flexibility criterion. Workflows trade adaptability for enforceability; agents-with-guardrails trade some enforceability for adaptability.",
+          "Preference is not the criterion. CCA-F guidance is property-driven: predetermined sequence favors workflow, adaptive favors agent.",
+          "Feature age is not the criterion. New features can be either class; legacy features can be either. The choice is property-driven.",
+          "Always-workflow forces inappropriate structure on adaptive tasks. CCA-F guidance favors stake-driven choice."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1D: Hooks and Programmatic Enforcement<br><br>Workflow vs. agentic-with-guardrails decision: workflow for predetermined sequence with strong enforcement, agentic-with-guardrails for adaptation within defined bounds. CCA-F guidance favors this stake-vs-flexibility criterion. Preference, age, and always-workflow each fail to address the property-driven decision."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D1",
+      "question_plain": "A Multi-Agent Research platform team is choosing whether to define a feature as a workflow or as an agentic system with workflow-like guardrails. The CTO asks for criteria that drive the choice. Which criteria MOST cleanly capture CCA-F guidance?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757097,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation client connects to three MCP servers. After the initial handshake, all three servers&#x27; tools are exposed to the model. A new server is added to the configuration mid-session. Which behavior is correct?</p>",
+        "answers": [
+          "The client refuses the addition because federation is fixed at session start, so any server not present during the initial handshake cannot contribute tools until the whole session is restarted fresh",
+          "The client establishes a connection to the new server, runs the initialization handshake, and adds its capabilities to the federated surface presented to the host — the model&#x27;s tool catalog grows mid-session",
+          "The client terminates the current session and requires a full restart to bring the new server online, treating any mid-session federation change as something that only a completely clean reinitialization can handle safely",
+          "The new server&#x27;s tools are queued internally and become available only on the next user turn, since the client defers exposing any freshly federated capabilities until a turn boundary is reached"
+        ],
+        "feedbacks": [
+          "Federation is dynamic, not fixed at session start. Servers can be added or removed during a session.",
+          "MCP clients support adding servers mid-session: connect to the new server, run the initialization handshake, federate its capabilities into the unified surface. The model&#x27;s tool catalog grows accordingly. This is the symmetric operation to mid-session disconnect — federation is dynamic, not locked at session start.",
+          "Session restart is too aggressive for mid-session server addition. Clients support dynamic federation.",
+          "There is no protocol-mandated queuing for mid-session additions. Once the handshake completes, capabilities are exposed."
+        ],
+        "explanation": "Domain 2: Tool Design &amp; MCP Integration<br>Subdomain 2B: MCP Server Configuration<br><br>MCP clients support adding servers mid-session — connect, handshake, federate capabilities into the unified surface. Federation is dynamic, not locked at session start. Refusing, restarting, or queuing all fail this dynamic federation model."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D2",
+      "question_plain": "A Code Generation client connects to three MCP servers. After the initial handshake, all three servers&#x27; tools are exposed to the model. A new server is added to the configuration mid-session. Which behavior is correct?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757099,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research orchestrator&#x27;s tools each accept a `confidence_threshold` parameter (float 0 to 1). Tools were authored by different teams and the parameter&#x27;s semantics drift: some treat 0.7 as &#x27;high confidence,&#x27; others as &#x27;medium.&#x27; The team wants consistent semantics across tools. What is the BEST architectural fix?</p>",
+        "answers": [
+          "Add a description note to each tool documenting how that tool interprets the float",
+          "Replace the float with a shared enum (low/medium/high) defined in a common schema module, and have every tool import the enum so semantics are unified at the type level",
+          "Standardize on float and publish a guideline that 0.5 means medium across all tools",
+          "Have the orchestrator post-process tool calls to normalize the threshold before invoking, so a single centralized normalization step rewrites every tool&#x27;s float into one canonical scale regardless of how each tool author defined it"
+        ],
+        "feedbacks": [
+          "Per-tool documentation does not enforce consistency. Teams drift again on the next change. The fix needs to be at the type/schema layer where it cannot be skipped.",
+          "Cross-tool semantic consistency is enforced by sharing a canonical type, not by per-tool documentation. A shared enum defined once and imported by every tool gives all tools the same meaning of low/medium/high, makes drift impossible at the type layer, and centralizes any future change. This is the production pattern for cross-tool semantic alignment.",
+          "Guidelines without enforcement drift over time. Without a shared type, each tool&#x27;s authors will reinterpret the float as their use case requires.",
+          "Orchestrator-side normalization papers over an upstream inconsistency and adds maintenance burden when new tools join. Fixing the parameter&#x27;s type once at the source is durably cleaner."
+        ],
+        "explanation": "Domain 2: Tool Design &amp; MCP Integration<br>Subdomain 2A: Tool Design Fundamentals<br><br>When the same parameter appears in many tools, semantic drift across tool authors is inevitable without a shared type definition. The architectural fix is to define a shared enum or schema fragment once, import it across tools, and make divergence impossible at the type layer. Documentation and post-processing are weaker substitutes that drift over time."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D2",
+      "question_plain": "A Multi-Agent Research orchestrator&#x27;s tools each accept a `confidence_threshold` parameter (float 0 to 1). Tools were authored by different teams and the parameter&#x27;s semantics drift: some treat 0.7 as &#x27;high confidence,&#x27; others as &#x27;medium.&#x27; The team wants consistent semantics across tools. What is the BEST architectural fix?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757101,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research firm designs a workflow where 12 subagents each produce 5KB findings, an aggregator concatenates them into 60KB and asks Claude to synthesize a final report. Mid-list findings consistently underrepresent in the synthesis. Which architectural change BEST addresses this while preserving the multi-agent pattern?</p>",
+        "answers": [
+          "Reduce the subagent count to three and let each cover four topics",
+          "Use a tree-structured aggregator that synthesizes groups of three findings first, then synthesizes those summaries",
+          "Concatenate findings as JSON with explicit numerical indexes to force ordering attention, since indexing each finding makes the model weight all positions equally and cancels the mid-list dip",
+          "Sort findings by relevance score and only include the top three in the synthesis"
+        ],
+        "feedbacks": [
+          "Collapsing 12 into 3 reintroduces the per-agent dilution that motivated decomposition in the first place. The bottleneck is the synthesis step, not the subagent count.",
+          "A hierarchical aggregator bounds each synthesis context to roughly 15KB at a time, keeping every finding in the high-attention zone. The final synthesis sees four summaries instead of twelve, and the lost-in-the-middle exposure is eliminated at each level. The multi-agent pattern is preserved and even strengthened.",
+          "JSON indexing aids parsing but does not change attention weighting. Items 4 through 9 in a JSON list of 12 still sit in the lost-in-the-middle zone of the model&#x27;s context.",
+          "Discarding nine of twelve findings throws away information the team explicitly chose to gather. The problem is synthesis attention, not finding quality; the fix should preserve the data."
+        ],
+        "explanation": "Domain 5: Context Management &amp; Reliability<br>Subdomain 5A: Context Preservation<br><br>Architectural fixes to lost-in-the-middle at synthesis time use tree-structured aggregation: bound each merge step to a manageable context and surface the final result through a shallow hierarchy. This pattern crosses D1 multi-agent design and D5 context management — the natural home of cross-domain reasoning."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D5",
+      "question_plain": "A Multi-Agent Research firm designs a workflow where 12 subagents each produce 5KB findings, an aggregator concatenates them into 60KB and asks Claude to synthesize a final report. Mid-list findings consistently underrepresent in the synthesis. Which architectural change BEST addresses this while preserving the multi-agent pattern?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757103,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research orchestrator dispatches four sub-queries in parallel. One returns valid results, two return validation errors, and one times out. The orchestrator currently aggregates only the successful one and ignores the rest. Engineers complain about silent quality degradation. What is the BEST architectural fix?</p>",
+        "answers": [
+          "Aggregate ALL outcomes (success, validation errors, timeout) into a single structured response, annotate the partial-failure cases, and have the orchestrator surface both the data and the degradation signal to its caller",
+          "Wait for all four branches to fully succeed before returning any results at all, so the orchestrator only ever aggregates a complete, fully-validated set of sub-query outputs",
+          "Take the single successful branch and discard the other three branches silently, since the one valid result is enough to proceed and surfacing the failed branches would only clutter the orchestrator&#x27;s downstream reasoning",
+          "Retry the three failed branches repeatedly until they all succeed, then aggregate the now-complete set so the consumer always receives every branch&#x27;s contribution"
+        ],
+        "feedbacks": [
+          "Silent quality degradation is a fallback-without-signal antipattern: the system continues producing output but the consumer can&#x27;t tell it was partial. The fix is propagating the degradation signal alongside the partial data — aggregate every branch&#x27;s outcome, annotate failures, and surface the structured response to the caller. Then the consumer (agent or user) can decide whether the partial result is acceptable.",
+          "All-or-nothing waiting sacrifices the partial successes that arrived correctly and may block indefinitely on transient failures. Aggregate-with-signal is the durable pattern.",
+          "This is the current behavior driving the complaint — silent degradation. The fix is making the degradation visible to the consumer.",
+          "Retrying timeouts and validation errors blindly can spin indefinitely and doesn&#x27;t address the design problem that the system silently degrades. The fix is signaling partial outcomes, not hiding them under retries."
+        ],
+        "explanation": "Domain 2: Tool Design &amp; MCP Integration<br>Subdomain 2A: Tool Design Fundamentals<br><br>Fan-out aggregation must propagate degradation signals alongside partial results, never silently drop failed branches. Aggregate every branch&#x27;s outcome with annotation so consumers can see what&#x27;s partial. All-or-nothing waits, silent drops, and blind retries all violate this principle and produce systems that degrade invisibly."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D2",
+      "question_plain": "A Multi-Agent Research orchestrator dispatches four sub-queries in parallel. One returns valid results, two return validation errors, and one times out. The orchestrator currently aggregates only the successful one and ignores the rest. Engineers complain about silent quality degradation. What is the BEST architectural fix?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757105,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research platform team is designing a general-purpose orchestration layer. The team must decide how to handle both sequential and parallel execution uniformly. Which design strategy is MOST consistent with CCA-F principles for a flexible orchestration layer?</p>",
+        "answers": [
+          "Force absolutely everything to run strictly sequentially one after the other in order to keep the orchestrator itself as simple as possible",
+          "Express subtasks with explicit dependencies in a DAG; the orchestrator runs independent nodes in parallel and dependent nodes sequentially",
+          "Force everything to be parallel to maximize speed",
+          "Let each subagent decide its own execution pattern"
+        ],
+        "feedbacks": [
+          "Forcing sequential gives up parallel benefits and is not a flexible layer — it cannot run independent subtasks concurrently. The DAG-based approach is more general and more efficient.",
+          "A directed acyclic graph (DAG) of subtasks with explicit dependencies lets the orchestrator decide parallel-vs-sequential per pair of nodes automatically. CCA-F guidance treats DAG-based orchestration as the canonical flexible model: dependencies drive scheduling, independence enables parallelism, and the orchestrator handles fan-in/fan-out implicitly.",
+          "Forcing parallel violates dependencies and produces incorrect results on dependent subtasks. A flexible layer must respect dependencies, not ignore them.",
+          "Subagents do not have global dependency view — the orchestrator does. CCA-F guidance places scheduling at the orchestrator, not in individual subagents, because only the orchestrator can see the full DAG."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1B: Task Decomposition and Planning<br><br>A directed acyclic graph of subtasks with explicit dependencies lets the orchestrator schedule parallel and sequential execution uniformly. CCA-F guidance treats DAG-based orchestration as the canonical flexible model. Forcing one mode gives up generality or correctness; subagent-decided scheduling lacks the global view required."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D1",
+      "question_plain": "A Multi-Agent Research platform team is designing a general-purpose orchestration layer. The team must decide how to handle both sequential and parallel execution uniformly. Which design strategy is MOST consistent with CCA-F principles for a flexible orchestration layer?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757107,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Customer Support Agent calls a `refund_payment` tool. The first call appears to fail with a network timeout, so Claude retries. The user is later double-refunded. Which tool design change PREVENTS this failure mode?</p>",
+        "answers": [
+          "Add server-side rate limiting so duplicate calls within five seconds are rejected",
+          "Increase the tool&#x27;s timeout from 30 seconds to 5 minutes to reduce retries, since a longer window lets slow refunds finish before Claude ever concludes the call failed",
+          "Make the tool synchronous so Claude waits for the response and cannot retry prematurely, because a blocking call holds the model until the refund definitively succeeds or fails, removing the window in which a duplicate retry could fire",
+          "Require an `idempotency_key` parameter on the tool, with the server deduplicating retries by that key"
+        ],
+        "feedbacks": [
+          "Rate limiting blocks rapid duplicates but does not establish a stable identity for the original request. A retry after the rate-limit window still double-refunds. The right primitive is idempotency.",
+          "Increasing timeouts reduces retry frequency but does not make retries safe when they do happen. The goal is making retries non-destructive, which requires idempotency keys.",
+          "Synchronous tools still time out at the network layer, and Claude still retries when timeouts occur. Synchrony does not address retry safety; idempotency does.",
+          "An idempotency key lets the server recognize a retry as a retry rather than as a fresh request. The server stores the result of the first successful execution against the key and returns the cached result on any subsequent call with the same key. This is the canonical pattern for retry-safe write tools."
+        ],
+        "explanation": "Domain 2: Tool Design &amp; MCP Integration<br>Subdomain 2A: Tool Design Fundamentals<br><br>Write tools that can be retried must support idempotency so the same operation cannot execute twice. An idempotency_key parameter — supplied by the caller and deduplicated server-side — is the canonical pattern. Rate limits, synchrony, and longer timeouts treat symptoms but do not make retries safe."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D2",
+      "question_plain": "A Customer Support Agent calls a `refund_payment` tool. The first call appears to fail with a network timeout, so Claude retries. The user is later double-refunded. Which tool design change PREVENTS this failure mode?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757109,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Data Extraction team wants to test a new system prompt against the production prompt without affecting customers. Both prompts target the same Claude model. Which approach BEST supports the A/B comparison?</p>",
+        "answers": [
+          "Deploy the new prompt to production and roll back if anyone complains",
+          "Route 50% of live traffic to each prompt and compare customer complaints, since real production traffic is the most representative test and complaints are ground truth",
+          "Run each prompt on 10 ad-hoc examples and read the outputs manually",
+          "Run both prompts against a shared held-out test dataset of labeled examples and compare structured metrics — exact match, field-level F1, parse failures"
+        ],
+        "feedbacks": [
+          "Deploy-and-pray bypasses evaluation. Customer impact is uncontrolled.",
+          "Live traffic A/B exposes customers to the worse prompt and uses complaint as a noisy lagging metric. Held-out evaluation is faster and cleaner.",
+          "Ten ad-hoc examples give coverage far too narrow to represent real inputs, and reading outputs manually makes grading subjective and unrepeatable. Prompt selection needs a frozen labeled dataset with structured metrics.",
+          "A/B prompt evaluation requires a frozen labeled dataset and structured metrics. Shared inputs and code-based grading produce apples-to-apples comparison without affecting customers. Live traffic comparisons risk customer exposure to the worse prompt and confound the metric with traffic mix changes."
+        ],
+        "explanation": "Domain 4: Prompt Engineering &amp; Structured Output<br>Subdomain 4A: Core Prompt Engineering<br><br>Prompt evaluation requires a pre-built, frozen test dataset with structured metrics, not live A/B tests or ad-hoc spot checks. Running both prompts against the same labeled examples yields an apples-to-apples comparison without exposing customers to the weaker prompt, and code-graded metrics like field-level F1 make the result objective and repeatable."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D4",
+      "question_plain": "A Data Extraction team wants to test a new system prompt against the production prompt without affecting customers. Both prompts target the same Claude model. Which approach BEST supports the A/B comparison?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757111,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation platform team is reviewing decomposition designs across multiple agents. The CTO asks for a set of properties that distinguish well-decomposed designs from poorly decomposed ones. Which set MOST cleanly captures CCA-F guidance?</p>",
+        "answers": [
+          "Minimum subtask count, flattest hierarchy, sequential execution everywhere, and smallest models",
+          "Maximum possible subtask count, the deepest achievable hierarchy, parallel execution applied everywhere, and the largest available models",
+          "Right-sized subtasks, disjoint scopes, explicit dependencies, checkpointable boundaries, and clean orchestrator contracts",
+          "Whatever the team finds most readable in code review"
+        ],
+        "feedbacks": [
+          "Minimizing every axis under-decomposes the work and forfeits parallel opportunity. Blanket minimization is just as wrong as blanket maximization; the CCA-F properties describe a balance across these axes, not a push to either extreme.",
+          "Maximizing each axis ignores trade-offs — more subtasks pay orchestration cost, deep hierarchies inflate coordination, parallel-everywhere assumes independence that may not hold, large models do not address structure. The CCA-F properties are about balance, not maxima.",
+          "CCA-F decomposition quality reduces to five properties: right-sized subtasks (controllability), disjoint scopes (no duplication), explicit dependencies (correct sequencing), checkpointable boundaries (validation), and clean orchestrator contracts (extensibility). Each property addresses a distinct failure mode of poor decomposition.",
+          "Readability is one operational concern but not the design framework. CCA-F decomposition quality has objective properties — right-sized, disjoint, explicit, checkpointable, clean contracts — that go beyond code-review aesthetics."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1B: Task Decomposition and Planning<br><br>Well-decomposed designs share five properties: right-sized subtasks, disjoint scopes, explicit dependencies, checkpointable boundaries, and clean orchestrator contracts. CCA-F guidance treats these as the framework for evaluating decomposition quality. Maximizing or minimizing single axes misses the balance the framework codifies."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D1",
+      "question_plain": "A Code Generation platform team is reviewing decomposition designs across multiple agents. The CTO asks for a set of properties that distinguish well-decomposed designs from poorly decomposed ones. Which set MOST cleanly captures CCA-F guidance?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757113,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Customer Support Agent orchestrator dispatches three parallel subagents and the fan-in pattern is voting (majority wins). Which CCA-F insight MOST directly applies?</p>",
+        "answers": [
+          "Voting fan-in increases reliability through redundancy but pays 3× the cost of single execution",
+          "Voting across the branches is essentially always going to be cheaper overall than just a single execution",
+          "Voting is inappropriate for any agentic task",
+          "Voting requires sequential execution"
+        ],
+        "feedbacks": [
+          "Voting fan-in is a quality/reliability pattern that pays cost proportional to branch count. CCA-F guidance acknowledges the trade-off: more branches improve majority robustness but increase cost. Choose voting when reliability matters more than cost on a specific task.",
+          "Voting executes the same task on multiple branches and is more expensive than single execution. The benefit is reliability, not cost reduction.",
+          "Voting is a valid pattern for high-reliability scenarios. CCA-F guidance treats it as one tool in the design toolkit, not as a categorically wrong pattern.",
+          "Voting typically uses parallel execution of identical tasks. Sequential voting wastes the wall-time benefit of parallelism without changing the voting semantics."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1B: Task Decomposition and Planning<br><br>Voting fan-in pays N× cost for N branches in exchange for majority robustness. CCA-F guidance treats this as a trade-off: choose voting when reliability matters more than cost on a specific task. Voting is parallel by design and is not categorically right or wrong — it is a design tool."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D1",
+      "question_plain": "A Customer Support Agent orchestrator dispatches three parallel subagents and the fan-in pattern is voting (majority wins). Which CCA-F insight MOST directly applies?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757115,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A customer support platform needs to deploy an MCP server that will be accessed by multiple agent instances running on different hosts. The server must support concurrent connections and will be accessed over the network. Which MCP transport should the team use?</p>",
+        "answers": [
+          "STDIO, because standard input/output can be redirected over SSH tunnels to support network access.",
+          "StreamableHTTP, because it is designed for remote, multi-user, and production deployments accessed over the network.",
+          "Either transport, since MCP servers support hot-switching between STDIO and StreamableHTTP without configuration changes.",
+          "STDIO on the server host combined with a reverse proxy to convert HTTP client requests to STDIO format for each agent instance."
+        ],
+        "feedbacks": [
+          "Using SSH tunnels to redirect STDIO over a network is an anti-pattern for production multi-user deployments. StreamableHTTP is the specified transport for network-accessible, multi-user MCP servers.",
+          "StreamableHTTP is the correct transport for remote, multi-user production deployments. It runs the server as an HTTP service, supports concurrent connections from multiple clients, and can stream responses via Server-Sent Events.",
+          "STDIO and StreamableHTTP are fundamentally different deployment models -- one runs as a child process, the other as an HTTP service. They are not interchangeable without architectural changes.",
+          "Adding a reverse proxy to adapt HTTP to STDIO creates unnecessary complexity. StreamableHTTP is the purpose-built transport for exactly this scenario."
+        ],
+        "explanation": "Domain 2: Tool Design &amp; MCP Integration<br>Subdomain 2C: Advanced MCP and Built-in Tools<br><br>StreamableHTTP is the MCP transport for remote, multi-user, and production environments. It runs the MCP server as an HTTP service supporting concurrent connections and optional streaming via Server-Sent Events. STDIO is reserved for local single-user child-process deployments."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D2",
+      "question_plain": "A customer support platform needs to deploy an MCP server that will be accessed by multiple agent instances running on different hosts. The server must support concurrent connections and will be accessed over the network. Which MCP transport should the team use?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757117,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation MCP server emits a progress notification &#x27;progress: 40%, stage: parsing&#x27; during a long tool call. The client wants to surface this to the model so the agent can decide whether the operation is on track. Should the client forward progress notifications to the model?</p>",
+        "answers": [
+          "Yes, the model should see every single progress notification as it arrives so it stays continuously informed about how far along the operation is and can react the moment anything looks like it is going wrong during the long-running tool call it is currently waiting on",
+          "Generally no — progress notifications are operational signals for the host UX and observability, not model context; forwarding every progress update would clutter the model&#x27;s working memory with telemetry it can&#x27;t usefully act on",
+          "Yes, but the client should forward the progress notification to the model only when it reaches one hundred percent, so the model learns the operation finished without being flooded by the intermediate updates",
+          "The protocol forces the client to forward all progress notifications to the model and gives the client no choice in the matter, so whether the model sees them is dictated by MCP rather than by host policy"
+        ],
+        "feedbacks": [
+          "Per-notification model context clutters the working memory with telemetry. Progress is for the human-facing path.",
+          "Progress notifications are for the host (UI progress bar, observability) and the human user, not for the model. Forwarding them to the model adds telemetry the model can&#x27;t usefully act on (the model can&#x27;t speed up a parsing job) and clutters its working memory. The model sees the final tool result; intermediate progress is for the human-facing path.",
+          "100% completion is signaled by the tool&#x27;s actual return, not a notification. The notification at 100% is redundant.",
+          "Clients have control over what reaches the model. Progress is for host UX by convention, not model context."
+        ],
+        "explanation": "Domain 2: Tool Design &amp; MCP Integration<br>Subdomain 2C: Advanced MCP and Built-in Tools<br><br>MCP progress notifications are operational signals for host UX and observability — progress bars, traces, user-facing feedback. They don&#x27;t belong in the model&#x27;s context, where they&#x27;d clutter working memory with telemetry the model can&#x27;t act on. The model sees the tool&#x27;s final result; progress is for the human-facing path."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D2",
+      "question_plain": "A Code Generation MCP server emits a progress notification &#x27;progress: 40%, stage: parsing&#x27; during a long tool call. The client wants to surface this to the model so the agent can decide whether the operation is on track. Should the client forward progress notifications to the model?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757119,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Developer Productivity agent running in Claude Code approaches its context limit after 80 turns of codebase exploration. The developer wants to continue the session with minimal disruption. Which action MOST directly addresses context pressure while preserving session coherence?</p>",
+        "answers": [
+          "Increase the context window via API parameter to continue without modification.",
+          "Start a new Claude Code session and re-explain the task from scratch.",
+          "Run /compact to summarize conversation history, preserving key context in a compressed form.",
+          "Delete recent tool call results to free context space, preserving only the conversational turns."
+        ],
+        "feedbacks": [
+          "Context window size is determined by the model and cannot be increased via API parameter. Claude Code operates within the model&#x27;s fixed context limits.",
+          "Starting fresh loses all accumulated reasoning, discoveries, and decisions from the 80-turn session. This sacrifices coherence entirely and forces redundant work.",
+          "Correct. /compact is Claude Code&#x27;s built-in context management command that summarizes conversation history to free context space while preserving session coherence through a structured summary. It is the canonical tool for managing context pressure in long Claude Code sessions.",
+          "Manually deleting tool results would require the developer to manually manage context content. This is error-prone and does not preserve the structured summary that /compact produces."
+        ],
+        "explanation": "Domain 5: Context Management &amp; Reliability<br>Subdomain 5C: Context Efficiency for Large Codebases<br><br>Domain 5C3 covers compaction patterns. /compact is Claude Code&#x27;s built-in command for managing context pressure in long sessions. It generates a summary of conversation history that preserves key decisions, findings, and context while freeing token space for continued work. It is the canonical tool for long-session coherence management, preferable to session restart or manual deletion."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D5",
+      "question_plain": "A Developer Productivity agent running in Claude Code approaches its context limit after 80 turns of codebase exploration. The developer wants to continue the session with minimal disruption. Which action MOST directly addresses context pressure while preserving session coherence?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757121,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Customer Support Agent platform serves Tier 1, Tier 2, and Enterprise customers. The team wants escalation triggers, handoff schemas, and review-queue routing tuned per tier. They consider three approaches: separate agents per tier, one agent with tier-conditional logic, or one agent with externalized policy. Which architecture BEST scales as the tier list grows?</p>",
+        "answers": [
+          "One agent with externalized policy keyed by tier — triggers, schemas, queues all driven by policy lookup",
+          "Separate agents per tier, since full isolation makes per-tier debugging and policy changes far easier to reason about as tiers grow",
+          "One agent with hardcoded tier-conditional branches in the prompt",
+          "Identical policy across all tiers; let humans decide manually"
+        ],
+        "feedbacks": [
+          "Externalized policy keyed by tier scales to N tiers without code change. Adding a new tier means adding a row in the policy store; triggers, schemas, and queue routes all read from it. Separate agents would multiply maintenance; tier-conditional code in one agent quickly becomes unmaintainable. Policy-driven systems are the standard architectural pattern when business segmentation grows.",
+          "Separate agents create N codebases to maintain, version, deploy, and test. Tier-specific debugging is easier per agent but the operational surface area grows linearly with tiers — the wrong scaling property.",
+          "Hardcoded conditional prompts become unmaintainable as tiers grow. Every change requires re-testing all branches, and the prompt itself bloats.",
+          "Uniform policy across distinct tiers either over-gates the low tier or under-gates the high tier. Per-tier customization is the explicit requirement of the scenario."
+        ],
+        "explanation": "Domain 5: Context Management &amp; Reliability<br>Subdomain 5B: Escalation and Error Propagation<br><br>Per-segment escalation policy belongs in externalized configuration, not in code or prompt. This architecture cross-cuts D5 escalation, D3 Claude Code config layering, and standard 12-factor patterns. As segmentation grows, only policy-driven systems scale without proportional maintenance burden."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D5",
+      "question_plain": "A Customer Support Agent platform serves Tier 1, Tier 2, and Enterprise customers. The team wants escalation triggers, handoff schemas, and review-queue routing tuned per tier. They consider three approaches: separate agents per tier, one agent with tier-conditional logic, or one agent with externalized policy. Which architecture BEST scales as the tier list grows?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757123,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Developer Productivity assistant exposes a Bash tool through an MCP server. Security wants Claude to refuse destructive shell commands. An engineer adds a system-prompt instruction: &#x27;You are a careful DevOps expert; never run destructive commands.&#x27; During a red-team test, a crafted user request still elicits a destructive command. Which assessment of this control is MOST accurate from an architectural standpoint?</p>",
+        "answers": [
+          "The role assignment grants the careful persona the authority to block destructive commands, so the failure must stem from a malformed system prompt section that, once corrected, will let the persona reliably enforce the refusal as a hard control",
+          "Setting temperature to 0 will make refusals deterministic, so the same destructive request will then be consistently blocked across runs",
+          "Adding more forceful language and capitalized warnings to the system prompt will make the behavioral constraint reliable enough to serve as the control",
+          "Prompt-based guardrails are probabilistic and can fail under adversarial input; the destructive-command block belongs in the MCP tool&#x27;s deterministic permission layer"
+        ],
+        "feedbacks": [
+          "Role assignment shapes style and does not grant or revoke capabilities; a persona cannot enforce a security boundary. The premise that the persona has blocking authority is the misconception.",
+          "Temperature 0 reduces sampling variance but does not make a soft instruction adversarially robust; the model can deterministically comply with a crafted bypass.",
+          "Stronger wording does not convert a probabilistic prompt guardrail into a deterministic boundary; adversarial prompts can still override emphasis.",
+          "A system-prompt behavioral constraint is a soft guardrail that adversarial inputs can defeat. Enforcing the block in the MCP server&#x27;s tool permissions makes it deterministic and outside the model&#x27;s discretion. Defense in depth keeps the prompt instruction but does not rely on it as the control."
+        ],
+        "explanation": "Domain 4: Prompt Engineering &amp; Structured Output<br>Subdomain 4A: Core Prompt Engineering<br><br>4A2 with D2 MCP security: a system-prompt instruction is a probabilistic guardrail that adversarial input can defeat. Hard security boundaries belong in the MCP tool&#x27;s deterministic permission layer. Persona authority, emphatic wording, and temperature 0 all leave the control inside the model&#x27;s discretion."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D4",
+      "question_plain": "A Developer Productivity assistant exposes a Bash tool through an MCP server. Security wants Claude to refuse destructive shell commands. An engineer adds a system-prompt instruction: &#x27;You are a careful DevOps expert; never run destructive commands.&#x27; During a red-team test, a crafted user request still elicits a destructive command. Which assessment of this control is MOST accurate from an architectural standpoint?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757125,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation team&#x27;s MCP server lists 12 tools via tools/list. Each tool definition includes a comprehensive `inputSchema` and `description`. Clients still report that some tools are confusing to choose between. Which addition to each tool&#x27;s definition MOST directly helps the host application surface clearer choices to its users?</p>",
+        "answers": [
+          "Add an `annotations` block (e.g., `readOnlyHint`, `destructiveHint`, `idempotentHint`) so the host can render visual cues to users about each tool&#x27;s nature",
+          "Add a `priority` integer so the host can sort tools in display order",
+          "Include the full source code of the tool implementation in the description so the host can show users exactly what each tool does, removing any ambiguity about behavior when two tools sound similar",
+          "Provide a screenshot of the tool&#x27;s output in each tool&#x27;s metadata so users can preview what the tool returns before choosing it"
+        ],
+        "feedbacks": [
+          "MCP tool annotations like readOnlyHint and destructiveHint give the host application metadata to render visual cues (e.g., a warning icon for destructive tools, a check for read-only ones). These hints help users — not the model — distinguish between similar-sounding tools at the UI layer. The model still relies on descriptions for routing.",
+          "There is no standard priority field in MCP tool definitions. The protocol provides annotations for tool semantics, not display ordering.",
+          "Including source code in the description does not help user choice and inflates the per-turn token cost. The user needs semantic hints, not implementation detail.",
+          "Screenshots are not part of the MCP tool definition shape. Tool annotations are the structured way to communicate semantic properties to the host."
+        ],
+        "explanation": "Domain 2: Tool Design &amp; MCP Integration<br>Subdomain 2B: MCP Server Configuration<br><br>MCP tool annotations (readOnlyHint, destructiveHint, idempotentHint, openWorldHint) give host applications structured metadata to render visual cues to users — for example, warning icons on destructive tools. These hints serve the user-facing UX, complementing descriptions that serve model routing."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D2",
+      "question_plain": "A Code Generation team&#x27;s MCP server lists 12 tools via tools/list. Each tool definition includes a comprehensive `inputSchema` and `description`. Clients still report that some tools are confusing to choose between. Which addition to each tool&#x27;s definition MOST directly helps the host application surface clearer choices to its users?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757127,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Customer Support Agent team built an agent because they expected the task to require runtime adaptation. After six months, telemetry shows that the agent makes the same five tool-call sequences 92% of the time. Which interpretation is MOST consistent with CCA-F guidance?</p>",
+        "answers": [
+          "Add more tools to the agent so it has even more flexibility",
+          "The agent is clearly performing perfectly well on all the data, so absolutely no architectural change of any kind is needed here",
+          "The original choice was wrong for the common path; a workflow with the five sequences would better fit the 92%",
+          "Replace the agent with a conversational system"
+        ],
+        "feedbacks": [
+          "Adding tools to an agent that mostly does five sequences extends the scope problem rather than addressing the mismatch. The fix is to match architecture to usage, not to expand capability the usage does not need.",
+          "&#x27;Performing&#x27; on 92% predictable cases is what a workflow would also do — at lower cost and lower variance. The evidence shows the agentic class is unnecessary on the dominant case, which is a cost-and-variance issue even if functional output is acceptable.",
+          "92% predictable sequences indicate the agentic class is over-engineered for the dominant case. CCA-F principles favor matching architecture to actual usage; the right refactor is to encode the five sequences as a workflow and keep the agent for the 8% residual where adaptation is real.",
+          "Conversational cannot take the actions the support agent currently performs. The downgrade target is workflow for the predictable case, not all the way to conversational."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1A: Agentic Loops and Core API<br><br>Telemetry showing high predictability is evidence to downgrade from agentic to workflow on the predictable path. CCA-F principles favor matching the architectural class to actual usage — keeping the agent for the residual that requires adaptation, and using the simpler class for the dominant predictable case."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D1",
+      "question_plain": "A Customer Support Agent team built an agent because they expected the task to require runtime adaptation. After six months, telemetry shows that the agent makes the same five tool-call sequences 92% of the time. Which interpretation is MOST consistent with CCA-F guidance?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757129,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Developer Productivity team adds an escalation trigger for any action that would commit code. After deployment they find the agent escalates even on local test runs that never commit. Which adjustment is MOST appropriate?</p>",
+        "answers": [
+          "Narrow the trigger to actual commit invocations, not actions that could potentially lead to commits",
+          "Disable the trigger entirely, since commit actions are routine enough that they do not actually need any human oversight",
+          "Widen the trigger to include any file modification",
+          "Manually approve every action including local test runs"
+        ],
+        "feedbacks": [
+          "Triggers should fire on the specific action they aim to gate, not on a broader class that includes it. Local test runs are not commits and should not be gated by a commit trigger. Narrowing the trigger to actual commit invocations restores intended behavior without losing oversight on real commits.",
+          "Disabling removes the oversight the team explicitly wanted. The miscalibration is in the trigger condition, not in whether to have one.",
+          "Widening the trigger increases false positives further — even more legitimate work would be gated. The direction is wrong.",
+          "Requiring approval for everything defeats the purpose of automation. The trigger should match the specific risk it gates."
+        ],
+        "explanation": "Domain 5: Context Management &amp; Reliability<br>Subdomain 5B: Escalation and Error Propagation<br><br>Trigger conditions should match the specific action being gated, not a broader category that includes it. Imprecise triggers cause false positives that erode trust in the escalation system; tightening to the actual risk action restores precision."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D5",
+      "question_plain": "A Developer Productivity team adds an escalation trigger for any action that would commit code. After deployment they find the agent escalates even on local test runs that never commit. Which adjustment is MOST appropriate?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757131,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research orchestrator has three subtasks: fetch from feed A, fetch from feed B, fetch from feed C. Which execution pattern is MOST appropriate?</p>",
+        "answers": [
+          "Run only feed A and skip the others",
+          "Sequential execution of the three fetches in order to maintain strict consistency across all of them",
+          "Parallel execution because the three fetches are independent and can proceed concurrently",
+          "Execute the fetches in a hub-and-spoke topology"
+        ],
+        "feedbacks": [
+          "Skipping feeds loses data the team explicitly wants. The requirement is three feeds; parallel execution is the right pattern, not partial skipping.",
+          "Independent fetches do not need sequencing for consistency — they retrieve from different sources. Sequential execution wastes wall time without providing any consistency benefit.",
+          "Three independent fetches with no inter-dependencies are the canonical parallel case. Wall time becomes max(A, B, C) instead of A + B + C. CCA-F guidance assigns parallel execution to truly independent subtasks; the fan-out pattern fits cleanly here.",
+          "Hub-and-spoke is a coordination topology, not an execution pattern. Parallel fetches can use a hub-and-spoke pattern, but the execution choice — parallel — is the answer to the execution-pattern question."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1B: Task Decomposition and Planning<br><br>Truly independent subtasks fit the parallel execution pattern. CCA-F guidance distinguishes dependency-bound subtasks (sequential) from independent ones (parallel); three independent fetches are the textbook parallel case where wall time becomes max instead of sum."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D1",
+      "question_plain": "A Multi-Agent Research orchestrator has three subtasks: fetch from feed A, fetch from feed B, fetch from feed C. Which execution pattern is MOST appropriate?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757133,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research firm wants to use compaction in subagents as well as the parent. Which design consideration BEST applies?</p>",
+        "answers": [
+          "Subagents cannot be compacted at all, since the compaction mechanism only ever applies to the parent session",
+          "Subagents should compact more aggressively than parents, since their tighter and more focused scope means heavier summarization does less damage and frees the most working room for the delegated task",
+          "Subagents typically have shorter lifespans and tighter scope, so compaction is often unnecessary — design for context-clean delegation instead",
+          "Require compaction for every subagent as a universal context-hygiene rule"
+        ],
+        "feedbacks": [
+          "Subagents can be compacted if they run long enough, but typically the task is short and compaction is unnecessary. Capability is not the limit; design appropriateness is.",
+          "Short-lived subagents typically do not benefit from compaction — they finish before compaction would matter. The pattern fits long-running contexts.",
+          "Subagents that complete a single task usually do not need compaction — their context is built fresh for the task and discarded after. The right design is to size subagent contexts to fit their task without compaction. Compaction is more relevant for long-running parent agents or sessions that span many tasks.",
+          "Requiring compaction in short-lived subagents adds drift risk without benefit. Apply compaction where context pressure exists, not as a universal rule."
+        ],
+        "explanation": "Domain 5: Context Management &amp; Reliability<br>Subdomain 5C: Context Efficiency for Large Codebases<br><br>Compaction is a tool for long-running contexts under pressure, not a universal hygiene step. CCA-F architects apply it where it earns its drift cost — multi-hour sessions, long-running pipelines — and skip it for short-lived subagent tasks that fit naturally within their initial context."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D5",
+      "question_plain": "A Multi-Agent Research firm wants to use compaction in subagents as well as the parent. Which design consideration BEST applies?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757135,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A CI/CD Integration team&#x27;s MCP server has a tool that takes 5-20 seconds to complete. The team wants to ensure the tool does not hold the protocol connection blocked while it executes, so other server activity (notifications, list calls) can interleave. Which implementation pattern is correct?</p>",
+        "answers": [
+          "Move slow tools to a separate dedicated server so the main server stays fast and is never held up waiting on any long-running operation",
+          "Make every tool synchronous and run the server single-threaded — concurrency is the client&#x27;s problem, since the client can simply space out its requests so the slow tool never blocks anything important",
+          "Spawn one process per tool call to maximize isolation, so each slow operation runs in its own process and never blocks the others",
+          "Implement the tool handler asynchronously so it yields control to the server&#x27;s event loop while it waits on its slow operation, allowing notifications and other calls to flow concurrently"
+        ],
+        "feedbacks": [
+          "Splitting servers is one valid pattern but is far heavier than making handlers async, and it does not solve the general problem for any future slow tool. Async handlers are the right primary lever.",
+          "Single-threaded blocking handlers cause head-of-line blocking on the protocol connection, freezing notifications and list calls behind any slow tool. The server is responsible for keeping its connection responsive.",
+          "Per-call processes are overkill for the concurrency requirement and add significant startup cost. Async handlers achieve concurrency without process overhead.",
+          "MCP servers handle multiple concurrent requests over their transport, and tool handlers should be async-aware so they yield while awaiting slow operations. This keeps the protocol connection responsive to notifications, list calls, and other tool invocations while the slow tool runs. Blocking handlers serialize all server activity behind the slowest call."
+        ],
+        "explanation": "Domain 2: Tool Design &amp; MCP Integration<br>Subdomain 2B: MCP Server Configuration<br><br>MCP servers should implement tool handlers asynchronously so slow operations yield to the event loop, keeping the protocol connection responsive to other calls. Synchronous blocking handlers serialize all server activity; per-call processes are overkill; per-tool server splits are heavier than necessary. Async handlers are the canonical concurrency primitive."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D2",
+      "question_plain": "A CI/CD Integration team&#x27;s MCP server has a tool that takes 5-20 seconds to complete. The team wants to ensure the tool does not hold the protocol connection blocked while it executes, so other server activity (notifications, list calls) can interleave. Which implementation pattern is correct?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757137,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation team uses tool-use schema. The schema has 8 fields. The model occasionally populates fewer than 8. Which interpretation is MOST consistent with required-field semantics?</p>",
+        "answers": [
+          "Mark all eight fields as required to fix the omissions, since forcing every field to be present is the simplest way to guarantee none of them are ever left out",
+          "Tool-use ignores the required array, so marking fields as required has no effect and the omissions must be addressed by some other mechanism entirely",
+          "Lower temperature to fill the missing fields, since a more deterministic setting makes the model populate all eight fields rather than leaving some empty",
+          "If the model omits fields, those fields aren&#x27;t in the required array; review the schema&#x27;s required list and add the fields that must always be populated"
+        ],
+        "feedbacks": [
+          "Over-marking forces null/placeholder for fields that may legitimately be optional. Mark only what must be populated.",
+          "Tool use does not ignore the required array; the model honors it, and with strict mode (strict: true) required-field conformance is guaranteed. The required list is exactly the mechanism for addressing these omissions.",
+          "Temperature controls sampling randomness, not schema enforcement; a more deterministic setting does not compel the model to populate fields the schema treats as optional. Field completeness is controlled by the required array.",
+          "Tool use respects the required array, so omitted fields are almost certainly missing from it. Adding them to the required list makes the model populate them reliably, and enabling strict mode (strict: true) guarantees required-field conformance on every call. This is the canonical control for field completeness in tool-use schemas."
+        ],
+        "explanation": "Domain 4: Prompt Engineering &amp; Structured Output<br>Subdomain 4C: Structured Output and Evaluation<br><br>The required array is the schema-level control for field completeness. Add fields that must always be populated; leave optional fields out. The model honors the required array in tool use, and strict mode (strict: true) guarantees required-field conformance on every call."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D4",
+      "question_plain": "A Code Generation team uses tool-use schema. The schema has 8 fields. The model occasionally populates fewer than 8. Which interpretation is MOST consistent with required-field semantics?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757139,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Customer Support Agent maintainer wants to compare Claude Code&#x27;s tool use to MCP tool use conceptually for an internal doc. Which characterization is MOST accurate under CCA-F&#x27;s architecture model?</p>",
+        "answers": [
+          "Claude Code does not support MCP — only the Claude API integrates with MCP servers",
+          "Claude Code tools are model-controlled but MCP tools are application-controlled, so Claude cannot invoke MCP tools directly and must wait for the host application to call them on its behalf",
+          "Both are model-controlled tool calls — Claude Code uses built-in tools plus any configured MCP servers as additional tool sources",
+          "MCP tools replace Claude Code&#x27;s built-in tools when configured — only one source is active at a time"
+        ],
+        "feedbacks": [
+          "Claude Code supports MCP server configuration directly. Pretending it does not removes a core piece of the D3/D2 integration story.",
+          "MCP tools are model-controlled; that is the defining property of the MCP tool primitive. Resources are application-controlled and prompts are user-controlled, so this option assigns the tool primitive the control model that actually belongs to resources.",
+          "Claude Code&#x27;s built-in tools and MCP-server-exposed tools are both invoked by the model under the same model-controlled tool-call pattern. MCP simply adds a standardized protocol for exposing extra tools; the loop treats them as additional callable surfaces.",
+          "MCP-exposed tools augment, not replace, the built-in tool set. Claude Code can mix built-in and MCP tools in the same session."
+        ],
+        "explanation": "Domain 3: Claude Code Configuration &amp; Workflows<br>Subdomain 3A: Claude Code Fundamentals<br><br>Claude Code uses built-in tools and can additionally call MCP-exposed tools, all under the same model-controlled tool-call pattern. MCP standardizes how extra tools are advertised; the loop&#x27;s mechanics do not change. This is the architectural bridge between D3 and D2."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D3",
+      "question_plain": "A Customer Support Agent maintainer wants to compare Claude Code&#x27;s tool use to MCP tool use conceptually for an internal doc. Which characterization is MOST accurate under CCA-F&#x27;s architecture model?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757141,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation assistant must emit commit messages in a strict team format. The team is deciding between zero-shot with a precise format spec and a few-shot prompt with several examples. Commit messages are a common, well-defined task, and the assistant runs on every commit in a CI/CD pipeline where prompt tokens are billed at high volume. Which choice is BEST and why?</p>",
+        "answers": [
+          "Use few-shot with several examples, because few-shot prompting always outperforms zero-shot for any structured output formatting requirement and concrete examples are strictly more reliable than a spec for enforcing a fixed format",
+          "Use zero-shot with a precise format specification, since well-defined common tasks can match few-shot performance while avoiding per-commit token bloat",
+          "Use one-shot as a middle ground, since one example is the standard fallback whenever few-shot would add too many tokens to the request",
+          "Use few-shot but cache the example block so the per-commit token cost of the examples is amortized across the pipeline&#x27;s many runs"
+        ],
+        "feedbacks": [
+          "Few-shot does not always win; for well-defined common tasks zero-shot with clear instructions matches it, and the examples add recurring token cost on every CI run for no benefit.",
+          "Commit messages are a common, well-defined task where zero-shot with a clear spec can match few-shot. In a high-volume CI/CD path, dropping example tokens from every invocation is a meaningful cost win with no accuracy loss. Few-shot earns its tokens only for novel formats or edge-case-heavy tasks.",
+          "One-shot is not a generic fallback; the zero/one/few choice is deliberate by task complexity, and a single example is unnecessary for a common, well-specified format.",
+          "Caching can reduce repeated input cost but still adds unnecessary examples for a task zero-shot handles; it optimizes a choice that was avoidable, and the spec alone suffices."
+        ],
+        "explanation": "Domain 4: Prompt Engineering &amp; Structured Output<br>Subdomain 4B: Advanced Prompting Techniques<br><br>4B1 with D3 CI/CD cost: zero-shot with a precise spec matches few-shot on common, well-defined tasks and avoids per-invocation token bloat in a high-volume pipeline. Few-shot is not universally superior, one-shot is not a default fallback, and caching optimizes an avoidable choice."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D4",
+      "question_plain": "A Code Generation assistant must emit commit messages in a strict team format. The team is deciding between zero-shot with a precise format spec and a few-shot prompt with several examples. Commit messages are a common, well-defined task, and the assistant runs on every commit in a CI/CD pipeline where prompt tokens are billed at high volume. Which choice is BEST and why?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757143,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Data Extraction team&#x27;s workflow occasionally runs steps out of order when the agent decides to optimize. Which CCA-F principle MOST directly applies?</p>",
+        "answers": [
+          "Just remove the step ordering from the workflow definition altogether",
+          "Agents should always optimize execution regardless of the declared ordering, since a capable agent reordering steps for efficiency will still reach the same correct outcome",
+          "Workflow step ordering should be treated as merely advisory guidance",
+          "Workflow step ordering must be enforced programmatically — agent optimization should not bypass declared ordering"
+        ],
+        "feedbacks": [
+          "Removing ordering loses the workflow&#x27;s structure. The fix is enforcement, not removal.",
+          "Out-of-order execution violates the workflow contract. CCA-F guidance favors workflow ordering as enforced structure, not advisory.",
+          "Advisory ordering produces the inconsistency the team is observing. CCA-F guidance favors enforced ordering.",
+          "Workflow ordering is a structural property, not a model decision. CCA-F guidance favors programmatic ordering enforcement — the workflow engine enforces sequence; the agent operates within steps, not over them. Optimization within a step is fine; reordering steps is not."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1D: Hooks and Programmatic Enforcement<br><br>Workflow step ordering is enforced programmatically, not at agent discretion. CCA-F guidance favors structural enforcement; agents operate within steps. Allowing optimization, treating ordering as advisory, and removing ordering each fail to address the ordering enforcement."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D1",
+      "question_plain": "A Data Extraction team&#x27;s workflow occasionally runs steps out of order when the agent decides to optimize. Which CCA-F principle MOST directly applies?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757145,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation prompt says &#x27;Generate idiomatic SQL queries.&#x27; Reviewers report inconsistent style — sometimes uppercased keywords, sometimes lowercased, sometimes inconsistent column quoting. Which change MOST directly stabilizes style?</p>",
+        "answers": [
+          "Name the style guide explicitly — &#x27;Follow SQL Style Guide by Simon Holywell: uppercase keywords, lowercase identifiers, double-quote case-sensitive names&#x27;",
+          "Raise temperature so style varies less from query to query, since a hotter sampler tends to smooth idiosyncratic keyword-casing choices into one consistent house style",
+          "Provide one example query and instruct the model to match its keyword casing and quoting",
+          "Use prefilling to start each response with &#x27;SELECT &#x27; so the style is anchored early"
+        ],
+        "feedbacks": [
+          "Idiomatic SQL has many regional dialects. Naming a published style guide imports a full rule set in one phrase, plus the three specific rules anchor the most variable dimensions. The model can no longer interpret &#x27;idiomatic&#x27; variably because the criterion has been named.",
+          "Raising temperature increases variance, not decreases it; and even with lower temperature, an unstated style guide produces deterministic idiomatic-by-the-model&#x27;s-choice queries.",
+          "One example covers a narrow region of the style space. Novel query shapes can pattern-match to it in unexpected ways.",
+          "Prefilling anchors the opening token but does not specify keyword case or quoting style across the rest of the query."
+        ],
+        "explanation": "Domain 4: Prompt Engineering &amp; Structured Output<br>Subdomain 4A: Core Prompt Engineering<br><br>Style criteria are best expressed by referencing a named standard — Conventional Commits, PEP 8, Holywell&#x27;s SQL Style Guide. Naming imports the full rule set efficiently. &#x27;Idiomatic&#x27; alone is the variance source."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D4",
+      "question_plain": "A Code Generation prompt says &#x27;Generate idiomatic SQL queries.&#x27; Reviewers report inconsistent style — sometimes uppercased keywords, sometimes lowercased, sometimes inconsistent column quoting. Which change MOST directly stabilizes style?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757147,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>Which of the following BEST describes the trade-off between sequential and parallel execution per CCA-F guidance?</p>",
+        "answers": [
+          "Parallel execution is always strictly far better than sequential execution here, simply because it is faster across the board in every single case",
+          "Sequential is always better because it is simpler",
+          "Sequential is simpler and avoids partial failure; parallel is faster on independent subtasks but adds coordination and partial-failure handling",
+          "Sequential and parallel are interchangeable and the choice does not matter"
+        ],
+        "feedbacks": [
+          "Parallel is not faster on dependent subtasks and is no faster than sequential on a single-branch task. The trade-off is genuine; both classes have appropriate use cases.",
+          "Sequential is not always better — on independent subtasks, it wastes wall time. The trade-off is real; CCA-F guidance favors matching execution pattern to dependency structure.",
+          "This is the canonical CCA-F trade-off. Sequential trades wall time for simplicity and the absence of partial failure; parallel trades simplicity for wall-time gains but requires explicit fan-in handling. The choice depends on dependency structure and operational priorities.",
+          "The choice matters because wall time, partial-failure scenarios, and coordination overhead all differ. CCA-F guidance is explicit about the trade-off, not indifferent to it."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1B: Task Decomposition and Planning<br><br>Sequential is simpler and avoids partial failure; parallel is faster on independent subtasks but adds coordination and partial-failure handling. CCA-F guidance favors matching execution pattern to dependency structure — sequential on dependencies, parallel on independents — with the trade-off as the design lever."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D1",
+      "question_plain": "Which of the following BEST describes the trade-off between sequential and parallel execution per CCA-F guidance?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757149,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Customer Support Agent team&#x27;s parent issues an Agent tool call but the subagent task description was vague. The subagent produces irrelevant output. Which BEST diagnoses the cause?</p>",
+        "answers": [
+          "Vague handoff — the parent did not specify task, expected output, and constraints clearly enough for the subagent to focus",
+          "Subagents always produce irrelevant output because they are unreliable by design, so the team should expect wandering results and treat any useful output as a pleasant surprise",
+          "The subagent&#x27;s own CLAUDE.md was malformed, corrupting its behavior, since each child loads a separate configuration file that can drift from the parent&#x27;s project settings",
+          "The parent should have used a slash command instead of the Agent tool, since slash commands give far more reliable scoped output than delegating to a subagent ever does"
+        ],
+        "feedbacks": [
+          "Subagent quality depends heavily on handoff specificity. A vague task description leaves the subagent to interpret broadly, producing wandering output. The fix is at the parent&#x27;s handoff layer: precise task, expected output schema, and constraints.",
+          "Subagents are not inherently unreliable. The cause is usually handoff quality.",
+          "Subagents load the same CLAUDE.md as the parent&#x27;s project. The likely root cause is handoff vagueness.",
+          "Slash commands and subagents differ. The fix here is handoff specificity, not feature swap."
+        ],
+        "explanation": "Domain 3: Claude Code Configuration &amp; Workflows<br>Subdomain 3C: Commands, Skills, and Subagents<br><br>Subagent output quality reflects handoff quality. Vague task descriptions produce wandering output. Specify task, expected return schema, and constraints in the Agent tool&#x27;s invocation."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D3",
+      "question_plain": "A Customer Support Agent team&#x27;s parent issues an Agent tool call but the subagent task description was vague. The subagent produces irrelevant output. Which BEST diagnoses the cause?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757151,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation orchestrator passes the entire codebase to every subagent. The team observes high cost and slow execution. Which CCA-F principle MOST directly applies?</p>",
+        "answers": [
+          "Context isolation means passing no context whatsoever to the subagent",
+          "Subagents always need the entire codebase passed in to function correctly, since a subagent given only its scoped slice will lack the context to do its task well",
+          "Passing more context to a subagent is always the cheaper option",
+          "Context isolation should pass only the context each subagent needs — passing everything wastes tokens and slows execution"
+        ],
+        "feedbacks": [
+          "No context is under-passing, which causes the subagent to fail. The right amount is what the scoped task needs — neither zero nor everything.",
+          "Most subagent tasks need only a small subset of the codebase. CCA-F guidance favors tailored handoffs; the assumption that everything is needed is the over-passing failure mode.",
+          "More context costs more tokens and slows inference. Cost grows with context size; over-passing is expensive precisely because of this.",
+          "Over-passing context is the inverse failure of under-passing. CCA-F guidance favors passing only what each subagent needs — minimal context for the scoped task. Passing the full codebase to every subagent treats handoff as a bulk dump rather than a tailored hand-off."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1C: Multi-Agent Orchestration<br><br>Context isolation passes only the context each subagent needs for its scoped task. CCA-F guidance treats handoff as tailored, not bulk dump. Over-passing wastes tokens and slows execution; under-passing causes failures. The right amount is the task-specific minimum."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D1",
+      "question_plain": "A Code Generation orchestrator passes the entire codebase to every subagent. The team observes high cost and slow execution. Which CCA-F principle MOST directly applies?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757153,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research orchestrator dispatches a subagent that loops over web search, scrape, and synthesize tools. The team observes that the subagent occasionally returns results with no actual sources cited. What property of agentic systems does this MOST directly highlight?</p>",
+        "answers": [
+          "Agentic systems require structured tool output schemas to function correctly",
+          "Agentic loops cannot reliably use web search tools because of latency",
+          "Agentic autonomy can satisfy a stop condition without satisfying the actual goal",
+          "Agentic systems require Claude&#x27;s largest model to reliably follow every complex instruction given"
+        ],
+        "feedbacks": [
+          "Structured schemas are a quality lever but do not address this specific failure. The subagent is returning results — the problem is that the loop terminated without enforcing the source-citation property.",
+          "Tool latency is unrelated to citation completeness. Web search works in agents; the failure is in how the loop validates output, not in the tool itself.",
+          "Autonomous agents can declare task completion when they have produced any answer, not necessarily a correct or complete one. Termination conditions that check only &#x27;output produced&#x27; miss this failure mode; the fix is goal-constraint validation at loop exit.",
+          "Model size is not the root cause. A larger model in the same loop will still terminate when it believes the task is done; the architectural fix is a validation gate that checks goal satisfaction, not a model swap."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1A: Agentic Loops and Core API<br><br>Autonomous agents can terminate when they believe they&#x27;re done, which is not the same as having actually met the goal. Production agentic systems need validation gates that check goal constraints — source citation, schema completeness, business rules — before accepting a result as final."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D1",
+      "question_plain": "A Multi-Agent Research orchestrator dispatches a subagent that loops over web search, scrape, and synthesize tools. The team observes that the subagent occasionally returns results with no actual sources cited. What property of agentic systems does this MOST directly highlight?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757155,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research subagent receives a handoff with required fields, optional fields, and field types specified. Which CCA-F principle does this design MOST directly satisfy?</p>",
+        "answers": [
+          "Structured handoff schema — explicit fields, types, and required-vs-optional designation make the inter-agent contract machine-enforceable",
+          "Maximum information density, on the theory that the more fields a handoff carries the better",
+          "A free-form prose handoff, chosen for its flexibility across tasks",
+          "An identical handoff format applied to all subagents regardless of their task, since one universal schema is easier to maintain than per-task contracts and avoids drift between them"
+        ],
+        "feedbacks": [
+          "Required, optional, and typed fields make the handoff a structured schema. CCA-F guidance favors machine-enforceable contracts because prose handoffs produce inter-agent errors. Schema enforcement catches missing fields, type mismatches, and contract violations at the boundary.",
+          "Density is not the principle — appropriate scope is. CCA-F guidance favors structured schemas with task-relevant fields, not maximum field count.",
+          "Free-form prose is the opposite of structured schema. CCA-F guidance favors structured schemas; prose is the anti-pattern.",
+          "Different subagents have different scopes and need different handoff schemas. CCA-F guidance favors task-specific schemas, not one-size-fits-all."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1C: Multi-Agent Orchestration<br><br>Structured handoff schemas with required fields, optional fields, and types are machine-enforceable contracts. CCA-F guidance favors this design because it catches inter-agent errors at the boundary. Maximum density, free-form prose, and uniform schemas each fail to provide task-fit enforcement."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D1",
+      "question_plain": "A Multi-Agent Research subagent receives a handoff with required fields, optional fields, and field types specified. Which CCA-F principle does this design MOST directly satisfy?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757157,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation team wants their SDK app to fall back to a different model if Claude is unavailable. Which characterization is MOST accurate?</p>",
+        "answers": [
+          "Fallback is the application&#x27;s job — the SDK targets Claude Code; the application implements model fallback logic around SDK calls",
+          "The SDK automatically falls back to other vendors on failure, so the application gets cross-provider resilience for free without writing any fallback logic",
+          "The SDK natively supports OpenAI as a fallback target, so the team can configure a secondary provider directly in the SDK and let it switch on failure",
+          "Cross-model fallback is not supported in any SDK at all, so if Claude is unavailable the application has no path to continue and must simply fail the request"
+        ],
+        "feedbacks": [
+          "The SDK is the Claude Code surface; cross-model fallback is application-level logic. The application can call the SDK, catch failure, and fall back to another model or service. The SDK itself does not orchestrate cross-provider fallback.",
+          "No cross-vendor auto-fallback. Application must implement.",
+          "SDK targets Claude Code; cross-provider fallback is application logic.",
+          "Application-implemented fallback is fully supported; the SDK is just one of multiple model surfaces an application can use."
+        ],
+        "explanation": "Domain 3: Claude Code Configuration &amp; Workflows<br>Subdomain 3D: Hooks, SDK, and CI/CD<br><br>SDK targets Claude Code; cross-provider or cross-model fallback is the application&#x27;s responsibility. The SDK exposes Claude Code reliably; fallback orchestration sits above it."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D3",
+      "question_plain": "A Code Generation team wants their SDK app to fall back to a different model if Claude is unavailable. Which characterization is MOST accurate?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757159,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A CI/CD team wants a slash command that spawns a subagent to run tests in parallel while the main session continues. What does the command template need to include to enable this?</p>",
+        "answers": [
+          "A Bash command in the template to launch a background process.",
+          "The command template should not include Agent tool calls — subagents can only be configured in CLAUDE.md.",
+          "Add a `parallel: true` flag to the command&#x27;s frontmatter so Claude Code automatically forks the session and runs the command body in a background subagent",
+          "Instruct Claude to use the Agent tool to spawn a subagent for test execution with the needed context — enabling parallel operation while the main session continues"
+        ],
+        "feedbacks": [
+          "Launching background processes via Bash does not create a Claude subagent — it runs shell commands in the background without Claude&#x27;s reasoning capabilities. Spawning a Claude subagent requires the Agent tool call, not a Bash background process.",
+          "Subagent delegation via the Agent tool can be initiated from any context where Claude is reasoning — including during execution of a slash command template. CLAUDE.md configures Claude Code&#x27;s behavior but does not restrict where subagent calls can originate.",
+          "Wrong: there is no `parallel: true` frontmatter flag that forks the session. Parallel subagent execution is driven by the prompt — the command body instructs Claude to use the Agent tool to delegate the task — not by a configuration flag.",
+          "Slash command templates guide Claude&#x27;s reasoning and tool use. A template that instructs Claude to &#x27;Use the Agent tool to spawn a subagent with the following task: run the test suite in [directory] and report results&#x27; will cause Claude to issue an Agent tool call, creating a parallel subagent for test execution. The main session can continue while the subagent handles testing independently."
+        ],
+        "explanation": "Domain 3: Claude Code Configuration &amp; Workflows<br>Subdomain 3C: Commands, Skills, and Subagents<br><br>Slash command templates direct Claude&#x27;s reasoning and tool usage, so parallel delegation is achieved by instructing Claude in the template body to use the Agent tool with the needed task context. That instruction causes Claude to spawn a subagent for test execution while the main session continues. No frontmatter flag or Bash background process creates a Claude subagent; the prompt drives the delegation."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D3",
+      "question_plain": "A CI/CD team wants a slash command that spawns a subagent to run tests in parallel while the main session continues. What does the command template need to include to enable this?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757161,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research subagent prompt says &#x27;Fetch the most relevant 5 sources.&#x27; Sources sometimes overlap heavily, sometimes diverge wildly. Which change BEST improves source diversity?</p>",
+        "answers": [
+          "Increase the source count to 10 so diversity emerges naturally, since a larger candidate set spans more distinct viewpoints and the broader sweep crowds out the heavy overlap",
+          "Require sources to cover distinct viewpoints — name the diversity dimensions (date range, authorship, methodology) and forbid duplicates within each dimension",
+          "Raise temperature so the source selection from the candidate pool is more varied",
+          "Sort the sources alphabetically and take the first five for reproducibility"
+        ],
+        "feedbacks": [
+          "More sources without a diversity rule produce more overlap, not better cover. The selection criterion is the lever.",
+          "&#x27;Most relevant&#x27; optimizes for similarity, which naturally produces overlap. Specifying diversity dimensions and forbidding duplicates within each turns the selection criterion from a single-axis ranking into a multi-axis cover, eliminating both the overlap and the wild-divergence failure modes.",
+          "Temperature affects token sampling, not source selection from a candidate pool. The variance is in the rule, not the sampling.",
+          "Alphabetic order is unrelated to diversity. The same overlap pattern emerges."
+        ],
+        "explanation": "Domain 4: Prompt Engineering &amp; Structured Output<br>Subdomain 4A: Core Prompt Engineering<br><br>Single-axis relevance optimizes for similarity. Diversity requires multi-axis criteria — dimensions named, duplicates per dimension forbidden. This applies to source selection, example selection in few-shot prompts, and any cover-the-space task."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D4",
+      "question_plain": "A Multi-Agent Research subagent prompt says &#x27;Fetch the most relevant 5 sources.&#x27; Sources sometimes overlap heavily, sometimes diverge wildly. Which change BEST improves source diversity?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757163,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research orchestrator stores session state in a single shared database that all subagents read and write. The team observes inconsistencies. Which CCA-F-consistent design MOST directly addresses this?</p>",
+        "answers": [
+          "Have the subagents lock the database during every single write",
+          "Concentrate state ownership at the orchestrator — subagents read filtered state and return updates, the orchestrator commits",
+          "Accept the inconsistencies as inherent to multi-agent systems, since concurrent subagents writing to shared state will always race and the conflicts cannot be prevented",
+          "Replicate the entire database separately for every subagent"
+        ],
+        "feedbacks": [
+          "Database-level locks across subagents add latency and may produce deadlocks. CCA-F guidance favors structural change — orchestrator-owned commits — over fine-grained locking.",
+          "Distributed writes to a single database produce inconsistencies. CCA-F guidance places state ownership at the orchestrator — subagents read filtered state and return updates as part of their handoff response, and the orchestrator commits with concurrency control.",
+          "Inconsistencies are a design issue, not inherent. CCA-F guidance favors centralized ownership to prevent them.",
+          "Replication produces divergent state across subagents — exactly the opposite of consistency. CCA-F guidance favors single source of truth at the orchestrator."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1C: Multi-Agent Orchestration<br><br>State consistency requires concentrated ownership — orchestrator commits, subagents propose. CCA-F guidance favors this pattern over fine-grained locking, accepting inconsistencies, or replication. The orchestrator&#x27;s single source of truth eliminates the consistency issue at its root."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D1",
+      "question_plain": "A Multi-Agent Research orchestrator stores session state in a single shared database that all subagents read and write. The team observes inconsistencies. Which CCA-F-consistent design MOST directly addresses this?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757165,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Customer Support Agent prompt asks Claude to translate to Spanish when the user writes in Spanish. The model sometimes responds in English to Spanish messages with English code-switching. Which change MOST directly enforces language matching?</p>",
+        "answers": [
+          "Add &#x27;always be linguistically appropriate&#x27; so the model self-corrects its language",
+          "Run a language-detection step in a separate API call first",
+          "Lower temperature to 0 so the language choice becomes deterministic, since a stable sampler reliably matches the user&#x27;s language without code-switching",
+          "Rule: detect the dominant language of the user&#x27;s most recent message and respond entirely in that language unless the user explicitly requests another"
+        ],
+        "feedbacks": [
+          "Adverb without an actionable rule.",
+          "An external detection step adds latency and is not necessary — the model can detect dominant language inline given the explicit rule.",
+          "Determinism on an unstated rule still produces unstated rule variance. The fix is the rule.",
+          "Code-switching messages confuse simple &#x27;match the user&#x27;s language&#x27; rules. Specifying dominant-language detection plus the entirely-in-that-language constraint with an explicit override mechanism gives the model an unambiguous decision rule for mixed-language inputs."
+        ],
+        "explanation": "Domain 4: Prompt Engineering &amp; Structured Output<br>Subdomain 4A: Core Prompt Engineering<br><br>When inputs can ambiguously trigger multiple behaviors (mixed languages, mixed intents, mixed topics), the rule must specify the disambiguation method (dominant language) plus the override mechanism. Vague rules degrade quietly on mixed inputs."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D4",
+      "question_plain": "A Customer Support Agent prompt asks Claude to translate to Spanish when the user writes in Spanish. The model sometimes responds in English to Spanish messages with English code-switching. Which change MOST directly enforces language matching?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757167,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A CI/CD Integration team adds Claude Code to a GitHub Actions workflow to scan diffs for security issues. The job must run unattended, fail the build when high-severity findings exist, emit machine-readable results, and never hang on confirmation prompts. Their first attempt invoked claude-code without the -p flag and the job stalled. The architect must specify the correct invocation and result contract. Which design is MOST correct?</p>",
+        "answers": [
+          "Use -p but always exit zero and post findings as a comment, letting reviewers decide whether to merge",
+          "Run claude-code interactively inside the GitHub Actions runner and have a background watcher process detect and answer each confirmation prompt automatically as it appears",
+          "Use -p but parse free-form prose output with regular expressions to decide whether to fail the build",
+          "Invoke with the -p flag for non-interactive execution, request structured JSON findings, and exit non-zero from the step when high-severity issues are present"
+        ],
+        "feedbacks": [
+          "Always exiting zero means high-severity findings never fail the build, violating the requirement. Human-gated merge is not the deterministic build failure the team specified.",
+          "Interactive mode in CI is exactly what caused the hang; scripting prompt answers is fragile and unsupported. The -p flag is the designed mechanism for non-interactive automation.",
+          "Free-form prose is brittle to parse and unreliable for a build-gating decision. Requesting structured JSON output gives a stable contract the downstream step can consume deterministically.",
+          "The -p flag runs Claude Code non-interactively so the job never waits on confirmation prompts (D3), the required fix for the stall. Requesting structured JSON gives the downstream step a machine-readable contract (D4 structured output), and exiting the step non-zero on high-severity findings fails the build deterministically. Each requirement maps cleanly to the print-mode automation pattern."
+        ],
+        "explanation": "Domain 3: Claude Code Configuration &amp; Workflows<br>Subdomain 3D: Hooks, SDK, and CI/CD<br><br>The -p flag is required for non-interactive CI so the job never hangs on prompts (D3). Pairing it with structured JSON output (D4) gives downstream steps a stable contract, and exiting the step non-zero on high-severity findings fails the build deterministically — prose parsing or always exiting zero cannot gate reliably."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D3",
+      "question_plain": "A CI/CD Integration team adds Claude Code to a GitHub Actions workflow to scan diffs for security issues. The job must run unattended, fail the build when high-severity findings exist, emit machine-readable results, and never hang on confirmation prompts. Their first attempt invoked claude-code without the -p flag and the job stalled. The architect must specify the correct invocation and result contract. Which design is MOST correct?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757169,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A code generation agent&#x27;s prompt caching metrics show 95% cache hit rate but overall API costs are only 15% lower than before caching was enabled. What could explain this gap?</p>",
+        "answers": [
+          "95% cache hit rate with only 15% cost savings indicates the cached prefix is a small fraction of total input tokens — most input tokens are dynamic and not cached",
+          "95% cache hit rate means 5% are cache misses, each incurring overhead roughly 10 times the normal uncached cost — the miss-penalty offsets all per-token savings from successful cache reads",
+          "The caching TTL has been set too short — cache entries expire before the second hit, making every request effectively a cache write",
+          "Output tokens have increased since caching was enabled — the model generates longer responses when the system prompt is cached"
+        ],
+        "feedbacks": [
+          "Cost savings from prompt caching = (cached_token_count / total_token_count) × cache_savings_rate. If the cached prefix is 500 tokens but the dynamic user code context is 4,500 tokens per request, only 10% of input tokens benefit from caching. At 90% savings on cached tokens: 10% × 90% = 9% total input cost reduction. If input tokens are 60% of total cost (40% output), overall savings = 9% × 60% = 5.4% — far less than the hit rate suggests. High hit rate on a small prefix produces modest savings.",
+          "Cache misses incur a cache write premium (~25% above base price for the cached tokens), not a 10x penalty. At 5% cache misses, the write premium is: 5% × 1.25x × cached_token_cost — a minor overhead, not a cost cancellation. A 95% hit rate with a 25% write premium nets enormous savings; no realistic cache miss penalty could cancel 95% hit savings.",
+          "If every request were a cache write (0% hit rate), the metric would show 0% hit rate, not 95%. The 95% hit rate is measured data — the cache is working. The gap between high hit rate and modest savings is a proportion problem (small cacheable prefix vs. large dynamic content), not a TTL problem.",
+          "Prompt caching has no effect on output token generation behavior — the model generates responses based on the input content, not based on whether the input was cached or processed fresh. Output token counts are determined by the task and model parameters (max_tokens, stop sequences), not by cache status."
+        ],
+        "explanation": "Domain 5: Context Management &amp; Reliability<br>Subdomain 5D: Human Oversight, Confidence, and Provenance<br><br>A cache hit rate measures how often the cached prefix is reused, not how much of each request it covers. When the stable prefix is small relative to the dynamic content appended per request, even a 95% hit rate discounts only a small slice of input tokens, and output tokens are never discounted at all. To widen the savings, move more stable content, such as tool definitions and reference material, into the cached prefix."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D5",
+      "question_plain": "A code generation agent&#x27;s prompt caching metrics show 95% cache hit rate but overall API costs are only 15% lower than before caching was enabled. What could explain this gap?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757171,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research team&#x27;s MCP server is deployed in a Kubernetes cluster behind an Ingress. Engineers find that connections drop after exactly 60 seconds of idle time. Which is the MOST likely cause?</p>",
+        "answers": [
+          "The server&#x27;s tool execution time happens to be exactly 60 seconds, so the connection drops precisely when each long-running tool call finishes rather than as a result of any idle period on the connection",
+          "The MCP protocol itself enforces a strict 60-second connection limit, so any connection is closed automatically once it reaches one minute regardless of what the surrounding infrastructure is configured to do, which is why the drops land on such a precise and consistent boundary every single time the connection sits idle",
+          "The Ingress (or upstream load balancer) has an idle-connection timeout that closes connections after 60 seconds of inactivity — configure the timeout to be longer than expected idle periods, or have the client emit keepalive traffic to keep the connection active",
+          "The Kubernetes pods backing the server are being restarted every 60 seconds on a fixed schedule, so each connection is severed when the pod it is bound to cycles out and a fresh replacement pod takes over"
+        ],
+        "feedbacks": [
+          "Tool execution time doesn&#x27;t cause idle-connection drops. Idle-timeouts are about inactivity, not active call duration.",
+          "MCP doesn&#x27;t enforce a 60-second limit. The cause is infrastructure-layer timeout, not protocol-level.",
+          "Kubernetes Ingresses (and load balancers in general) have idle-connection timeouts that close connections after a configurable period of inactivity. For long-lived MCP connections (especially StreamableHTTP with notifications), the Ingress timeout must be configured longer than expected idle gaps, or the client must emit keepalive traffic. This is a common operational issue with hosted MCP deployments.",
+          "Pods don&#x27;t restart on a 60-second schedule by default. The Ingress idle timeout is the standard cause for this symptom."
+        ],
+        "explanation": "Domain 2: Tool Design &amp; MCP Integration<br>Subdomain 2C: Advanced MCP and Built-in Tools<br><br>Idle-connection timeouts on Kubernetes Ingresses and load balancers close inactive connections after a configurable period. Fix by extending the timeout or emitting client-side keepalives. Protocol limits, tool execution time, and pod restarts all misdiagnose this common operational issue."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D2",
+      "question_plain": "A Multi-Agent Research team&#x27;s MCP server is deployed in a Kubernetes cluster behind an Ingress. Engineers find that connections drop after exactly 60 seconds of idle time. Which is the MOST likely cause?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757173,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Developer Productivity agent helps a team refactor a large codebase across many sessions. Each new session starts without memory of prior decisions — which modules were already refactored, which patterns were rejected, and which open questions remain. The team wants continuity without re-explaining context every time. What is the recommended approach?</p>",
+        "answers": [
+          "Embed all prior decisions in the system prompt so the model sees them at every session start.",
+          "Rely on the model&#x27;s in-weights training to recall prior session decisions — Claude retains project context between sessions through parametric memory, with no external file",
+          "Maintain a NOTES.md or CONTEXT.md scratchpad that is loaded at session start and updated at session end with new decisions and open questions.",
+          "Store decisions in CLAUDE.md so Claude automatically inherits them as project rules."
+        ],
+        "feedbacks": [
+          "System prompts carry static rules. Evolving state like refactoring decisions and open questions belongs in a mutable scratchpad file, not baked into the prompt, which is harder to update incrementally.",
+          "Claude has no persistent memory across sessions from training. Each new session is stateless. External files are required for cross-session knowledge persistence.",
+          "The scratchpad pattern solves cross-session statefulness. Loading at start injects prior context; writing at end captures new decisions. The file evolves with the project, not with model weights.",
+          "CLAUDE.md is for stable rules and instructions, not evolving state. Mixing frequently updated decisions into CLAUDE.md blurs the distinction between rules and mutable context, making both harder to maintain."
+        ],
+        "explanation": "Domain 5: Context Management &amp; Reliability<br>Subdomain 5C: Context Efficiency for Large Codebases<br><br>Domain 5, subdomain 5C1 addresses the cross-session memory problem: Claude Code starts each session with no memory of prior work. The solution is a durable scratchpad file, typically NOTES.md or CONTEXT.md, that captures evolving state: decisions made, patterns rejected, open questions. Load it at session start, update it at session end. This file is distinct from CLAUDE.md, which holds stable project rules rather than mutable session state."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D5",
+      "question_plain": "A Developer Productivity agent helps a team refactor a large codebase across many sessions. Each new session starts without memory of prior decisions — which modules were already refactored, which patterns were rejected, and which open questions remain. The team wants continuity without re-explaining context every time. What is the recommended approach?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757175,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Data Extraction prompt instructs Claude to &#x27;extract dates in ISO format.&#x27; Some outputs use 2026-06-15, some 2026/06/15, some June 15 2026. Which change BEST stabilizes the format?</p>",
+        "answers": [
+          "Use JSON mode so the date is emitted as a clean string value",
+          "Provide three examples of ISO dates and trust the model to generalize, since worked instances implicitly teach the exact pattern for every novel date",
+          "Lower temperature so the date-format choice stabilizes across extractions",
+          "Specify &#x27;YYYY-MM-DD with hyphens, zero-padded; reject any other format&#x27; and provide one canonical example"
+        ],
+        "feedbacks": [
+          "JSON mode constrains structure, not date format within the string field.",
+          "Examples without a stated rule produce pattern-match, not constraint. The model can still pick a variant if a novel date shape arrives.",
+          "Format choice is a rule decision, not a sampling decision. Determinism on a vague rule produces deterministic ambiguity.",
+          "&#x27;ISO format&#x27; is ambiguous because ISO 8601 admits several variants. Specifying the exact pattern (YYYY-MM-DD, hyphens, zero-padding) plus a canonical example removes interpretation latitude and gives the model an unambiguous target."
+        ],
+        "explanation": "Domain 4: Prompt Engineering &amp; Structured Output<br>Subdomain 4A: Core Prompt Engineering<br><br>Format names like &#x27;ISO date&#x27; have multiple valid sub-formats. Explicit criteria must specify the exact pattern, not the name of the standard. This applies equally to date, currency, phone number, and identifier formats."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D4",
+      "question_plain": "A Data Extraction prompt instructs Claude to &#x27;extract dates in ISO format.&#x27; Some outputs use 2026-06-15, some 2026/06/15, some June 15 2026. Which change BEST stabilizes the format?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757177,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Developer Productivity user asks Claude Code to summarize the test suite without modifying anything. Which tool sequence MOST closely matches the read-only intent?</p>",
+        "answers": [
+          "Run a Bash find command to delete cached test artifacts before summarizing",
+          "Edit each file with an empty replacement to confirm presence then summarize",
+          "Write a temporary inventory file and read it back to produce the summary",
+          "Read each test file individually and then return the summary to the user"
+        ],
+        "feedbacks": [
+          "Deleting artifacts is destructive and unrelated to the summarization task. The user requested no modifications, so any deletion violates the constraint regardless of test-suite hygiene benefits.",
+          "Edit is a mutation tool even with a no-op replacement and triggers write semantics. Misusing Edit to probe files violates the read-only intent and may trip PreToolUse hooks.",
+          "Write mutates the working directory by creating a new file. The user explicitly requested no modifications; introducing a scratch file violates that constraint when Read alone is sufficient.",
+          "Read is the explicit read-only tool. Using only Read keeps the action observably non-mutating, gives Claude precise content access, and matches the user&#x27;s stated read-only intent."
+        ],
+        "explanation": "Domain 3: Claude Code Configuration &amp; Workflows<br>Subdomain 3A: Claude Code Fundamentals<br><br>Claude Code distinguishes read-only tools (Read, WebSearch) from mutating tools (Write, Edit, Bash side effects). When a user states a read-only intent, the correct tool path uses only the non-mutating tools, both to honor intent and to keep the action auditable."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D3",
+      "question_plain": "A Developer Productivity user asks Claude Code to summarize the test suite without modifying anything. Which tool sequence MOST closely matches the read-only intent?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757179,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Developer Productivity team wants CLAUDE.md to encourage Claude to ask clarifying questions before destructive operations. Which phrasing is MOST effective?</p>",
+        "answers": [
+          "Aspirational phrasing such as always be cautious with sensitive operations, trusting the model to infer when an operation is risky enough to warrant pausing",
+          "Explicit trigger plus action — &#x27;Before deleting files or dropping tables, ask the user to confirm the scope.&#x27;",
+          "Generic phrasing such as when in doubt, ask the user, leaving it to the model to judge which situations actually warrant a confirmation",
+          "Inverted — &#x27;Never ask the user anything during a session.&#x27;"
+        ],
+        "feedbacks": [
+          "&#x27;Cautious&#x27; is subjective. Without explicit triggers and actions, the rule fails to shape behavior reliably.",
+          "Explicit triggers (deleting files, dropping tables) paired with the desired action (ask for confirmation) give Claude a clear if-then. Vague encouragements like &#x27;be careful&#x27; are weaker.",
+          "Doubt is subjective. Explicit triggers anchor the rule to observable events.",
+          "This is the opposite of the requirement. Explicit if-then phrasing is the right tool."
+        ],
+        "explanation": "Domain 3: Claude Code Configuration &amp; Workflows<br>Subdomain 3B: CLAUDE.md Configuration Hierarchy<br><br>Effective CLAUDE.md instructions use explicit if-then phrasing: name the observable trigger, then name the required action. Vague appeals like &#x27;be careful&#x27; leave the model to judge risk subjectively and underdeliver, while concrete triggers such as deleting files or dropping tables anchor the confirmation behavior reliably."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D3",
+      "question_plain": "A Developer Productivity team wants CLAUDE.md to encourage Claude to ask clarifying questions before destructive operations. Which phrasing is MOST effective?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757181,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Data Extraction agent queries a database for records matching a filter. The query succeeds but returns 0 rows. The agent reports &#x27;no records found.&#x27; Which is the MOST important reliability check before accepting that conclusion?</p>",
+        "answers": [
+          "Verify the agent had access to the table and the filter executed correctly",
+          "Re-run the query at a different time of day",
+          "Trust the database driver to report any access issue, since a silent driver implies the table was genuinely empty",
+          "Cache the empty result so the next query is faster"
+        ],
+        "feedbacks": [
+          "An empty result and an access failure can look identical — both produce &#x27;no records.&#x27; The reliability discipline is to confirm the query actually ran against the intended scope with permission, distinguishing a true empty result from a permission-denied query that silently returned empty. CCA-F treats this distinction as a primary reliability gate.",
+          "Time-of-day variation does not address the empty-vs-access-failure distinction. The agent might run the query 24 hours later with the same access issue and same empty result.",
+          "Many access patterns silently return empty rather than erroring — RBAC may scope the visible rows to none, views may filter, or the connection may target a wrong schema. The driver is not always reliable for this distinction.",
+          "Caching an empty result that may actually be an access failure compounds the problem — future queries return the wrong empty conclusion from cache."
+        ],
+        "explanation": "Domain 5: Context Management &amp; Reliability<br>Subdomain 5B: Escalation and Error Propagation<br><br>Empty results and access failures often appear identical to the agent. The CCA-F D5 reliability discipline is to verify that the query ran against the intended scope with proper access before accepting an empty result. This composes with provenance tracking (5D3) to ensure conclusions are grounded in actually-accessed data."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D5",
+      "question_plain": "A Data Extraction agent queries a database for records matching a filter. The query succeeds but returns 0 rows. The agent reports &#x27;no records found.&#x27; Which is the MOST important reliability check before accepting that conclusion?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757183,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation team&#x27;s system prompt has 8 instructions all phrased imperatively: &#x27;Use type hints. Avoid global state. Test all functions.&#x27; New rules are appended at the bottom over time. Which change BEST improves long-term maintainability?</p>",
+        "answers": [
+          "Convert the imperatives to declaratives so the rules read more naturally to editors",
+          "Number the rules so each can be referenced by a stable index when editing",
+          "Group related rules under XML-tagged sections — &lt;type_safety&gt;, &lt;state_management&gt;, &lt;testing&gt; — and assign each new rule to a section",
+          "Lower temperature so the rules are applied more consistently, since a deterministic sampler enforces all eight imperatives uniformly enough to feel maintained"
+        ],
+        "feedbacks": [
+          "Phrasing change does not address organization. Maintenance pain comes from structure, not voice.",
+          "Numbering creates fragile cross-references — adding a rule shifts all subsequent numbers. Tagging by concern is order-independent.",
+          "Flat imperative lists scale poorly because related rules drift apart over edit cycles. XML sectioning by concern gives each new rule a natural home, makes related rules discoverable together, and surfaces duplications when they appear. Maintenance becomes proportional to section count, not rule count.",
+          "Parameters do not affect prompt organization."
+        ],
+        "explanation": "Domain 4: Prompt Engineering &amp; Structured Output<br>Subdomain 4A: Core Prompt Engineering<br><br>System prompts mature like any codebase. Concern-based grouping with XML tags is the canonical organization pattern. This bridges 4A2 (system prompt structure) with 4A3 (XML tags) and serves the team&#x27;s long-term prompt-as-code workflow."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D4",
+      "question_plain": "A Code Generation team&#x27;s system prompt has 8 instructions all phrased imperatively: &#x27;Use type hints. Avoid global state. Test all functions.&#x27; New rules are appended at the bottom over time. Which change BEST improves long-term maintainability?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757185,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Multi-Agent Research team uses Claude&#x27;s built-in web_search and a custom MCP-exposed academic-database search. Both descriptions are well-written and disambiguating. The team adds prompt-injection-resistant phrasing to the system prompt asking the model to prefer the academic-database for scholarly queries. Why might this still fail to enforce the routing?</p>",
+        "answers": [
+          "System-prompt rules are always ignored by Claude, so encoding the routing preference there can never have any effect on which search tool the model actually selects at decision time",
+          "System-prompt routing rules are instructions the model usually follows but can be overridden by adversarial inputs or context drift — for high-impact routing decisions, the tool descriptions themselves are more durable because the comparison happens at every routing decision",
+          "System-prompt rules only work for tools and not for distinguishing built-in tools from MCP-exposed ones, because the model routes the two sources through different paths a single instruction cannot span",
+          "System-prompt routing rules are forbidden by Anthropic&#x27;s terms of service when they steer the model away from a built-in tool toward a third-party one, so the rule would have to be removed for compliance anyway, and any preference expressed in the system prompt that demotes a first-party tool in favor of a custom MCP tool is treated as an unsupported configuration"
+        ],
+        "feedbacks": [
+          "Claude does follow system-prompt rules under normal conditions. The concern is durability under adversarial or drifted contexts, not total ignorance.",
+          "System prompts are instructions, not enforcement. They guide the model under normal conditions but can be overridden by prompt injection, context drift, or contradictory user requests. The routing decision happens at description comparison; system-prompt rules are a softer layer above it. Description-level routing is more durable because it lives in the comparison the model actually performs.",
+          "System-prompt rules apply uniformly across tool sources. The durability concern is general, not specific to built-in vs. MCP.",
+          "No such prohibition exists. The concern is durability and effectiveness, not a TOS violation."
+        ],
+        "explanation": "Domain 2: Tool Design &amp; MCP Integration<br>Subdomain 2C: Advanced MCP and Built-in Tools<br><br>System-prompt routing rules are instructions the model usually follows but can drift under adversarial input or context shift. Description-level routing is more durable because the comparison happens at every routing decision. For high-impact routing, encode the rule in the tool descriptions themselves."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D2",
+      "question_plain": "A Multi-Agent Research team uses Claude&#x27;s built-in web_search and a custom MCP-exposed academic-database search. Both descriptions are well-written and disambiguating. The team adds prompt-injection-resistant phrasing to the system prompt asking the model to prefer the academic-database for scholarly queries. Why might this still fail to enforce the routing?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757187,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Customer Support Agent receives a vague request: &#x27;fix my account.&#x27; The agent must decide whether to ask clarifying questions or to interpret and proceed. Which factor MOST strongly favors asking?</p>",
+        "answers": [
+          "The agent is configured with a polite persona",
+          "The user has simply not gone to the trouble of specifying what exactly the word &#x27;fix&#x27; is supposed to mean here",
+          "The agent has access to multiple tools",
+          "The agent&#x27;s actions are irreversible or high-impact, making misinterpretation costly"
+        ],
+        "feedbacks": [
+          "Persona affects tone, not the decision to ask. A polite agent still must judge when clarification is warranted versus interpretation; that judgment is impact-driven.",
+          "Vagueness alone is not sufficient — many vague requests have a reasonable default interpretation. The discriminator is whether misinterpretation is costly enough to justify the clarification friction.",
+          "Tool count is unrelated to ambiguity handling. Whether to ask depends on impact of misinterpretation, not on toolset breadth.",
+          "Irreversibility and high impact tip the balance toward clarification. CCA-F guidance favors asking when misinterpretation is costly; for reversible low-impact actions, interpreting-and-proceeding may be fine. Impact drives the design choice."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1B: Task Decomposition and Planning<br><br>When agent actions are irreversible or high-impact, ambiguity should trigger clarification rather than interpretation. CCA-F guidance favors asking when misinterpretation is costly; for low-impact reversible actions, proceeding with a reasonable default may be acceptable. Impact is the design lever."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D1",
+      "question_plain": "A Customer Support Agent receives a vague request: &#x27;fix my account.&#x27; The agent must decide whether to ask clarifying questions or to interpret and proceed. Which factor MOST strongly favors asking?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757189,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Customer Support Agent uses a workflow that classifies the user&#x27;s intent, retrieves docs, and generates a reply. The team wants to upgrade to handle multi-turn back-and-forth where Claude can ask clarifying questions and call account tools as needed. Which class change BEST describes the upgrade?</p>",
+        "answers": [
+          "Workflow to agentic, because the new behavior requires runtime decisions about tool calls and clarifications",
+          "Workflow to conversational, because the clarifying questions are themselves nothing more than user-turn interactions",
+          "Workflow to multi-agent, because clarification is a separate concern from tool use",
+          "No change, because the existing workflow can handle the new behavior with more branches"
+        ],
+        "feedbacks": [
+          "Adding runtime decisions about when to ask clarifying questions and when to call account tools moves the system out of the workflow class. The model now decides the next action at each turn — the defining property of an agentic loop.",
+          "Conversational systems do not call account tools or take action — they only respond. Adding tools and runtime decisions takes the system into the agentic class, not back into conversational.",
+          "Clarification and tool use can both run in a single agent. Splitting them across agents adds coordination overhead without unlocking new capability — the upgrade is to agentic, not to multi-agent.",
+          "Multi-turn back-and-forth with runtime decisions about tool calls cannot be expressed as fixed branches without combinatorial explosion. The new requirements need runtime decision-making, which workflows cannot provide by definition."
+        ],
+        "explanation": "Domain 1: Agentic Architecture &amp; Orchestration<br>Subdomain 1A: Agentic Loops and Core API<br><br>Adding runtime decisions about which tools to call and when to ask the user for clarification moves a workflow into the agentic class. The model now drives the next action at each step, which is the defining property of an agent — fixed branches cannot scale to this requirement."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D1",
+      "question_plain": "A Customer Support Agent uses a workflow that classifies the user&#x27;s intent, retrieves docs, and generates a reply. The team wants to upgrade to handle multi-turn back-and-forth where Claude can ask clarifying questions and call account tools as needed. Which class change BEST describes the upgrade?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757191,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Data Extraction team uses Claude Code to read large vendor invoices and write normalized records. Sessions degrade after an hour: Claude forgets earlier extraction rules and re-reads processed files. The lead suspects repeated Read results are crowding out the standing rules. Given how the Claude Code execution model accumulates tool output in the session context window, which redesign MOST directly addresses the root cause?</p>",
+        "answers": [
+          "Lower the temperature on the underlying model calls so extraction becomes more deterministic and Claude stops re-reading files, since lower sampling randomness makes the model recall earlier rules more reliably and avoid redundant tool calls as the session grows",
+          "Move the extraction rules into the user-level CLAUDE.md so they are reloaded automatically and cannot be forgotten mid-session",
+          "Delegate the verbose per-file reading to subagents that return only the extracted fields, keeping bulky Read output out of the parent session context",
+          "Increase the size of each Read call so fewer total calls are needed, reducing the number of tool results stored in context"
+        ],
+        "feedbacks": [
+          "Temperature controls sampling randomness, not context window occupancy. The forgetting is caused by accumulated tool output displacing earlier content, which sampling parameters do not affect.",
+          "CLAUDE.md is loaded once at session start and itself counts against the context window. It is not re-injected as the window fills, so it does not prevent rules from being compacted out by tool output.",
+          "In Claude Code&#x27;s execution model, every Read result accumulates in the session context window and can push out standing rules. Subagent delegation isolates verbose discovery (D5) so the parent receives only compact results, preserving the rules and session continuity. This pairs the tool execution model (D3) with context-efficiency design (D5).",
+          "Larger reads put MORE bytes of tool output into the context window per call, accelerating the displacement of earlier rules rather than relieving it."
+        ],
+        "explanation": "Domain 3: Claude Code Configuration &amp; Workflows<br>Subdomain 3A: Claude Code Fundamentals<br><br>Claude Code accumulates every tool result in the session context window, so verbose Read output can crowd out standing rules and cause re-reading. Delegating verbose discovery to subagents (D5) keeps bulky output out of the parent context, preserving continuity. Temperature, CLAUDE.md reloading, and larger reads do not address context occupancy."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D3",
+      "question_plain": "A Data Extraction team uses Claude Code to read large vendor invoices and write normalized records. Sessions degrade after an hour: Claude forgets earlier extraction rules and re-reads processed files. The lead suspects repeated Read results are crowding out the standing rules. Given how the Claude Code execution model accumulates tool output in the session context window, which redesign MOST directly addresses the root cause?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757193,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A CI/CD Integration job uses Claude to summarize nightly build logs. The 500MB log is chunked into 250 chunks and processed serially, with each call&#x27;s output passed forward as context. By chunk 50, summaries become generic. Which factor BEST explains it?</p>",
+        "answers": [
+          "Build logs at chunk 50 contain no useful information",
+          "The model&#x27;s training data does not include build logs, so by chunk 50 it is generating from priors rather than the specific log content in context",
+          "Accumulated prior summaries dominate context and dilute the new chunk&#x27;s signal",
+          "JSON mode is rate-limiting the output, so the structured-format overhead throttles each call and the summaries thin out as the throttle tightens"
+        ],
+        "feedbacks": [
+          "The stem describes a systematic decay pattern starting at chunk 50, not a content gap. Real logs of that size contain useful information throughout.",
+          "Training-data coverage does not explain a quality decay that appears specifically after chunk 50. If the model could summarize early chunks well, the architecture, not the training corpus, is the cause of the degradation.",
+          "Carrying every prior summary forward grows the running context with each chunk, eventually overwhelming the current chunk&#x27;s signal. The model attends increasingly to prior summaries rather than the new log content, producing generic, recap-style output rather than fresh, log-specific findings.",
+          "JSON mode constrains output shape, not summary specificity. The stem does not mention JSON mode and rate limits would produce errors, not generic content."
+        ],
+        "explanation": "Domain 5: Context Management &amp; Reliability<br>Subdomain 5A: Context Preservation<br><br>Append-only context accumulation in long pipelines is a classic D5 anti-pattern. The fix is to summarize the running summary periodically (compaction) or to design chunks as context-isolated so the model focuses on each chunk in turn, only synthesizing at the end."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D5",
+      "question_plain": "A CI/CD Integration job uses Claude to summarize nightly build logs. The 500MB log is chunked into 250 chunks and processed serially, with each call&#x27;s output passed forward as context. By chunk 50, summaries become generic. Which factor BEST explains it?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757195,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation team&#x27;s agent emits confidence scores from 0-1. The team finds confidence 0.9 and 0.5 both produce wrong code at similar rates. Which is the MOST important step before relying on these scores?</p>",
+        "answers": [
+          "Calibrate the confidence scores against a labeled validation set so 0.9 maps to actual 90% accuracy",
+          "Trust the raw confidence scores as-is, since a model&#x27;s self-reported certainty is the best available accuracy signal",
+          "Drop confidence scoring and instead gate auto-merge purely on whether the generated code compiles cleanly",
+          "Train the model further on edge cases until its confidence becomes reliable"
+        ],
+        "feedbacks": [
+          "Raw model confidence is uncalibrated — the model&#x27;s self-rated certainty may not match true outcome probability. Calibration against a labeled validation set establishes the mapping (e.g., model-reported 0.9 maps to actual 70% accuracy). Without calibration, the score is a noisy signal; with calibration, it becomes operationally useful.",
+          "Trusting uncalibrated confidence is exactly the failure mode the team observed. Trust requires calibration first.",
+          "Calibration is the fix; dropping the signal removes a useful routing dimension.",
+          "Further training is heavy and does not directly address calibration. A calibration step uses the existing model with a measured mapping."
+        ],
+        "explanation": "Domain 5: Context Management &amp; Reliability<br>Subdomain 5D: Human Oversight, Confidence, and Provenance<br><br>Confidence scores must be calibrated against ground truth before they drive operational decisions. CCA-F architects treat calibration as the prerequisite to confidence-based routing or escalation — uncalibrated scores look numeric but are not operationally useful."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D5",
+      "question_plain": "A Code Generation team&#x27;s agent emits confidence scores from 0-1. The team finds confidence 0.9 and 0.5 both produce wrong code at similar rates. Which is the MOST important step before relying on these scores?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757197,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A CI/CD Integration job runs Claude Code with -p in non-interactive mode. Which session-continuity property BEST describes that run?</p>",
+        "answers": [
+          "-p runs share session state with any active interactive Claude Code session on the same machine",
+          "-p maintains a rolling session across invocations as long as the same working directory is reused, so successive pipeline runs implicitly inherit the prior run&#x27;s accumulated context",
+          "-p disables CLAUDE.md loading entirely to keep CI runs lean, so non-interactive pipeline runs deliberately start without any project configuration",
+          "Each -p invocation is a fresh session — no state from prior -p runs carries over unless reloaded from files"
+        ],
+        "feedbacks": [
+          "Sessions are not shared across processes or modalities. An interactive session and a -p run are independent contexts.",
+          "There is no implicit cross-invocation session for -p. Each call is its own context. Working directory affects file resolution, not session continuity.",
+          "-p does not disable CLAUDE.md. The configuration hierarchy still applies; -p only controls interactivity.",
+          "Non-interactive -p runs are bounded by the single invocation. They start fresh, do their work, and exit. Anything that needs to persist between runs has to ride in CLAUDE.md or files the next run loads explicitly."
+        ],
+        "explanation": "Domain 3: Claude Code Configuration &amp; Workflows<br>Subdomain 3A: Claude Code Fundamentals<br><br>Each -p invocation is its own bounded session. State must be carried via files (CLAUDE.md, tracked scratchpads) if it needs to persist across runs. The CI/CD pattern is built on this fact: pure functions of repo state plus prompt, not implicit memory."
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "D3",
+      "question_plain": "A CI/CD Integration job runs Claude Code with -p in non-interactive mode. Which session-continuity property BEST describes that run?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757199,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Developer Productivity user asks Claude Code to &#x27;just answer the question, don&#x27;t touch any files.&#x27; Claude still issues a single Read. Which BEST characterizes the situation?</p>",
+        "answers": [
+          "Read is forbidden under a do-not-touch constraint and Claude should have answered from memory without it, because honoring the user&#x27;s instruction means avoiding every tool call rather than only the mutating ones",
+          "Claude violated the constraint — any tool call counts as touching files",
+          "Read is non-mutating and does not violate the do-not-touch constraint — file content is unchanged",
+          "Read mutates the file&#x27;s access time metadata so it counts as a modification"
+        ],
+        "feedbacks": [
+          "Read is not forbidden by a do-not-touch constraint focused on mutation. Forbidding all tools is a different, stricter request the user did not make.",
+          "Read is read-only by definition. Treating any tool call as a violation conflates &#x27;tool use&#x27; with &#x27;mutation&#x27; and misrepresents Claude Code&#x27;s tool model.",
+          "Read does not modify files; it loads content into context. &#x27;Don&#x27;t touch any files&#x27; typically refers to mutation, which Read does not cause. The constraint is upheld even when Claude grounds the answer by reading.",
+          "atime updates are filesystem metadata that users almost never mean when they say &#x27;touch any files.&#x27; Treating that as a violation of the user&#x27;s intent is hyper-literal and misreads the constraint."
+        ],
+        "explanation": "Domain 3: Claude Code Configuration &amp; Workflows<br>Subdomain 3A: Claude Code Fundamentals<br><br>Read is Claude Code&#x27;s non-mutating tool. &#x27;Don&#x27;t modify files&#x27; or &#x27;don&#x27;t touch files&#x27; is naturally about mutation (Write, Edit, destructive Bash), not about loading content into context. Recognizing this distinction prevents over-strict interpretations that block useful grounding."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D3",
+      "question_plain": "A Developer Productivity user asks Claude Code to &#x27;just answer the question, don&#x27;t touch any files.&#x27; Claude still issues a single Read. Which BEST characterizes the situation?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757201,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation team has a 12,000-word CLAUDE.md that documents every coding standard. They notice Claude Code sometimes ignores newer rules late in long sessions. Which BEST diagnoses the cause?</p>",
+        "answers": [
+          "Rules are applied strictly in order of appearance, and later rules require Claude to re-read the entire CLAUDE.md on each turn, so newer rules at the bottom get skipped under time pressure",
+          "Verbose CLAUDE.md consumes session context — long sessions plus a heavy CLAUDE.md crowd out working memory",
+          "CLAUDE.md content is parsed only when /init is run; standing rules expire after the first hour",
+          "CLAUDE.md files over 10,000 words are silently truncated and most rules are dropped"
+        ],
+        "feedbacks": [
+          "Claude does not re-read CLAUDE.md every turn — it is loaded once at session start. The problem is total context budget, not a per-turn re-read step.",
+          "CLAUDE.md content counts against the context window. A 12,000-word file leaves less room for code, tool results, and reasoning, and as sessions extend the combined pressure causes earlier or middle content (including rules) to be deprioritized.",
+          "CLAUDE.md is reloaded at session start, not only at /init time, and there is no built-in expiration. The cause is context window economics.",
+          "There is no documented hard truncation at 10,000 words. The issue is pressure on a finite context window, not a fixed truncation threshold."
+        ],
+        "explanation": "Domain 3: Claude Code Configuration &amp; Workflows<br>Subdomain 3A: Claude Code Fundamentals<br><br>CLAUDE.md content is part of the session context window. Verbose files crowd out working memory and worsen long-session coherence. The fix is brevity and precision in CLAUDE.md, not adding more rules at the end."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D3",
+      "question_plain": "A Code Generation team has a 12,000-word CLAUDE.md that documents every coding standard. They notice Claude Code sometimes ignores newer rules late in long sessions. Which BEST diagnoses the cause?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757203,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Code Generation team wants Claude to refactor a function while preserving public behavior. The prompt says &#x27;Refactor for readability while keeping behavior the same.&#x27; Some refactors silently change function signatures. Which change MOST directly prevents signature changes?</p>",
+        "answers": [
+          "Lower temperature to 0 so refactors become more conservative",
+          "Explicitly forbid signature changes — &#x27;Function name, parameter names, parameter order, and return type must remain identical&#x27;",
+          "Run the refactor through a linter after Claude finishes",
+          "Use prefilling to start with &#x27;def &#x27; and the original function name, since anchoring the opening tokens locks the signature to match the original"
+        ],
+        "feedbacks": [
+          "Conservativeness is not the same as signature preservation. The model can deterministically change signatures with low temperature.",
+          "&#x27;Keeping behavior the same&#x27; is interpretable; the model can treat signature changes as behavior-preserving if semantics are unchanged. Enumerating the four immutable signature attributes turns the rule into an explicit checklist the model can verify before responding.",
+          "A linter does not check signature equivalence with the original; only the prompt rule does. Linting is downstream of the issue.",
+          "Prefilling anchors the function name but not parameter order, names, or return type. Partial constraint, partial fix."
+        ],
+        "explanation": "Domain 4: Prompt Engineering &amp; Structured Output<br>Subdomain 4A: Core Prompt Engineering<br><br>Preservation rules must enumerate exactly what must not change. &#x27;Same behavior&#x27; leaves implementation details open to interpretation. The pattern applies to signature preservation, schema stability, API contract preservation — explicit immutables, not implicit equivalence."
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "D4",
+      "question_plain": "A Code Generation team wants Claude to refactor a function while preserving public behavior. The prompt says &#x27;Refactor for readability while keeping behavior the same.&#x27; Some refactors silently change function signatures. Which change MOST directly prevents signature changes?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757205,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Developer Productivity assistant generates README files. The prompt says &#x27;Write a good README.&#x27; Some READMEs include installation but skip usage; others include badges but no quickstart. Which change MOST efficiently fixes the gaps?</p>",
+        "answers": [
+          "Require a fixed section order — Overview, Quickstart, Installation, Usage, Configuration, Contributing, License — each labeled and present",
+          "Show Claude five high-quality READMEs from popular projects, since strong exemplars implicitly teach the full required section set to reproduce",
+          "Lower temperature so the README structure stabilizes between runs",
+          "Add &#x27;be thorough and complete&#x27; to the prompt so no section is skipped"
+        ],
+        "feedbacks": [
+          "&#x27;Good README&#x27; is a label without a structure. Specifying the required section list plus the order forces every output to include every section, eliminating the omission gaps and producing readmes that match team expectations regardless of which the model would have prioritized.",
+          "Five examples may vary in their own structures. Without a stated section list, the model still picks the variant it favors.",
+          "Temperature does not introduce a section list. Determinism produces deterministically omitted sections.",
+          "Thoroughness adjective produces no required section set."
+        ],
+        "explanation": "Domain 4: Prompt Engineering &amp; Structured Output<br>Subdomain 4A: Core Prompt Engineering<br><br>Document templates with required sections benefit from explicit enumeration. This is universal for any structured artifact — readmes, ADRs, design docs, runbooks. Section lists are the prompt-engineering analogue of a schema."
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "D4",
+      "question_plain": "A Developer Productivity assistant generates README files. The prompt says &#x27;Write a good README.&#x27; Some READMEs include installation but skip usage; others include badges but no quickstart. Which change MOST efficiently fixes the gaps?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 181757207,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A Developer Productivity team&#x27;s hook is supposed to validate test files after Edits but mistakenly validates non-test files too. Which fix is MOST appropriate?</p>",
+        "answers": [
+          "Disable the hook for non-test work through a CLAUDE.md instruction, since a standing rule can tell Claude Code to skip the validation on non-test files",
+          "Register the hook only for the specific tool calls that touch test files, since hook registration lets you scope by file path so non-test files are never seen",
+          "Inspect the file path inside the hook and skip non-test files — narrow the hook&#x27;s effective scope by pattern matching",
+          "Add a SKILL.md that disables the hook in certain scopes, since skills can be configured to suppress a hook whenever the work falls outside the test directory"
+        ],
+        "feedbacks": [
+          "CLAUDE.md does not toggle hooks. In-hook filtering is the right mechanism.",
+          "Hook registration is per lifecycle event, not per file path. Filtering happens inside the hook script.",
+          "Hooks see tool-call details. Filtering by file path inside the hook scopes its effect to the intended files. This is the documented way to narrow per-call hook applicability without registering separate hooks per pattern.",
+          "Skills do not control hook activation. Filtering inside the hook script is the mechanism."
+        ],
+        "explanation": "Domain 3: Claude Code Configuration &amp; Workflows<br>Subdomain 3D: Hooks, SDK, and CI/CD<br><br>Hooks see tool-call details and can filter by path or pattern inside the script. This narrows effective scope without separate hooks per pattern. CLAUDE.md and skills do not toggle hooks."
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "D3",
+      "question_plain": "A Developer Productivity team&#x27;s hook is supposed to validate test files after Edits but mistakenly validates non-test files too. Which fix is MOST appropriate?",
+      "related_lectures": []
+    }
+  ]
+}

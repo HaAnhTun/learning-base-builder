@@ -1,0 +1,622 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.460
+In this lesson, we're going to talk about provenance tracking.
+
+2
+00:00:03.460 --> 00:00:07.260
+When an AI model synthesizes information from multiple sources,
+
+3
+00:00:07.260 --> 00:00:09.180
+the output reads confidently.
+
+4
+00:00:09.180 --> 00:00:13.220
+But can you trace any single sentence back to where it came from?
+
+5
+00:00:13.220 --> 00:00:15.579
+We'll cover claim to source mapping,
+
+6
+00:00:15.579 --> 00:00:19.299
+inline citations, and the verification workflows
+
+7
+00:00:19.299 --> 00:00:22.620
+that make synthesis actually auditable.
+
+8
+00:00:22.620 --> 00:00:24.100
+Let's get into it.
+
+9
+00:00:24.100 --> 00:00:28.500
+Read a synthesized report and you can't tell from the text alone
+
+10
+00:00:28.680 --> 00:00:31.079
+which sentence came from which document.
+
+11
+00:00:31.079 --> 00:00:34.319
+Provenance tracking is the practice that fixes that.
+
+12
+00:00:34.319 --> 00:00:36.360
+It attaches a verifiable source pointer
+
+13
+00:00:36.360 --> 00:00:38.520
+to every claim in the output.
+
+14
+00:00:38.520 --> 00:00:42.520
+So fluency stops being the only thing you have to go on.
+
+15
+00:00:42.520 --> 00:00:45.759
+Claim to source mapping is the data structure underneath it,
+
+16
+00:00:45.759 --> 00:00:47.400
+linking each output claim
+
+17
+00:00:47.400 --> 00:00:50.319
+to the specific source documents it came from.
+
+18
+00:00:50.319 --> 00:00:53.319
+Inline citations are how that mapping surfaces
+
+19
+00:00:53.319 --> 00:00:54.840
+in the readable text.
+
+20
+00:00:54.860 --> 00:00:58.459
+An inline citation sits next to the claim it supports,
+
+21
+00:00:58.459 --> 00:01:00.380
+which is a fundamentally different thing
+
+22
+00:01:00.380 --> 00:01:03.500
+from a bibliography at the end of a paragraph.
+
+23
+00:01:03.500 --> 00:01:06.139
+A bibliography tells you what sources exist.
+
+24
+00:01:06.139 --> 00:01:09.000
+It doesn't tell you which sentence came from which one.
+
+25
+00:01:09.980 --> 00:01:11.580
+Here's the core problem.
+
+26
+00:01:11.580 --> 00:01:13.459
+A large language model is excellent
+
+27
+00:01:13.459 --> 00:01:16.699
+at producing fluent, confident-sounding prose.
+
+28
+00:01:16.699 --> 00:01:19.379
+When it synthesizes 10 source documents
+
+29
+00:01:19.379 --> 00:01:20.980
+into a single report,
+
+30
+00:01:20.980 --> 00:01:22.660
+the output reads like it was written
+
+31
+00:01:22.680 --> 00:01:26.000
+by someone who read everything and understands it.
+
+32
+00:01:26.000 --> 00:01:28.319
+But the sources themselves are invisible.
+
+33
+00:01:28.319 --> 00:01:30.959
+As a reviewer, you have no direct way to know
+
+34
+00:01:30.959 --> 00:01:33.480
+which sentence came from which document.
+
+35
+00:01:33.480 --> 00:01:35.239
+That means you can't efficiently check
+
+36
+00:01:35.239 --> 00:01:37.300
+whether a claim is accurate.
+
+37
+00:01:37.300 --> 00:01:39.639
+Errors compound across a long document
+
+38
+00:01:39.639 --> 00:01:41.360
+because each incorrect claim
+
+39
+00:01:41.360 --> 00:01:43.440
+becomes a building block for the next.
+
+40
+00:01:43.440 --> 00:01:45.959
+And when a regulator or an auditor asks you
+
+41
+00:01:45.959 --> 00:01:49.919
+to show them where a conclusion came from, you are stuck.
+
+42
+00:01:49.940 --> 00:01:51.980
+Provenance tracking solves this
+
+43
+00:01:51.980 --> 00:01:54.720
+by making sources visible at the claim level.
+
+44
+00:01:55.680 --> 00:01:57.699
+The choice between inline citations
+
+45
+00:01:57.699 --> 00:02:01.059
+and end-of-paragraph lists isn't just cosmetic.
+
+46
+00:02:01.059 --> 00:02:04.279
+It determines how granular your accountability is.
+
+47
+00:02:04.279 --> 00:02:07.459
+Inline citations sit next to each claim.
+
+48
+00:02:07.459 --> 00:02:09.979
+A reviewer can point to any sentence in the output,
+
+49
+00:02:09.979 --> 00:02:11.139
+follow the source pointer,
+
+50
+00:02:11.139 --> 00:02:12.940
+and verify that the cited document
+
+51
+00:02:12.940 --> 00:02:14.979
+actually supports that sentence.
+
+52
+00:02:14.979 --> 00:02:17.179
+That's per-claim accountability.
+
+53
+00:02:17.179 --> 00:02:19.300
+End-of-paragraph citation lists tell you
+
+54
+00:02:19.300 --> 00:02:21.320
+which sources informed a paragraph,
+
+55
+00:02:21.320 --> 00:02:23.440
+but they don't tell you which specific sentence
+
+56
+00:02:23.440 --> 00:02:24.899
+came from which source.
+
+57
+00:02:24.899 --> 00:02:28.039
+That's paragraph-level accountability, at best.
+
+58
+00:02:28.039 --> 00:02:31.600
+For high-stakes synthesis, like regulatory filings,
+
+59
+00:02:31.600 --> 00:02:34.000
+clinical summaries, or legal analysis,
+
+60
+00:02:34.000 --> 00:02:35.919
+you need the inline approach.
+
+61
+00:02:35.919 --> 00:02:38.160
+End-of-paragraph lists are acceptable
+
+62
+00:02:38.160 --> 00:02:41.000
+only when the cost of a wrong claim is low
+
+63
+00:02:41.000 --> 00:02:42.559
+and review time is limited.
+
+64
+00:02:43.559 --> 00:02:45.839
+Let's get concrete about what a claim-to-source
+
+65
+00:02:45.839 --> 00:02:47.919
+mapping schema actually looks like.
+
+66
+00:02:47.940 --> 00:02:50.740
+At minimum, each record holds three things.
+
+67
+00:02:50.740 --> 00:02:53.300
+First, the claim text itself,
+
+68
+00:02:53.300 --> 00:02:56.539
+the exact sentence or assertion from the output.
+
+69
+00:02:56.539 --> 00:02:58.979
+Second, a list of source identifiers,
+
+70
+00:02:58.979 --> 00:03:03.160
+the document IDs, URLs, or chunk references
+
+71
+00:03:03.160 --> 00:03:06.500
+for every source that supports that claim.
+
+72
+00:03:06.500 --> 00:03:08.779
+Those identifiers have to be stable,
+
+73
+00:03:08.779 --> 00:03:10.059
+meaning they don't break
+
+74
+00:03:10.059 --> 00:03:12.580
+when a document is updated or moved.
+
+75
+00:03:12.580 --> 00:03:15.220
+Unstable identifiers make the whole
+
+76
+00:03:15.220 --> 00:03:17.539
+provenance trail unreliable.
+
+77
+00:03:18.039 --> 00:03:21.039
+Third, an optional confidence score per source.
+
+78
+00:03:21.039 --> 00:03:23.199
+You don't need to display any of this
+
+79
+00:03:23.199 --> 00:03:24.880
+in the readable output.
+
+80
+00:03:24.880 --> 00:03:27.199
+The schema lives in the background,
+
+81
+00:03:27.199 --> 00:03:30.860
+but because each claim is now a first-class data object,
+
+82
+00:03:30.860 --> 00:03:32.639
+you can query it, audit it,
+
+83
+00:03:32.639 --> 00:03:35.399
+and update it independently of the surrounding text.
+
+84
+00:03:36.380 --> 00:03:38.740
+There are four concrete reasons organizations
+
+85
+00:03:38.740 --> 00:03:40.820
+should invest in provenance tracking.
+
+86
+00:03:40.820 --> 00:03:42.399
+The first is trust.
+
+87
+00:03:42.399 --> 00:03:45.360
+When stakeholders can verify a sample of claims,
+
+88
+00:03:45.380 --> 00:03:47.860
+they are more willing to act on the synthesis.
+
+89
+00:03:47.860 --> 00:03:49.860
+They don't need to verify everything,
+
+90
+00:03:49.860 --> 00:03:51.759
+just enough to build confidence.
+
+91
+00:03:51.759 --> 00:03:53.660
+The second is auditability.
+
+92
+00:03:53.660 --> 00:03:57.979
+A regulator can request a trace of any fact to its origin
+
+93
+00:03:57.979 --> 00:03:59.740
+without rerunning the model.
+
+94
+00:03:59.740 --> 00:04:01.520
+The third is compliance,
+
+95
+00:04:01.520 --> 00:04:04.820
+GDPR transparency and access obligations.
+
+96
+00:04:04.820 --> 00:04:07.259
+In Articles 13 through 15,
+
+97
+00:04:07.259 --> 00:04:10.740
+and the EU AI Act increasingly push organizations
+
+98
+00:04:10.740 --> 00:04:14.539
+to explain the logic behind automated conclusions,
+
+99
+00:04:14.539 --> 00:04:16.399
+not just what they concluded.
+
+100
+00:04:16.399 --> 00:04:18.440
+The fourth is error correction.
+
+101
+00:04:18.440 --> 00:04:20.359
+When a claim is flagged as wrong,
+
+102
+00:04:20.359 --> 00:04:23.679
+you follow its source pointer directly to the problem.
+
+103
+00:04:23.679 --> 00:04:26.519
+You don't need to resynthesize the whole document
+
+104
+00:04:26.519 --> 00:04:28.019
+to fix one sentence.
+
+105
+00:04:28.940 --> 00:04:32.239
+A verification workflow puts the provenance schema to work,
+
+106
+00:04:32.239 --> 00:04:36.279
+and the structured version of it is called a sampling audit.
+
+107
+00:04:36.279 --> 00:04:38.500
+The core idea is sampling.
+
+108
+00:04:38.500 --> 00:04:40.440
+You don't verify every claim.
+
+109
+00:04:40.440 --> 00:04:42.880
+Instead, you select a representative sample
+
+110
+00:04:42.880 --> 00:04:45.179
+weighted toward higher risk claims,
+
+111
+00:04:45.179 --> 00:04:48.559
+and you confirm each one against its source pointer.
+
+112
+00:04:48.559 --> 00:04:50.380
+The process looks like this.
+
+113
+00:04:50.380 --> 00:04:51.980
+Pick a claim from the output,
+
+114
+00:04:51.980 --> 00:04:54.940
+follow the source identifiers to the cited documents,
+
+115
+00:04:54.940 --> 00:04:56.619
+read the relevant passage,
+
+116
+00:04:56.619 --> 00:04:59.100
+and judge whether the synthesized claim
+
+117
+00:04:59.100 --> 00:05:01.940
+accurately reflects what the source says.
+
+118
+00:05:01.940 --> 00:05:03.660
+There's no magic percentage.
+
+119
+00:05:03.660 --> 00:05:07.079
+The right sample size depends on how common errors are,
+
+120
+00:05:07.079 --> 00:05:08.899
+how much error you can tolerate,
+
+121
+00:05:08.899 --> 00:05:11.179
+and the confidence level you need.
+
+122
+00:05:11.179 --> 00:05:15.239
+A risk-weighted sample can catch systematic problems,
+
+123
+00:05:15.239 --> 00:05:18.899
+including fabricated citations and distorted paraphrases,
+
+124
+00:05:18.899 --> 00:05:20.640
+without requiring a human
+
+125
+00:05:20.640 --> 00:05:23.000
+to read every source document in full.
+
+126
+00:05:23.880 --> 00:05:26.920
+Fabricated citations deserve extra attention
+
+127
+00:05:26.920 --> 00:05:29.660
+because they're particularly hard to detect
+
+128
+00:05:29.660 --> 00:05:31.880
+without a verification workflow.
+
+129
+00:05:31.880 --> 00:05:33.179
+Here's what happens.
+
+130
+00:05:33.179 --> 00:05:35.600
+The model produces a fluent claim
+
+131
+00:05:35.600 --> 00:05:38.420
+and attaches a real-looking source reference.
+
+132
+00:05:38.420 --> 00:05:40.320
+The document title looks plausible,
+
+133
+00:05:40.320 --> 00:05:43.859
+the authors sound credible, the date is recent.
+
+134
+00:05:43.859 --> 00:05:46.399
+But when a reviewer follows the pointer,
+
+135
+00:05:46.399 --> 00:05:48.179
+one of two things is true.
+
+136
+00:05:48.179 --> 00:05:51.359
+Either the document doesn't support the claim that was made
+
+137
+00:05:51.359 --> 00:05:53.619
+or the document doesn't exist at all.
+
+138
+00:05:53.619 --> 00:05:56.079
+Reviewers who trust the citation format
+
+139
+00:05:56.079 --> 00:05:59.839
+without verifying it will accept the claim as sourced.
+
+140
+00:05:59.839 --> 00:06:03.559
+This is a systematic risk in any synthesis pipeline
+
+141
+00:06:03.559 --> 00:06:06.339
+that doesn't enforce source verification.
+
+142
+00:06:06.339 --> 00:06:09.000
+The fix is simple but requires discipline.
+
+143
+00:06:09.000 --> 00:06:11.839
+Every citation in the schema should be verified
+
+144
+00:06:11.839 --> 00:06:15.700
+against the actual source before the output is finalized.
+
+145
+00:06:17.119 --> 00:06:20.140
+Provenance tracking turns synthesis from a black box
+
+146
+00:06:20.140 --> 00:06:22.359
+into an auditable process.
+
+147
+00:06:22.359 --> 00:06:24.820
+When every claim carries a source pointer,
+
+148
+00:06:24.820 --> 00:06:27.440
+a reviewer can verify any sentence,
+
+149
+00:06:27.440 --> 00:06:30.720
+an auditor can trace any fact back to its origin,
+
+150
+00:06:30.720 --> 00:06:34.079
+and a wrong claim can be corrected one sentence at a time
+
+151
+00:06:34.079 --> 00:06:37.959
+instead of by resynthesizing the entire document.
+
+152
+00:06:37.959 --> 00:06:40.200
+Fabricated citations are the failure
+
+153
+00:06:40.200 --> 00:06:43.959
+this discipline exists to catch, so watch out for those.
+
+154
+00:06:43.959 --> 00:06:45.959
+And that closes out this one.
+
+155
+00:06:45.959 --> 00:06:47.519
+I'll see you in the next video.
+

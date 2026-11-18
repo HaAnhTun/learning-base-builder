@@ -1,0 +1,254 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:07.039
+MCP exposes capabilities through exactly three primitives, tools, resources, and prompts.
+
+2
+00:00:07.599 --> 00:00:13.039
+Once you understand each one and who controls it, you know how to model any capability on an
+
+3
+00:00:13.039 --> 00:00:18.239
+MCP server. In this lesson, we'll define each primitive, see what makes them different,
+
+4
+00:00:18.239 --> 00:00:26.799
+and build intuition for which one to use when. Every capability an MCP server exposes is a tool,
+
+5
+00:00:26.799 --> 00:00:33.200
+a resource, or a prompt. And what separates them isn't what they do, but who decides to use them.
+
+6
+00:00:33.759 --> 00:00:40.080
+An MCP tool is a callable function the model invokes. An MCP resource is a data object
+
+7
+00:00:40.080 --> 00:00:47.439
+identified by URI, which the application injects into context. An MCP prompt is a reusable,
+
+8
+00:00:47.439 --> 00:00:53.119
+parameterized template the user selects to start an interaction. Notice the pattern,
+
+9
+00:00:53.119 --> 00:00:58.799
+each primitive has a different owner. That ownership distinction is the single most
+
+10
+00:00:58.799 --> 00:01:05.120
+important thing to internalize here, and it's a concept the Architect Foundation's exam tests
+
+11
+00:01:05.120 --> 00:01:11.360
+directly. Model controls tools, application controls resources, user controls prompts.
+
+12
+00:01:11.919 --> 00:01:18.720
+Memorize that split and you've got the core of the primitives topic locked down. Tools are the
+
+13
+00:01:18.720 --> 00:01:24.160
+most active primitive. When you expose a function as an MCP tool, you're giving the model the
+
+14
+00:01:24.160 --> 00:01:30.239
+ability to do something, such as run a database query, send a notification, call a calculation
+
+15
+00:01:30.239 --> 00:01:36.239
+service, or trigger any other side-affecting operation. Each tool gets a JSON schema that
+
+16
+00:01:36.239 --> 00:01:42.800
+describes its name, required inputs, types, and what it returns. Claude reads that schema and
+
+17
+00:01:42.800 --> 00:01:47.760
+uses it to understand how to invoke the tool correctly. Then it reasons about whether calling
+
+18
+00:01:47.839 --> 00:01:54.319
+the tool actually serves the user's goal in this conversation. The key word is decides. The model
+
+19
+00:01:54.319 --> 00:02:00.080
+is in control of when and whether the tool gets called. That's the practical meaning of model
+
+20
+00:02:00.080 --> 00:02:06.720
+controlled. Resources work differently from tools. They're data sources that the server exposes for
+
+21
+00:02:06.720 --> 00:02:12.800
+the model to read. Files, database records, configuration documents, and knowledge bases.
+
+22
+00:02:12.800 --> 00:02:18.399
+The application injects them into Claude's context before or during a conversation. The
+
+23
+00:02:18.399 --> 00:02:24.160
+server registers each resource with a URI so clients can address and request it. But the
+
+24
+00:02:24.160 --> 00:02:30.320
+decision about which resources to include in context isn't made by the model. The host application
+
+25
+00:02:30.320 --> 00:02:36.320
+makes that call based on its own logic about what data should be present. So if you've got a
+
+26
+00:02:36.320 --> 00:02:41.600
+knowledge base that should always be in context when a user asks a product question, that's a
+
+27
+00:02:41.600 --> 00:02:48.720
+resource. The app loads it automatically, not because Claude asked for it. The comparison between
+
+28
+00:02:48.720 --> 00:02:55.440
+tools and resources comes down to control and dynamism. Tools are model controlled and action
+
+29
+00:02:55.440 --> 00:03:01.839
+oriented. Claude uses them when the conversation warrants it based on its own in-context reasoning.
+
+30
+00:03:01.839 --> 00:03:07.440
+Resources are application controlled and data oriented. The host loads them based on its own
+
+31
+00:03:07.440 --> 00:03:13.119
+business logic, completely independent of what the model thinks it needs. Here's a practical
+
+32
+00:03:13.119 --> 00:03:18.880
+heuristic. A weather lookup the model calls on demand because the user asked about the weather.
+
+33
+00:03:18.880 --> 00:03:24.720
+That's a tool. A company policy document, the application always loads into context before
+
+34
+00:03:24.720 --> 00:03:30.080
+any compliance related conversation. That's a resource. When you're designing a server, just
+
+35
+00:03:30.080 --> 00:03:37.119
+ask yourself, who makes the decision to use this, the model, or the application? The ownership model
+
+36
+00:03:37.119 --> 00:03:43.039
+is worth sitting with a bit longer because the three-way split isn't arbitrary. It's principled.
+
+37
+00:03:43.039 --> 00:03:49.119
+The model controls tools because it's the one reasoning about what action needs to happen next
+
+38
+00:03:49.119 --> 00:03:55.679
+in a conversation, and it has the most context for that decision. The application controls resources
+
+39
+00:03:55.679 --> 00:04:01.520
+because it has the broader system level context to know what data should be present for a given
+
+40
+00:04:01.520 --> 00:04:08.000
+workflow or user state. The user controls prompts because prompts are really about letting humans
+
+41
+00:04:08.000 --> 00:04:15.039
+configure their own starting point intentionally before an interaction begins. MCP landed on this
+
+42
+00:04:15.039 --> 00:04:21.519
+split deliberately. Each ownership model maps to the party with the most relevant information to
+
+43
+00:04:21.519 --> 00:04:28.399
+make that specific decision correctly, safely, and without overstepping. Prompts are the third
+
+44
+00:04:28.399 --> 00:04:34.000
+primitive. They're reusable, parameterized templates stored on the server that users can
+
+45
+00:04:34.000 --> 00:04:40.000
+browse and explicitly apply. Think of them as pre-built workflows a user can launch by name.
+
+46
+00:04:40.559 --> 00:04:46.320
+The mental model, a user opens a chat interface, sees a list of prompts the connected server makes
+
+47
+00:04:46.320 --> 00:04:52.160
+available, picks one, fills in any required variables, and the interaction starts with that
+
+48
+00:04:52.160 --> 00:04:58.559
+template already applied and active. The user is explicitly initiating this. The model doesn't
+
+49
+00:04:58.559 --> 00:05:04.079
+choose to apply a prompt on its own, and the application doesn't inject it silently without
+
+50
+00:05:04.079 --> 00:05:10.160
+the user knowing. The human makes a deliberate, intentional selection. That's the practical meaning
+
+51
+00:05:10.160 --> 00:05:17.279
+of user-controlled for this particular primitive. When you're designing an MCP server, the primitive
+
+52
+00:05:17.279 --> 00:05:22.799
+choice is a real design decision with real consequences for how your server gets used
+
+53
+00:05:22.799 --> 00:05:28.799
+and misused. Use a tool for actions or computations the model should trigger during its reasoning,
+
+54
+00:05:28.799 --> 00:05:34.799
+such as search queries, calculations, and mutation operations that change state. Use a resource for
+
+55
+00:05:34.799 --> 00:05:40.000
+background data the application should load and inject before the model generates a response.
+
+56
+00:05:40.559 --> 00:05:46.239
+Use a prompt for reusable starting point workflows that make sense for users to select intentionally
+
+57
+00:05:46.239 --> 00:05:52.640
+before beginning a task. The reliable shortcut is always to ask who drives this decision. If it's the
+
+58
+00:05:52.640 --> 00:05:58.959
+model, it's a tool. If it's the application, it's a resource. If it's the user, it's a prompt.
+
+59
+00:06:00.640 --> 00:06:05.920
+People tend to lump tools and resources together because both end up as information that the model
+
+60
+00:06:05.920 --> 00:06:12.079
+uses. The real split is who pulls the trigger. Claude reaches for a tool because the conversation
+
+61
+00:06:12.079 --> 00:06:19.040
+calls for it. Your application pushes a resource in because its own logic says to do so. Once you
+
+62
+00:06:19.040 --> 00:06:24.880
+sort capabilities by who decides rather than by what comes back, server design stops being
+
+63
+00:06:24.880 --> 00:06:29.040
+guesswork. That wraps up this lesson. I'll see you in the next one.
+

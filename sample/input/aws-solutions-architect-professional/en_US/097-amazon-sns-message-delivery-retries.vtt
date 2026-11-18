@@ -1,0 +1,278 @@
+WEBVTT
+
+1
+00:00:00.270 --> 00:00:01.320
+<v Instructor>So, let's do a deep dive</v>
+
+2
+00:00:01.320 --> 00:00:03.300
+on the Message Delivery Retries
+
+3
+00:00:03.300 --> 00:00:06.090
+and SNS dead letter queues.
+
+4
+00:00:06.090 --> 00:00:09.510
+So, when a message is delivered to an SNS subscriber,
+
+5
+00:00:09.510 --> 00:00:11.370
+in case you have service side errors,
+
+6
+00:00:11.370 --> 00:00:13.380
+a delivery policy is applied.
+
+7
+00:00:13.380 --> 00:00:15.630
+So, it means if the endpoint that SNS
+
+8
+00:00:15.630 --> 00:00:17.700
+is calling is having issues.
+
+9
+00:00:17.700 --> 00:00:20.520
+And this is a table that makes it look
+
+10
+00:00:20.520 --> 00:00:21.990
+like what is going to happen.
+
+11
+00:00:21.990 --> 00:00:25.230
+So, if you look at the AWS manage endpoint, for example,
+
+12
+00:00:25.230 --> 00:00:27.690
+can you firehose, lambda or SQS?
+
+13
+00:00:27.690 --> 00:00:29.723
+Immediately, there's gonna be three times
+
+14
+00:00:29.723 --> 00:00:31.620
+without delay or retry.
+
+15
+00:00:31.620 --> 00:00:33.870
+So that's maybe the message will go through.
+
+16
+00:00:33.870 --> 00:00:35.850
+If it doesn't go, then it goes
+
+17
+00:00:35.850 --> 00:00:38.274
+into a pre backup phase
+
+18
+00:00:38.274 --> 00:00:42.090
+where it's tried two times one second apart.
+
+19
+00:00:42.090 --> 00:00:44.617
+Then it goes into a backup phase where it's tried 10 times
+
+20
+00:00:44.617 --> 00:00:48.750
+with exponential backup from one second to 20 seconds.
+
+21
+00:00:48.750 --> 00:00:50.550
+And then, if it doesn't work still,
+
+22
+00:00:50.550 --> 00:00:52.943
+it goes into the past backup phase
+
+23
+00:00:52.943 --> 00:00:56.790
+where it's tried 100,000 times 20 seconds apart.
+
+24
+00:00:56.790 --> 00:01:00.324
+So the total attempts is over 100,015 times
+
+25
+00:01:00.324 --> 00:01:03.630
+over the course of 23 days.
+
+26
+00:01:03.630 --> 00:01:05.580
+So as you can see, there is a lot of retries
+
+27
+00:01:05.580 --> 00:01:07.800
+for the manage endpoints of AWS.
+
+28
+00:01:07.800 --> 00:01:10.260
+And there's another one for SMTP.
+
+29
+00:01:10.260 --> 00:01:13.039
+But the idea here is that there is a delivery policy
+
+30
+00:01:13.039 --> 00:01:14.670
+and retries are being made
+
+31
+00:01:14.670 --> 00:01:17.460
+until a success happens, hopefully.
+
+32
+00:01:17.460 --> 00:01:19.693
+In case you have an HTP endpoint
+
+33
+00:01:19.693 --> 00:01:23.580
+that you set up as a subscriber to your SNS topic.
+
+34
+00:01:23.580 --> 00:01:26.640
+Then you have support for custom policies.
+
+35
+00:01:26.640 --> 00:01:28.320
+So, you may want to say
+
+36
+00:01:28.320 --> 00:01:31.137
+what is the number of retry, the min delay, the max delay
+
+37
+00:01:31.137 --> 00:01:34.560
+the backoff function, the throttle policy, and so on
+
+38
+00:01:34.560 --> 00:01:39.090
+to really customize how SNS will retry for your backend
+
+39
+00:01:39.090 --> 00:01:41.670
+because your backend may not like heavy load
+
+40
+00:01:41.670 --> 00:01:43.500
+or a heavy number of retries.
+
+41
+00:01:43.500 --> 00:01:46.300
+So this is the only kind of delivery mechanism
+
+42
+00:01:46.300 --> 00:01:50.070
+that supports a custom delivery policy.
+
+43
+00:01:50.070 --> 00:01:52.213
+That's very important for you to remember.
+
+44
+00:01:52.213 --> 00:01:54.027
+Next, we have Dead Letter Queues.
+
+45
+00:01:54.027 --> 00:01:58.650
+So, in case you have exhausted the delivery policy,
+
+46
+00:01:58.650 --> 00:02:01.170
+then the messages that haven't been delivered
+
+47
+00:02:01.170 --> 00:02:02.970
+are going to be discarded,
+
+48
+00:02:02.970 --> 00:02:05.880
+unless we set a Dead Letter Queue.
+
+49
+00:02:05.880 --> 00:02:09.240
+And the DLQ is dissimilar to what we have for SQS.
+
+50
+00:02:09.240 --> 00:02:12.660
+So, DLQ are again, SQSQ queues or SQS FIFO queues,
+
+51
+00:02:12.660 --> 00:02:14.880
+in case you use SNS FIFO.
+
+52
+00:02:14.880 --> 00:02:18.150
+And they're attached to a subscription, not to a topic.
+
+53
+00:02:18.150 --> 00:02:19.620
+So, let me make it clear.
+
+54
+00:02:19.620 --> 00:02:21.360
+The SNS topic receives messages
+
+55
+00:02:21.360 --> 00:02:23.160
+and we have two subscriptions.
+
+56
+00:02:23.160 --> 00:02:26.640
+We have an email subscription and an HTTP subscription
+
+57
+00:02:26.640 --> 00:02:28.800
+and we can see how these could have issues.
+
+58
+00:02:28.800 --> 00:02:31.195
+For example, if my email server has issues,
+
+59
+00:02:31.195 --> 00:02:33.120
+then you may have a problem
+
+60
+00:02:33.120 --> 00:02:35.580
+or if your HTTP subscription has issue,
+
+61
+00:02:35.580 --> 00:02:37.530
+again you can have problems.
+
+62
+00:02:37.530 --> 00:02:39.570
+So, you can set up a Dead Letter Queue
+
+63
+00:02:39.570 --> 00:02:41.310
+for your email subscription
+
+64
+00:02:41.310 --> 00:02:43.890
+and you can set up another Dead Letter Queue
+
+65
+00:02:43.890 --> 00:02:45.690
+for your HTTP subscription.
+
+66
+00:02:45.690 --> 00:02:48.360
+This guaranteeing that you can process these messages
+
+67
+00:02:48.360 --> 00:02:51.840
+that were not successful, in case that happens.
+
+68
+00:02:51.840 --> 00:02:53.670
+Okay, so that's it for this lecture.
+
+69
+00:02:53.670 --> 00:02:56.620
+I hope you liked it and I will see you in the next lecture.
+

@@ -1,0 +1,1074 @@
+WEBVTT
+
+1
+00:00:00.030 --> 00:00:02.550
+<v Presenter>Okay, so let's get into VPN now</v>
+
+2
+00:00:02.550 --> 00:00:05.490
+and let's talk first about site to site VPN
+
+3
+00:00:05.490 --> 00:00:09.510
+which is a way to call it an AWS managed VPN.
+
+4
+00:00:09.510 --> 00:00:12.870
+So the idea is that we have our corporate data center
+
+5
+00:00:12.870 --> 00:00:16.260
+and our VPC and we want to be able to connect them
+
+6
+00:00:16.260 --> 00:00:18.480
+over the public internet.
+
+7
+00:00:18.480 --> 00:00:19.920
+So one reason to do it is
+
+8
+00:00:19.920 --> 00:00:23.100
+so that they can access each other using private IP
+
+9
+00:00:23.100 --> 00:00:26.370
+that realistically it will go over the public internet
+
+10
+00:00:26.370 --> 00:00:28.950
+and it will be more secure, encrypted and so on.
+
+11
+00:00:28.950 --> 00:00:30.540
+So we have to set up a few things.
+
+12
+00:00:30.540 --> 00:00:33.270
+First on-premise, you need to set up a software
+
+13
+00:00:33.270 --> 00:00:37.110
+or a hardware VPN appliance onto your on-premise network.
+
+14
+00:00:37.110 --> 00:00:39.750
+And then this on-premise VPN
+
+15
+00:00:39.750 --> 00:00:42.087
+should be accessible using a public IP.
+
+16
+00:00:42.087 --> 00:00:45.420
+And that makes sense because the VPN is going to go
+
+17
+00:00:45.420 --> 00:00:46.920
+over the public internet.
+
+18
+00:00:46.920 --> 00:00:48.600
+So now that we have our VPN appliance
+
+19
+00:00:48.600 --> 00:00:50.970
+with the public IP in our corporate data center
+
+20
+00:00:50.970 --> 00:00:53.820
+we are going to do some changes on AWS.
+
+21
+00:00:53.820 --> 00:00:55.620
+On AWS, you need to set up something called,
+
+22
+00:00:55.620 --> 00:00:58.800
+a Virtual Private Gateway or VGW
+
+23
+00:00:58.800 --> 00:01:00.810
+and you attach it to your VPC.
+
+24
+00:01:00.810 --> 00:01:02.670
+So it's a VPC level resource.
+
+25
+00:01:02.670 --> 00:01:05.190
+And then you set up a Customer Gateway
+
+26
+00:01:05.190 --> 00:01:07.680
+and that customer gateway is gonna be configured
+
+27
+00:01:07.680 --> 00:01:12.680
+to the public IP of the on-premise VPN appliance.
+
+28
+00:01:13.230 --> 00:01:16.350
+And then you are going to set up a VPN connection,
+
+29
+00:01:16.350 --> 00:01:21.150
+a site-to-site VPN between on-premise and your AWS.
+
+30
+00:01:21.150 --> 00:01:23.550
+And what happens is that two VPN connections
+
+31
+00:01:23.550 --> 00:01:25.290
+will be created for redundancy
+
+32
+00:01:25.290 --> 00:01:27.990
+and all of them will be encrypted using IPSec.
+
+33
+00:01:27.990 --> 00:01:30.270
+So in the backend there will be a first tunnel
+
+34
+00:01:30.270 --> 00:01:31.860
+for your site-to-site VPN
+
+35
+00:01:31.860 --> 00:01:34.380
+and a second tunnel for redundancy.
+
+36
+00:01:34.380 --> 00:01:37.560
+So this is the basics of site-to-site VPN.
+
+37
+00:01:37.560 --> 00:01:38.760
+And, finally, you should know that
+
+38
+00:01:38.760 --> 00:01:41.700
+if you want to accelerate it to make it work globally
+
+39
+00:01:41.700 --> 00:01:45.840
+you can use the AWS Global Accelerator to accelerate it
+
+40
+00:01:45.840 --> 00:01:47.790
+for worldwide networks.
+
+41
+00:01:47.790 --> 00:01:49.470
+Okay, so next.
+
+42
+00:01:49.470 --> 00:01:50.940
+Let's get into the details
+
+43
+00:01:50.940 --> 00:01:54.210
+of how the site-to-site VPN setup is being done.
+
+44
+00:01:54.210 --> 00:01:56.760
+So we're getting into the route propagation area.
+
+45
+00:01:56.760 --> 00:01:58.620
+So we have a corporate data center
+
+46
+00:01:58.620 --> 00:02:02.970
+and our VPC and both of them have non overlapping CIDRs
+
+47
+00:02:02.970 --> 00:02:05.610
+and we are creating a site-to-site VPN connection.
+
+48
+00:02:05.610 --> 00:02:08.610
+So that means that there is a VGW on the VPC site
+
+49
+00:02:08.610 --> 00:02:11.400
+and a customer gateway on the corporate data center site.
+
+50
+00:02:11.400 --> 00:02:14.670
+Okay, but now we need to make sure that our instances
+
+51
+00:02:14.670 --> 00:02:19.020
+in our private subnets can communicate through the VGW.
+
+52
+00:02:19.020 --> 00:02:21.690
+And for this, we have to set up a route table
+
+53
+00:02:21.690 --> 00:02:24.690
+on our VPC site at the subnet level to make sure
+
+54
+00:02:24.690 --> 00:02:27.210
+that the instance can find its way
+
+55
+00:02:27.210 --> 00:02:29.850
+to the VGW for the CIDR corresponding
+
+56
+00:02:29.850 --> 00:02:31.440
+to the corporate data center
+
+57
+00:02:31.440 --> 00:02:33.690
+and vice versa for the corporate data center
+
+58
+00:02:33.690 --> 00:02:36.330
+we need to update the on-premise router to make sure
+
+59
+00:02:36.330 --> 00:02:37.890
+that any IP that corresponds
+
+60
+00:02:37.890 --> 00:02:42.390
+to the private subnet is going to be routed through the CGW.
+
+61
+00:02:42.390 --> 00:02:46.350
+So we have two ways of setting up these route tables.
+
+62
+00:02:46.350 --> 00:02:48.270
+Number one, you can do static routing.
+
+63
+00:02:48.270 --> 00:02:49.170
+And so it's very easy,
+
+64
+00:02:49.170 --> 00:02:51.480
+you need to edit the entries into the route tables
+
+65
+00:02:51.480 --> 00:02:53.820
+of each, the VPC and the corporate data center.
+
+66
+00:02:53.820 --> 00:02:56.190
+And so on the corporate data center side
+
+67
+00:02:56.190 --> 00:02:57.210
+we're going to say anything
+
+68
+00:02:57.210 --> 00:03:02.160
+that is going to be 10.0.0.1/24 should go through the CGW
+
+69
+00:03:02.160 --> 00:03:04.080
+which should take the network from the left
+
+70
+00:03:04.080 --> 00:03:06.000
+and go all the way to the right.
+
+71
+00:03:06.000 --> 00:03:09.270
+And for either site on the route table
+
+72
+00:03:09.270 --> 00:03:13.260
+we're saying anything that is 10.3.0.0/20
+
+73
+00:03:13.260 --> 00:03:15.060
+should go through the VGW
+
+74
+00:03:15.060 --> 00:03:17.760
+and we have set up properly our routes.
+
+75
+00:03:17.760 --> 00:03:18.990
+This is static routing.
+
+76
+00:03:18.990 --> 00:03:21.060
+So in case things change in the future
+
+77
+00:03:21.060 --> 00:03:23.700
+we have to go ahead and manually edit our route tables
+
+78
+00:03:23.700 --> 00:03:25.440
+and that may be complicated
+
+79
+00:03:25.440 --> 00:03:29.360
+but you can also enable dynamic routing, also called BGP.
+
+80
+00:03:29.360 --> 00:03:32.340
+So BGP is the Border Gateway Protocol
+
+81
+00:03:32.340 --> 00:03:35.400
+and it's a protocol that allows your networks
+
+82
+00:03:35.400 --> 00:03:38.370
+to share the routes automatically with one another.
+
+83
+00:03:38.370 --> 00:03:40.650
+And in case the BGP goes over the internet,
+
+84
+00:03:40.650 --> 00:03:42.360
+it's called eBGP.
+
+85
+00:03:42.360 --> 00:03:46.110
+So we don't need BGP to update the routing tables.
+
+86
+00:03:46.110 --> 00:03:47.940
+It will be done for us dynamically.
+
+87
+00:03:47.940 --> 00:03:48.900
+It's a bit magical.
+
+88
+00:03:48.900 --> 00:03:52.080
+And so for it to work, then you need to specify the ASN,
+
+89
+00:03:52.080 --> 00:03:56.790
+the Autonomous System Number of both the CGW and the VGW.
+
+90
+00:03:56.790 --> 00:03:59.183
+So the CGW will have a custom ASN
+
+91
+00:03:59.183 --> 00:04:02.490
+and the VGW will also have a custom ASN.
+
+92
+00:04:02.490 --> 00:04:06.180
+And so by enabling BGP, we just need to say yes
+
+93
+00:04:06.180 --> 00:04:09.810
+we want dynamic routing, and automatically the route tables
+
+94
+00:04:09.810 --> 00:04:13.410
+on either of the sides will be automatically updated.
+
+95
+00:04:13.410 --> 00:04:16.710
+Okay, so next we have a site-to-site VPN connection
+
+96
+00:04:16.710 --> 00:04:19.590
+and we want to know if our instance on-premise
+
+97
+00:04:19.590 --> 00:04:23.040
+can access internet through our VPC and vice versa.
+
+98
+00:04:23.040 --> 00:04:24.420
+So let's take an example.
+
+99
+00:04:24.420 --> 00:04:26.640
+We have our VPC and a public subnets
+
+100
+00:04:26.640 --> 00:04:28.290
+and we have NAT Gateway that is connected
+
+101
+00:04:28.290 --> 00:04:31.290
+to an Internet Gateway that may lead to request
+
+102
+00:04:31.290 --> 00:04:32.820
+to Google account.
+
+103
+00:04:32.820 --> 00:04:34.830
+And on the corporate data center side
+
+104
+00:04:34.830 --> 00:04:38.010
+we have our servers connected to the Customer Gateway
+
+105
+00:04:38.010 --> 00:04:42.120
+and we have established a site-to-site VPN to the VGW.
+
+106
+00:04:42.120 --> 00:04:43.740
+And it could also be a direct connect,
+
+107
+00:04:43.740 --> 00:04:45.450
+it doesn't really matter for the discussion.
+
+108
+00:04:45.450 --> 00:04:47.340
+And so we're asking ourselves the question,
+
+109
+00:04:47.340 --> 00:04:52.080
+can the server on premise connect through the CGW to the VGW
+
+110
+00:04:52.080 --> 00:04:54.090
+to the NAT Gateway to the Internet Gateway
+
+111
+00:04:54.090 --> 00:04:55.050
+to Google account?
+
+112
+00:04:55.050 --> 00:04:58.110
+Is it a possible way for us to provide internet access
+
+113
+00:04:58.110 --> 00:05:00.120
+to the on premise stuff?
+
+114
+00:05:00.120 --> 00:05:02.940
+And the reason is no, it is not okay.
+
+115
+00:05:02.940 --> 00:05:03.773
+Why?
+
+116
+00:05:03.773 --> 00:05:05.580
+In this entire architecture
+
+117
+00:05:05.580 --> 00:05:07.860
+the NAT Gateway is going to have a restriction
+
+118
+00:05:07.860 --> 00:05:10.830
+and the NAT Gateway is saying that any source network
+
+119
+00:05:10.830 --> 00:05:13.140
+that comes from the site-to-site VPN
+
+120
+00:05:13.140 --> 00:05:16.440
+or direct connect cannot go through the NAT Gateway
+
+121
+00:05:16.440 --> 00:05:18.990
+into the Internet Gateway into the public internet.
+
+122
+00:05:18.990 --> 00:05:20.940
+So this setup does not work.
+
+123
+00:05:20.940 --> 00:05:23.250
+Okay, next, we have the exact same setup,
+
+124
+00:05:23.250 --> 00:05:26.520
+but this time instead of using a NAT Gateway
+
+125
+00:05:26.520 --> 00:05:28.860
+we're going to use a NAT Instance.
+
+126
+00:05:28.860 --> 00:05:29.693
+Why?
+
+127
+00:05:29.693 --> 00:05:30.840
+Because we have a bit more control
+
+128
+00:05:30.840 --> 00:05:33.480
+over the software on the NAT Instance.
+
+129
+00:05:33.480 --> 00:05:35.340
+So now we're doing the exact same setup.
+
+130
+00:05:35.340 --> 00:05:36.840
+We have our corporate data center
+
+131
+00:05:36.840 --> 00:05:38.370
+that is connected to our VPC
+
+132
+00:05:38.370 --> 00:05:42.180
+either site-to-site VPN or direct connect, and is this okay?
+
+133
+00:05:42.180 --> 00:05:44.220
+Now, can we access google.com
+
+134
+00:05:44.220 --> 00:05:45.597
+through our corporate data center?
+
+135
+00:05:45.597 --> 00:05:48.840
+And the answer is yes, because we manage the software
+
+136
+00:05:48.840 --> 00:05:51.360
+on the NAT Instance, we have more control
+
+137
+00:05:51.360 --> 00:05:54.270
+and so it is possible for us to create a route
+
+138
+00:05:54.270 --> 00:05:58.830
+from the corporate data center to the internet through AWS.
+
+139
+00:05:58.830 --> 00:06:02.160
+Okay, so next, can we have this set up.
+
+140
+00:06:02.160 --> 00:06:04.350
+So we have our corporate data center
+
+141
+00:06:04.350 --> 00:06:06.960
+that has an on-premise NAT that gives us access
+
+142
+00:06:06.960 --> 00:06:08.880
+to google.com and we wanna know
+
+143
+00:06:08.880 --> 00:06:11.400
+if we can connect our instances
+
+144
+00:06:11.400 --> 00:06:13.710
+from the private subnet in our VPC
+
+145
+00:06:13.710 --> 00:06:16.860
+to the internet through our corporate data center.
+
+146
+00:06:16.860 --> 00:06:19.920
+So, again, we're going to do this time a direct connect
+
+147
+00:06:19.920 --> 00:06:23.190
+or a site-to-site VPN and the question is,
+
+148
+00:06:23.190 --> 00:06:24.120
+does this work or not?
+
+149
+00:06:24.120 --> 00:06:27.270
+Can the instance connect to the VGW then the CGW
+
+150
+00:06:27.270 --> 00:06:29.370
+and then the (indistinct) is not in google.com?
+
+151
+00:06:29.370 --> 00:06:30.960
+And the answer is yes.
+
+152
+00:06:30.960 --> 00:06:33.060
+So this would be an alternative setup
+
+153
+00:06:33.060 --> 00:06:36.960
+to using NAT Instances or NAT Gateway on AWS.
+
+154
+00:06:36.960 --> 00:06:38.520
+And so the reason you would do this
+
+155
+00:06:38.520 --> 00:06:40.380
+is that maybe your on-premise NAT already
+
+156
+00:06:40.380 --> 00:06:41.910
+does a lot of package filtering,
+
+157
+00:06:41.910 --> 00:06:45.780
+maybe it does some rules and some checks on the network.
+
+158
+00:06:45.780 --> 00:06:48.240
+And so you have a corporate data center rule
+
+159
+00:06:48.240 --> 00:06:50.580
+to have all the internet traffic go through
+
+160
+00:06:50.580 --> 00:06:51.810
+your corporate data center.
+
+161
+00:06:51.810 --> 00:06:55.170
+In this case, this would be a valid setup.
+
+162
+00:06:55.170 --> 00:06:56.610
+Okay, finally, for VPN.
+
+163
+00:06:56.610 --> 00:06:58.860
+We have to discuss about VPN CloudHub.
+
+164
+00:06:58.860 --> 00:07:00.840
+So VPN CloudHub is a way
+
+165
+00:07:00.840 --> 00:07:04.890
+to connect different Customer Gateways together.
+
+166
+00:07:04.890 --> 00:07:08.940
+So in this example, we can connect up to 10 Customer Gateway
+
+167
+00:07:08.940 --> 00:07:11.340
+for each Virtual Private Gateway.
+
+168
+00:07:11.340 --> 00:07:12.570
+So what do we have?
+
+169
+00:07:12.570 --> 00:07:16.020
+We have our Customers Network with different locations.
+
+170
+00:07:16.020 --> 00:07:18.960
+So, for example, New York, Los Angeles, and Miami.
+
+171
+00:07:18.960 --> 00:07:20.880
+And they're gonna be able to connect
+
+172
+00:07:20.880 --> 00:07:24.780
+and talk to one another through the Virtual Private Gateway
+
+173
+00:07:24.780 --> 00:07:27.510
+and the VPN connections that have been established.
+
+174
+00:07:27.510 --> 00:07:28.590
+So why do we do this?
+
+175
+00:07:28.590 --> 00:07:31.470
+Well, it's a low cost hub-and-spoke model
+
+176
+00:07:31.470 --> 00:07:35.100
+for primary network in case we wanna connect data centers
+
+177
+00:07:35.100 --> 00:07:37.470
+like this or it could be a secondary network
+
+178
+00:07:37.470 --> 00:07:39.390
+in case our main connections
+
+179
+00:07:39.390 --> 00:07:42.690
+between our customer networks are failing.
+
+180
+00:07:42.690 --> 00:07:44.340
+So, for example, if you have a direct connection
+
+181
+00:07:44.340 --> 00:07:47.610
+between New York and Los Angeles and that connection fails
+
+182
+00:07:47.610 --> 00:07:50.550
+then we could fail over to the VPN CloudHub
+
+183
+00:07:50.550 --> 00:07:53.250
+that has been set up between the customer network
+
+184
+00:07:53.250 --> 00:07:55.020
+on New York and the one in Los Angeles.
+
+185
+00:07:55.020 --> 00:07:57.660
+And as you can see, the network goes through
+
+186
+00:07:57.660 --> 00:08:01.110
+the Virtual Private Gateway into each end customer.
+
+187
+00:08:01.110 --> 00:08:02.640
+So what do we get out of it?
+
+188
+00:08:02.640 --> 00:08:04.770
+Well, we get a secure communication between the sites
+
+189
+00:08:04.770 --> 00:08:08.040
+in case we have indeed set up multiple VPN connections.
+
+190
+00:08:08.040 --> 00:08:09.780
+And because it's a VPN connection,
+
+191
+00:08:09.780 --> 00:08:11.130
+you have to remember everything goes
+
+192
+00:08:11.130 --> 00:08:13.680
+over the public internet even though of course
+
+193
+00:08:13.680 --> 00:08:17.250
+your VPN connection is going to be encrypted using IPSec.
+
+194
+00:08:17.250 --> 00:08:20.070
+And this can be used, as I said, as a failover connection
+
+195
+00:08:20.070 --> 00:08:22.560
+between your on-premise locations in case there is
+
+196
+00:08:22.560 --> 00:08:25.500
+a network issue between the way you have directly connected
+
+197
+00:08:25.500 --> 00:08:28.410
+your different on-premise locations.
+
+198
+00:08:28.410 --> 00:08:30.960
+What about if you have multiple VPC,
+
+199
+00:08:30.960 --> 00:08:33.180
+how do we establish VPN connections?
+
+200
+00:08:33.180 --> 00:08:34.860
+So say you have a corporate data center
+
+201
+00:08:34.860 --> 00:08:38.890
+and you have set up a customer gateway and you have one VPC.
+
+202
+00:08:38.890 --> 00:08:41.640
+In that case, for a VPN based customer,
+
+203
+00:08:41.640 --> 00:08:43.680
+AWS recommends creating a separate VPN connection
+
+204
+00:08:43.680 --> 00:08:45.300
+for each customer VPC.
+
+205
+00:08:45.300 --> 00:08:47.970
+So that means that we have to create a VPN connection
+
+206
+00:08:47.970 --> 00:08:51.150
+between your VGW and your Customer Gateway here.
+
+207
+00:08:51.150 --> 00:08:52.740
+In case we have the second VPC
+
+208
+00:08:52.740 --> 00:08:55.320
+we create another site-to-site VPN connection.
+
+209
+00:08:55.320 --> 00:08:57.870
+And, finally, in case of a third VPC
+
+210
+00:08:57.870 --> 00:09:01.710
+we have to create a third site-to-site VPN connection.
+
+211
+00:09:01.710 --> 00:09:04.110
+In that case, it can become very, very complicated
+
+212
+00:09:04.110 --> 00:09:06.000
+if you have many, many different VPCs.
+
+213
+00:09:06.000 --> 00:09:08.760
+And so AWS will recommend using Direct Connect
+
+214
+00:09:08.760 --> 00:09:10.530
+because we can leverage Direct Connect Gateway
+
+215
+00:09:10.530 --> 00:09:12.270
+to achieve the exact same thing.
+
+216
+00:09:12.270 --> 00:09:14.880
+But we'll see this in the Direct Connect lectures.
+
+217
+00:09:14.880 --> 00:09:17.940
+So we have a couple options to fix that problem.
+
+218
+00:09:17.940 --> 00:09:19.650
+Obviously one of them is Direct Connect Gateway,
+
+219
+00:09:19.650 --> 00:09:20.940
+we'll discuss it later.
+
+220
+00:09:20.940 --> 00:09:24.590
+But one thing we can do is to have a Shared Services VPC.
+
+221
+00:09:24.590 --> 00:09:27.690
+In that case, we're going to create a VPN connection
+
+222
+00:09:27.690 --> 00:09:29.970
+between our on-premise data center
+
+223
+00:09:29.970 --> 00:09:32.340
+and one Shared Services VPC.
+
+224
+00:09:32.340 --> 00:09:33.570
+So this is represented here,
+
+225
+00:09:33.570 --> 00:09:37.338
+so we have our Shared Services VPC, and we'll set up a VGW,
+
+226
+00:09:37.338 --> 00:09:40.290
+a CGW, and a site-to-site VPN between the two.
+
+227
+00:09:40.290 --> 00:09:43.470
+And then we're going to replicate the services,
+
+228
+00:09:43.470 --> 00:09:47.130
+application, databases, everything that can be on-premise
+
+229
+00:09:47.130 --> 00:09:50.520
+and we'll replicate it onto the Shared Services VPC.
+
+230
+00:09:50.520 --> 00:09:53.760
+Or we can deploy proxies in the Shared Services VPC
+
+231
+00:09:53.760 --> 00:09:56.520
+to access the on-premise resources.
+
+232
+00:09:56.520 --> 00:09:59.220
+So either we can replicate the services
+
+233
+00:09:59.220 --> 00:10:01.620
+or we're gonna deploy a fleet of proxies
+
+234
+00:10:01.620 --> 00:10:03.240
+that will proxy the request made
+
+235
+00:10:03.240 --> 00:10:06.690
+into the shared service VPC to the corporate data center.
+
+236
+00:10:06.690 --> 00:10:09.030
+So the question is, why do we do this?
+
+237
+00:10:09.030 --> 00:10:11.070
+Because now we can do VPC peering
+
+238
+00:10:11.070 --> 00:10:14.610
+between other VPCs and the shared services VPC.
+
+239
+00:10:14.610 --> 00:10:15.480
+So here's an example.
+
+240
+00:10:15.480 --> 00:10:17.070
+We have our first VPC
+
+241
+00:10:17.070 --> 00:10:19.620
+and we have created a VPC peering connection
+
+242
+00:10:19.620 --> 00:10:21.900
+between VPC A and their shared services.
+
+243
+00:10:21.900 --> 00:10:24.270
+Same for B and same for C.
+
+244
+00:10:24.270 --> 00:10:25.500
+And so what do we get out of it?
+
+245
+00:10:25.500 --> 00:10:28.050
+I told you that VPC peering is not transitive.
+
+246
+00:10:28.050 --> 00:10:31.800
+So VPC A cannot access your corporate data center.
+
+247
+00:10:31.800 --> 00:10:34.497
+VPC B as well cannot access your corporate data center.
+
+248
+00:10:34.497 --> 00:10:36.600
+And VPC C as well cannot.
+
+249
+00:10:36.600 --> 00:10:39.870
+But because we have replicated all their services
+
+250
+00:10:39.870 --> 00:10:41.430
+from the corporate data center
+
+251
+00:10:41.430 --> 00:10:43.620
+onto the shared service VPC using
+
+252
+00:10:43.620 --> 00:10:45.780
+a site-to-site VPN connection,
+
+253
+00:10:45.780 --> 00:10:48.960
+then VPC A is able to access
+
+254
+00:10:48.960 --> 00:10:51.480
+our services through their shared VPC.
+
+255
+00:10:51.480 --> 00:10:53.730
+So either we access the replicated services
+
+256
+00:10:53.730 --> 00:10:55.290
+and we directly talk with them
+
+257
+00:10:55.290 --> 00:10:57.270
+or we talk with the application proxies,
+
+258
+00:10:57.270 --> 00:11:00.120
+which by definition are going to proxy the request
+
+259
+00:11:00.120 --> 00:11:01.170
+onto on-premise.
+
+260
+00:11:01.170 --> 00:11:04.290
+And this is the idea behind a Shared Services VPC.
+
+261
+00:11:04.290 --> 00:11:06.030
+So here, as we can see
+
+262
+00:11:06.030 --> 00:11:09.120
+we don't need to establish VPN connections to on-premise.
+
+263
+00:11:09.120 --> 00:11:10.770
+We just need to establish one of them between
+
+264
+00:11:10.770 --> 00:11:13.170
+the Shared Services VPC and on-premise.
+
+265
+00:11:13.170 --> 00:11:16.170
+And for the rest, we can use VPC peering.
+
+266
+00:11:16.170 --> 00:11:18.810
+Okay, so that's it for the first part of VPN.
+
+267
+00:11:18.810 --> 00:11:20.070
+I will see you in the second part
+
+268
+00:11:20.070 --> 00:11:21.870
+for more insights and architectures.
+

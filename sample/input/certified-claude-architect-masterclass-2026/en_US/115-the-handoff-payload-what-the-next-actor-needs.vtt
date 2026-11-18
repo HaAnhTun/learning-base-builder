@@ -1,0 +1,378 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.639
+We'll spend the next few minutes going over what happens after an escalation fires.
+
+2
+00:00:05.639 --> 00:00:11.279
+The handoff payload is what determines whether the next actor can actually resolve the situation
+
+3
+00:00:11.279 --> 00:00:15.000
+or has to reconstruct the entire conversation from scratch.
+
+4
+00:00:15.000 --> 00:00:20.959
+We'll cover the four fields a payload should have, why structure beats narrative, how routing
+
+5
+00:00:20.959 --> 00:00:25.719
+works, and how to close the loop when a resolution comes back.
+
+6
+00:00:25.719 --> 00:00:29.520
+An escalation is only as good as the bundle it hands forward.
+
+7
+00:00:29.520 --> 00:00:35.439
+That bundle is the handoff payload, the structured package of context, history, and suggested
+
+8
+00:00:35.439 --> 00:00:39.840
+next step that an agent passes on when it escalates.
+
+9
+00:00:39.840 --> 00:00:43.080
+The word structured is doing real work there.
+
+10
+00:00:43.080 --> 00:00:48.840
+A free text block and a schema with defined fields are very different things, and they
+
+11
+00:00:48.840 --> 00:00:53.159
+produce very different outcomes for whoever receives them.
+
+12
+00:00:53.159 --> 00:00:58.639
+Escalation routing is how that payload gets directed to the right next actor based on
+
+13
+00:00:58.799 --> 00:01:00.119
+what it contains.
+
+14
+00:01:00.119 --> 00:01:06.720
+And closing the loop is the return trip, re-injecting the reviewer's or supervisor's response back
+
+15
+00:01:06.720 --> 00:01:11.599
+into the original agent's context once the escalation resolves.
+
+16
+00:01:11.599 --> 00:01:16.959
+Without that last step, an escalation is a one-way street and the agent never learns
+
+17
+00:01:16.959 --> 00:01:19.040
+what was decided.
+
+18
+00:01:19.040 --> 00:01:21.519
+A handoff payload needs four things.
+
+19
+00:01:21.519 --> 00:01:27.519
+First, a conversation summary, a compressed account of what happened before the escalation fired.
+
+20
+00:01:27.519 --> 00:01:29.800
+Second, the triggering question.
+
+21
+00:01:29.800 --> 00:01:31.400
+Preserve it verbatim.
+
+22
+00:01:31.400 --> 00:01:35.680
+Don't summarize it and don't paraphrase it because the reviewer needs to see exactly
+
+23
+00:01:35.680 --> 00:01:38.879
+what the agent saw at the moment the trigger fired.
+
+24
+00:01:38.879 --> 00:01:43.519
+Third, what the agent tried, and that's a log rather than a summary.
+
+25
+00:01:43.519 --> 00:01:49.440
+Each tool call made, each validation run, each retry attempted, along with what it returned
+
+26
+00:01:49.440 --> 00:01:55.000
+because that log is how the reviewer knows what not to bother trying again.
+
+27
+00:01:55.000 --> 00:01:57.879
+And fourth, a suggested next step.
+
+28
+00:01:57.879 --> 00:02:02.080
+Agents often skip this one since they escalated precisely because they didn't know what to
+
+29
+00:02:02.080 --> 00:02:08.399
+do, but even an uncertain hypothesis gives the reviewer somewhere to start.
+
+30
+00:02:08.399 --> 00:02:12.559
+Structured handoffs and narrative dumps aren't equally useful, and the difference shows up
+
+31
+00:02:12.559 --> 00:02:15.880
+immediately when you try to route or aggregate them.
+
+32
+00:02:15.880 --> 00:02:19.039
+A structured handoff has defined fields.
+
+33
+00:02:19.039 --> 00:02:23.759
+The receiver can parse it, route it to the right queue, and extract the fields they need
+
+34
+00:02:23.759 --> 00:02:25.759
+without reading everything.
+
+35
+00:02:25.759 --> 00:02:28.639
+An automated system can do that routing too.
+
+36
+00:02:28.639 --> 00:02:31.119
+A narrative dump is a free text block.
+
+37
+00:02:31.119 --> 00:02:36.300
+It might contain everything, or it might omit the one detail the reviewer needed most.
+
+38
+00:02:36.300 --> 00:02:43.000
+It can't be parsed reliably, can't be routed automatically, and can't be aggregated into metrics.
+
+39
+00:02:43.000 --> 00:02:48.279
+When you're looking at the data across 100 escalations, free text is nearly useless.
+
+40
+00:02:48.279 --> 00:02:53.960
+Structure wins because it's designed for the receiver, not for the agent that produced it.
+
+41
+00:02:53.960 --> 00:02:57.720
+Once a payload is structured, routing becomes straightforward.
+
+42
+00:02:57.720 --> 00:03:02.960
+The orchestrator inspects the payload and directs it to one of three destinations.
+
+43
+00:03:02.960 --> 00:03:08.520
+Human reviewer is the right destination when the escalation requires judgment or authority
+
+44
+00:03:08.520 --> 00:03:10.600
+that a model shouldn't exercise.
+
+45
+00:03:10.600 --> 00:03:16.919
+A specialist agent is the right destination when the issue falls within another agent's defined domain.
+
+46
+00:03:16.919 --> 00:03:22.279
+A supervisor model is the right destination when the escalating agent hit its capability
+
+47
+00:03:22.279 --> 00:03:26.320
+limit, but a more capable model might be able to proceed.
+
+48
+00:03:26.320 --> 00:03:30.539
+The routing logic lives in the orchestrator, not in the escalating agent.
+
+49
+00:03:30.539 --> 00:03:33.520
+The agent's job is to produce a clean payload.
+
+50
+00:03:33.520 --> 00:03:36.679
+The orchestrator's job is to send it somewhere.
+
+51
+00:03:36.679 --> 00:03:43.720
+Keeping those responsibilities separate makes both components easier to test and easier to change.
+
+52
+00:03:43.720 --> 00:03:47.759
+Three failure patterns show up repeatedly in handoff designs.
+
+53
+00:03:47.759 --> 00:03:49.960
+Missing context is the most common.
+
+54
+00:03:49.960 --> 00:03:55.039
+The payload describes what failed, but omits enough of the conversation history that the
+
+55
+00:03:55.039 --> 00:03:58.679
+reviewer has to go back and read the whole thing anyway.
+
+56
+00:03:58.679 --> 00:04:01.559
+That defeats the purpose of a structured handoff.
+
+57
+00:04:01.559 --> 00:04:04.360
+The second failure is no suggested step.
+
+58
+00:04:04.360 --> 00:04:08.800
+The agent describes the problem, but offers nothing on what to do next.
+
+59
+00:04:08.800 --> 00:04:11.619
+The reviewer is left to figure that out alone.
+
+60
+00:04:11.619 --> 00:04:14.240
+The third failure is an unroutable format.
+
+61
+00:04:14.240 --> 00:04:19.119
+A free text payload can't be parsed by the routing layer, so it lands in a generic queue
+
+62
+00:04:19.160 --> 00:04:21.320
+instead of the right inbox.
+
+63
+00:04:21.320 --> 00:04:25.880
+All three failures come from designing the payload for the agent's convenience, rather
+
+64
+00:04:25.880 --> 00:04:28.559
+than the receiver's needs.
+
+65
+00:04:28.559 --> 00:04:30.600
+Every escalation is a data point.
+
+66
+00:04:30.600 --> 00:04:35.720
+An agent that escalates repeatedly on the same trigger category is telling you something
+
+67
+00:04:35.720 --> 00:04:39.679
+about your prompt, your policy, or your threshold settings.
+
+68
+00:04:39.679 --> 00:04:45.160
+The only way to see that pattern is to log each handoff and aggregate over time.
+
+69
+00:04:45.160 --> 00:04:51.519
+Log the trigger type, the payload fields, the routing destination, and the resolution.
+
+70
+00:04:51.519 --> 00:04:55.839
+Aggregate that data across sessions, and you'll find patterns quickly.
+
+71
+00:04:55.839 --> 00:05:00.480
+Maybe one trigger category is responsible for 60% of your escalations.
+
+72
+00:05:00.480 --> 00:05:05.480
+That probably means the threshold is set too low, or there's an allow list gap.
+
+73
+00:05:05.480 --> 00:05:10.480
+Maybe escalations to the supervisor model almost always resolve successfully, which
+
+74
+00:05:10.480 --> 00:05:14.799
+suggests the issue is capability, not policy.
+
+75
+00:05:14.799 --> 00:05:20.640
+Routing turns individual escalations into systemic improvements to your agent design.
+
+76
+00:05:20.640 --> 00:05:24.640
+Closing the loop is the step that most agent designs omit.
+
+77
+00:05:24.640 --> 00:05:29.899
+After a human reviewer or supervisor model resolves the escalation, that resolution needs
+
+78
+00:05:29.899 --> 00:05:32.079
+to come back to the original agent.
+
+79
+00:05:32.079 --> 00:05:36.920
+The injection point is the same context window the agent escalated from.
+
+80
+00:05:36.920 --> 00:05:42.040
+The reviewer's answer gets appended, and the agent resumes with that new information.
+
+81
+00:05:42.040 --> 00:05:46.320
+When we talk about loop closure, the agent restarts from its pre-escalation state.
+
+82
+00:05:46.320 --> 00:05:48.500
+It doesn't know what the reviewer decided.
+
+83
+00:05:48.500 --> 00:05:53.559
+It might escalate again on the same trigger, or it might proceed incorrectly because it
+
+84
+00:05:53.559 --> 00:05:56.000
+never received the resolution.
+
+85
+00:05:56.000 --> 00:05:59.619
+With loop closure, escalation becomes a recovery mechanism.
+
+86
+00:05:59.619 --> 00:06:03.399
+The agent hits a limit, gets help, and continues.
+
+87
+00:06:03.399 --> 00:06:10.200
+That's the design goal for any agent that needs to handle complex multi-step tasks reliably.
+
+88
+00:06:10.200 --> 00:06:17.040
+A well-structured handoff payload gives the next actor everything they need to act without starting over.
+
+89
+00:06:17.040 --> 00:06:22.140
+A defined set of fields instead of a narrative dump, clear routing to the destination that
+
+90
+00:06:22.140 --> 00:06:29.440
+can actually resolve the issue, and loop closure at the end are what turn an escalation into
+
+91
+00:06:29.440 --> 00:06:33.040
+a recovery mechanism, rather than a dead end.
+
+92
+00:06:33.040 --> 00:06:37.399
+Build the payload for the receiver, not for the agent that produced it.
+
+93
+00:06:37.399 --> 00:06:38.760
+That wraps up this lesson.
+
+94
+00:06:38.760 --> 00:06:39.920
+I'll see you in the next one.
+

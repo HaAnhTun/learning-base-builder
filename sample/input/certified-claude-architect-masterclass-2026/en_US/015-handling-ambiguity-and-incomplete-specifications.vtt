@@ -1,0 +1,374 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:07.000
+If you're building agents that interact with real users, ambiguous goal specification is unavoidable.
+
+2
+00:00:07.000 --> 00:00:13.000
+We'll spend the next few minutes going over the two core strategies for dealing with unclear instructions,
+
+3
+00:00:13.000 --> 00:00:16.000
+how iterative refinement loops close quality gaps,
+
+4
+00:00:16.000 --> 00:00:21.000
+and why documenting assumptions matters for human oversight and auditability.
+
+5
+00:00:21.000 --> 00:00:23.000
+Let's get into it.
+
+6
+00:00:23.000 --> 00:00:28.000
+What should an agent do when the instruction it was handed can be read several different ways?
+
+7
+00:00:28.000 --> 00:00:34.000
+That's an ambiguous goal, a task specification that doesn't fully define the expected outcome,
+
+8
+00:00:34.000 --> 00:00:36.000
+and leaves the agent to pick an interpretation.
+
+9
+00:00:36.000 --> 00:00:41.000
+The response is either clarify first or assume and proceed.
+
+10
+00:00:41.000 --> 00:00:46.000
+Clarify first means pausing execution and asking a human for more information,
+
+11
+00:00:46.000 --> 00:00:51.000
+which costs latency but protects you when a wrong reading would be expensive.
+
+12
+00:00:51.000 --> 00:00:55.000
+Assume and proceed means making a reasonable inference and continuing,
+
+13
+00:00:55.000 --> 00:01:00.000
+which is the right call for low stakes, reversible, or time-sensitive work.
+
+14
+00:01:00.000 --> 00:01:04.000
+The whole skill is knowing which response fits the situation in front of you,
+
+15
+00:01:04.000 --> 00:01:07.000
+and that's what we're building here.
+
+16
+00:01:07.000 --> 00:01:11.000
+Some situations make assumption-based execution genuinely risky,
+
+17
+00:01:11.000 --> 00:01:16.000
+and those are the cases where clarifying up front is the right call.
+
+18
+00:01:16.000 --> 00:01:19.000
+Irreversible actions are the clearest example.
+
+19
+00:01:19.000 --> 00:01:23.000
+If the agent is about to delete data, send an external communication,
+
+20
+00:01:23.000 --> 00:01:29.000
+or commit a transaction that can't be undone, a wrong assumption could cause significant harm.
+
+21
+00:01:29.000 --> 00:01:31.000
+High-cost operations are similar.
+
+22
+00:01:31.000 --> 00:01:35.000
+If a task triggers an expensive API call or a long batch process,
+
+23
+00:01:35.000 --> 00:01:39.000
+it's worth a brief delay to confirm the scope is right.
+
+24
+00:01:39.000 --> 00:01:42.000
+Scope uncertainty is the third signal.
+
+25
+00:01:42.000 --> 00:01:47.000
+When the agent doesn't know what's in bounds, wrong assumptions don't just cause minor errors.
+
+26
+00:01:47.000 --> 00:01:52.000
+They cause the agent to operate on entirely the wrong data or system.
+
+27
+00:01:52.000 --> 00:01:59.000
+On the flip side, clarifying every ambiguity makes agents slow, brittle, and frustrating to work with.
+
+28
+00:01:59.000 --> 00:02:06.000
+The assume-and-proceed strategy is appropriate when the action is low stakes and easily reversible.
+
+29
+00:02:06.000 --> 00:02:10.000
+If the agent makes a wrong call, the user can undo it without much cost.
+
+30
+00:02:10.000 --> 00:02:13.000
+Time-sensitive tasks are another case.
+
+31
+00:02:13.000 --> 00:02:20.000
+Sometimes the window for action is narrow enough that waiting for clarification means missing the opportunity entirely.
+
+32
+00:02:20.000 --> 00:02:25.000
+And sometimes the context is clear enough that the right interpretation is obvious,
+
+33
+00:02:25.000 --> 00:02:28.000
+even if the instruction wasn't perfectly worded.
+
+34
+00:02:28.000 --> 00:02:30.000
+The goal isn't maximum caution.
+
+35
+00:02:30.000 --> 00:02:33.000
+It's appropriate judgment based on actual risk,
+
+36
+00:02:33.000 --> 00:02:38.000
+and that judgment needs to be calibrated to the real costs involved.
+
+37
+00:02:38.000 --> 00:02:42.000
+It helps to put the two strategies directly side-by-side.
+
+38
+00:02:42.000 --> 00:02:47.000
+Clarifying up front adds latency and requires the human to be available and responsive.
+
+39
+00:02:47.000 --> 00:02:52.000
+It's justified when getting it wrong would cause irreversible damage, trigger high costs,
+
+40
+00:02:52.000 --> 00:02:56.000
+or send the agent off into the wrong scope entirely.
+
+41
+00:02:56.000 --> 00:03:02.000
+Assuming-and-proceeding maintains task velocity and doesn't require human involvement.
+
+42
+00:03:02.000 --> 00:03:04.000
+It's justified when the action is reversible.
+
+43
+00:03:04.000 --> 00:03:09.000
+The stakes are low, and the context makes the intent reasonably clear.
+
+44
+00:03:09.000 --> 00:03:11.000
+Neither strategy is universally better.
+
+45
+00:03:12.000 --> 00:03:14.000
+The right answer is always situational,
+
+46
+00:03:14.000 --> 00:03:18.000
+and agents that apply the same strategy to every ambiguous instruction
+
+47
+00:03:18.000 --> 00:03:23.000
+will get it wrong in one direction or the other more often than they should.
+
+48
+00:03:23.000 --> 00:03:28.000
+Three practical criteria help structure the clarify-versus-assume decision.
+
+49
+00:03:28.000 --> 00:03:31.000
+Reversibility is probably the most important.
+
+50
+00:03:31.000 --> 00:03:34.000
+If the action can be undone easily and cheaply,
+
+51
+00:03:34.000 --> 00:03:38.000
+proceeding on an assumption carries much lower risk.
+
+52
+00:03:38.000 --> 00:03:39.000
+Stake level is second.
+
+53
+00:03:39.000 --> 00:03:45.000
+High-cost or high-impact operations justify the latency of a clarification request
+
+54
+00:03:45.000 --> 00:03:49.000
+in ways that routine, low-cost tasks don't.
+
+55
+00:03:49.000 --> 00:03:51.000
+Scope clarity is third.
+
+56
+00:03:51.000 --> 00:03:54.000
+When the boundaries of the task are genuinely ambiguous,
+
+57
+00:03:54.000 --> 00:03:58.000
+a wrong assumption doesn't just affect this one action.
+
+58
+00:03:58.000 --> 00:04:02.000
+It can cause the agent to work on the wrong data or the wrong system
+
+59
+00:04:02.000 --> 00:04:06.000
+for an extended sequence of steps before the error surfaces.
+
+60
+00:04:06.000 --> 00:04:11.000
+Clear scope reduces that cascading risk significantly.
+
+61
+00:04:11.000 --> 00:04:13.000
+When a single pass isn't good enough,
+
+62
+00:04:13.000 --> 00:04:17.000
+iterative refinement is the pattern that closes the gap.
+
+63
+00:04:17.000 --> 00:04:20.000
+A generator agent produces a candidate output.
+
+64
+00:04:20.000 --> 00:04:25.000
+An evaluator agent, which might be a separate model or just a structured critique prompt,
+
+65
+00:04:25.000 --> 00:04:29.000
+scores that output against a rubric and returns specific feedback
+
+66
+00:04:29.000 --> 00:04:31.000
+rather than a bare pass or fail.
+
+67
+00:04:31.000 --> 00:04:35.000
+The generator takes that critique and produces a revised version.
+
+68
+00:04:35.000 --> 00:04:38.000
+Convergence criteria decide when the loop stops.
+
+69
+00:04:38.000 --> 00:04:42.000
+Either the quality bar is met or the maximum iteration count is reached.
+
+70
+00:04:42.000 --> 00:04:44.000
+That cap isn't optional.
+
+71
+00:04:44.000 --> 00:04:50.000
+Without it, the loop can run indefinitely on tasks where the evaluator is hard to satisfy.
+
+72
+00:04:50.000 --> 00:04:52.000
+This is called the evaluator-optimizer loop,
+
+73
+00:04:52.000 --> 00:04:56.000
+and it earns its cost on work like writing and analysis,
+
+74
+00:04:56.000 --> 00:05:01.000
+where quality is hard to specify up front but easy to recognize.
+
+75
+00:05:01.000 --> 00:05:03.000
+When an agent proceeds on assumptions,
+
+76
+00:05:03.000 --> 00:05:09.000
+the best practice is to make those assumptions explicit in the output or the execution log.
+
+77
+00:05:09.000 --> 00:05:11.000
+This isn't just a courtesy.
+
+78
+00:05:11.000 --> 00:05:13.000
+It's a meaningful audit capability.
+
+79
+00:05:13.000 --> 00:05:16.000
+A human reviewer can check whether the assumption was reasonable
+
+80
+00:05:16.000 --> 00:05:19.000
+without rerunning the full task from scratch.
+
+81
+00:05:19.000 --> 00:05:23.000
+Well-documented assumptions reduce audit burden, speed up review cycles,
+
+82
+00:05:23.000 --> 00:05:29.000
+and make the agent's reasoning transparent enough to catch problems before they compound.
+
+83
+00:05:29.000 --> 00:05:33.000
+The longer-term solution is to improve goal specification design at the source.
+
+84
+00:05:33.000 --> 00:05:40.000
+Precise, well-scoped instructions reduce the number of assumptions agents need to make in the first place.
+
+85
+00:05:40.000 --> 00:05:46.000
+That's a design investment that pays off across every task that touches that specification.
+
+86
+00:05:46.000 --> 00:05:52.000
+It's fun to treat vague instructions as a challenge for how reliable your system is.
+
+87
+00:05:52.000 --> 00:05:56.000
+If something is cheap to undo, the agent should just move forward.
+
+88
+00:05:56.000 --> 00:06:00.000
+If something is expensive or permanent, it should stop and ask permission.
+
+89
+00:06:00.000 --> 00:06:03.000
+That single question carries most of the judgment here.
+
+90
+00:06:03.000 --> 00:06:06.000
+It only holds up if the agent writes down what it assumed
+
+91
+00:06:06.000 --> 00:06:10.000
+because a reviewer can't check reasoning that was never communicated.
+
+92
+00:06:10.000 --> 00:06:12.000
+And that's it for this lesson.
+
+93
+00:06:12.000 --> 00:06:14.000
+I'll see you in the next one.
+

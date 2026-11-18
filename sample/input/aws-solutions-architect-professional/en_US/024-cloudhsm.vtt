@@ -1,0 +1,490 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.920
+<v Instructor>So now let's talk about CloudHSM.</v>
+
+2
+00:00:01.920 --> 00:00:04.770
+And the best way to start is to talk about KMS.
+
+3
+00:00:04.770 --> 00:00:08.970
+So when we have KMS, AWS manages the software for encryption
+
+4
+00:00:08.970 --> 00:00:10.860
+and the encryption keys.
+
+5
+00:00:10.860 --> 00:00:12.330
+But with CloudHSM,
+
+6
+00:00:12.330 --> 00:00:16.230
+AWS will only provision us the encryption hardware.
+
+7
+00:00:16.230 --> 00:00:18.750
+It's going to be dedicated hardware
+
+8
+00:00:18.750 --> 00:00:21.660
+and HSM stands for Hardware Security Module,
+
+9
+00:00:21.660 --> 00:00:23.520
+hence the name CloudHSM.
+
+10
+00:00:23.520 --> 00:00:26.100
+And your responsibility is going to manage
+
+11
+00:00:26.100 --> 00:00:30.330
+your own encryption keys entirely, not AWS.
+
+12
+00:00:30.330 --> 00:00:32.940
+The idea is that you are entirely responsible
+
+13
+00:00:32.940 --> 00:00:36.150
+for the security, the maintenance,
+
+14
+00:00:36.150 --> 00:00:40.380
+and the backup of these encryption keys, not AWS.
+
+15
+00:00:40.380 --> 00:00:43.140
+So the HSM device is going to be tamper resistant.
+
+16
+00:00:43.140 --> 00:00:45.120
+It has some kind of compliance,
+
+17
+00:00:45.120 --> 00:00:48.480
+and so that means that if anyone on site
+
+18
+00:00:48.480 --> 00:00:51.660
+tries to open up your HSM device,
+
+19
+00:00:51.660 --> 00:00:54.120
+there's going to be a flip and it's going to be seen.
+
+20
+00:00:54.120 --> 00:00:58.230
+So it supports both symmetric and asymmetric encryption
+
+21
+00:00:58.230 --> 00:00:59.063
+which is really helpful
+
+22
+00:00:59.063 --> 00:01:02.700
+if you want to do something called TLS or SSL offloading.
+
+23
+00:01:02.700 --> 00:01:04.770
+And there's no free tier available.
+
+24
+00:01:04.770 --> 00:01:06.810
+For you to use CloudHSM,
+
+25
+00:01:06.810 --> 00:01:08.820
+you need to use the CloudHSM Client Software.
+
+26
+00:01:08.820 --> 00:01:11.400
+It's not something that is done through API calls.
+
+27
+00:01:11.400 --> 00:01:14.490
+And you have some integration with CloudHSM,
+
+28
+00:01:14.490 --> 00:01:17.040
+for example, with Redshift that supports CloudHSM
+
+29
+00:01:17.040 --> 00:01:19.500
+for database encryption and key management.
+
+30
+00:01:19.500 --> 00:01:23.910
+So in case you want to use SSE-C type of encryption
+
+31
+00:01:23.910 --> 00:01:25.530
+for your S3 objects,
+
+32
+00:01:25.530 --> 00:01:29.520
+which is when you provide your own encryption key to S3
+
+33
+00:01:29.520 --> 00:01:32.010
+and then there will be server-side encryption happening,
+
+34
+00:01:32.010 --> 00:01:35.130
+then a good way to generate that encryption key
+
+35
+00:01:35.130 --> 00:01:36.810
+would be to use CloudHSM.
+
+36
+00:01:36.810 --> 00:01:38.790
+It's a very common pattern.
+
+37
+00:01:38.790 --> 00:01:41.159
+Okay, so let's have a look at a diagram.
+
+38
+00:01:41.159 --> 00:01:43.500
+AWS will manage the hardware for us,
+
+39
+00:01:43.500 --> 00:01:46.590
+but then we will be provided with a CloudHSM device
+
+40
+00:01:46.590 --> 00:01:48.540
+and it's dedicated to us
+
+41
+00:01:48.540 --> 00:01:50.610
+and then that's all AWS does for us.
+
+42
+00:01:50.610 --> 00:01:54.390
+So if we lose the encryption keys, if we lose anything,
+
+43
+00:01:54.390 --> 00:01:56.580
+AWS cannot recover the device for us.
+
+44
+00:01:56.580 --> 00:02:00.060
+It's really our own responsibility, so use with caution.
+
+45
+00:02:00.060 --> 00:02:01.920
+And to manage these keys and everything,
+
+46
+00:02:01.920 --> 00:02:03.570
+you need to have CloudHSM clients
+
+47
+00:02:03.570 --> 00:02:05.880
+which will access your CloudHSM device
+
+48
+00:02:05.880 --> 00:02:06.930
+and you manage your keys.
+
+49
+00:02:06.930 --> 00:02:08.490
+They will have encrypted connection
+
+50
+00:02:08.490 --> 00:02:11.130
+between your CloudHSM clients and your CloudHSM device,
+
+51
+00:02:11.130 --> 00:02:14.340
+of course, to encrypt and share a secure information.
+
+52
+00:02:14.340 --> 00:02:16.350
+But it's your responsibility
+
+53
+00:02:16.350 --> 00:02:18.930
+to manage everything within your device.
+
+54
+00:02:18.930 --> 00:02:21.210
+AWS cannot help you once it has provided you
+
+55
+00:02:21.210 --> 00:02:22.920
+with the hardware you need.
+
+56
+00:02:22.920 --> 00:02:24.810
+In terms of IAM permissions, therefore,
+
+57
+00:02:24.810 --> 00:02:26.700
+the only thing AWS can do
+
+58
+00:02:26.700 --> 00:02:30.480
+in terms of IAM is helping you create, describe,
+
+59
+00:02:30.480 --> 00:02:33.180
+and delete your CloudHSM cluster.
+
+60
+00:02:33.180 --> 00:02:35.940
+But anything within your CloudHSM cluster,
+
+61
+00:02:35.940 --> 00:02:37.980
+it's your own responsibility.
+
+62
+00:02:37.980 --> 00:02:40.920
+So using the CloudHSM software, you can manage the keys,
+
+63
+00:02:40.920 --> 00:02:43.080
+that means create, read, update, delete keys,
+
+64
+00:02:43.080 --> 00:02:46.380
+and also manage the users that have access to these keys.
+
+65
+00:02:46.380 --> 00:02:48.780
+It's very similar to say a database
+
+66
+00:02:48.780 --> 00:02:52.050
+where AWS will give you the database itself
+
+67
+00:02:52.050 --> 00:02:54.210
+and you have to manage the users within it.
+
+68
+00:02:54.210 --> 00:02:56.700
+It's not exactly the case, not exactly similar as CloudHSM,
+
+69
+00:02:56.700 --> 00:02:57.960
+but you get the idea.
+
+70
+00:02:57.960 --> 00:03:01.350
+You have to manage all the security within your device
+
+71
+00:03:01.350 --> 00:03:03.330
+and AWS cannot help you with that.
+
+72
+00:03:03.330 --> 00:03:05.220
+Okay, another very important thing
+
+73
+00:03:05.220 --> 00:03:07.800
+is to set up CloudHSM with high availability.
+
+74
+00:03:07.800 --> 00:03:10.740
+And for this, you need to create a CloudHSM cluster
+
+75
+00:03:10.740 --> 00:03:13.249
+that will be spread across multiple AZ.
+
+76
+00:03:13.249 --> 00:03:14.430
+It's going to be great to enhance
+
+77
+00:03:14.430 --> 00:03:16.320
+one more time the availability,
+
+78
+00:03:16.320 --> 00:03:18.510
+but also the durability of your data.
+
+79
+00:03:18.510 --> 00:03:21.360
+So we have this very classic architecture
+
+80
+00:03:21.360 --> 00:03:24.000
+where we have two AZ, two CloudHSM devices
+
+81
+00:03:24.000 --> 00:03:25.950
+that are going to be paired up in a cluster
+
+82
+00:03:25.950 --> 00:03:27.570
+and your CloudHSM clients.
+
+83
+00:03:27.570 --> 00:03:29.280
+And the idea here is that if we lose one AZ,
+
+84
+00:03:29.280 --> 00:03:31.170
+well, we'll still have access to the second AZ,
+
+85
+00:03:31.170 --> 00:03:34.650
+and our data is safe, highly available, and durable.
+
+86
+00:03:34.650 --> 00:03:35.820
+But important to see it once
+
+87
+00:03:35.820 --> 00:03:37.800
+to know that it's possible to do it,
+
+88
+00:03:37.800 --> 00:03:40.530
+going into the exam, it can be very handy.
+
+89
+00:03:40.530 --> 00:03:43.680
+So for CloudHSM, you have a single-tenant device.
+
+90
+00:03:43.680 --> 00:03:46.770
+Whereas for KMS, it's multi-tenant.
+
+91
+00:03:46.770 --> 00:03:51.717
+For Standard, both KMS and CloudHSM are FIPS 140-2 Level 3.
+
+92
+00:03:53.790 --> 00:03:55.860
+In terms of the master keys, you have different kinds.
+
+93
+00:03:55.860 --> 00:03:59.310
+On KMS, you have the AWS Owned Keys, the AWS Managed Keys,
+
+94
+00:03:59.310 --> 00:04:01.590
+as well as the Customer Managed KMS Keys.
+
+95
+00:04:01.590 --> 00:04:03.240
+Whereas on CloudHSM, you just have one thing.
+
+96
+00:04:03.240 --> 00:04:05.760
+It's Customer Managed CMK.
+
+97
+00:04:05.760 --> 00:04:07.950
+Now, for the key type, well, you have similar ones.
+
+98
+00:04:07.950 --> 00:04:10.410
+You have symmetric, asymmetric, digital signing,
+
+99
+00:04:10.410 --> 00:04:12.870
+and CloudHSM gives you also hashing.
+
+100
+00:04:12.870 --> 00:04:16.560
+For key accessibility, KMS keys are scoped per region,
+
+101
+00:04:16.560 --> 00:04:18.870
+although you can do KMS key replication.
+
+102
+00:04:18.870 --> 00:04:21.060
+And CloudHSM, well, they're deployed and managed
+
+103
+00:04:21.060 --> 00:04:22.290
+in specific VPC.
+
+104
+00:04:22.290 --> 00:04:24.150
+And they can be shared across different VPC
+
+105
+00:04:24.150 --> 00:04:26.730
+by using VPC peering, for example.
+
+106
+00:04:26.730 --> 00:04:29.340
+CloudHSM has cryptographic acceleration
+
+107
+00:04:29.340 --> 00:04:32.400
+for SSL and TLS and Oracle TDE.
+
+108
+00:04:32.400 --> 00:04:36.420
+In terms of access and authorization, KMS is using IAM,
+
+109
+00:04:36.420 --> 00:04:39.660
+whereas CloudHSM is using their own users
+
+110
+00:04:39.660 --> 00:04:41.160
+and you have to manage your own permissions
+
+111
+00:04:41.160 --> 00:04:44.610
+from within the CloudHSM device itself.
+
+112
+00:04:44.610 --> 00:04:45.510
+For high availability,
+
+113
+00:04:45.510 --> 00:04:47.340
+well, this is embedded in the KMS service.
+
+114
+00:04:47.340 --> 00:04:50.820
+But for CloudHSM, you need to have multiple HSM device
+
+115
+00:04:50.820 --> 00:04:53.130
+over different availability zones.
+
+116
+00:04:53.130 --> 00:04:55.320
+For audit capability, you have CloudTrail and CloudWatch.
+
+117
+00:04:55.320 --> 00:04:56.370
+But on top of it,
+
+118
+00:04:56.370 --> 00:04:59.370
+CloudHSM has multifactor authentication support.
+
+119
+00:04:59.370 --> 00:05:01.020
+And finally, there's a free tier for KMS
+
+120
+00:05:01.020 --> 00:05:04.200
+whereas there's no free tier for CloudHSM.
+
+121
+00:05:04.200 --> 00:05:05.940
+Okay, so that's it for this lecture.
+
+122
+00:05:05.940 --> 00:05:08.940
+I hope you liked it, and I will see you in the next lecture.
+

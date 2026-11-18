@@ -1,0 +1,590 @@
+WEBVTT
+
+1
+00:00:00.090 --> 00:00:02.130
+<v Instructor>Okay, so let's get into EMR.</v>
+
+2
+00:00:02.130 --> 00:00:04.770
+EMR stands for Elastic MapReduce,
+
+3
+00:00:04.770 --> 00:00:07.200
+and they help you create Hadoop clusters
+
+4
+00:00:07.200 --> 00:00:10.710
+to do Big Data in the AWS Cloud.
+
+5
+00:00:10.710 --> 00:00:12.540
+The idea is that you would use EMR
+
+6
+00:00:12.540 --> 00:00:15.390
+if you're doing a migration from on-premise,
+
+7
+00:00:15.390 --> 00:00:19.050
+and many companies have an on-premise Hadoop cluster,
+
+8
+00:00:19.050 --> 00:00:21.720
+and they wanna migrate these jobs onto AWS
+
+9
+00:00:21.720 --> 00:00:23.220
+to take advantage of the Cloud.
+
+10
+00:00:23.220 --> 00:00:25.110
+So usually it's about elasticity.
+
+11
+00:00:25.110 --> 00:00:28.860
+So, the clusters can be made of hundreds of EC2 instances,
+
+12
+00:00:28.860 --> 00:00:31.620
+so they give you a lot of scale to process data.
+
+13
+00:00:31.620 --> 00:00:32.910
+But then as soon as you're done,
+
+14
+00:00:32.910 --> 00:00:35.370
+you're more than welcome to shut down your EMR cluster
+
+15
+00:00:35.370 --> 00:00:37.500
+and that saves you a lot of cost as well.
+
+16
+00:00:37.500 --> 00:00:39.300
+So EMR is a natural fit
+
+17
+00:00:39.300 --> 00:00:43.230
+to migrate your Hadoop clusters from on-premise onto AWS.
+
+18
+00:00:43.230 --> 00:00:46.950
+EMR is going to be launched in the Big Data ecosystem.
+
+19
+00:00:46.950 --> 00:00:49.140
+So it's going to be made of Apache Spark,
+
+20
+00:00:49.140 --> 00:00:53.550
+HBase, Presto, Flink, Hive, et cetera, et cetera.
+
+21
+00:00:53.550 --> 00:00:54.810
+The idea is that usually
+
+22
+00:00:54.810 --> 00:00:56.370
+Hadoop clusters are quite complicated
+
+23
+00:00:56.370 --> 00:00:57.930
+to create and configure,
+
+24
+00:00:57.930 --> 00:01:00.900
+but with EMR, all the provisioning and the configuration
+
+25
+00:01:00.900 --> 00:01:03.120
+of the EC2 instances is done for you.
+
+26
+00:01:03.120 --> 00:01:06.060
+You just specify what you want and you get it very quickly.
+
+27
+00:01:06.060 --> 00:01:08.700
+You also get auto-scaling capability with CloudWatch,
+
+28
+00:01:08.700 --> 00:01:11.220
+and the use cases for EMR very classically
+
+29
+00:01:11.220 --> 00:01:13.410
+is data processing, machine learning,
+
+30
+00:01:13.410 --> 00:01:15.240
+web indexing, big data,
+
+31
+00:01:15.240 --> 00:01:18.300
+basically anything you need to process at scale.
+
+32
+00:01:18.300 --> 00:01:21.330
+Now, EMR has a few integrations you need to remember
+
+33
+00:01:21.330 --> 00:01:22.800
+going into the exam.
+
+34
+00:01:22.800 --> 00:01:25.530
+So EMR is launched within a VPC,
+
+35
+00:01:25.530 --> 00:01:28.830
+and it is within a single availability zone.
+
+36
+00:01:28.830 --> 00:01:30.750
+So you have your EC2 instances
+
+37
+00:01:30.750 --> 00:01:32.280
+and they have EBS volumes
+
+38
+00:01:32.280 --> 00:01:33.810
+and you can have many of that.
+
+39
+00:01:33.810 --> 00:01:36.720
+And the EBS volumes are running something called HDFS
+
+40
+00:01:36.720 --> 00:01:38.850
+for Hadoop Distributed File System,
+
+41
+00:01:38.850 --> 00:01:40.890
+and that gives you temporary storage
+
+42
+00:01:40.890 --> 00:01:43.800
+for your EC2 instances in your cluster.
+
+43
+00:01:43.800 --> 00:01:47.220
+But if you want to have long-term retention of data,
+
+44
+00:01:47.220 --> 00:01:49.590
+you need to use something called EMRFS,
+
+45
+00:01:49.590 --> 00:01:51.750
+which has a native integration into S3,
+
+46
+00:01:51.750 --> 00:01:53.460
+and S3 obviously is going to be
+
+47
+00:01:53.460 --> 00:01:56.490
+a more durable type of storage because it is multi-AZ,
+
+48
+00:01:56.490 --> 00:01:58.560
+and that gives you permanent storage
+
+49
+00:01:58.560 --> 00:02:01.290
+and you can also define server-side encryption.
+
+50
+00:02:01.290 --> 00:02:04.140
+So as we can see, any EBS volume is going to be
+
+51
+00:02:04.140 --> 00:02:05.910
+high performance for temporary storage
+
+52
+00:02:05.910 --> 00:02:07.410
+and for your computations,
+
+53
+00:02:07.410 --> 00:02:09.060
+but as soon as you need to persist your data
+
+54
+00:02:09.060 --> 00:02:11.850
+into something that's going to be multi-AZ,
+
+55
+00:02:11.850 --> 00:02:14.730
+use EMRFS and S3.
+
+56
+00:02:14.730 --> 00:02:17.400
+As you can see, everything is launched in your EMR cluster
+
+57
+00:02:17.400 --> 00:02:19.890
+within a single-AZ because you get natural,
+
+58
+00:02:19.890 --> 00:02:22.890
+better networking performance and lower cost.
+
+59
+00:02:22.890 --> 00:02:25.020
+But obviously because it is within a single-AZ,
+
+60
+00:02:25.020 --> 00:02:26.370
+in case you lose your AZ
+
+61
+00:02:26.370 --> 00:02:28.080
+you would lose your data.
+
+62
+00:02:28.080 --> 00:02:31.590
+Then we can run something like Apache Hive on EMR,
+
+63
+00:02:31.590 --> 00:02:34.050
+and there is a module that has been developed for Hive
+
+64
+00:02:34.050 --> 00:02:36.870
+to directly read data from a DynamoDB table.
+
+65
+00:02:36.870 --> 00:02:39.480
+So in case you want to analyze all your DynamoDB table,
+
+66
+00:02:39.480 --> 00:02:42.990
+you can do it so from EMR by using Hive.
+
+67
+00:02:42.990 --> 00:02:46.020
+Okay, next, very important, you need to understand
+
+68
+00:02:46.020 --> 00:02:48.960
+how you can optimize your cost in EMR.
+
+69
+00:02:48.960 --> 00:02:52.530
+So Amazon EMR is made of clusters of EC2 instances
+
+70
+00:02:52.530 --> 00:02:54.000
+and you have different kind of nodes.
+
+71
+00:02:54.000 --> 00:02:55.110
+You have the master node,
+
+72
+00:02:55.110 --> 00:02:57.300
+and the master node manages the cluster.
+
+73
+00:02:57.300 --> 00:02:59.280
+It will coordinate and manage the health
+
+74
+00:02:59.280 --> 00:03:01.110
+of all your other nodes
+
+75
+00:03:01.110 --> 00:03:03.540
+and it must be long running.
+
+76
+00:03:03.540 --> 00:03:04.950
+Then you have the core node.
+
+77
+00:03:04.950 --> 00:03:08.610
+They're here to run tasks and also store data,
+
+78
+00:03:08.610 --> 00:03:10.620
+and they must be long running as well.
+
+79
+00:03:10.620 --> 00:03:12.390
+And then you have this task node,
+
+80
+00:03:12.390 --> 00:03:14.340
+which is there just to run tasks
+
+81
+00:03:14.340 --> 00:03:17.010
+and usually you can take spot instances for it,
+
+82
+00:03:17.010 --> 00:03:19.860
+and using task node is optional.
+
+83
+00:03:19.860 --> 00:03:22.440
+So the purchasing options really depends.
+
+84
+00:03:22.440 --> 00:03:25.230
+If you have the on-demand EC2 instance type,
+
+85
+00:03:25.230 --> 00:03:26.640
+then you're going to get reliable,
+
+86
+00:03:26.640 --> 00:03:28.440
+predictable type of workloads
+
+87
+00:03:28.440 --> 00:03:30.480
+and they will never be terminated.
+
+88
+00:03:30.480 --> 00:03:32.160
+If you use reserved instances,
+
+89
+00:03:32.160 --> 00:03:34.770
+and remember it's minimum one year of usage,
+
+90
+00:03:34.770 --> 00:03:37.380
+then you're going to get big cost savings
+
+91
+00:03:37.380 --> 00:03:39.270
+and EMR will automatically use
+
+92
+00:03:39.270 --> 00:03:41.490
+your reserved instances if possible.
+
+93
+00:03:41.490 --> 00:03:45.030
+And therefore, good candidates for reserved instances
+
+94
+00:03:45.030 --> 00:03:46.980
+are going to be the master node
+
+95
+00:03:46.980 --> 00:03:48.840
+because it must be long running,
+
+96
+00:03:48.840 --> 00:03:51.360
+and also the core nodes.
+
+97
+00:03:51.360 --> 00:03:53.790
+And regarding spot instances,
+
+98
+00:03:53.790 --> 00:03:55.500
+well because they can be terminated,
+
+99
+00:03:55.500 --> 00:03:58.680
+they're less reliable but they're cheaper.
+
+100
+00:03:58.680 --> 00:04:02.400
+And so, a good way for you to leverage spot instances
+
+101
+00:04:02.400 --> 00:04:04.353
+would be on Task Nodes.
+
+102
+00:04:05.430 --> 00:04:07.260
+Finally, for EMR in terms of deployments,
+
+103
+00:04:07.260 --> 00:04:09.390
+you can have either long-running clusters,
+
+104
+00:04:09.390 --> 00:04:12.900
+which would make sense for than using reserved instances,
+
+105
+00:04:12.900 --> 00:04:15.330
+or you can use transient temporary clusters
+
+106
+00:04:15.330 --> 00:04:16.740
+to just do something
+
+107
+00:04:16.740 --> 00:04:19.560
+and then tear it down once the analysis is done.
+
+108
+00:04:19.560 --> 00:04:22.410
+Okay, next you have the instance configuration.
+
+109
+00:04:22.410 --> 00:04:24.450
+So you have uniform instance groups,
+
+110
+00:04:24.450 --> 00:04:26.430
+where you select a single instance type
+
+111
+00:04:26.430 --> 00:04:28.230
+and purchasing option for each node.
+
+112
+00:04:28.230 --> 00:04:29.677
+So in this example, you say,
+
+113
+00:04:29.677 --> 00:04:32.430
+"Okay, the master needs to be on-demand or spot,
+
+114
+00:04:32.430 --> 00:04:35.550
+the cores, I want two and to be on-demand or spot,
+
+115
+00:04:35.550 --> 00:04:39.570
+and the task node, I want c4 xlarge, D22 xlarge,"
+
+116
+00:04:39.570 --> 00:04:40.403
+that kind of things.
+
+117
+00:04:40.403 --> 00:04:41.910
+And you say on-demand spot.
+
+118
+00:04:41.910 --> 00:04:43.110
+So this is very helpful,
+
+119
+00:04:43.110 --> 00:04:46.020
+and it's called a uniform instance group.
+
+120
+00:04:46.020 --> 00:04:49.500
+A difference, the other type of EMR instance configuration
+
+121
+00:04:49.500 --> 00:04:51.390
+is called an instance fleet,
+
+122
+00:04:51.390 --> 00:04:53.520
+where you select a target capacity
+
+123
+00:04:53.520 --> 00:04:57.060
+and you will mix instant types and purchasing options.
+
+124
+00:04:57.060 --> 00:04:58.627
+So in this example, you're saying,
+
+125
+00:04:58.627 --> 00:05:02.040
+"Okay, my master is going to be an on-demand.
+
+126
+00:05:02.040 --> 00:05:05.400
+My core can be a bunch of different instances,
+
+127
+00:05:05.400 --> 00:05:07.200
+and six of them needs to be on-demand
+
+128
+00:05:07.200 --> 00:05:09.150
+and 10 of them needs to be spot.
+
+129
+00:05:09.150 --> 00:05:10.470
+And same for my tasks."
+
+130
+00:05:10.470 --> 00:05:11.643
+So you have more,
+
+131
+00:05:12.661 --> 00:05:15.210
+it's a spot fleet basically for EMR.
+
+132
+00:05:15.210 --> 00:05:17.520
+So that's how the best way to describe it.
+
+133
+00:05:17.520 --> 00:05:19.290
+So it's just two purchasing options.
+
+134
+00:05:19.290 --> 00:05:21.120
+The first one has auto-scaling,
+
+135
+00:05:21.120 --> 00:05:23.820
+the second one does not have auto-scaling for now,
+
+136
+00:05:23.820 --> 00:05:26.100
+but the idea is that on the left-hand side
+
+137
+00:05:26.100 --> 00:05:28.410
+you choose the instance type in advance.
+
+138
+00:05:28.410 --> 00:05:29.640
+And on the right-hand side,
+
+139
+00:05:29.640 --> 00:05:32.400
+you just specify a mix of on-demand and spot fleet
+
+140
+00:05:32.400 --> 00:05:35.310
+and a bunch of different instance types you can choose from.
+
+141
+00:05:35.310 --> 00:05:37.770
+And EMR will provision that cluster for you.
+
+142
+00:05:37.770 --> 00:05:39.990
+I don't think the exam will go into that level of details,
+
+143
+00:05:39.990 --> 00:05:42.540
+but it's good for you to know as a solution architect
+
+144
+00:05:42.540 --> 00:05:44.760
+that these two options are available.
+
+145
+00:05:44.760 --> 00:05:46.860
+Okay, so that's all you need to know for EMR.
+
+146
+00:05:46.860 --> 00:05:47.820
+I hope you like this lecture
+
+147
+00:05:47.820 --> 00:05:49.770
+and I will see you in the next lecture.
+

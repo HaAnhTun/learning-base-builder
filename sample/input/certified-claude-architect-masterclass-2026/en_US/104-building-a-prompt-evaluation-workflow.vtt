@@ -1,0 +1,302 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.679
+Welcome back. Eval workflows are how you turn prompt iteration from guesswork into measurable
+
+2
+00:00:05.679 --> 00:00:11.119
+engineering, and most teams skip them until something breaks in production. We'll cover
+
+3
+00:00:11.119 --> 00:00:17.760
+why manual spot checking falls apart at scale, how a structured eval loop works, the metrics
+
+4
+00:00:17.760 --> 00:00:23.200
+that actually matter, and how eval-driven iteration becomes a deployment gate. Let's jump in.
+
+5
+00:00:24.159 --> 00:00:30.159
+A handful of terms anchor this lesson. Prompt evaluation is the systematic process of testing
+
+6
+00:00:30.159 --> 00:00:36.240
+prompt variants against a labeled dataset to measure output quality, consistency, and regression
+
+7
+00:00:36.240 --> 00:00:42.000
+risk. It includes defining metrics, building test datasets, and running graded comparisons
+
+8
+00:00:42.000 --> 00:00:47.200
+before deploying changes. Regression testing is the practice of running the full eval suite
+
+9
+00:00:47.200 --> 00:00:53.040
+after a prompt change to detect whether cases that previously passed now fail. The goal is
+
+10
+00:00:53.119 --> 00:00:58.560
+to catch regressions before they reach production rather than discovering them from user reports.
+
+11
+00:00:58.560 --> 00:01:04.239
+An eval metric is a quantitative measure used to compare prompt versions, with common examples
+
+12
+00:01:04.239 --> 00:01:10.720
+being pass rate, regression rate, latency per call, and cost per eval run. These three concepts
+
+13
+00:01:10.720 --> 00:01:16.480
+together define the scaffolding that makes systematic evaluation possible. Manual spot
+
+14
+00:01:16.480 --> 00:01:21.760
+checking has a structural problem. It depends on the reviewer's intuition rather than consistent
+
+15
+00:01:21.760 --> 00:01:27.919
+criteria. When you review five or ten outputs and they look reasonable, that observation tells you
+
+16
+00:01:27.919 --> 00:01:33.599
+almost nothing about how the prompt performs across the full input space. Edge cases and
+
+17
+00:01:33.599 --> 00:01:39.440
+adversarial inputs are rarely included in informal reviews, which means the failures that matter most
+
+18
+00:01:39.440 --> 00:01:45.199
+in production are precisely the ones least likely to appear in spot checks. There is also no record
+
+19
+00:01:45.199 --> 00:01:50.720
+kept, so when a future prompt change introduces a regression, there is no documented baseline to
+
+20
+00:01:50.720 --> 00:01:57.839
+compare against. Systematic evaluation addresses all of these gaps by replacing subjective impression
+
+21
+00:01:57.839 --> 00:02:03.760
+with measurable, repeatable, documented results that travel with the prompt through every change cycle.
+
+22
+00:02:04.959 --> 00:02:10.479
+The contrast between ad hoc testing and a systematic eval workflow is essentially a contrast
+
+23
+00:02:10.479 --> 00:02:17.279
+between speed and reliability. Ad hoc spot checking is fast. You make a change, look at a few outputs,
+
+24
+00:02:17.279 --> 00:02:22.800
+and decide it looks better. The problem is that this approach produces no coverage of edge cases,
+
+25
+00:02:22.800 --> 00:02:27.119
+no regression detection, and no historical record to reference after the fact.
+
+26
+00:02:27.759 --> 00:02:34.080
+A systematic eval workflow is slower to set up but produces consistent documented evidence. You
+
+27
+00:02:34.080 --> 00:02:40.559
+have a data set, a run script, a grading step, and a comparison against a baseline. That evidence is
+
+28
+00:02:40.559 --> 00:02:45.759
+what makes a deploy decision defensible. The upfront investment in building the workflow
+
+29
+00:02:45.759 --> 00:02:51.440
+pays off every time you run it because each iteration adds to a record of measured improvements
+
+30
+00:02:51.440 --> 00:02:57.360
+rather than a sequence of impressions. The core eval loop has four steps that repeat on every
+
+31
+00:02:57.360 --> 00:03:03.759
+iteration. First, the data set. A curated set of inputs with known expected outputs or grading
+
+32
+00:03:03.759 --> 00:03:10.000
+criteria. Second, the run. Each input in the data set is sent through the current prompt and the
+
+33
+00:03:10.000 --> 00:03:16.240
+responses are collected. Third, the grade. Each response is scored against the expected output or
+
+34
+00:03:16.240 --> 00:03:23.199
+criteria producing a pass or fail result for every case. Fourth, the compare. The aggregated scores
+
+35
+00:03:23.199 --> 00:03:27.520
+for the new prompt version are measured against the baseline established by the prior version.
+
+36
+00:03:28.080 --> 00:03:33.600
+Each pass through this loop produces a documented result. That result either justifies promoting the
+
+37
+00:03:33.600 --> 00:03:39.119
+new version or sends you back to the change step. The loop is the mechanism that turns testing from
+
+38
+00:03:39.119 --> 00:03:45.679
+a one-time check into a continuous improvement process. Four metrics cover the majority of what
+
+39
+00:03:45.679 --> 00:03:51.839
+you need to evaluate a prompt change. Pass rate is the percentage of eval cases where the output
+
+40
+00:03:51.839 --> 00:03:57.759
+meets the grading criteria and is the primary indicator of overall prompt quality. Regression
+
+41
+00:03:57.759 --> 00:04:03.759
+rate is the share of cases that previously passed but now fail after the change. Any increase in
+
+42
+00:04:03.759 --> 00:04:09.759
+regression rate is a signal to investigate before proceeding. Latency is the average response time
+
+43
+00:04:09.759 --> 00:04:15.600
+per eval case which matters when a prompt change affects how the model processes the task in ways
+
+44
+00:04:15.600 --> 00:04:22.160
+that could slow output. Cost per eval is the total token spend divided by the number of cases which
+
+45
+00:04:22.160 --> 00:04:27.519
+tracks whether the prompt is staying within operational budget constraints. Together these
+
+46
+00:04:27.519 --> 00:04:34.239
+four metrics give you a complete picture of quality, stability, cost, and speed. Eval-driven
+
+47
+00:04:34.239 --> 00:04:39.440
+prompt iteration replaces guesswork with a structured four-step cycle. You make a change
+
+48
+00:04:39.440 --> 00:04:44.959
+to the prompt based on observed failures or new requirements. You run the full eval suite against
+
+49
+00:04:44.959 --> 00:04:50.239
+the updated prompt. You compare pass rate and regression rate against the prior version to
+
+50
+00:04:50.239 --> 00:04:55.760
+measure the net effect. You deploy only when the new version passes without introducing new
+
+51
+00:04:55.760 --> 00:05:01.760
+regressions. This cycle converts every deploy decision into a documented judgment backed by
+
+52
+00:05:01.760 --> 00:05:07.839
+measured evidence. The discipline here is in not skipping any step even for small changes that seem
+
+53
+00:05:07.839 --> 00:05:14.079
+obviously safe. Small changes to prompts can have non-obvious effects on cases that look unrelated
+
+54
+00:05:14.079 --> 00:05:20.959
+to the modification. The only way to catch that is to run the suite. Regression testing protects all
+
+55
+00:05:20.959 --> 00:05:25.760
+cases that currently work, not just the specific inputs related to the change you are making.
+
+56
+00:05:26.320 --> 00:05:32.559
+Every prompt change runs the full suite. A test case that newly fails after a change is a regression
+
+57
+00:05:32.559 --> 00:05:37.600
+regardless of whether fixing that case was the intent of the change. Regression rate tracks the
+
+58
+00:05:37.600 --> 00:05:43.200
+fraction of previously passing cases that now fail and that number needs to be zero or declining
+
+59
+00:05:43.200 --> 00:05:48.799
+before a change is promoted. A prompt modification that fixes the target failures but introduces
+
+60
+00:05:48.799 --> 00:05:55.279
+regressions elsewhere isn't a net improvement. It has traded one set of problems for another.
+
+61
+00:05:55.279 --> 00:05:59.600
+Catching regressions before deploy is always cheaper than finding them in production
+
+62
+00:05:59.600 --> 00:06:04.799
+because production regressions affect real users and require emergency fixes under pressure.
+
+63
+00:06:06.000 --> 00:06:11.119
+Knowing when to run evals is as important as knowing how to run them. The most important rule
+
+64
+00:06:11.119 --> 00:06:17.200
+is to run a full eval before every deployment. Any prompt change that touches production requires it
+
+65
+00:06:17.200 --> 00:06:21.519
+regardless of how small the change appears or how confident you are in the modification.
+
+66
+00:06:22.239 --> 00:06:27.279
+Evals should also run after dataset updates because adding new test cases changes what
+
+67
+00:06:27.279 --> 00:06:32.640
+the baseline metrics represent. Rerunning against both versions recalibrates the comparison.
+
+68
+00:06:33.200 --> 00:06:39.200
+Running evals on a regular schedule independent of any change cycle catches model level drift.
+
+69
+00:06:39.200 --> 00:06:44.079
+Models can shift in behavior across provider updates even when the prompt hasn't changed
+
+70
+00:06:44.079 --> 00:06:48.079
+and scheduled eval runs surface those shifts before they cause production problems.
+
+71
+00:06:49.200 --> 00:06:54.559
+Systematic evaluation turns every prompt change into a documented evidence-backed decision.
+
+72
+00:06:55.200 --> 00:07:03.519
+The core loop is dataset, run, grade, repair. Pass rate, regression rate, latency, and cost per eval
+
+73
+00:07:03.519 --> 00:07:09.760
+carry the comparison. Regression testing ensures fixes don't come at the cost of cases that were
+
+74
+00:07:09.760 --> 00:07:16.399
+already working. That's the eval workflow from dataset to comparison. Next up, generating test
+
+75
+00:07:16.399 --> 00:07:20.079
+datasets and using models to grade outputs. I'll see you there.
+

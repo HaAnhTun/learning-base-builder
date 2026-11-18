@@ -1,0 +1,1050 @@
+WEBVTT
+
+1
+00:00:00.690 --> 00:00:02.760
+<v Instructor>So let's talk about SQS.</v>
+
+2
+00:00:02.760 --> 00:00:05.040
+And at the core of SQS is a queue
+
+3
+00:00:05.040 --> 00:00:07.350
+because SQS is a simple queuing service.
+
+4
+00:00:07.350 --> 00:00:09.000
+So we have an SQS queue
+
+5
+00:00:09.000 --> 00:00:11.190
+and it's going to contain messages
+
+6
+00:00:11.190 --> 00:00:12.630
+and to contain messages
+
+7
+00:00:12.630 --> 00:00:16.080
+while something needs to send messages into our SQS queue
+
+8
+00:00:16.080 --> 00:00:18.060
+and whatever sends a message
+
+9
+00:00:18.060 --> 00:00:21.120
+into our SQS queue is called a producer.
+
+10
+00:00:21.120 --> 00:00:23.520
+So it's possible for us to have one producer,
+
+11
+00:00:23.520 --> 00:00:24.600
+but also have more.
+
+12
+00:00:24.600 --> 00:00:27.660
+You can have multiple producers sending many messages
+
+13
+00:00:27.660 --> 00:00:29.400
+into an SQS queue,
+
+14
+00:00:29.400 --> 00:00:31.140
+and the message could be whatever you want.
+
+15
+00:00:31.140 --> 00:00:33.690
+For example, it could be process this order
+
+16
+00:00:33.690 --> 00:00:35.190
+or process this video.
+
+17
+00:00:35.190 --> 00:00:38.400
+Whatever message you create goes into the queue.
+
+18
+00:00:38.400 --> 00:00:41.700
+Then something needs to process the messages from the queue
+
+19
+00:00:41.700 --> 00:00:42.930
+and receive them.
+
+20
+00:00:42.930 --> 00:00:44.640
+And it's called consumers.
+
+21
+00:00:44.640 --> 00:00:47.460
+So consumers will pull the messages from the queue.
+
+22
+00:00:47.460 --> 00:00:49.650
+So that means that they will ask the queue,
+
+23
+00:00:49.650 --> 00:00:51.000
+do you have any message for me?
+
+24
+00:00:51.000 --> 00:00:52.890
+And the queue says, yes, here it is.
+
+25
+00:00:52.890 --> 00:00:54.630
+And the consumer will pull these messages
+
+26
+00:00:54.630 --> 00:00:56.250
+and get some information.
+
+27
+00:00:56.250 --> 00:00:58.680
+And then with that message, it will process it
+
+28
+00:00:58.680 --> 00:01:00.660
+and then delete it back from the queue.
+
+29
+00:01:00.660 --> 00:01:03.180
+And you may have multiple consumers consuming messages
+
+30
+00:01:03.180 --> 00:01:04.680
+from an SQS queue.
+
+31
+00:01:04.680 --> 00:01:08.940
+So queuing service is here to be a buffer to decouple
+
+32
+00:01:08.940 --> 00:01:12.000
+between your producers and your consumers.
+
+33
+00:01:12.000 --> 00:01:14.160
+Now, SQS is a complicated service
+
+34
+00:01:14.160 --> 00:01:15.330
+and we'll see it in depth,
+
+35
+00:01:15.330 --> 00:01:18.690
+but the very first offering is called Amazon SQS
+
+36
+00:01:18.690 --> 00:01:20.460
+for standard queues.
+
+37
+00:01:20.460 --> 00:01:24.630
+And SQS, historically on AWS, it is the oldest offering.
+
+38
+00:01:24.630 --> 00:01:27.360
+It was one of the first services on AWS.
+
+39
+00:01:27.360 --> 00:01:28.530
+It's over 10 years old,
+
+40
+00:01:28.530 --> 00:01:31.680
+so it's quite, quite set in stone about how it works.
+
+41
+00:01:31.680 --> 00:01:33.060
+It's a fully managed service
+
+42
+00:01:33.060 --> 00:01:35.520
+and it will be used to decouple applications.
+
+43
+00:01:35.520 --> 00:01:39.330
+So anytime you see application decoupling in your exam,
+
+44
+00:01:39.330 --> 00:01:41.880
+think about Amazon SQS.
+
+45
+00:01:41.880 --> 00:01:44.743
+Now, why is SQS so special?
+
+46
+00:01:44.743 --> 00:01:47.400
+Well, we get an unlimited throughput.
+
+47
+00:01:47.400 --> 00:01:49.500
+That means you can send as many messages per second
+
+48
+00:01:49.500 --> 00:01:50.640
+as you want,
+
+49
+00:01:50.640 --> 00:01:53.700
+and the queue can have as many messages as you want as well.
+
+50
+00:01:53.700 --> 00:01:55.410
+So there's no limit on throughput
+
+51
+00:01:55.410 --> 00:01:58.740
+and no limit in the number of messages in the queue.
+
+52
+00:01:58.740 --> 00:02:00.930
+Now each message is short-lived.
+
+53
+00:02:00.930 --> 00:02:01.800
+What does that mean?
+
+54
+00:02:01.800 --> 00:02:03.330
+That means that by default,
+
+55
+00:02:03.330 --> 00:02:06.807
+the message will stay in the queue for four days.
+
+56
+00:02:06.807 --> 00:02:08.550
+And the maximum amount of time
+
+57
+00:02:08.550 --> 00:02:11.880
+that the message can be in a queue is 14 days.
+
+58
+00:02:11.880 --> 00:02:14.400
+That means that as soon as you send a message to a queue,
+
+59
+00:02:14.400 --> 00:02:16.680
+it has to be read by a consumer
+
+60
+00:02:16.680 --> 00:02:19.320
+and deleted from the queue after being processed
+
+61
+00:02:19.320 --> 00:02:21.450
+within that retention period.
+
+62
+00:02:21.450 --> 00:02:23.370
+Otherwise it will be lost.
+
+63
+00:02:23.370 --> 00:02:25.020
+Then we have low latency.
+
+64
+00:02:25.020 --> 00:02:27.990
+So SQS means that that means that
+
+65
+00:02:27.990 --> 00:02:30.360
+whenever you send a message or read a message from SQS,
+
+66
+00:02:30.360 --> 00:02:32.040
+you will get a response very quickly,
+
+67
+00:02:32.040 --> 00:02:34.770
+less than 10 milliseconds on publish and receive.
+
+68
+00:02:34.770 --> 00:02:37.050
+And the messages in SQS, they have to be small,
+
+69
+00:02:37.050 --> 00:02:40.350
+they have to be less than 1,024 kilobytes
+
+70
+00:02:40.350 --> 00:02:41.910
+per message is sent.
+
+71
+00:02:41.910 --> 00:02:43.860
+Now, SQS is a queuing service, as you can see,
+
+72
+00:02:43.860 --> 00:02:45.870
+high throughput, high volume and so on.
+
+73
+00:02:45.870 --> 00:02:49.470
+And so it is possible to have duplicates messages.
+
+74
+00:02:49.470 --> 00:02:50.790
+That means that, for example,
+
+75
+00:02:50.790 --> 00:02:53.280
+sometimes a message will be delivered twice.
+
+76
+00:02:53.280 --> 00:02:56.100
+And so this is why it's called at least once delivery.
+
+77
+00:02:56.100 --> 00:02:58.890
+And if you go ahead with writing an application,
+
+78
+00:02:58.890 --> 00:03:00.900
+you need to take that into account.
+
+79
+00:03:00.900 --> 00:03:03.720
+It can also have out of the order messages,
+
+80
+00:03:03.720 --> 00:03:06.480
+which means it's best effort ordering.
+
+81
+00:03:06.480 --> 00:03:09.660
+And we'll see there is another type of offering from SQS
+
+82
+00:03:09.660 --> 00:03:11.460
+that can deal with that limitation.
+
+83
+00:03:11.460 --> 00:03:13.770
+But we'll see this later on in this section.
+
+84
+00:03:13.770 --> 00:03:16.830
+So let's go back to our message producers.
+
+85
+00:03:16.830 --> 00:03:21.150
+So messages are sent into SQS by producers.
+
+86
+00:03:21.150 --> 00:03:23.220
+And how do they, how does it happen?
+
+87
+00:03:23.220 --> 00:03:25.590
+Well, the producers will send the messages to SQS
+
+88
+00:03:25.590 --> 00:03:28.560
+using an SDK, software development kits,
+
+89
+00:03:28.560 --> 00:03:31.170
+and the API to send a message to SQS
+
+90
+00:03:31.170 --> 00:03:34.080
+is called SendMessage, very simple.
+
+91
+00:03:34.080 --> 00:03:36.150
+Now, the message, it will be written,
+
+92
+00:03:36.150 --> 00:03:38.520
+it will be persisted into the SQS queue
+
+93
+00:03:38.520 --> 00:03:42.150
+until a consumer reads that message and deletes it,
+
+94
+00:03:42.150 --> 00:03:45.210
+which signifies that the message has been processed.
+
+95
+00:03:45.210 --> 00:03:46.380
+We know the retention.
+
+96
+00:03:46.380 --> 00:03:48.450
+And so what's the use case for producing messages?
+
+97
+00:03:48.450 --> 00:03:51.600
+For example, you want to process an order, for example,
+
+98
+00:03:51.600 --> 00:03:54.180
+packet and then ship it to the sender.
+
+99
+00:03:54.180 --> 00:03:56.040
+And so you wanna do this in your own time.
+
+100
+00:03:56.040 --> 00:03:58.770
+So you will send a message into the SQS queue
+
+101
+00:03:58.770 --> 00:04:01.740
+with maybe some information such as the order id,
+
+102
+00:04:01.740 --> 00:04:04.470
+the customer id, and any attributes you may want,
+
+103
+00:04:04.470 --> 00:04:06.090
+for example, the address and so on.
+
+104
+00:04:06.090 --> 00:04:08.490
+And then your consumer, that is an application you write,
+
+105
+00:04:08.490 --> 00:04:11.520
+will have to deal with that message itself.
+
+106
+00:04:11.520 --> 00:04:12.750
+So again, to confirm,
+
+107
+00:04:12.750 --> 00:04:16.590
+SQS standard held has unlimited throughputs.
+
+108
+00:04:16.590 --> 00:04:18.870
+So we've seen about producers, very simple.
+
+109
+00:04:18.870 --> 00:04:21.030
+Now let's look about consumers.
+
+110
+00:04:21.030 --> 00:04:23.280
+So consumers, they are applications
+
+111
+00:04:23.280 --> 00:04:25.410
+that you have to write with some code.
+
+112
+00:04:25.410 --> 00:04:29.190
+And these applications can be running on EC2 instances,
+
+113
+00:04:29.190 --> 00:04:31.770
+so your virtual servers on AWS,
+
+114
+00:04:31.770 --> 00:04:33.210
+but also they can be running
+
+115
+00:04:33.210 --> 00:04:36.630
+on your own on-premises servers if you wanted to,
+
+116
+00:04:36.630 --> 00:04:38.250
+or we haven't seen it yet.
+
+117
+00:04:38.250 --> 00:04:41.790
+But they can also be running on Lambda functions
+
+118
+00:04:41.790 --> 00:04:42.840
+on AWS Lambda.
+
+119
+00:04:42.840 --> 00:04:43.673
+We'll see in this course
+
+120
+00:04:43.673 --> 00:04:46.470
+it is a serverless compute type of service.
+
+121
+00:04:46.470 --> 00:04:48.810
+Well, this means that you can just read messages
+
+122
+00:04:48.810 --> 00:04:49.920
+directly from Lambda as well.
+
+123
+00:04:49.920 --> 00:04:51.360
+We'll see this later on this course.
+
+124
+00:04:51.360 --> 00:04:52.290
+Do not worry.
+
+125
+00:04:52.290 --> 00:04:56.970
+So going back to our simple use case about EC2 instances,
+
+126
+00:04:56.970 --> 00:04:59.460
+our queue has a consumer
+
+127
+00:04:59.460 --> 00:05:03.057
+and the consumer pulls for SQS for messages.
+
+128
+00:05:03.057 --> 00:05:05.550
+And that means that the consumer will ask the queue,
+
+129
+00:05:05.550 --> 00:05:07.650
+do you have messages from me?
+
+130
+00:05:07.650 --> 00:05:10.890
+And the consumer may receive up to 10 messages at a time.
+
+131
+00:05:10.890 --> 00:05:13.740
+So if there are messages in the SQS queue,
+
+132
+00:05:13.740 --> 00:05:15.210
+it will receive a valid response saying,
+
+133
+00:05:15.210 --> 00:05:18.390
+here are the messages that are waiting for you.
+
+134
+00:05:18.390 --> 00:05:20.400
+Then the consumer, it's your code,
+
+135
+00:05:20.400 --> 00:05:22.890
+has a responsibility to process these messages.
+
+136
+00:05:22.890 --> 00:05:26.370
+For example, insert some orders into an RDS database.
+
+137
+00:05:26.370 --> 00:05:28.920
+So you will go ahead and for each order,
+
+138
+00:05:28.920 --> 00:05:31.170
+you will insert it into your RDS database,
+
+139
+00:05:31.170 --> 00:05:33.630
+something that you have to write obviously with your code.
+
+140
+00:05:33.630 --> 00:05:36.480
+And then because these messages have been processed,
+
+141
+00:05:36.480 --> 00:05:37.740
+because they have been received
+
+142
+00:05:37.740 --> 00:05:40.590
+and inserted into an Amazon RDS database,
+
+143
+00:05:40.590 --> 00:05:43.440
+your consumer will go ahead and delete these messages
+
+144
+00:05:43.440 --> 00:05:46.590
+from the queue using the delete message API.
+
+145
+00:05:46.590 --> 00:05:49.260
+And this will guarantee that no other consumer
+
+146
+00:05:49.260 --> 00:05:50.880
+will be able to see these messages,
+
+147
+00:05:50.880 --> 00:05:54.243
+and therefore the message processing is complete.
+
+148
+00:05:55.140 --> 00:05:57.090
+So now we can scale this up.
+
+149
+00:05:57.090 --> 00:05:59.250
+We can have multiple consumers at a time.
+
+150
+00:05:59.250 --> 00:06:01.533
+So SQS queue can have multiple consumers
+
+151
+00:06:01.533 --> 00:06:05.550
+that will receive and process these messages in parallel.
+
+152
+00:06:05.550 --> 00:06:07.950
+So here we are three on EC2 instances.
+
+153
+00:06:07.950 --> 00:06:10.860
+And so each consumer will receive a different set
+
+154
+00:06:10.860 --> 00:06:13.830
+of messages by calling the poll function.
+
+155
+00:06:13.830 --> 00:06:16.980
+And so if somehow a message is not processed fast enough
+
+156
+00:06:16.980 --> 00:06:19.920
+by consumer, it will be received by other consumers.
+
+157
+00:06:19.920 --> 00:06:23.340
+And so this is why we have at least once delivery,
+
+158
+00:06:23.340 --> 00:06:26.760
+and this is also why we have best effort message ordering.
+
+159
+00:06:26.760 --> 00:06:28.620
+Now, as I said, when the consumers are done
+
+160
+00:06:28.620 --> 00:06:30.300
+with the messages, they will have to delete them,
+
+161
+00:06:30.300 --> 00:06:33.330
+otherwise other consumers will see these messages.
+
+162
+00:06:33.330 --> 00:06:35.580
+And so what that means is that with SQS gueues,
+
+163
+00:06:35.580 --> 00:06:38.353
+if we need to increase the throughputs
+
+164
+00:06:38.353 --> 00:06:40.260
+because we have more messages,
+
+165
+00:06:40.260 --> 00:06:43.740
+then we can add consumers and do horizontal scaling
+
+166
+00:06:43.740 --> 00:06:46.620
+to improve the throughput of processing.
+
+167
+00:06:46.620 --> 00:06:49.080
+And so if you remember what we said,
+
+168
+00:06:49.080 --> 00:06:51.810
+this is a perfect use case for using SQS
+
+169
+00:06:51.810 --> 00:06:54.120
+with your auto scaling groups or ASG.
+
+170
+00:06:54.120 --> 00:06:55.440
+So what does that mean?
+
+171
+00:06:55.440 --> 00:06:58.200
+Well, that means that your consumers will be running
+
+172
+00:06:58.200 --> 00:07:01.440
+on EC2 instances inside of an auto scaling group,
+
+173
+00:07:01.440 --> 00:07:04.800
+and they will be pulling for messages from the SQS queue.
+
+174
+00:07:04.800 --> 00:07:07.350
+But now your auto scaling group has to be scaling
+
+175
+00:07:07.350 --> 00:07:09.090
+on some kind of metric.
+
+176
+00:07:09.090 --> 00:07:12.510
+And a metric that is available to us is the queue length.
+
+177
+00:07:12.510 --> 00:07:15.060
+It's called approximate number of messages.
+
+178
+00:07:15.060 --> 00:07:16.260
+It is a CloudWatch metric
+
+179
+00:07:16.260 --> 00:07:18.900
+that's available on any SQS queue.
+
+180
+00:07:18.900 --> 00:07:21.570
+And we could set up an alarm such as whenever
+
+181
+00:07:21.570 --> 00:07:25.051
+the queue length go over a certain level,
+
+182
+00:07:25.051 --> 00:07:27.570
+then please set up a CloudWatch alarm.
+
+183
+00:07:27.570 --> 00:07:30.960
+And this alarm should increase the capacity
+
+184
+00:07:30.960 --> 00:07:34.020
+of my auto scaling group by X amount.
+
+185
+00:07:34.020 --> 00:07:36.420
+And this will guarantee that the more messages
+
+186
+00:07:36.420 --> 00:07:37.500
+you have in your SQS queue,
+
+187
+00:07:37.500 --> 00:07:40.500
+maybe because there's a surge of orders on your websites,
+
+188
+00:07:40.500 --> 00:07:42.930
+the more easy two instances will be provided
+
+189
+00:07:42.930 --> 00:07:44.400
+by your auto scaling group
+
+190
+00:07:44.400 --> 00:07:46.800
+and you will accordingly process these messages
+
+191
+00:07:46.800 --> 00:07:48.450
+at a higher throughput.
+
+192
+00:07:48.450 --> 00:07:50.160
+So this is a very common integration
+
+193
+00:07:50.160 --> 00:07:52.440
+that you will see in the exam.
+
+194
+00:07:52.440 --> 00:07:53.940
+Now, SQS, again,
+
+195
+00:07:53.940 --> 00:07:57.750
+the use case is to decouple between applications.
+
+196
+00:07:57.750 --> 00:07:59.310
+So application tiers.
+
+197
+00:07:59.310 --> 00:08:01.950
+So for example, let's take an example of an application
+
+198
+00:08:01.950 --> 00:08:03.780
+that processes videos.
+
+199
+00:08:03.780 --> 00:08:07.260
+We could have just one big application that call
+
+200
+00:08:07.260 --> 00:08:09.480
+that's called the front end that will take the request
+
+201
+00:08:09.480 --> 00:08:11.640
+and whenever a video needs to be processed,
+
+202
+00:08:11.640 --> 00:08:12.630
+it will do the processing
+
+203
+00:08:12.630 --> 00:08:15.090
+and then insert that into an S3 buckets.
+
+204
+00:08:15.090 --> 00:08:17.190
+But the problem is that processing may be very,
+
+205
+00:08:17.190 --> 00:08:20.940
+very long to do and it may just slow down your websites
+
+206
+00:08:20.940 --> 00:08:23.610
+if you do this in the front end tier.
+
+207
+00:08:23.610 --> 00:08:25.920
+So instead, you can decouple your application tier
+
+208
+00:08:25.920 --> 00:08:27.390
+and say, wait a minute,
+
+209
+00:08:27.390 --> 00:08:29.580
+the request of processing a file
+
+210
+00:08:29.580 --> 00:08:31.380
+and the actual processing of a file
+
+211
+00:08:31.380 --> 00:08:33.480
+can happen in two different applications.
+
+212
+00:08:33.480 --> 00:08:36.690
+And therefore whenever you take a request to process a file,
+
+213
+00:08:36.690 --> 00:08:39.900
+you will send a message into an SQS queue.
+
+214
+00:08:39.900 --> 00:08:42.480
+Now when you do the request to process
+
+215
+00:08:42.480 --> 00:08:44.490
+that file will be in the SQS queue,
+
+216
+00:08:44.490 --> 00:08:47.370
+and you can create a second processing tier
+
+217
+00:08:47.370 --> 00:08:49.410
+called the backend processing application
+
+218
+00:08:49.410 --> 00:08:51.510
+that will be in its own auto scaling group
+
+219
+00:08:51.510 --> 00:08:54.450
+to receive these messages, process these videos,
+
+220
+00:08:54.450 --> 00:08:57.030
+and insert them into industry buckets.
+
+221
+00:08:57.030 --> 00:08:59.280
+So as we can see here with this architecture,
+
+222
+00:08:59.280 --> 00:09:01.860
+we can scale the front end accordingly
+
+223
+00:09:01.860 --> 00:09:04.260
+and we can scale the backend accordingly as well,
+
+224
+00:09:04.260 --> 00:09:05.670
+but independently.
+
+225
+00:09:05.670 --> 00:09:08.700
+And because the SQS queue has unlimited throughput
+
+226
+00:09:08.700 --> 00:09:10.740
+and it has unlimited number of messages
+
+227
+00:09:10.740 --> 00:09:13.590
+in terms of the queue, then you are really safe.
+
+228
+00:09:13.590 --> 00:09:17.550
+And this is a robust and scalable type of architecture.
+
+229
+00:09:17.550 --> 00:09:19.290
+And also for your front end,
+
+230
+00:09:19.290 --> 00:09:22.290
+you can use the optimal type of EC2 instances
+
+231
+00:09:22.290 --> 00:09:24.780
+or architecture for your front end and for the backend,
+
+232
+00:09:24.780 --> 00:09:26.370
+maybe if you're doing some video processing,
+
+233
+00:09:26.370 --> 00:09:30.150
+you can use some EC2 instances that have a GPU,
+
+234
+00:09:30.150 --> 00:09:32.310
+a graphical processing unit because you know
+
+235
+00:09:32.310 --> 00:09:34.170
+that these type of instances will be optimal
+
+236
+00:09:34.170 --> 00:09:35.760
+for doing this kind of workload.
+
+237
+00:09:35.760 --> 00:09:37.950
+So this is the kind of architecture
+
+238
+00:09:37.950 --> 00:09:39.090
+that will come up in the exam
+
+239
+00:09:39.090 --> 00:09:40.200
+and that you're expected to know.
+
+240
+00:09:40.200 --> 00:09:41.220
+And this is an amazing
+
+241
+00:09:41.220 --> 00:09:44.370
+and tremendous use case for SQS queues.
+
+242
+00:09:44.370 --> 00:09:46.230
+Finally, SQS security.
+
+243
+00:09:46.230 --> 00:09:48.870
+So we have encryption in flight by sending
+
+244
+00:09:48.870 --> 00:09:51.570
+and producing messages using the HTTPS API.
+
+245
+00:09:51.570 --> 00:09:54.180
+We could add at-rest encryption using KMS keys.
+
+246
+00:09:54.180 --> 00:09:56.700
+And if we wanted to, we can do client side encryption,
+
+247
+00:09:56.700 --> 00:09:58.440
+but that means that the client has to perform
+
+248
+00:09:58.440 --> 00:10:00.210
+the encryption and the decryption itself.
+
+249
+00:10:00.210 --> 00:10:03.510
+It's not something that's supported by SQS out of the box.
+
+250
+00:10:03.510 --> 00:10:04.800
+For access controls,
+
+251
+00:10:04.800 --> 00:10:07.530
+IAM policies are going to be able to regulate access
+
+252
+00:10:07.530 --> 00:10:12.060
+to the SQS API, but we also have SQS access policies,
+
+253
+00:10:12.060 --> 00:10:14.430
+which are similar to S3 bucket policies,
+
+254
+00:10:14.430 --> 00:10:15.840
+and they're very helpful when you want
+
+255
+00:10:15.840 --> 00:10:18.540
+to do cross account access to SQS queue
+
+256
+00:10:18.540 --> 00:10:21.180
+or when you want to allow other services such as SNS
+
+257
+00:10:21.180 --> 00:10:22.350
+that we'll see very soon,
+
+258
+00:10:22.350 --> 00:10:25.140
+or Amazon S3 to write to an SQS queue,
+
+259
+00:10:25.140 --> 00:10:27.240
+for example, with S3 events.
+
+260
+00:10:27.240 --> 00:10:29.100
+So that's it for SQS for an overview.
+
+261
+00:10:29.100 --> 00:10:29.933
+I hope you liked it,
+
+262
+00:10:29.933 --> 00:10:32.730
+and I will see you in the next lecture for some practice.
+

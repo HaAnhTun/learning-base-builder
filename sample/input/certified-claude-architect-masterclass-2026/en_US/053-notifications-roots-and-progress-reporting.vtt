@@ -1,0 +1,258 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.599
+If you're building MCP servers that run in production, log notifications, progress notifications,
+
+2
+00:00:05.599 --> 00:00:12.399
+and routes are the three features that matter most. They let servers communicate status during
+
+3
+00:00:12.399 --> 00:00:18.239
+long-running operations and give servers controlled, scoped access to the client file system
+
+4
+00:00:18.239 --> 00:00:25.360
+without opening up a security loophole. Let's go through each one now. A slow tool call and a hung
+
+5
+00:00:25.360 --> 00:00:31.280
+tool call look exactly the same from the client side, and that ambiguity is what these features
+
+6
+00:00:31.280 --> 00:00:38.240
+fix. A progress notification is an MCP notification a server sends during a long-running tool call
+
+7
+00:00:38.240 --> 00:00:44.959
+to report incremental status. It carries a numeric progress value and an optional total,
+
+8
+00:00:44.959 --> 00:00:50.959
+so the client can compute a percentage for the user. A log notification carries diagnostic text
+
+9
+00:00:50.959 --> 00:00:58.720
+with a severity level, such as info, warning, or error, plus an optional logger name. And routes
+
+10
+00:00:58.720 --> 00:01:04.239
+are the list of file system paths, or URIs the client advises a server to work within.
+
+11
+00:01:04.800 --> 00:01:10.480
+Routes communicate intended scope, but they are advisory because the protocol doesn't enforce them.
+
+12
+00:01:11.599 --> 00:01:17.760
+The standard MCP tool call model is synchronous. The client sends a request and waits for the result.
+
+13
+00:01:17.760 --> 00:01:23.199
+For tools that finish in milliseconds, that's completely fine, but for tools that process large
+
+14
+00:01:23.199 --> 00:01:30.000
+files, run database queries, or make external API calls, the client can be waiting for seconds or
+
+15
+00:01:30.000 --> 00:01:36.400
+even minutes with no feedback. That silence creates a bad user experience and makes it hard to diagnose
+
+16
+00:01:36.400 --> 00:01:43.199
+problems when something goes wrong. Notifications break that silence. The server sends status updates
+
+17
+00:01:43.199 --> 00:01:48.959
+as the operation progresses, and the client can display them, log them, or surface them to the user
+
+18
+00:01:48.959 --> 00:01:56.000
+in real time. Think of notifications as the MCP equivalent of a progress bar. They transform an
+
+19
+00:01:56.000 --> 00:02:02.239
+opaque weight into an observable process. Log notifications are the simpler of the two
+
+20
+00:02:02.239 --> 00:02:06.959
+notification types. They carry a severity level, a logger name, and a message string.
+
+21
+00:02:07.519 --> 00:02:14.479
+These are the eight standard size log severity levels. Debug, info, notice, warning, error,
+
+22
+00:02:14.479 --> 00:02:20.800
+critical, alert, and emergency, in increasing order of urgency. The server sends these whenever it
+
+23
+00:02:20.800 --> 00:02:26.559
+wants to surface diagnostic information to the client. The client can display them in a log pane,
+
+24
+00:02:26.559 --> 00:02:32.800
+filter by severity threshold, store them for later review, or ignore them entirely. Log notifications
+
+25
+00:02:32.800 --> 00:02:38.639
+are fire and forget. They don't expect a response, so a server can omit them during any operation
+
+26
+00:02:38.639 --> 00:02:44.800
+without blocking. You call a single context method and the MCP framework handles the rest,
+
+27
+00:02:44.800 --> 00:02:50.080
+especially valuable during development when you want step-by-step visibility into what a tool is
+
+28
+00:02:50.080 --> 00:02:56.720
+doing. Progress notifications have a slightly more structured format because they're designed to drive
+
+29
+00:02:56.720 --> 00:03:03.279
+UI elements like progress bars. Every progress notification includes a progress token, an opaque
+
+30
+00:03:03.279 --> 00:03:09.520
+identifier from the original tool call request. That token ties the update to its parent operation,
+
+31
+00:03:09.520 --> 00:03:15.039
+so the client knows which tool call is reporting. The progress field is a numeric value indicating
+
+32
+00:03:15.039 --> 00:03:20.960
+how far along the operation is. The total field is optional. Include it, and clients can divide
+
+33
+00:03:20.960 --> 00:03:26.320
+progress by total to get a percentage. Leave it out, and the client shows an indeterminate
+
+34
+00:03:26.320 --> 00:03:31.759
+indicator. The convention is to call report progress at meaningful checkpoints after each
+
+35
+00:03:31.759 --> 00:03:37.759
+major step completes, not on every minor iteration. That way the client always has a current view
+
+36
+00:03:37.759 --> 00:03:44.559
+without being flooded with updates. Wiring progress notifications into a tool is straightforward.
+
+37
+00:03:44.559 --> 00:03:49.600
+When the client sends a tool call request, it can include a progress token in the meta field.
+
+38
+00:03:50.160 --> 00:03:56.639
+Inside your handler, you check for that token. If it's present, you call CTX report progress at
+
+39
+00:03:56.639 --> 00:04:02.880
+each meaningful step. The MCP server framework serializes the notification and sends it to the
+
+40
+00:04:02.880 --> 00:04:09.600
+client automatically. You don't manage the transport yourself. One important detail. If the client
+
+41
+00:04:09.600 --> 00:04:14.960
+didn't include a progress token, it means the client doesn't want progress updates for this call.
+
+42
+00:04:15.600 --> 00:04:21.760
+Skip the report progress calls. Clients that don't support progress notifications won't send
+
+43
+00:04:21.760 --> 00:04:29.359
+tokens, and your tool degrades gracefully with no special handling required. It's worth comparing
+
+44
+00:04:29.359 --> 00:04:34.239
+log and progress notifications directly because developers sometimes reach for the wrong one.
+
+45
+00:04:34.799 --> 00:04:40.640
+Log notifications are for diagnostic text, meaning messages that tell you what the server is doing
+
+46
+00:04:40.640 --> 00:04:45.600
+and whether it's healthy. They're tagged with severity so they can be filtered and stored.
+
+47
+00:04:46.160 --> 00:04:51.040
+Progress notifications are for numeric status tied to a specific operation.
+
+48
+00:04:51.040 --> 00:04:55.839
+They're designed to drive a progress indicator in the user interface. You wouldn't use a log
+
+49
+00:04:55.839 --> 00:05:00.799
+notification to update a progress bar, and you wouldn't use a progress notification to surface
+
+50
+00:05:00.799 --> 00:05:07.600
+an error message. In a production server, you'll typically use both log notifications for observability
+
+51
+00:05:07.600 --> 00:05:12.559
+and debugging. Progress notifications for user-facing feedback during long operations.
+
+52
+00:05:13.760 --> 00:05:19.440
+Roots are how MCP communicates file system scope, and here's what people get backwards. It's the
+
+53
+00:05:19.440 --> 00:05:25.600
+client, not the server, that declares the root's capability during initialization. The server then
+
+54
+00:05:25.600 --> 00:05:33.760
+requests the list by calling roots slash list, and each root is a URI. Those roots are advisory.
+
+55
+00:05:33.760 --> 00:05:39.839
+They tell a well-behaved server where to confine itself, but the protocol never stops one from
+
+56
+00:05:39.839 --> 00:05:45.040
+reaching outside. That matters most when servers come from different vendors, and you don't want
+
+57
+00:05:45.040 --> 00:05:50.880
+a third-party tool reading files beyond its expected scope. The protection has to be layered
+
+58
+00:05:50.880 --> 00:05:56.559
+underneath through restricted operating system permissions, a sandbox around the server, or the
+
+59
+00:05:56.559 --> 00:06:03.119
+client validating paths before it acts. Roots make the intended scope explicit and auditable.
+
+60
+00:06:03.119 --> 00:06:10.399
+The enforcement is your job. When a long-running tool goes quiet, what the user actually sees
+
+61
+00:06:10.399 --> 00:06:16.559
+is a client that looks hung up, and what you see in triage is nothing at all. That's the gap these
+
+62
+00:06:16.559 --> 00:06:24.160
+features close. One carrying diagnostic out, and one carrying progress back. Roots are the odd one
+
+63
+00:06:24.160 --> 00:06:30.559
+out. They tell a server where to stay, but they don't enforce it, so the real boundary still lives
+
+64
+00:06:30.559 --> 00:06:35.679
+in your permissions file. That closes out this lesson. I'll see you in the next one.
+

@@ -1,0 +1,466 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.800
+Structured outputs sound like a blank check, ask for JSON and always get valid JSON.
+
+2
+00:00:05.800 --> 00:00:11.300
+But the guarantee only holds when your schema fits a supported subset.
+
+3
+00:00:11.300 --> 00:00:14.800
+And a few constraints you write might never reach it at all.
+
+4
+00:00:14.800 --> 00:00:21.399
+This lesson maps what works, what doesn't, and where the promise bends. Let's dig in.
+
+5
+00:00:21.399 --> 00:00:24.500
+Structured outputs makes a strong promise.
+
+6
+00:00:24.500 --> 00:00:26.500
+And that promise has an edge to it.
+
+7
+00:00:26.500 --> 00:00:29.299
+Everything rests on the enforceable subset.
+
+8
+00:00:29.299 --> 00:00:34.799
+The slice of JSON's schema, the grammar engine can actually compile and guarantee
+
+9
+00:00:34.799 --> 00:00:37.799
+during generation, through constrained decoding.
+
+10
+00:00:37.799 --> 00:00:42.799
+Write a keyword outside that subset and the raw API returns a 400 error,
+
+11
+00:00:42.799 --> 00:00:45.799
+but the official SDK transforms it for you.
+
+12
+00:00:45.799 --> 00:00:49.799
+It strips the keyword, folds its intent into the field's description,
+
+13
+00:00:49.799 --> 00:00:53.799
+and validates the final response against your original full schema.
+
+14
+00:00:53.799 --> 00:00:55.799
+Then there are the guarantee gaps.
+
+15
+00:00:55.799 --> 00:01:01.299
+Two situations break the schema promise entirely, and both are expected behavior.
+
+16
+00:01:01.299 --> 00:01:03.799
+Not bugs you should retry blindly.
+
+17
+00:01:03.799 --> 00:01:07.800
+Everything else in this lesson hangs off those pieces.
+
+18
+00:01:07.800 --> 00:01:10.800
+Let's start with the good news, the supported typeset.
+
+19
+00:01:10.800 --> 00:01:13.300
+All of the standard JSON types are here.
+
+20
+00:01:13.300 --> 00:01:18.300
+You've got the structural types, object and array, which let you nest and group.
+
+21
+00:01:18.300 --> 00:01:23.300
+You've got the scalar types, string, integer, number, boolean, and null.
+
+22
+00:01:23.300 --> 00:01:29.800
+And you've got enum and const, which pin a field to a fixed set of allowed values or a single constant.
+
+23
+00:01:29.800 --> 00:01:33.800
+That combination covers most real extraction and classification work.
+
+24
+00:01:33.800 --> 00:01:37.800
+If you're pulling fields out of a document or sorting something into categories,
+
+25
+00:01:37.800 --> 00:01:40.800
+these types alone usually carry the whole schema.
+
+26
+00:01:40.800 --> 00:01:42.800
+So the foundation is solid.
+
+27
+00:01:42.800 --> 00:01:47.800
+Where it gets interesting is the layer above the basic types, composition.
+
+28
+00:01:47.800 --> 00:01:52.300
+Composition is how you build richer shapes, and there are a few pieces to know.
+
+29
+00:01:52.300 --> 00:01:55.800
+Any of lets the model pick one branch from several.
+
+30
+00:01:55.800 --> 00:01:59.800
+That's how you express a union, where a field could be one shape or another.
+
+31
+00:01:59.800 --> 00:02:03.800
+All of combines constraints together, but watch the catch.
+
+32
+00:02:03.800 --> 00:02:06.800
+All of paired with a reference isn't supported.
+
+33
+00:02:06.800 --> 00:02:08.800
+So don't lean on that pattern.
+
+34
+00:02:08.800 --> 00:02:10.800
+Then you've got references.
+
+35
+00:02:10.800 --> 00:02:17.881
+Internal ones, using $ref and $defs, let you define a shape once and reuse it across the schema,
+
+36
+00:02:17.881 --> 00:02:19.726
+which keeps things clean.
+
+37
+00:02:19.800 --> 00:02:25.300
+But external references, the kind that point at a remote URL, are rejected outright.
+
+38
+00:02:25.300 --> 00:02:28.300
+So compose freely inside your own document.
+
+39
+00:02:28.300 --> 00:02:31.300
+Just keep every reference local.
+
+40
+00:02:31.300 --> 00:02:36.300
+Two smaller features round out what's supported, and both are narrow but genuinely useful.
+
+41
+00:02:36.300 --> 00:02:38.300
+First, string formats.
+
+42
+00:02:38.300 --> 00:02:45.300
+You can constrain a string to a shape like DateTime, PlainDate, Email, a URI, or a UUID.
+
+43
+00:02:45.300 --> 00:02:50.300
+That's handy when you need a field to look like a real timestamp or identifier.
+
+44
+00:02:50.300 --> 00:02:52.300
+Second, ArrayMinItems.
+
+45
+00:02:52.300 --> 00:02:59.300
+You can require an array to be non-empty, but only barely, because the only supported values are 0 and 1.
+
+46
+00:02:59.300 --> 00:03:01.300
+You can't say, give me at least 5.
+
+47
+00:03:01.300 --> 00:03:04.300
+And RegX is supported at a basic level.
+
+48
+00:03:04.300 --> 00:03:07.800
+Character classes, groups, and simple quantifiers.
+
+49
+00:03:07.800 --> 00:03:14.411
+Anything richer than these falls outside the compiled grammar, which brings us to the full picture
+
+50
+00:03:14.411 --> 00:03:16.232
+of enforced versus ignored.
+
+51
+00:03:16.300 --> 00:03:20.300
+Here's the line that trips people up most, so let's draw it clearly.
+
+52
+00:03:20.300 --> 00:03:25.300
+On the grammar-enforceable side, constrained decoding guarantees what the model can emit.
+
+53
+00:03:25.300 --> 00:03:33.689
+That's your types, enum, const, anyof, allof, internal references, string formats, minItems of 0 or
+
+54
+00:03:33.689 --> 00:03:35.215
+1, and basic RegX.
+
+55
+00:03:35.300 --> 00:03:38.300
+All of those really constrain generation.
+
+56
+00:03:38.300 --> 00:03:40.300
+Everything else is the other bucket.
+
+57
+00:03:40.300 --> 00:03:44.300
+Numeric bounds, minimum, maximum, and multiple of.
+
+58
+00:03:44.300 --> 00:03:48.300
+String length, minLength, and maxLength. MaxItems.
+
+59
+00:03:48.300 --> 00:03:51.300
+And additional properties, unless it's set to false.
+
+60
+00:03:51.300 --> 00:03:55.300
+Send any of these to the raw API, and you get a 400 error.
+
+61
+00:03:55.300 --> 00:03:57.800
+The official SDK handles it instead.
+
+62
+00:03:57.800 --> 00:04:04.466
+It strips the keyword, folds its intent into the field description, and validates the final response
+
+63
+00:04:04.466 --> 00:04:06.733
+against your original full schema.
+
+64
+00:04:06.800 --> 00:04:10.800
+A few more constructs fall outside the grammar the same way.
+
+65
+00:04:10.800 --> 00:04:16.799
+Recursive schemas, the kind that reference themselves to describe a tree or a nested comment thread.
+
+66
+00:04:16.799 --> 00:04:21.799
+External references, pointing at a remote URL instead of a local definition.
+
+67
+00:04:21.799 --> 00:04:28.799
+And complex RegX features, back references, lookAhead and lookBehind, and word boundaries.
+
+68
+00:04:28.799 --> 00:04:32.799
+Send any of these to the raw API, and you get a 400 error.
+
+69
+00:04:32.799 --> 00:04:35.799
+Exactly like the numeric and length keywords.
+
+70
+00:04:35.799 --> 00:04:39.799
+The official SDK transforms them for you instead.
+
+71
+00:04:39.799 --> 00:04:42.799
+But the practical move is to design them out from the start.
+
+72
+00:04:42.799 --> 00:04:45.799
+Flatten a recursive structure into a bounded one.
+
+73
+00:04:45.799 --> 00:04:48.799
+Inline your references, and keep patterns simple.
+
+74
+00:04:48.799 --> 00:04:53.799
+That gives you a clean grammar, rather than leaning on the transform to bail you out.
+
+75
+00:04:53.799 --> 00:04:56.799
+Next, the hard numeric limits.
+
+76
+00:04:56.799 --> 00:05:00.799
+And these are worth memorizing, because they're easy to hit at scale.
+
+77
+00:05:00.799 --> 00:05:06.799
+First, at most, 20 tools can carry strict mode in a single request.
+
+78
+00:05:06.799 --> 00:05:09.799
+Non-strict tools don't count against that.
+
+79
+00:05:09.799 --> 00:05:11.799
+Second, optional parameters.
+
+80
+00:05:11.799 --> 00:05:19.029
+Across every strict schema and structured output in the request, you get a combined budget of just
+
+81
+00:05:19.029 --> 00:05:20.726
+24 optional parameters.
+
+82
+00:05:20.799 --> 00:05:26.799
+That's a shared pool, so a handful of tools with 6 optional fields apiece already maxes it out.
+
+83
+00:05:26.799 --> 00:05:29.799
+Third, union-typed parameters.
+
+84
+00:05:29.799 --> 00:05:36.799
+Anything typed through any of, or a type array, like string or null, is capped at 16 total.
+
+85
+00:05:36.799 --> 00:05:43.080
+The thing to notice is that these are request-wide budgets, not per tool, so complexity adds up
+
+86
+00:05:43.080 --> 00:05:44.733
+faster than you'd expect.
+
+87
+00:05:44.799 --> 00:05:48.799
+You met these two guarantee gaps in the structured outputs lesson.
+
+88
+00:05:48.799 --> 00:05:50.799
+Here is what each one actually returns.
+
+89
+00:05:50.799 --> 00:05:53.799
+The first is a refusal.
+
+90
+00:05:53.799 --> 00:06:00.799
+If the request triggers a safety response, the model returns a refusal message, and safety wins over the schema.
+
+91
+00:06:00.799 --> 00:06:07.799
+You'll see a stop reason of refusal, a normal 200 status, and build tokens, but the body won't match your shape.
+
+92
+00:06:07.799 --> 00:06:10.799
+The second is a max-tokens cutoff.
+
+93
+00:06:10.799 --> 00:06:14.799
+If generation hits the token ceiling, the output truncates.
+
+94
+00:06:14.799 --> 00:06:16.799
+Don't assume it's still valid JSON.
+
+95
+00:06:16.799 --> 00:06:22.735
+A truncated response can be incomplete and can fail to parse, because the closing braces and
+
+96
+00:06:22.735 --> 00:06:24.735
+brackets may never get omitted.
+
+97
+00:06:24.799 --> 00:06:29.799
+The fix is to check for a max-tokens stop reason and retry with a higher limit.
+
+98
+00:06:29.799 --> 00:06:35.799
+In both cases, the first step is the same, check the stop reason before you trust the payload.
+
+99
+00:06:35.799 --> 00:06:39.799
+Last piece, and it's about performance, not correctness.
+
+100
+00:06:39.799 --> 00:06:43.799
+Your schema doesn't run as is, it compiles into a grammar first.
+
+101
+00:06:43.799 --> 00:06:46.799
+That compile has real-timing behavior worth knowing.
+
+102
+00:06:46.799 --> 00:06:53.799
+The very first request against a brand new schema pays a one-time compile latency, so that call feels slower.
+
+103
+00:06:53.799 --> 00:07:01.799
+After that, the compiled grammar is cached for 24 hours from its last use, and repeat requests are much faster.
+
+104
+00:07:01.799 --> 00:07:03.799
+Now, what busts the cache?
+
+105
+00:07:03.799 --> 00:07:09.799
+Changing the schema's structure does, and so does changing the set of tools in the request.
+
+106
+00:07:09.799 --> 00:07:10.799
+But here's a nice detail.
+
+107
+00:07:10.799 --> 00:07:15.799
+Renaming a field or editing a description alone doesn't force a recompile.
+
+108
+00:07:15.799 --> 00:07:19.799
+So cosmetic tweaks stay cheap, structural ones don't.
+
+109
+00:07:20.799 --> 00:07:23.799
+The failure here doesn't look like a crash.
+
+110
+00:07:23.799 --> 00:07:27.799
+It looks like a validator you wrote that quietly stopped being enforced,
+
+111
+00:07:27.799 --> 00:07:32.799
+because the keyword you leaned on never made it to the grammar in the first place.
+
+112
+00:07:32.799 --> 00:07:36.799
+Everything inside the supported subset really is guaranteed.
+
+113
+00:07:36.799 --> 00:07:39.799
+Everything outside is just a suggestion.
+
+114
+00:07:39.799 --> 00:07:44.799
+Just remember, a refusal or a truncated response breaks the promise, too.
+
+115
+00:07:44.799 --> 00:07:47.799
+So read the stop reason before you parse.
+
+116
+00:07:47.799 --> 00:07:50.799
+That wraps up this lesson. I'll see you in the next one.
+

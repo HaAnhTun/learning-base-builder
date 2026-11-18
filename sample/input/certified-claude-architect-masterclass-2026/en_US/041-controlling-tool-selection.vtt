@@ -1,0 +1,230 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.440
+Welcome back. When you give the model tools, it decides on its own whether to reach for one.
+
+2
+00:00:05.440 --> 00:00:11.600
+That default works most of the time, but every so often you need a firmer hand to point to the
+
+3
+00:00:11.600 --> 00:00:17.440
+right tool. This lesson covers the one parameter that gives you that control and the four ways you
+
+4
+00:00:17.440 --> 00:00:23.120
+can use it. Let's get into it. Everything in this lesson turns on a single parameter.
+
+5
+00:00:23.600 --> 00:00:30.000
+Tool choice. Start with auto. With auto, the model looks at the request and decides for itself
+
+6
+00:00:30.000 --> 00:00:36.959
+whether calling a tool helps. This is the default whenever you supply tools. Next is any. With any,
+
+7
+00:00:36.959 --> 00:00:42.159
+the model has to call one of your tools, but it still picks which one fits. Then there's tool.
+
+8
+00:00:42.720 --> 00:00:48.319
+Here you name a specific tool, and the model calls that exact one every single time. There's
+
+9
+00:00:48.319 --> 00:00:54.959
+a fourth value, none, and we'll come back to it. For now, hold on to the shape of it. Auto is a
+
+10
+00:00:54.959 --> 00:01:01.360
+free choice. Any is a forced choice among options. Tool is a fixed choice you make for the model.
+
+11
+00:01:02.560 --> 00:01:07.680
+Let's start with auto because it's the one you'll use most. With auto, the model reads what the
+
+12
+00:01:07.680 --> 00:01:13.199
+user asked and judges whether a tool actually helps. If someone asks a question, it can answer
+
+13
+00:01:13.199 --> 00:01:20.080
+from its own knowledge. It just answers. No tool call. But if the task genuinely needs a live look
+
+14
+00:01:20.080 --> 00:01:26.000
+up or an action, it calls the right tool. And here's a nice touch. With auto, the model can
+
+15
+00:01:26.000 --> 00:01:32.319
+narrate what it's about to do before it makes the call. That running commentary feels natural to a
+
+16
+00:01:32.319 --> 00:01:38.400
+user. For most assistant style applications, this balance is exactly what you want. So reach for
+
+17
+00:01:38.400 --> 00:01:45.440
+auto first and only tighten things when you have a concrete reason. Now, what happens when you force
+
+18
+00:01:45.440 --> 00:01:51.199
+a call? When you set any or tool, the model pre-fills its own reply so that a tool call is
+
+19
+00:01:51.199 --> 00:01:56.319
+guaranteed to come out. There's a consequence to that. The model skips the friendly natural
+
+20
+00:01:56.319 --> 00:02:02.000
+language preamble. It won't explain itself first. You get a tool call as the very first block of
+
+21
+00:02:02.000 --> 00:02:07.440
+content. So use forcing when a plain prose answer is never an acceptable outcome for that turn.
+
+22
+00:02:08.000 --> 00:02:12.960
+The trade is real. You gain certainty, but you lose that conversational explanation.
+
+23
+00:02:12.960 --> 00:02:18.479
+If you want both, there's a trick. Keep tool choice on auto and just add a clear instruction
+
+24
+00:02:18.479 --> 00:02:23.839
+in your user message asking the model to use the tool. That often gets you the call and the
+
+25
+00:02:23.839 --> 00:02:30.960
+explanation together. Let's put any and tool side by side because people mix them up. Any guarantees
+
+26
+00:02:30.960 --> 00:02:36.240
+that some tool runs, but it leaves the choice of which one to the model. That's your go-to when
+
+27
+00:02:36.240 --> 00:02:41.759
+you have a set of actions and any of them could be the right answer. Think of routing a request to
+
+28
+00:02:41.759 --> 00:02:48.080
+one of several valid handlers. Tool is stricter. You name one exact tool and the model calls that
+
+29
+00:02:48.080 --> 00:02:54.960
+one every time. Full stop. That fits a fixed step in a pipeline. Something like a data extraction
+
+30
+00:02:54.960 --> 00:03:00.720
+call that should always happen regardless of what the user said. So the question to ask yourself is
+
+31
+00:03:00.720 --> 00:03:06.720
+simple. Do I need a specific tool or just any valid tool? That answer picks the setting for you.
+
+32
+00:03:07.919 --> 00:03:14.240
+That brings us to the fourth value. None. None blocks the model from calling any tool at all
+
+33
+00:03:14.240 --> 00:03:20.559
+even when you've attached tools to the request. Two things make it useful. First, none is actually
+
+34
+00:03:20.559 --> 00:03:26.240
+the default whenever you send no tools. That's the quiet baseline behavior. Second, and more
+
+35
+00:03:26.240 --> 00:03:32.639
+interesting, you can keep your tools attached and still set none to force a text, only turn in the
+
+36
+00:03:32.639 --> 00:03:39.039
+middle of a longer conversation. Imagine a multi-step flow where at one point you want the
+
+37
+00:03:39.039 --> 00:03:45.119
+model to summarize what happened so far without touching a tool. You set none for that turn, get
+
+38
+00:03:45.119 --> 00:03:52.080
+your pros, then switch back. It's a clean way to pause tool activity without stripping the tools
+
+39
+00:03:52.080 --> 00:03:57.919
+out of your request. Let me show you a concrete routing pattern because this is where any really
+
+40
+00:03:57.919 --> 00:04:03.759
+shines. Say you've built a handful of database actions. Look up a record, create one, update one.
+
+41
+00:04:03.759 --> 00:04:09.440
+You want the model to always pick one of those. Never to wander off into a chatty non-answer.
+
+42
+00:04:09.440 --> 00:04:15.360
+You set tool choice to any. Now the model has to route the request into one of your actions.
+
+43
+00:04:15.360 --> 00:04:21.440
+It reads the intent and dispatches to the right one for you. You never get an off-topic pros reply
+
+44
+00:04:21.440 --> 00:04:26.640
+because pros isn't an option that turn. This effectively turns the model into a dependable
+
+45
+00:04:26.640 --> 00:04:32.320
+dispatcher sitting in front of your tools. For any workflow where the next step has to be an action,
+
+46
+00:04:32.320 --> 00:04:38.160
+that pattern is worth keeping in your pocket. So how do you actually choose? Match the setting
+
+47
+00:04:38.160 --> 00:04:44.239
+to how much freedom the task should have. For open-ended assistant work, stay with auto. When
+
+48
+00:04:44.239 --> 00:04:50.559
+the model has to act but any of several actions is valid, use any. When there's exactly one mandatory
+
+49
+00:04:50.559 --> 00:04:57.200
+step, name it with tool. And when you need a text-only turn, none is your answer. A couple of
+
+50
+00:04:57.200 --> 00:05:02.720
+limits are worth remembering before you commit. Changing tool choice invalidates your cached
+
+51
+00:05:02.720 --> 00:05:08.959
+message blocks, though your tool definitions and system prompt stay cached. When you're unsure,
+
+52
+00:05:08.959 --> 00:05:15.600
+auto paired with a clear instruction handles a surprising amount. Tool choice decides how much
+
+53
+00:05:15.600 --> 00:05:22.160
+freedom the model has about reaching for a tool at all. It matters because most agent misbehavior
+
+54
+00:05:22.160 --> 00:05:28.079
+isn't a bad tool call. It's a tool call at the wrong moment or skipped when one is actually
+
+55
+00:05:28.079 --> 00:05:34.559
+needed. One thing to watch is the pull toward forcing things. A tight setting buys certainty
+
+56
+00:05:34.559 --> 00:05:41.279
+on one turn and costs you judgment everywhere else. So constrain only where the task genuinely
+
+57
+00:05:41.279 --> 00:05:45.440
+needs it. That wraps up this one. I'll see you in the next video.
+

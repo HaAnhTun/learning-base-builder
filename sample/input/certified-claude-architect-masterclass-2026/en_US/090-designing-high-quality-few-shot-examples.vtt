@@ -1,0 +1,618 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.840
+Here's what we're tackling in this one.
+
+2
+00:00:01.840 --> 00:00:05.360
+How to design high-quality few-shot examples.
+
+3
+00:00:05.360 --> 00:00:08.640
+Input-output pair design, example diversity and edge
+
+4
+00:00:08.640 --> 00:00:12.039
+cases, what contamination is and how to avoid it,
+
+5
+00:00:12.039 --> 00:00:15.039
+dynamic selection at runtime, ordering effects,
+
+6
+00:00:15.039 --> 00:00:18.760
+and how to test whether examples are helping or hurting.
+
+7
+00:00:18.760 --> 00:00:21.920
+These ideas frame everything we'll do from here on.
+
+8
+00:00:21.920 --> 00:00:23.760
+Let's get into it.
+
+9
+00:00:23.760 --> 00:00:26.440
+Before we go further, let's pin down the three terms
+
+10
+00:00:26.440 --> 00:00:28.479
+that anchor example design.
+
+11
+00:00:28.520 --> 00:00:30.360
+Example contamination is what happens
+
+12
+00:00:30.360 --> 00:00:33.360
+when examples are too narrow, stylistically skewed,
+
+13
+00:00:33.360 --> 00:00:35.360
+or topically biased.
+
+14
+00:00:35.360 --> 00:00:37.639
+Instead of teaching the model to generalize,
+
+15
+00:00:37.639 --> 00:00:40.080
+contaminated examples cause it to reproduce
+
+16
+00:00:40.080 --> 00:00:43.880
+the example's idiosyncrasies across all outputs.
+
+17
+00:00:43.880 --> 00:00:46.880
+Dynamic few-shot is the practice of selecting examples
+
+18
+00:00:46.880 --> 00:00:50.639
+at runtime based on similarity to the current input
+
+19
+00:00:50.639 --> 00:00:53.319
+rather than using a fixed static set.
+
+20
+00:00:53.319 --> 00:00:57.040
+It produces more consistent output across varied inputs.
+
+21
+00:00:57.040 --> 00:00:58.919
+Ordering effects refer to the influence
+
+22
+00:00:58.919 --> 00:01:01.599
+that example sequence has on output.
+
+23
+00:01:01.599 --> 00:01:03.360
+Models give more weight to examples
+
+24
+00:01:03.360 --> 00:01:05.279
+that appear later in the prompt, so where
+
+25
+00:01:05.279 --> 00:01:09.599
+you place your best example is a deliberate design decision.
+
+26
+00:01:09.599 --> 00:01:12.160
+Every input-output pair in your example set
+
+27
+00:01:12.160 --> 00:01:15.919
+is a signal to the model about what a correct response looks like.
+
+28
+00:01:15.919 --> 00:01:17.800
+That signal needs to be clean.
+
+29
+00:01:17.800 --> 00:01:20.239
+The input should be realistic and representative
+
+30
+00:01:20.239 --> 00:01:23.800
+of the actual task, inputs you'll send in production,
+
+31
+00:01:23.800 --> 00:01:28.160
+not a simplified stand-in that doesn't reflect real complexity.
+
+32
+00:01:28.160 --> 00:01:29.720
+The output should be exactly what
+
+33
+00:01:29.720 --> 00:01:33.080
+you would accept as a correct response, nothing more
+
+34
+00:01:33.080 --> 00:01:34.519
+and nothing less.
+
+35
+00:01:34.519 --> 00:01:36.839
+If the output contains anything unusual,
+
+36
+00:01:36.839 --> 00:01:39.959
+any artifact, odd phrasing, or extra formatting
+
+37
+00:01:39.959 --> 00:01:42.720
+that you wouldn't want reproduced, remove it.
+
+38
+00:01:42.720 --> 00:01:44.760
+Examples that almost demonstrate the pattern
+
+39
+00:01:44.760 --> 00:01:47.080
+introduce more noise than signal.
+
+40
+00:01:47.080 --> 00:01:50.080
+One focused example that clearly shows the target behavior
+
+41
+00:01:50.080 --> 00:01:54.080
+is worth more than several that partially demonstrate it.
+
+42
+00:01:54.080 --> 00:01:56.360
+A set of similar examples teaches the model
+
+43
+00:01:56.360 --> 00:01:57.879
+one narrow pattern.
+
+44
+00:01:57.879 --> 00:02:00.279
+A diverse set teaches it a range.
+
+45
+00:02:00.279 --> 00:02:03.339
+When all your examples come from the same input type, length,
+
+46
+00:02:03.339 --> 00:02:05.620
+and phrasing style, the model learns
+
+47
+00:02:05.620 --> 00:02:07.599
+to handle that specific case well
+
+48
+00:02:07.599 --> 00:02:10.440
+and generalizes poorly to anything different.
+
+49
+00:02:10.440 --> 00:02:13.080
+Diversity means covering different input lengths,
+
+50
+00:02:13.080 --> 00:02:15.380
+different topics, and different phrasing styles
+
+51
+00:02:15.380 --> 00:02:17.559
+within the same task type.
+
+52
+00:02:17.559 --> 00:02:19.940
+It also means including at least one example
+
+53
+00:02:19.940 --> 00:02:23.179
+that tests the edge of the pattern, a harder input,
+
+54
+00:02:23.179 --> 00:02:26.300
+an unusual format, or a boundary case.
+
+55
+00:02:26.300 --> 00:02:28.419
+Three well-chosen diverse examples
+
+56
+00:02:28.419 --> 00:02:30.699
+will outperform five examples drawn
+
+57
+00:02:30.699 --> 00:02:33.600
+from the same narrow slice of your input space.
+
+58
+00:02:33.600 --> 00:02:37.339
+The goal is breadth of coverage, not volume.
+
+59
+00:02:37.339 --> 00:02:40.339
+Static few-shot uses the same fixed examples
+
+60
+00:02:40.339 --> 00:02:42.539
+for every input the prompt receives.
+
+61
+00:02:42.539 --> 00:02:45.039
+It's simple to implement and easy to maintain,
+
+62
+00:02:45.039 --> 00:02:47.020
+but it has a real weakness.
+
+63
+00:02:47.020 --> 00:02:48.940
+When real inputs differ significantly
+
+64
+00:02:48.940 --> 00:02:51.779
+from the examples, output quality drops.
+
+65
+00:02:51.779 --> 00:02:54.339
+Static sets work well when your input distribution
+
+66
+00:02:54.339 --> 00:02:56.139
+is narrow and predictable.
+
+67
+00:02:56.139 --> 00:03:00.619
+Dynamic few-shot addresses this by selecting examples at runtime.
+
+68
+00:03:00.619 --> 00:03:03.020
+You embed a pool of high-quality examples
+
+69
+00:03:03.020 --> 00:03:06.100
+and retrieve the most similar ones to the current input
+
+70
+00:03:06.100 --> 00:03:08.100
+before each inference call.
+
+71
+00:03:08.100 --> 00:03:09.940
+The prompt always contains examples
+
+72
+00:03:09.940 --> 00:03:12.460
+that are close to what you're actually asking.
+
+73
+00:03:12.460 --> 00:03:14.500
+For diverse or open-ended workloads,
+
+74
+00:03:14.500 --> 00:03:17.660
+dynamic selection is significantly more reliable,
+
+75
+00:03:17.660 --> 00:03:19.699
+though it requires a retrieval mechanism
+
+76
+00:03:19.699 --> 00:03:22.860
+and a well-maintained example pool.
+
+77
+00:03:22.860 --> 00:03:25.179
+Contamination is one of the most common failure
+
+78
+00:03:25.179 --> 00:03:29.339
+modes in few-shot prompting and one of the easiest to miss.
+
+79
+00:03:29.339 --> 00:03:31.979
+When an example uses unusual phrasing,
+
+80
+00:03:31.979 --> 00:03:34.300
+that phrasing tends to appear in outputs
+
+81
+00:03:34.300 --> 00:03:36.419
+across unrelated inputs.
+
+82
+00:03:36.419 --> 00:03:39.059
+When examples are all drawn from one topic area,
+
+83
+00:03:39.059 --> 00:03:41.860
+the model learns to assume that topic context,
+
+84
+00:03:41.860 --> 00:03:44.699
+even when the input is about something different.
+
+85
+00:03:44.699 --> 00:03:47.460
+When example outputs are longer than they need to be,
+
+86
+00:03:47.460 --> 00:03:50.660
+the model learns to generate verbose responses.
+
+87
+00:03:50.660 --> 00:03:52.580
+These are contamination patterns.
+
+88
+00:03:52.580 --> 00:03:54.220
+The most reliable way to catch them
+
+89
+00:03:54.220 --> 00:03:56.740
+is to review each example output as
+
+90
+00:03:56.740 --> 00:04:00.220
+if it were a production response you would ship to a real user.
+
+91
+00:04:00.220 --> 00:04:02.339
+If anything in the output would prompt you to edit it
+
+92
+00:04:02.339 --> 00:04:06.660
+before shipping, that element shouldn't be in your example.
+
+93
+00:04:06.660 --> 00:04:08.660
+Dynamic few-shot selection requires
+
+94
+00:04:08.660 --> 00:04:11.059
+building and maintaining an example pool.
+
+95
+00:04:11.059 --> 00:04:13.779
+The process starts with embedding your example pool
+
+96
+00:04:13.779 --> 00:04:16.980
+using a sentence similarity or retrieval model.
+
+97
+00:04:16.980 --> 00:04:19.459
+At inference time, you embed the current input
+
+98
+00:04:19.459 --> 00:04:22.980
+and retrieve the top examples by similarity score.
+
+99
+00:04:22.980 --> 00:04:24.980
+Those examples go into the prompt in place
+
+100
+00:04:24.980 --> 00:04:27.179
+of a fixed static set.
+
+101
+00:04:27.179 --> 00:04:29.019
+The result is a prompt whose examples
+
+102
+00:04:29.019 --> 00:04:33.100
+are contextually relevant to the specific input being processed.
+
+103
+00:04:33.100 --> 00:04:35.940
+Over time, as you collect and validate higher quality
+
+104
+00:04:35.940 --> 00:04:39.899
+examples from real production inputs, you update the pool.
+
+105
+00:04:39.899 --> 00:04:42.380
+Dynamic selection is the most reliable approach
+
+106
+00:04:42.380 --> 00:04:46.940
+for applications with diverse or unpredictable input distributions.
+
+107
+00:04:46.940 --> 00:04:50.459
+The overhead is real, but the output consistency improvement
+
+108
+00:04:50.459 --> 00:04:54.019
+justifies it for most production use cases.
+
+109
+00:04:54.019 --> 00:04:56.619
+Ordering effects are a well-documented property
+
+110
+00:04:56.619 --> 00:04:58.339
+of few-shot prompts.
+
+111
+00:04:58.339 --> 00:05:00.299
+Models assign more weight to examples
+
+112
+00:05:00.299 --> 00:05:02.700
+that appear closer to the task instruction,
+
+113
+00:05:02.700 --> 00:05:06.019
+meaning later examples have more influence on output format
+
+114
+00:05:06.019 --> 00:05:08.459
+and tone than earlier ones.
+
+115
+00:05:08.459 --> 00:05:11.500
+The practical implication is that your most representative
+
+116
+00:05:11.500 --> 00:05:15.540
+highest quality example belongs at the end of the example block
+
+117
+00:05:15.540 --> 00:05:17.859
+immediately before the actual task.
+
+118
+00:05:17.859 --> 00:05:20.459
+If you have one example you're most confident about,
+
+119
+00:05:20.459 --> 00:05:22.339
+that's the one to put last.
+
+120
+00:05:22.339 --> 00:05:25.459
+When you observe unexpected variance in output quality,
+
+121
+00:05:25.459 --> 00:05:29.260
+reordering examples is one of the first things to try.
+
+122
+00:05:29.260 --> 00:05:31.619
+Ordering is an easy-to-adjust variable
+
+123
+00:05:31.619 --> 00:05:35.059
+that can produce significant differences in complex prompts
+
+124
+00:05:35.059 --> 00:05:38.660
+without changing any of the example content.
+
+125
+00:05:38.660 --> 00:05:40.859
+Testing examples isn't optional if you want
+
+126
+00:05:40.859 --> 00:05:42.619
+to know whether they're working.
+
+127
+00:05:42.619 --> 00:05:44.820
+The baseline comparison is simple.
+
+128
+00:05:44.820 --> 00:05:48.100
+Run the prompt with examples, then run it without examples,
+
+129
+00:05:48.100 --> 00:05:50.059
+and evaluate the outputs.
+
+130
+00:05:50.059 --> 00:05:52.820
+If zero-shot matches the quality of few-shot,
+
+131
+00:05:52.820 --> 00:05:56.779
+your examples are adding prompt length without adding value.
+
+132
+00:05:56.779 --> 00:05:59.980
+If the output reproduces stylistic artifacts
+
+133
+00:05:59.980 --> 00:06:02.700
+or phrasing that only appeared in one example,
+
+134
+00:06:02.700 --> 00:06:04.679
+you have contamination.
+
+135
+00:06:04.679 --> 00:06:07.320
+If quality degrades on inputs that don't closely
+
+136
+00:06:07.320 --> 00:06:10.760
+resemble the examples, your set lacks diversity.
+
+137
+00:06:10.760 --> 00:06:14.440
+Test across a range of inputs, not just the canonical cases
+
+138
+00:06:14.440 --> 00:06:16.640
+the examples were designed for.
+
+139
+00:06:16.640 --> 00:06:18.399
+When an example is hurting quality,
+
+140
+00:06:18.399 --> 00:06:20.480
+remove it or replace it.
+
+141
+00:06:20.480 --> 00:06:23.480
+Patching around a bad example with additional instructions
+
+142
+00:06:23.480 --> 00:06:25.760
+is the wrong direction.
+
+143
+00:06:25.760 --> 00:06:29.559
+High-quality few-shot examples require deliberate design.
+
+144
+00:06:29.559 --> 00:06:33.239
+Each pair needs realistic inputs and clean outputs
+
+145
+00:06:33.239 --> 00:06:34.940
+with no artifacts.
+
+146
+00:06:34.940 --> 00:06:38.679
+Diverse examples generalize better than similar examples.
+
+147
+00:06:38.679 --> 00:06:42.880
+Dynamic selection outperforms static sets when inputs vary.
+
+148
+00:06:42.880 --> 00:06:45.279
+Place your best example last.
+
+149
+00:06:45.279 --> 00:06:47.519
+Always compare against a zero-shot
+
+150
+00:06:47.519 --> 00:06:50.040
+to confirm examples are adding value.
+
+151
+00:06:50.040 --> 00:06:52.600
+And that wraps up few-shot example design.
+
+152
+00:06:52.600 --> 00:06:55.040
+Next up, chain of thought prompting
+
+153
+00:06:55.040 --> 00:06:57.480
+and how to get Claude to show its reasoning.
+
+154
+00:06:57.480 --> 00:06:59.399
+I'll see you there.
+

@@ -1,0 +1,658 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:00.959
+Welcome back.
+
+2
+00:00:00.959 --> 00:00:03.279
+When you're running long multi-turn workflows,
+
+3
+00:00:03.279 --> 00:00:05.800
+context management is a challenge that quietly
+
+4
+00:00:05.800 --> 00:00:08.079
+causes quality to degrade.
+
+5
+00:00:08.079 --> 00:00:10.319
+We're covering how context accumulates
+
+6
+00:00:10.319 --> 00:00:13.720
+and when it becomes a problem, how topic and tone drift
+
+7
+00:00:13.720 --> 00:00:16.799
+in long conversations, how to repair turns that
+
+8
+00:00:16.799 --> 00:00:19.639
+produce wrong output, and when starting fresh
+
+9
+00:00:19.639 --> 00:00:20.799
+beats continuing.
+
+10
+00:00:20.799 --> 00:00:22.799
+Let's jump into it.
+
+11
+00:00:22.799 --> 00:00:24.719
+Start with the vocabulary.
+
+12
+00:00:24.719 --> 00:00:27.959
+Context accumulation is the growth of conversation history
+
+13
+00:00:27.959 --> 00:00:29.239
+as turns are added.
+
+14
+00:00:29.319 --> 00:00:32.360
+Every turn adds tokens to the context window.
+
+15
+00:00:32.360 --> 00:00:34.959
+Some of that accumulated context is useful
+
+16
+00:00:34.959 --> 00:00:37.599
+because it enables coherence across turns,
+
+17
+00:00:37.599 --> 00:00:39.560
+but some of it becomes noise that competes
+
+18
+00:00:39.560 --> 00:00:41.279
+with current instructions.
+
+19
+00:00:41.279 --> 00:00:43.599
+Context drift is the gradual shift
+
+20
+00:00:43.599 --> 00:00:46.919
+in topic, tone, or task framing that happens
+
+21
+00:00:46.919 --> 00:00:48.840
+across long conversations.
+
+22
+00:00:48.840 --> 00:00:51.759
+It is a slow failure mode where the model's behavior
+
+23
+00:00:51.759 --> 00:00:56.840
+drifts from the original intent without any single obviously wrong turn.
+
+24
+00:00:56.880 --> 00:00:58.680
+Noise buildup is the accumulation
+
+25
+00:00:58.680 --> 00:01:01.959
+of repeated, contradictory, or obsolete content
+
+26
+00:01:01.959 --> 00:01:04.080
+in the conversation history.
+
+27
+00:01:04.080 --> 00:01:06.680
+Noise dilutes the signal from current instructions
+
+28
+00:01:06.680 --> 00:01:08.839
+and degrades output quality in ways
+
+29
+00:01:08.839 --> 00:01:11.760
+that are often hard to diagnose.
+
+30
+00:01:11.760 --> 00:01:14.639
+Every turn adds tokens to the context window
+
+31
+00:01:14.639 --> 00:01:16.839
+and shapes what the model attends to when
+
+32
+00:01:16.839 --> 00:01:18.879
+generating the next response.
+
+33
+00:01:18.879 --> 00:01:21.120
+The system prompt and early messages
+
+34
+00:01:21.120 --> 00:01:23.760
+carry the most structural weight because they establish
+
+35
+00:01:23.760 --> 00:01:25.680
+the foundational framing.
+
+36
+00:01:25.720 --> 00:01:27.559
+Each assistant response becomes part
+
+37
+00:01:27.559 --> 00:01:31.319
+of the history the model reads when producing the next turn.
+
+38
+00:01:31.319 --> 00:01:34.440
+Longer histories give the model more background to work with,
+
+39
+00:01:34.440 --> 00:01:37.519
+but they also give it more noise to filter through.
+
+40
+00:01:37.519 --> 00:01:40.000
+Context window limits create a hard ceiling
+
+41
+00:01:40.000 --> 00:01:42.599
+regardless of how long the conversation runs.
+
+42
+00:01:42.599 --> 00:01:44.239
+The practical consequence is that you
+
+43
+00:01:44.239 --> 00:01:47.360
+have to treat context as a resource to manage,
+
+44
+00:01:47.360 --> 00:01:49.919
+not as an unlimited accumulator.
+
+45
+00:01:49.919 --> 00:01:52.480
+Useful context supports coherence.
+
+46
+00:01:52.480 --> 00:01:55.120
+Excess context competes with what the current turn
+
+47
+00:01:55.120 --> 00:01:57.720
+is actually asking for.
+
+48
+00:01:57.720 --> 00:01:59.879
+Drift is one of the subtler failure modes
+
+49
+00:01:59.879 --> 00:02:02.000
+in multi-turn conversation.
+
+50
+00:02:02.000 --> 00:02:04.080
+Topic drift happens when the conversation
+
+51
+00:02:04.080 --> 00:02:07.360
+steps through adjacent subjects across many turns
+
+52
+00:02:07.360 --> 00:02:10.199
+and ends up somewhere far from where it started.
+
+53
+00:02:10.199 --> 00:02:12.320
+Tone drift occurs when the model adapts
+
+54
+00:02:12.320 --> 00:02:15.520
+to the style of recent turns and gradually shifts away
+
+55
+00:02:15.520 --> 00:02:19.839
+from the formality or register that the original framing established.
+
+56
+00:02:19.839 --> 00:02:22.160
+Task drift is the most damaging.
+
+57
+00:02:22.160 --> 00:02:25.000
+The model starts solving a related but different problem
+
+58
+00:02:25.039 --> 00:02:27.240
+than the one originally specified.
+
+59
+00:02:27.240 --> 00:02:30.160
+What makes drift hard to catch is that no single turn
+
+60
+00:02:30.160 --> 00:02:31.880
+is obviously wrong.
+
+61
+00:02:31.880 --> 00:02:34.440
+Each step looks reasonable in isolation.
+
+62
+00:02:34.440 --> 00:02:36.000
+You only notice the problem when you
+
+63
+00:02:36.000 --> 00:02:39.160
+compare the current response to the original intent.
+
+64
+00:02:39.160 --> 00:02:42.360
+Periodic re-anchoring with explicit framing reminders
+
+65
+00:02:42.360 --> 00:02:46.399
+is the main tool for preventing drift from compounding.
+
+66
+00:02:46.399 --> 00:02:48.880
+The distinction between useful context and noise
+
+67
+00:02:48.880 --> 00:02:52.119
+is the key judgment call in conversation management.
+
+68
+00:02:52.119 --> 00:02:54.520
+Useful context is the prior content
+
+69
+00:02:54.520 --> 00:02:58.160
+the model genuinely needs to produce coherent output.
+
+70
+00:02:58.160 --> 00:03:00.800
+Task framing, established constraints,
+
+71
+00:03:00.800 --> 00:03:03.800
+key decisions that were reached across earlier turns,
+
+72
+00:03:03.800 --> 00:03:07.559
+and relevant prior outputs that inform the current step.
+
+73
+00:03:07.559 --> 00:03:10.679
+This context is essential and should be preserved.
+
+74
+00:03:10.679 --> 00:03:12.440
+Noise is everything else.
+
+75
+00:03:12.440 --> 00:03:15.000
+Repeated instructions, contradictory messages
+
+76
+00:03:15.000 --> 00:03:18.559
+that were never reconciled, verbose hedging and confirmation
+
+77
+00:03:18.559 --> 00:03:21.320
+back and forth, and exchanges about subtasks
+
+78
+00:03:21.320 --> 00:03:23.240
+that were ultimately abandoned.
+
+79
+00:03:23.240 --> 00:03:25.360
+Noise dilutes the model's attention away
+
+80
+00:03:25.360 --> 00:03:27.720
+from what matters in the current turn.
+
+81
+00:03:27.720 --> 00:03:29.600
+Learning to distinguish one from the other
+
+82
+00:03:29.600 --> 00:03:32.960
+is what separates well-managed long conversations from ones
+
+83
+00:03:32.960 --> 00:03:35.279
+that slowly degrade.
+
+84
+00:03:35.279 --> 00:03:37.600
+Four noise patterns account for most of the build-up
+
+85
+00:03:37.600 --> 00:03:39.240
+in long conversations.
+
+86
+00:03:39.240 --> 00:03:41.520
+Repeated instructions, the same directive
+
+87
+00:03:41.520 --> 00:03:44.639
+appears across multiple turns because earlier statements
+
+88
+00:03:44.639 --> 00:03:46.839
+weren't trusted to carry forward.
+
+89
+00:03:46.839 --> 00:03:49.600
+Contradictory messages, an earlier constraint
+
+90
+00:03:49.600 --> 00:03:53.279
+was overridden by a later one, but both remain in history,
+
+91
+00:03:53.279 --> 00:03:56.559
+forcing the model to guess which one is current.
+
+92
+00:03:56.559 --> 00:03:59.520
+Abandoned subtasks, exchanges about a direction
+
+93
+00:03:59.520 --> 00:04:03.000
+that was dropped, but the turns are still in the history.
+
+94
+00:04:03.000 --> 00:04:05.479
+And verbose back and forth, lengthy hedging,
+
+95
+00:04:05.479 --> 00:04:08.199
+requests for confirmation, and meta-commentary
+
+96
+00:04:08.199 --> 00:04:11.720
+that adds tokens without adding useful signal.
+
+97
+00:04:11.720 --> 00:04:14.000
+Individually, these seem minor, but each one
+
+98
+00:04:14.000 --> 00:04:17.600
+makes later turns harder for the model to parse correctly.
+
+99
+00:04:17.600 --> 00:04:19.799
+And the diagnostic difficulty grows
+
+100
+00:04:19.799 --> 00:04:22.459
+because the noise is embedded throughout the history
+
+101
+00:04:22.459 --> 00:04:25.720
+rather than isolated in a single message.
+
+102
+00:04:25.720 --> 00:04:27.799
+When a turn produces wrong output,
+
+103
+00:04:27.799 --> 00:04:29.720
+the correction strategy matters as much
+
+104
+00:04:29.720 --> 00:04:31.559
+as the correction itself.
+
+105
+00:04:31.559 --> 00:04:34.179
+The most important thing is to be explicit.
+
+106
+00:04:34.179 --> 00:04:37.059
+Name what was wrong rather than simply restating
+
+107
+00:04:37.059 --> 00:04:40.959
+your original prompt and hoping the model figures out what changed.
+
+108
+00:04:40.959 --> 00:04:43.399
+Correcting one issue at a time prevents the model
+
+109
+00:04:43.399 --> 00:04:45.459
+from getting a compound set of changes that
+
+110
+00:04:45.459 --> 00:04:47.779
+are hard to apply simultaneously.
+
+111
+00:04:47.779 --> 00:04:51.260
+Before asking for a redo, reaffirm the correct context,
+
+112
+00:04:51.260 --> 00:04:54.019
+especially if the error suggests the model had picked up
+
+113
+00:04:54.019 --> 00:04:57.540
+an incorrect framing from earlier in the conversation.
+
+114
+00:04:57.540 --> 00:04:59.779
+After the correction is applied, verify
+
+115
+00:04:59.779 --> 00:05:02.519
+that the repair produced the right change before moving
+
+116
+00:05:02.519 --> 00:05:04.140
+to the next step.
+
+117
+00:05:04.140 --> 00:05:06.140
+Targeted corrections that name the problem
+
+118
+00:05:06.140 --> 00:05:08.980
+and reaffirm context produce cleaner follow-through
+
+119
+00:05:08.980 --> 00:05:11.299
+than broad reruns.
+
+120
+00:05:11.299 --> 00:05:13.500
+The decision between resetting a conversation
+
+121
+00:05:13.500 --> 00:05:16.899
+and continuing it comes down to whether the accumulated history
+
+122
+00:05:16.899 --> 00:05:19.859
+is still helping or has become a liability.
+
+123
+00:05:19.859 --> 00:05:22.100
+Continue when the conversation is coherent,
+
+124
+00:05:22.100 --> 00:05:24.220
+recent turns are on track, and the model
+
+125
+00:05:24.220 --> 00:05:26.739
+has the context it needs to proceed.
+
+126
+00:05:26.739 --> 00:05:29.540
+Reset when noise has built up significantly,
+
+127
+00:05:29.540 --> 00:05:31.700
+when drift has taken the conversation far
+
+128
+00:05:31.700 --> 00:05:34.820
+from its original framing, or when the task has changed
+
+129
+00:05:34.820 --> 00:05:37.779
+enough that prior context is no longer relevant
+
+130
+00:05:37.779 --> 00:05:40.019
+and may be actively confusing.
+
+131
+00:05:40.019 --> 00:05:42.579
+A partial reset is often the best option.
+
+132
+00:05:42.579 --> 00:05:46.540
+Start a new thread, but carry forward only the essential prior context,
+
+133
+00:05:46.540 --> 00:05:50.579
+key decisions, confirmed constraints, and relevant outputs.
+
+134
+00:05:50.579 --> 00:05:53.140
+Leave the noise and abandoned branches behind.
+
+135
+00:05:53.140 --> 00:05:55.940
+That selective carry forward gives you a clean start
+
+136
+00:05:55.940 --> 00:05:59.579
+without losing the useful work that was already done.
+
+137
+00:05:59.579 --> 00:06:05.100
+Context window budget is a resource you should manage proactively, not reactively.
+
+138
+00:06:05.100 --> 00:06:07.980
+Start by estimating how many turns a task will require
+
+139
+00:06:07.980 --> 00:06:10.220
+before beginning the conversation.
+
+140
+00:06:10.220 --> 00:06:13.500
+Front load the most important constraints and framing early
+
+141
+00:06:13.500 --> 00:06:16.140
+when they will carry the most structural weight.
+
+142
+00:06:16.140 --> 00:06:19.579
+For long prior exchanges, summarize rather than carrying
+
+143
+00:06:19.579 --> 00:06:21.779
+full verbatim history forward.
+
+144
+00:06:21.779 --> 00:06:26.980
+If your API client exposes token usage, monitor it during long sessions.
+
+145
+00:06:26.980 --> 00:06:30.660
+The most important rule is to reset before hitting the window limit
+
+146
+00:06:30.660 --> 00:06:34.500
+rather than letting the model degrade silently into truncation.
+
+147
+00:06:34.500 --> 00:06:36.940
+When context is truncated without warning,
+
+148
+00:06:36.940 --> 00:06:39.820
+the model loses access to prior instructions
+
+149
+00:06:39.820 --> 00:06:42.459
+without any signal to you that it happened.
+
+150
+00:06:42.459 --> 00:06:45.140
+And the resulting output degradation is often
+
+151
+00:06:45.140 --> 00:06:49.619
+misattributed to model quality rather than to context management.
+
+152
+00:06:49.619 --> 00:06:53.739
+Context accumulation, drift, and noise are the three operational challenges
+
+153
+00:06:53.739 --> 00:06:56.299
+of multi-turn conversation design.
+
+154
+00:06:56.299 --> 00:06:59.500
+Proactive budget management prevents window pressure.
+
+155
+00:06:59.500 --> 00:07:03.459
+Periodic re-anchoring stops drift before it compounds.
+
+156
+00:07:03.459 --> 00:07:06.859
+Targeted correction turns address wrong output
+
+157
+00:07:06.859 --> 00:07:09.100
+without derailing the workflow.
+
+158
+00:07:09.100 --> 00:07:11.380
+Knowing when to reset rather than continue
+
+159
+00:07:11.380 --> 00:07:13.339
+is a judgment call that preserves everything
+
+160
+00:07:13.339 --> 00:07:15.820
+useful while cutting the liability.
+
+161
+00:07:15.820 --> 00:07:20.459
+One more time, budget, anchor, correct, and reset when needed.
+
+162
+00:07:20.459 --> 00:07:24.739
+From here, we shift to structured output, specifically JSON mode
+
+163
+00:07:24.739 --> 00:07:27.100
+and the schema-constrained responses.
+
+164
+00:07:27.100 --> 00:07:29.059
+I'll see you there.
+

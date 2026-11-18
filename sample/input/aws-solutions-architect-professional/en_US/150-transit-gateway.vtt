@@ -1,0 +1,902 @@
+WEBVTT
+
+1
+00:00:00.110 --> 00:00:03.570
+<v Instructor>So if we look at a typical architecture</v>
+
+2
+00:00:03.570 --> 00:00:07.290
+or network topology for your VPC, your customer gateway,
+
+3
+00:00:07.290 --> 00:00:09.900
+your VPN connections, direct connect and so on,
+
+4
+00:00:09.900 --> 00:00:11.790
+it becomes very, very complicated
+
+5
+00:00:11.790 --> 00:00:14.310
+because you allow some things to talk to one another,
+
+6
+00:00:14.310 --> 00:00:17.070
+and anytime you need another thing to talk to another thing,
+
+7
+00:00:17.070 --> 00:00:19.320
+then you have to create maybe a new VPN connection,
+
+8
+00:00:19.320 --> 00:00:20.910
+maybe a new VPC Peering connection,
+
+9
+00:00:20.910 --> 00:00:23.550
+and it can become very, very complicated.
+
+10
+00:00:23.550 --> 00:00:26.940
+And so the idea is that as we grow our architectures,
+
+11
+00:00:26.940 --> 00:00:30.030
+the number of accounts we have, we need to have a better way
+
+12
+00:00:30.030 --> 00:00:33.390
+of handling all the network topology in our accounts.
+
+13
+00:00:33.390 --> 00:00:37.140
+And we saw the VPC transits, that was a possible solution,
+
+14
+00:00:37.140 --> 00:00:39.600
+but here we have a transit gateway
+
+15
+00:00:39.600 --> 00:00:43.530
+which is going to be a more modern solution brought by AWS.
+
+16
+00:00:43.530 --> 00:00:46.050
+So the reason we introduce a transit gateway
+
+17
+00:00:46.050 --> 00:00:48.810
+is that we want to have transitive peering between,
+
+18
+00:00:48.810 --> 00:00:52.710
+I would say thousands of VPC, even on premise data centers
+
+19
+00:00:52.710 --> 00:00:55.710
+into a hub and spoke star connection.
+
+20
+00:00:55.710 --> 00:00:56.730
+So why a star?
+
+21
+00:00:56.730 --> 00:00:59.220
+Well, you can look at the diagRAM, it looks like a star.
+
+22
+00:00:59.220 --> 00:01:00.330
+And so as you can see,
+
+23
+00:01:00.330 --> 00:01:04.230
+my treasure gateway can connect many VPCs together.
+
+24
+00:01:04.230 --> 00:01:06.660
+They can also connect to direct connect gateway
+
+25
+00:01:06.660 --> 00:01:09.990
+if we needed to, and also connect to our on premise
+
+26
+00:01:09.990 --> 00:01:12.780
+through a VPN connection and a customer gateway.
+
+27
+00:01:12.780 --> 00:01:16.470
+So similar to the idea of the transit VPC we had before,
+
+28
+00:01:16.470 --> 00:01:19.680
+now we have a transit gateway and all the traffic will flow
+
+29
+00:01:19.680 --> 00:01:22.290
+through the transit gateway and we'll have control over
+
+30
+00:01:22.290 --> 00:01:25.200
+how that traffic is going to be rerouted
+
+31
+00:01:25.200 --> 00:01:28.170
+to different endpoints in our star network.
+
+32
+00:01:28.170 --> 00:01:31.440
+So the transit gateway is a regional resource,
+
+33
+00:01:31.440 --> 00:01:33.330
+although you can peer together
+
+34
+00:01:33.330 --> 00:01:36.120
+many transit gateways across region.
+
+35
+00:01:36.120 --> 00:01:37.980
+And to share a transit gateway
+
+36
+00:01:37.980 --> 00:01:39.540
+into many different accounts,
+
+37
+00:01:39.540 --> 00:01:42.330
+you use resource access manager or RAM,
+
+38
+00:01:42.330 --> 00:01:44.160
+and that is one of the primary use case
+
+39
+00:01:44.160 --> 00:01:46.980
+for using RAM alongside transit gateway.
+
+40
+00:01:46.980 --> 00:01:49.050
+You can peer transit gateways across regions
+
+41
+00:01:49.050 --> 00:01:51.870
+as where as just said, so it has cross region support.
+
+42
+00:01:51.870 --> 00:01:54.420
+And in the route tables, you are able to limit
+
+43
+00:01:54.420 --> 00:01:57.180
+which VPC can talk to which other VPC.
+
+44
+00:01:57.180 --> 00:01:58.770
+So you define these route tables directly
+
+45
+00:01:58.770 --> 00:02:00.540
+at the transit gateway level.
+
+46
+00:02:00.540 --> 00:02:03.390
+It works with direct connect gateway VPN connections.
+
+47
+00:02:03.390 --> 00:02:07.500
+And one thing it supports is called IP multicast.
+
+48
+00:02:07.500 --> 00:02:09.570
+So trendy gateway, to my knowledge,
+
+49
+00:02:09.570 --> 00:02:13.110
+is the only thing that supports IP multicast
+
+50
+00:02:13.110 --> 00:02:15.300
+in your AWS network.
+
+51
+00:02:15.300 --> 00:02:18.240
+No other services will support IP multicast.
+
+52
+00:02:18.240 --> 00:02:20.760
+And so if your architecture and your application
+
+53
+00:02:20.760 --> 00:02:22.530
+is relying on IP multicast,
+
+54
+00:02:22.530 --> 00:02:25.410
+then you have to use a transit gateway.
+
+55
+00:02:25.410 --> 00:02:27.510
+So what does it give us, a transit gateway?
+
+56
+00:02:27.510 --> 00:02:29.580
+Well, instances in the VPC
+
+57
+00:02:29.580 --> 00:02:31.920
+can access any other NAT gateway,
+
+58
+00:02:31.920 --> 00:02:33.690
+network load balancer or private link
+
+59
+00:02:33.690 --> 00:02:37.170
+or EFS in other VPCs attached to the transit gateway.
+
+60
+00:02:37.170 --> 00:02:39.960
+So here we do have edge to edge routing,
+
+61
+00:02:39.960 --> 00:02:42.860
+we have transitivity and this is the whole purpose
+
+62
+00:02:42.860 --> 00:02:44.460
+of the transit gateway.
+
+63
+00:02:44.460 --> 00:02:46.080
+So let's go through an architecture
+
+64
+00:02:46.080 --> 00:02:48.120
+in which we have the transit gateway
+
+65
+00:02:48.120 --> 00:02:49.920
+be a central NAT gateway,
+
+66
+00:02:49.920 --> 00:02:52.710
+and you really have to understand what's going on.
+
+67
+00:02:52.710 --> 00:02:55.980
+So I would suggest you look at this link and open the blog,
+
+68
+00:02:55.980 --> 00:02:57.720
+but I will walk you through this architecture
+
+69
+00:02:57.720 --> 00:02:58.890
+as best as I can.
+
+70
+00:02:58.890 --> 00:03:01.260
+But take your time, try to understand how that works
+
+71
+00:03:01.260 --> 00:03:04.320
+because if you do, then you're good to go for VPCs.
+
+72
+00:03:04.320 --> 00:03:07.110
+So the idea is that we have an Egress VPC
+
+73
+00:03:07.110 --> 00:03:10.890
+on the left hand side, and within it, we have a NAT gateway.
+
+74
+00:03:10.890 --> 00:03:13.977
+And so we want these NAT gateways into two AZs,
+
+75
+00:03:13.977 --> 00:03:18.420
+so AZ one and AZ two, to take all the internet traffic
+
+76
+00:03:18.420 --> 00:03:21.030
+from my other VPCs in my architecture.
+
+77
+00:03:21.030 --> 00:03:22.920
+This is something I've tried to represent to you
+
+78
+00:03:22.920 --> 00:03:26.070
+before in another slide, but I showed you it wasn't possible
+
+79
+00:03:26.070 --> 00:03:30.900
+because of the lack of edge to edge routing for VPC peering.
+
+80
+00:03:30.900 --> 00:03:33.900
+But here, so we have two NAT gateways and two AZ,
+
+81
+00:03:33.900 --> 00:03:35.520
+and they're highly available.
+
+82
+00:03:35.520 --> 00:03:37.620
+And then we have two ENIs,
+
+83
+00:03:37.620 --> 00:03:39.840
+and these ENIs are going to allow us
+
+84
+00:03:39.840 --> 00:03:42.570
+to connect our transit gateway.
+
+85
+00:03:42.570 --> 00:03:44.400
+And so our transit gateway in here
+
+86
+00:03:44.400 --> 00:03:46.890
+is going to be connected to two VPC,
+
+87
+00:03:46.890 --> 00:03:50.490
+so the app1-VPC and the app2-VPC.
+
+88
+00:03:50.490 --> 00:03:53.580
+And through the editing of the route tables,
+
+89
+00:03:53.580 --> 00:03:58.580
+we are going to allow any traffic coming from the app2-VPC
+
+90
+00:03:58.920 --> 00:04:02.310
+to go all the way through my Egress VPC,
+
+91
+00:04:02.310 --> 00:04:04.440
+and get to the internet gateway here
+
+92
+00:04:04.440 --> 00:04:05.910
+and talk to the internet.
+
+93
+00:04:05.910 --> 00:04:07.140
+And why would we do this?
+
+94
+00:04:07.140 --> 00:04:09.600
+Well, because we have more control here over
+
+95
+00:04:09.600 --> 00:04:12.180
+how the internet traffic is going to be distributed.
+
+96
+00:04:12.180 --> 00:04:14.220
+We also have the centralization of resources,
+
+97
+00:04:14.220 --> 00:04:16.590
+so we don't to create one NAT gateway
+
+98
+00:04:16.590 --> 00:04:18.660
+in one internet gateway per VPC,
+
+99
+00:04:18.660 --> 00:04:20.730
+we can keep all the other VPCs private
+
+100
+00:04:20.730 --> 00:04:22.950
+and make sure they have to access the internet
+
+101
+00:04:22.950 --> 00:04:27.150
+through the transit gateway, through the Egress VPC.
+
+102
+00:04:27.150 --> 00:04:30.120
+And so for this to work, you need to edit some route tables.
+
+103
+00:04:30.120 --> 00:04:33.030
+So here, it says 000/0
+
+104
+00:04:33.030 --> 00:04:35.280
+should go to the transit gateway internet
+
+105
+00:04:35.280 --> 00:04:36.900
+and then the transit gateway internet is saying,
+
+106
+00:04:36.900 --> 00:04:40.350
+okay, anything that comes from 000/0
+
+107
+00:04:40.350 --> 00:04:42.750
+should go to these ENIs,
+
+108
+00:04:42.750 --> 00:04:45.270
+and then it goes on to NAT gateway and so on.
+
+109
+00:04:45.270 --> 00:04:48.270
+And you look at all the route tables and that works.
+
+110
+00:04:48.270 --> 00:04:49.950
+But something that is happening
+
+111
+00:04:49.950 --> 00:04:54.030
+in that diagram is that the app VPCs themselves,
+
+112
+00:04:54.030 --> 00:04:56.040
+they cannot talk to each other.
+
+113
+00:04:56.040 --> 00:04:57.960
+And the reason for that is that
+
+114
+00:04:57.960 --> 00:05:01.770
+the transit gateway route table does not allow currently
+
+115
+00:05:01.770 --> 00:05:03.750
+these VPCs to talk to one another,
+
+116
+00:05:03.750 --> 00:05:06.150
+but that would be something that's very possible.
+
+117
+00:05:06.150 --> 00:05:08.850
+So meaning that if you have a transit gateway,
+
+118
+00:05:08.850 --> 00:05:10.410
+it doesn't necessarily mean that
+
+119
+00:05:10.410 --> 00:05:12.660
+everything is going to be peered with another.
+
+120
+00:05:12.660 --> 00:05:14.700
+You have to define the route tables
+
+121
+00:05:14.700 --> 00:05:17.760
+to allow things to be talking to one another.
+
+122
+00:05:17.760 --> 00:05:20.040
+So you can also share your transit gateway
+
+123
+00:05:20.040 --> 00:05:23.340
+using the resource access manager service, RAM.
+
+124
+00:05:23.340 --> 00:05:25.170
+And so you can share within other accounts
+
+125
+00:05:25.170 --> 00:05:28.020
+or within your AWS organization.
+
+126
+00:05:28.020 --> 00:05:29.760
+So let's say for example, we have an account A
+
+127
+00:05:29.760 --> 00:05:32.460
+with a transit gateway that's being set up correctly,
+
+128
+00:05:32.460 --> 00:05:34.320
+and then account B, well, first we can
+
+129
+00:05:34.320 --> 00:05:36.030
+share our transit gateway,
+
+130
+00:05:36.030 --> 00:05:38.220
+account B will then accept our request,
+
+131
+00:05:38.220 --> 00:05:41.640
+and then the account B can just use the transit gateway
+
+132
+00:05:41.640 --> 00:05:44.370
+for example, to create more attachments
+
+133
+00:05:44.370 --> 00:05:47.430
+of VPC to the transit gateway, but VPC that belong
+
+134
+00:05:47.430 --> 00:05:50.160
+in account B, therefore simplifying
+
+135
+00:05:50.160 --> 00:05:51.633
+your network architecture.
+
+136
+00:05:52.980 --> 00:05:56.070
+Also using the transit gateway, you can connect it to
+
+137
+00:05:56.070 --> 00:05:57.930
+many different accounts, many different VPCs.
+
+138
+00:05:57.930 --> 00:06:00.270
+So using the resource access manager,
+
+139
+00:06:00.270 --> 00:06:04.560
+we can go into some sort of network topology where
+
+140
+00:06:04.560 --> 00:06:06.270
+different VPCs from different accounts
+
+141
+00:06:06.270 --> 00:06:08.670
+are connected to the same transit gateway.
+
+142
+00:06:08.670 --> 00:06:11.130
+But of course, you do not want the prod
+
+143
+00:06:11.130 --> 00:06:13.260
+and the staging account to communicate together
+
+144
+00:06:13.260 --> 00:06:14.790
+or the dev and the pre-product account
+
+145
+00:06:14.790 --> 00:06:16.350
+to communicate together.
+
+146
+00:06:16.350 --> 00:06:17.790
+So in that case, what you can do
+
+147
+00:06:17.790 --> 00:06:20.910
+is that you can create, for example, a prod route table
+
+148
+00:06:20.910 --> 00:06:23.280
+which gives some CIDRs as well as the next hop,
+
+149
+00:06:23.280 --> 00:06:26.700
+which is a special transit gateway attachment.
+
+150
+00:06:26.700 --> 00:06:29.820
+And if you attach it to these one,
+
+151
+00:06:29.820 --> 00:06:33.150
+the A and B VPC in the prod and pre-prod accounts,
+
+152
+00:06:33.150 --> 00:06:37.110
+we only ensure that VPC A can communicate with with VPC B
+
+153
+00:06:37.110 --> 00:06:38.340
+and vice versa.
+
+154
+00:06:38.340 --> 00:06:40.260
+But C and D are isolated from it
+
+155
+00:06:40.260 --> 00:06:43.440
+because they do not appear in this route table.
+
+156
+00:06:43.440 --> 00:06:45.810
+Likewise, we could create a staging route table
+
+157
+00:06:45.810 --> 00:06:48.330
+with the correct transit gateway attachments
+
+158
+00:06:48.330 --> 00:06:50.160
+to ensure that the staging and the dev accounts
+
+159
+00:06:50.160 --> 00:06:51.240
+can communicate with each other,
+
+160
+00:06:51.240 --> 00:06:53.610
+but not with the prod accounts.
+
+161
+00:06:53.610 --> 00:06:54.840
+So by default, of course,
+
+162
+00:06:54.840 --> 00:06:55.860
+everything will connect to each other,
+
+163
+00:06:55.860 --> 00:06:58.890
+but if you're to create your own route tables
+
+164
+00:06:58.890 --> 00:07:00.960
+and attach them to the transit gateway,
+
+165
+00:07:00.960 --> 00:07:04.770
+you can specify which VPCs or which attachments
+
+166
+00:07:04.770 --> 00:07:06.483
+can route to each other.
+
+167
+00:07:07.650 --> 00:07:09.720
+If you have a direct connect gateway set up,
+
+168
+00:07:09.720 --> 00:07:11.580
+so you have corporate data center,
+
+169
+00:07:11.580 --> 00:07:15.090
+a direct connect location, and a direct connect gateway,
+
+170
+00:07:15.090 --> 00:07:16.890
+you can connect to multiple regions.
+
+171
+00:07:16.890 --> 00:07:20.070
+So if you create a transit gateway in us-east-1
+
+172
+00:07:20.070 --> 00:07:23.190
+and a transit gateway in us-west-2 in two different regions,
+
+173
+00:07:23.190 --> 00:07:26.670
+it is totally possible for you to connect the gateway
+
+174
+00:07:26.670 --> 00:07:28.260
+to the first transit gateway
+
+175
+00:07:28.260 --> 00:07:31.500
+as well as the second transit gateway.
+
+176
+00:07:31.500 --> 00:07:35.190
+Therefore, you have a direct connection into
+
+177
+00:07:35.190 --> 00:07:38.610
+multiple regions through using a transit gateway.
+
+178
+00:07:38.610 --> 00:07:42.090
+And of course, if the us-east-1 VPCs
+
+179
+00:07:42.090 --> 00:07:44.970
+must talk with the us-west-2 VPCs,
+
+180
+00:07:44.970 --> 00:07:49.380
+you can create an inter-region transit gateway peering
+
+181
+00:07:49.380 --> 00:07:51.210
+to peer the true transit gateway together
+
+182
+00:07:51.210 --> 00:07:53.940
+and then allow the network connectivity
+
+183
+00:07:53.940 --> 00:07:56.673
+to go directly and stay within AWS.
+
+184
+00:07:57.570 --> 00:08:00.210
+So which brings me to the second subject, which is
+
+185
+00:08:00.210 --> 00:08:03.180
+around inter and intra region peering.
+
+186
+00:08:03.180 --> 00:08:05.190
+So say we have a region right here,
+
+187
+00:08:05.190 --> 00:08:08.220
+we create a transit gateway, we can do attachments
+
+188
+00:08:08.220 --> 00:08:12.600
+to site to site VPN to VPCs and so on.
+
+189
+00:08:12.600 --> 00:08:14.940
+But we can also, for example, create a second
+
+190
+00:08:14.940 --> 00:08:18.390
+transit gateway or use a third party transit gateway
+
+191
+00:08:18.390 --> 00:08:20.430
+and connect connected to its own, of course,
+
+192
+00:08:20.430 --> 00:08:22.110
+type of topology.
+
+193
+00:08:22.110 --> 00:08:25.110
+And you can establish an intra-region peering mesh.
+
+194
+00:08:25.110 --> 00:08:27.990
+So you have your own VPC transit gateway
+
+195
+00:08:27.990 --> 00:08:32.990
+or TGW one connected to your second transit gateway.
+
+196
+00:08:33.270 --> 00:08:35.460
+You can do the same thing in another region.
+
+197
+00:08:35.460 --> 00:08:36.293
+So it's very possible for you
+
+198
+00:08:36.293 --> 00:08:37.680
+to have the same kind of architecture.
+
+199
+00:08:37.680 --> 00:08:41.610
+But if you wanted to connect all these regions together,
+
+200
+00:08:41.610 --> 00:08:43.980
+you could create a third transit gateway
+
+201
+00:08:43.980 --> 00:08:46.080
+which is a hub transit gateway,
+
+202
+00:08:46.080 --> 00:08:48.150
+and then you connect it inter-region
+
+203
+00:08:48.150 --> 00:08:50.640
+using an inter-region peering mesh.
+
+204
+00:08:50.640 --> 00:08:53.100
+And then these transit gateways, the hub ones,
+
+205
+00:08:53.100 --> 00:08:55.350
+can be connected to the ones within the region
+
+206
+00:08:55.350 --> 00:08:57.600
+using in-region peering mesh.
+
+207
+00:08:57.600 --> 00:08:59.820
+So you go into this kind of architecture
+
+208
+00:08:59.820 --> 00:09:02.490
+and you can extend it into a third region
+
+209
+00:09:02.490 --> 00:09:05.310
+to have, again, a mesh of inter-region peering mesh
+
+210
+00:09:05.310 --> 00:09:07.560
+between your hub transit gateways,
+
+211
+00:09:07.560 --> 00:09:11.220
+and within each region you have intra-region peering.
+
+212
+00:09:11.220 --> 00:09:12.810
+So you're going to be billed hourly
+
+213
+00:09:12.810 --> 00:09:14.820
+for each peering attachment,
+
+214
+00:09:14.820 --> 00:09:17.340
+but there are no data processing charges.
+
+215
+00:09:17.340 --> 00:09:18.173
+Okay?
+
+216
+00:09:18.173 --> 00:09:20.490
+But if the data, of course, grows cross region
+
+217
+00:09:20.490 --> 00:09:21.870
+through the attachments,
+
+218
+00:09:21.870 --> 00:09:23.880
+then you will have standard charges.
+
+219
+00:09:23.880 --> 00:09:26.400
+So if the data goes from region A to region B,
+
+220
+00:09:26.400 --> 00:09:28.260
+of course, you're going to pay some money.
+
+221
+00:09:28.260 --> 00:09:31.140
+For this to work, you must of course, do all these peerings
+
+222
+00:09:31.140 --> 00:09:34.800
+by specifying the transit gateway ID.
+
+223
+00:09:34.800 --> 00:09:35.633
+Okay.
+
+224
+00:09:35.633 --> 00:09:37.920
+So that's it for transit gateway, I hope you liked it.
+
+225
+00:09:37.920 --> 00:09:39.870
+And I will see you in the next lecture.
+

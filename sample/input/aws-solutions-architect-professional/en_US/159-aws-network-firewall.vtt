@@ -1,0 +1,538 @@
+WEBVTT
+
+1
+00:00:00.510 --> 00:00:02.400
+<v Instructor>So let's summarize the kind of ways</v>
+
+2
+00:00:02.400 --> 00:00:03.690
+we can protect your network
+
+3
+00:00:03.690 --> 00:00:06.210
+on AWS that we know about so far.
+
+4
+00:00:06.210 --> 00:00:08.880
+So we've seen network access control list,
+
+5
+00:00:08.880 --> 00:00:11.730
+we've seen Amazon VPC security groups,
+
+6
+00:00:11.730 --> 00:00:13.770
+we've seen AWS WAF to protect
+
+7
+00:00:13.770 --> 00:00:15.360
+against malicious requests made
+
+8
+00:00:15.360 --> 00:00:18.900
+through HTTP on specific services that we have
+
+9
+00:00:18.900 --> 00:00:21.750
+we've seen AWS Shield and Shield Advance to protect
+
+10
+00:00:21.750 --> 00:00:25.110
+against DDoS, and we've seen AWS Firewall Manager
+
+11
+00:00:25.110 --> 00:00:27.930
+to manage them all your rules for WAF
+
+12
+00:00:27.930 --> 00:00:31.170
+and Shield and so on across multiple accounts.
+
+13
+00:00:31.170 --> 00:00:33.150
+Okay, so we know about this, but what
+
+14
+00:00:33.150 --> 00:00:34.170
+if you want to protect
+
+15
+00:00:34.170 --> 00:00:38.040
+our entire VPC in a sophisticated way
+
+16
+00:00:38.040 --> 00:00:41.850
+Introducing the AWS Network Firewall.
+
+17
+00:00:41.850 --> 00:00:45.120
+So this is used to protect your entire VPC with a Firewall.
+
+18
+00:00:45.120 --> 00:00:46.590
+So here's my VPC
+
+19
+00:00:46.590 --> 00:00:49.200
+and the Firewall is going to be all around it.
+
+20
+00:00:49.200 --> 00:00:51.512
+And so this AWS Network Firewall protects it
+
+21
+00:00:51.512 --> 00:00:53.070
+from the layer three
+
+22
+00:00:53.070 --> 00:00:55.350
+to the layer seven protection.
+
+23
+00:00:55.350 --> 00:00:58.800
+So you can inspect any kind of traffic in any direction.
+
+24
+00:00:58.800 --> 00:01:01.770
+So you can expect VPC to VPC traffic.
+
+25
+00:01:01.770 --> 00:01:04.620
+outbound to internet, inbound from internet,
+
+26
+00:01:04.620 --> 00:01:06.360
+and to and from Direct Connect
+
+27
+00:01:06.360 --> 00:01:08.310
+and Site-to-Site VPN connections.
+
+28
+00:01:08.310 --> 00:01:09.420
+So I represent that in there.
+
+29
+00:01:09.420 --> 00:01:11.760
+So here we protect anything coming in
+
+30
+00:01:11.760 --> 00:01:14.940
+and out of the internet, in and out of a peer VPC
+
+31
+00:01:14.940 --> 00:01:16.620
+and in and out of Direct Connect
+
+32
+00:01:16.620 --> 00:01:19.170
+or a Site-to-Site VPN connection.
+
+33
+00:01:19.170 --> 00:01:20.910
+So we define rules
+
+34
+00:01:20.910 --> 00:01:23.250
+and then we can control anything that happens.
+
+35
+00:01:23.250 --> 00:01:25.680
+So internally, the Network Firewall
+
+36
+00:01:25.680 --> 00:01:28.560
+uses the AWS Gateway Load Balancer,
+
+37
+00:01:28.560 --> 00:01:29.820
+but instead of us setting
+
+38
+00:01:29.820 --> 00:01:33.420
+up a third party appliance to inspect the traffic,
+
+39
+00:01:33.420 --> 00:01:37.470
+we just have AWS manage it with its own appliances
+
+40
+00:01:37.470 --> 00:01:39.210
+and so therefore we have our own rules
+
+41
+00:01:39.210 --> 00:01:40.770
+on the Network Firewall.
+
+42
+00:01:40.770 --> 00:01:43.530
+And these rules can be centrally managed as well
+
+43
+00:01:43.530 --> 00:01:46.380
+across multiple accounts and many VPCs
+
+44
+00:01:46.380 --> 00:01:49.980
+on the AWS Firewall Manager Service.
+
+45
+00:01:49.980 --> 00:01:51.180
+So with the Network Firewall,
+
+46
+00:01:51.180 --> 00:01:52.410
+we have fine grained controls
+
+47
+00:01:52.410 --> 00:01:55.800
+over all kind of network traffic.
+
+48
+00:01:55.800 --> 00:01:58.800
+So we support thousands of rules at our VPC level.
+
+49
+00:01:58.800 --> 00:02:01.080
+We can filter by IP and by port
+
+50
+00:02:01.080 --> 00:02:03.090
+with tens of thousands of IPs.
+
+51
+00:02:03.090 --> 00:02:04.860
+We can filter by protocol.
+
+52
+00:02:04.860 --> 00:02:07.470
+For example, we can disable the SMB protocol
+
+53
+00:02:07.470 --> 00:02:09.120
+for outbound communication.
+
+54
+00:02:09.120 --> 00:02:11.490
+We can filter at the domain level.
+
+55
+00:02:11.490 --> 00:02:13.230
+So we say, "Hey, you only allow
+
+56
+00:02:13.230 --> 00:02:14.910
+outbound traffic from our VPC
+
+57
+00:02:14.910 --> 00:02:18.600
+into our My corporate domain or any third party
+
+58
+00:02:18.600 --> 00:02:21.000
+software repository that we only allow."
+
+59
+00:02:21.000 --> 00:02:23.700
+We can do general pattern matching with regex and so on,
+
+60
+00:02:23.700 --> 00:02:27.450
+and we can choose to allow, drop, or get alerted
+
+61
+00:02:27.450 --> 00:02:30.720
+on the traffic that will match the rules that we've set up.
+
+62
+00:02:30.720 --> 00:02:33.300
+And we also have active flow inspections,
+
+63
+00:02:33.300 --> 00:02:37.440
+so we can actually have an intrusion prevention capability
+
+64
+00:02:37.440 --> 00:02:39.480
+just like we have with the Gateway Load Balancer,
+
+65
+00:02:39.480 --> 00:02:41.940
+but all managed by AWS
+
+66
+00:02:41.940 --> 00:02:43.920
+and all the rule matches can also
+
+67
+00:02:43.920 --> 00:02:46.500
+be sent to Amazon S3, CloudWatch Logs
+
+68
+00:02:46.500 --> 00:02:49.560
+and Kinesis Data Firehose for analysis.
+
+69
+00:02:49.560 --> 00:02:51.780
+So let's have a look at architectures
+
+70
+00:02:51.780 --> 00:02:54.210
+using the AWS Network Firewall.
+
+71
+00:02:54.210 --> 00:02:56.010
+So let's assume we have multiple VPCs
+
+72
+00:02:56.010 --> 00:02:58.800
+with instances in them, and we want to have all
+
+73
+00:02:58.800 --> 00:03:01.950
+traffic go through an inspection VPC.
+
+74
+00:03:01.950 --> 00:03:04.800
+This is where we're going to analyze all our traffic.
+
+75
+00:03:04.800 --> 00:03:07.470
+On top of it, we have requirements to access the internet.
+
+76
+00:03:07.470 --> 00:03:11.370
+So we're going to create an egress VPC within that gateway.
+
+77
+00:03:11.370 --> 00:03:14.850
+An internet gateway, which gives us access to the internet
+
+78
+00:03:14.850 --> 00:03:18.330
+and we may have also an on-premises data center
+
+79
+00:03:18.330 --> 00:03:20.310
+or corporate data center
+
+80
+00:03:20.310 --> 00:03:22.470
+and therefore we need to have a VPN connection,
+
+81
+00:03:22.470 --> 00:03:24.150
+a Side-to-Side VPN connection
+
+82
+00:03:24.150 --> 00:03:26.880
+and an AWS Direct Connect Gateway.
+
+83
+00:03:26.880 --> 00:03:31.080
+So we want to have everything go through the inspection VPC
+
+84
+00:03:31.080 --> 00:03:33.240
+and in the inspection VPC, we're going
+
+85
+00:03:33.240 --> 00:03:36.750
+to have the AWS Network Firewall Service.
+
+86
+00:03:36.750 --> 00:03:39.300
+So to interconnect everything
+
+87
+00:03:39.300 --> 00:03:42.720
+and make sure your traffic is going to be properly routed,
+
+88
+00:03:42.720 --> 00:03:44.700
+when you see something this complicated
+
+89
+00:03:44.700 --> 00:03:45.810
+you have to think directly
+
+90
+00:03:45.810 --> 00:03:48.990
+about the AWS Transit Gateway at the center,
+
+91
+00:03:48.990 --> 00:03:51.750
+which enables you to do tons of cool patterns.
+
+92
+00:03:51.750 --> 00:03:52.770
+So let's have a look
+
+93
+00:03:52.770 --> 00:03:56.280
+at North South VPC egress to the internet.
+
+94
+00:03:56.280 --> 00:03:58.890
+That means from the VPC to the internet,
+
+95
+00:03:58.890 --> 00:04:01.320
+but through the inspection VPC.
+
+96
+00:04:01.320 --> 00:04:02.610
+So you can just post right now
+
+97
+00:04:02.610 --> 00:04:04.770
+and map it out on here
+
+98
+00:04:04.770 --> 00:04:05.970
+to see how this would work,
+
+99
+00:04:05.970 --> 00:04:07.440
+but hopefully you get it right.
+
+100
+00:04:07.440 --> 00:04:11.730
+So first the traffic goes from the VPC instances
+
+101
+00:04:11.730 --> 00:04:14.403
+to the Transit Gateway, and then you create routing
+
+102
+00:04:14.403 --> 00:04:17.580
+within the Transit Gateway to send everything
+
+103
+00:04:17.580 --> 00:04:19.470
+to the inspection VPC,
+
+104
+00:04:19.470 --> 00:04:22.650
+which sends back the traffic to the Transit Gateway
+
+105
+00:04:22.650 --> 00:04:25.440
+which then forwards the traffic to the egress VPC.
+
+106
+00:04:25.440 --> 00:04:27.012
+And then from there it goes
+
+107
+00:04:27.012 --> 00:04:30.240
+to the internet through the Internet Gateway.
+
+108
+00:04:30.240 --> 00:04:31.230
+So that makes sense
+
+109
+00:04:31.230 --> 00:04:34.140
+and so with this, we send to the Transit Gateway
+
+110
+00:04:34.140 --> 00:04:35.550
+and the Transit Gateway is responsible
+
+111
+00:04:35.550 --> 00:04:38.820
+for setting all traffic into the inspection VPC.
+
+112
+00:04:38.820 --> 00:04:41.370
+So this is similar if you want to inspect traffic
+
+113
+00:04:41.370 --> 00:04:44.580
+before it goes to your on-premises data center.
+
+114
+00:04:44.580 --> 00:04:46.260
+Again, we need to set the Transit Gateway
+
+115
+00:04:46.260 --> 00:04:49.200
+so the traffic goes from the instances
+
+116
+00:04:49.200 --> 00:04:50.730
+into the Transit Gateway,
+
+117
+00:04:50.730 --> 00:04:53.880
+which goes into the Network Firewall back and forth.
+
+118
+00:04:53.880 --> 00:04:55.920
+And then the Transit Gateway will send it
+
+119
+00:04:55.920 --> 00:04:59.550
+to your VPN connection or to your Direct Connect Gateway.
+
+120
+00:04:59.550 --> 00:05:02.190
+And if you want to have East West VPC to VPC,
+
+121
+00:05:02.190 --> 00:05:04.770
+so that means from your VPC to another VPC
+
+122
+00:05:04.770 --> 00:05:07.380
+but through the inspection VPC, again
+
+123
+00:05:07.380 --> 00:05:08.730
+it goes from your instances
+
+124
+00:05:08.730 --> 00:05:10.260
+into the Transit Gateway,
+
+125
+00:05:10.260 --> 00:05:12.090
+through the Network Firewall,
+
+126
+00:05:12.090 --> 00:05:15.090
+and then finally into your instances.
+
+127
+00:05:15.090 --> 00:05:17.580
+So it's a pretty easy architecture once you've seen it once,
+
+128
+00:05:17.580 --> 00:05:19.680
+but everything goes from the Transit Gateway
+
+129
+00:05:19.680 --> 00:05:21.840
+to the Network Firewall to get inspected
+
+130
+00:05:21.840 --> 00:05:23.520
+and then back to the Transit Gateway
+
+131
+00:05:23.520 --> 00:05:26.100
+to go to its final destination.
+
+132
+00:05:26.100 --> 00:05:26.933
+Okay, that's it.
+
+133
+00:05:26.933 --> 00:05:28.050
+I hope you liked it and
+
+134
+00:05:28.050 --> 00:05:29.800
+I will see you in the next lecture.
+

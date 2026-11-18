@@ -1,0 +1,586 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.700
+<v Educator>Hey and welcome to this lecture on ElastiCache.</v>
+
+2
+00:00:02.700 --> 00:00:04.590
+So in this lecture, I'm not going to teach you
+
+3
+00:00:04.590 --> 00:00:05.760
+anything groundbreaking,
+
+4
+00:00:05.760 --> 00:00:08.460
+but we are going to see a few solution architecture,
+
+5
+00:00:08.460 --> 00:00:11.400
+and also learn the difference between Redis and Memcached,
+
+6
+00:00:11.400 --> 00:00:12.990
+because this is something you may have to choose
+
+7
+00:00:12.990 --> 00:00:14.910
+between at the exam.
+
+8
+00:00:14.910 --> 00:00:16.230
+So the same way we have RDS
+
+9
+00:00:16.230 --> 00:00:18.030
+to get manager international databases,
+
+10
+00:00:18.030 --> 00:00:21.090
+we get ElastiCache to get and manage Redis or Memcached.
+
+11
+00:00:21.090 --> 00:00:23.400
+And they're different technologies for caching.
+
+12
+00:00:23.400 --> 00:00:25.680
+Caches are in-memory databases
+
+13
+00:00:25.680 --> 00:00:28.380
+that have really high performance and really low latency,
+
+14
+00:00:28.380 --> 00:00:31.200
+and they help reduce load off of databases
+
+15
+00:00:31.200 --> 00:00:33.090
+for read intensive workloads.
+
+16
+00:00:33.090 --> 00:00:35.790
+So the idea is that anything that is frequently queried
+
+17
+00:00:35.790 --> 00:00:37.350
+or very expensive to compute,
+
+18
+00:00:37.350 --> 00:00:39.840
+you would cache it into an ElastiCache database,
+
+19
+00:00:39.840 --> 00:00:41.100
+so Redis or Memcached.
+
+20
+00:00:41.100 --> 00:00:43.320
+And then the database itself
+
+21
+00:00:43.320 --> 00:00:45.390
+will achieve a lot less queries.
+
+22
+00:00:45.390 --> 00:00:48.120
+They also help you make your application stateless.
+
+23
+00:00:48.120 --> 00:00:50.520
+So if you have session stores, all these kind of things,
+
+24
+00:00:50.520 --> 00:00:54.240
+ElastiCache is a great place to have this data in.
+
+25
+00:00:54.240 --> 00:00:56.640
+Now because this is a managed service,
+
+26
+00:00:56.640 --> 00:00:58.920
+AWS will take care of all the OS maintenance,
+
+27
+00:00:58.920 --> 00:01:00.810
+the patching, any optimization,
+
+28
+00:01:00.810 --> 00:01:03.030
+set up, configuration, monitoring, failure,
+
+29
+00:01:03.030 --> 00:01:04.320
+recovery, and backups.
+
+30
+00:01:04.320 --> 00:01:06.450
+You do have to set up your own settings,
+
+31
+00:01:06.450 --> 00:01:09.390
+and you do have to set up your own security groups
+
+32
+00:01:09.390 --> 00:01:11.340
+to get access to ElastiCache.
+
+33
+00:01:11.340 --> 00:01:13.050
+But overall this is a managed service.
+
+34
+00:01:13.050 --> 00:01:16.470
+So we get all the things we already know from AWS.
+
+35
+00:01:16.470 --> 00:01:19.320
+Overall using ElastiCache does involve
+
+36
+00:01:19.320 --> 00:01:21.030
+heavy application code changes.
+
+37
+00:01:21.030 --> 00:01:22.500
+This is not something that you get for free.
+
+38
+00:01:22.500 --> 00:01:25.560
+So even though you do set up a Redis or a Memcached,
+
+39
+00:01:25.560 --> 00:01:26.940
+your application code itself
+
+40
+00:01:26.940 --> 00:01:29.790
+has to be refactored to use ElastiCache.
+
+41
+00:01:29.790 --> 00:01:31.680
+So this is something you have to take into account
+
+42
+00:01:31.680 --> 00:01:34.800
+when answering a question in the exam.
+
+43
+00:01:34.800 --> 00:01:37.980
+Next, so ElastiCachee can be used at a DB Cache.
+
+44
+00:01:37.980 --> 00:01:39.780
+So the idea is that we have our application,
+
+45
+00:01:39.780 --> 00:01:43.140
+ElastiCache and for example, a database such as Amazon RDS.
+
+46
+00:01:43.140 --> 00:01:45.450
+And the application when they're refactored,
+
+47
+00:01:45.450 --> 00:01:48.240
+will query ElastiCache and if not available,
+
+48
+00:01:48.240 --> 00:01:51.076
+they will get the data from RDS and store in ElastiCache.
+
+49
+00:01:51.076 --> 00:01:52.560
+That is one caging strategy.
+
+50
+00:01:52.560 --> 00:01:53.730
+So it's called lazy loading.
+
+51
+00:01:53.730 --> 00:01:55.770
+So if we get a cache hit, that's perfect,
+
+52
+00:01:55.770 --> 00:01:57.750
+we get the data back from ElastiCache.
+
+53
+00:01:57.750 --> 00:01:58.950
+Otherwise, if you have a Cache miss
+
+54
+00:01:58.950 --> 00:02:01.110
+because the data is not in ElastiCache,
+
+55
+00:02:01.110 --> 00:02:03.090
+then we're going to read it from the database,
+
+56
+00:02:03.090 --> 00:02:05.340
+and then write it to Cache.
+
+57
+00:02:05.340 --> 00:02:07.020
+This helps relieve any kind of load
+
+58
+00:02:07.020 --> 00:02:09.120
+in RDS in case there is some hot keys
+
+59
+00:02:09.120 --> 00:02:11.400
+or something that reads very, very often.
+
+60
+00:02:11.400 --> 00:02:14.010
+And you must have a cache invalidation strategy
+
+61
+00:02:14.010 --> 00:02:16.320
+to make sure that only the most current data
+
+62
+00:02:16.320 --> 00:02:17.280
+is used in there.
+
+63
+00:02:17.280 --> 00:02:19.260
+Otherwise there will be a consistency problem
+
+64
+00:02:19.260 --> 00:02:22.200
+between the state of your cache and the state of RDS.
+
+65
+00:02:22.200 --> 00:02:23.790
+And this is a big problem in notifications.
+
+66
+00:02:23.790 --> 00:02:25.890
+This is very hard problem to solve.
+
+67
+00:02:25.890 --> 00:02:28.320
+Okay, the second thing can use ElastiCache for is
+
+68
+00:02:28.320 --> 00:02:29.970
+to be a user session store.
+
+69
+00:02:29.970 --> 00:02:31.440
+So say you have your application,
+
+70
+00:02:31.440 --> 00:02:33.900
+and they're on two different EC2 instances.
+
+71
+00:02:33.900 --> 00:02:35.310
+And your users, they're accessing it
+
+72
+00:02:35.310 --> 00:02:36.143
+through a load announcer,
+
+73
+00:02:36.143 --> 00:02:38.130
+but you haven't enabled session stickiness.
+
+74
+00:02:38.130 --> 00:02:39.900
+It's possible that your users are talking to
+
+75
+00:02:39.900 --> 00:02:42.300
+any of the applications.
+
+76
+00:02:42.300 --> 00:02:43.470
+Now, what the application will do is
+
+77
+00:02:43.470 --> 00:02:46.740
+that they will write the session data back into ElastiCache,
+
+78
+00:02:46.740 --> 00:02:50.040
+such as if your users hits another EC2 instance
+
+79
+00:02:50.040 --> 00:02:51.240
+of your application,
+
+80
+00:02:51.240 --> 00:02:52.920
+then your application can retrieve
+
+81
+00:02:52.920 --> 00:02:54.330
+the session from ElastiCache.
+
+82
+00:02:54.330 --> 00:02:56.910
+And know who the user is if it's logged in,
+
+83
+00:02:56.910 --> 00:02:58.560
+it's state, and that kind of things.
+
+84
+00:02:58.560 --> 00:03:01.800
+And so we have this way achieved statelessness
+
+85
+00:03:01.800 --> 00:03:04.862
+in our solution architecture regardless of
+
+86
+00:03:04.862 --> 00:03:06.780
+if we hit one application or another.
+
+87
+00:03:06.780 --> 00:03:10.020
+And that is a very common pattern for using ElastiCache
+
+88
+00:03:10.020 --> 00:03:12.150
+to have user session store.
+
+89
+00:03:12.150 --> 00:03:15.180
+Okay, so finally, we need to understand the difference
+
+90
+00:03:15.180 --> 00:03:16.680
+between Redis and Memcached.
+
+91
+00:03:16.680 --> 00:03:19.530
+'Cause it may be something we have to choose on at the exam.
+
+92
+00:03:19.530 --> 00:03:21.810
+So Redis is going to have a feature
+
+93
+00:03:21.810 --> 00:03:24.000
+of multi AZ with Auto-Failover.
+
+94
+00:03:24.000 --> 00:03:25.530
+So it is highly available.
+
+95
+00:03:25.530 --> 00:03:27.510
+There is some standby active,
+
+96
+00:03:27.510 --> 00:03:30.420
+and you can recover from a failure of an AZ.
+
+97
+00:03:30.420 --> 00:03:31.800
+So that makes it a very good choice
+
+98
+00:03:31.800 --> 00:03:33.450
+based on some situations.
+
+99
+00:03:33.450 --> 00:03:35.880
+And you can create Read Replicas to scale reads
+
+100
+00:03:35.880 --> 00:03:37.410
+and have high availability.
+
+101
+00:03:37.410 --> 00:03:39.420
+So this looks a lot like RDS.
+
+102
+00:03:39.420 --> 00:03:42.420
+Redis RDS nano technique maybe that works for you.
+
+103
+00:03:42.420 --> 00:03:45.360
+Okay, are the features that it's persistent the data.
+
+104
+00:03:45.360 --> 00:03:46.830
+So that means that if you enable
+
+105
+00:03:46.830 --> 00:03:49.140
+the append only file feature, AOF,
+
+106
+00:03:49.140 --> 00:03:52.530
+you can get back your data after losing your cluster.
+
+107
+00:03:52.530 --> 00:03:54.660
+So it is possible for you to have backup
+
+108
+00:03:54.660 --> 00:03:57.000
+and restore features, and that is extremely important.
+
+109
+00:03:57.000 --> 00:03:59.550
+So this looks a lot like a real database
+
+110
+00:03:59.550 --> 00:04:01.470
+from RDS that we're used to do.
+
+111
+00:04:01.470 --> 00:04:04.890
+So if you look at Redis, think Redis are replication.
+
+112
+00:04:04.890 --> 00:04:06.570
+So we have two Redis instances
+
+113
+00:04:06.570 --> 00:04:08.400
+and some replication happening between them.
+
+114
+00:04:08.400 --> 00:04:09.960
+So what you need to remember out of Redis is
+
+115
+00:04:09.960 --> 00:04:11.610
+that it's highly available.
+
+116
+00:04:11.610 --> 00:04:13.200
+There's some replication, some backup,
+
+117
+00:04:13.200 --> 00:04:14.670
+all that kind of things.
+
+118
+00:04:14.670 --> 00:04:16.680
+Memcached is another strategy.
+
+119
+00:04:16.680 --> 00:04:19.200
+In this case, when you have multiple nodes in Memcached,
+
+120
+00:04:19.200 --> 00:04:20.550
+this is not for replication of data,
+
+121
+00:04:20.550 --> 00:04:22.920
+this is for partitioning and data sharding.
+
+122
+00:04:22.920 --> 00:04:24.420
+It's not a persistent cache that mean
+
+123
+00:04:24.420 --> 00:04:26.760
+that if you lose the cache then you lose your data.
+
+124
+00:04:26.760 --> 00:04:30.690
+So it's really just for temporary persist transient data.
+
+125
+00:04:30.690 --> 00:04:32.160
+You have backup and restore features
+
+126
+00:04:32.160 --> 00:04:34.260
+for the serverless version of Memcached,
+
+127
+00:04:34.260 --> 00:04:36.240
+not the self-managed version.
+
+128
+00:04:36.240 --> 00:04:38.610
+And it's a multi-threaded architecture.
+
+129
+00:04:38.610 --> 00:04:39.930
+So when you look at Memcached,
+
+130
+00:04:39.930 --> 00:04:42.300
+this is maybe not something that's gonna be Multi AZ
+
+131
+00:04:42.300 --> 00:04:44.160
+in the same way Redis is.
+
+132
+00:04:44.160 --> 00:04:46.470
+The way you should look at Memcached is sharding.
+
+133
+00:04:46.470 --> 00:04:47.850
+So that means that some data will go
+
+134
+00:04:47.850 --> 00:04:49.560
+onto one Memcached node.
+
+135
+00:04:49.560 --> 00:04:52.230
+Some data will go onto another Memcached node.
+
+136
+00:04:52.230 --> 00:04:54.570
+And this way your data is sharded across multiple
+
+137
+00:04:54.570 --> 00:04:56.070
+instances of Memcached.
+
+138
+00:04:56.070 --> 00:04:58.800
+And if you lose one node of Memcached,
+
+139
+00:04:58.800 --> 00:05:00.570
+then you lose all the data on that node,
+
+140
+00:05:00.570 --> 00:05:02.889
+even though the other nodes may
+
+141
+00:05:02.889 --> 00:05:04.290
+still may still be operational.
+
+142
+00:05:04.290 --> 00:05:05.610
+Okay, so that's it.
+
+143
+00:05:05.610 --> 00:05:07.457
+Hope that makes sense for the differences between
+
+144
+00:05:07.457 --> 00:05:09.780
+Redis and Memcached and ElistiCache role.
+
+145
+00:05:09.780 --> 00:05:10.740
+I hope you like this lecture,
+
+146
+00:05:10.740 --> 00:05:12.690
+and I will see you in the next lecture.
+

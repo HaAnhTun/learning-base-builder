@@ -1,0 +1,442 @@
+WEBVTT
+
+1
+00:00:00.230 --> 00:00:02.310
+<v Instructor>So we have seen KMS for encryption,</v>
+
+2
+00:00:02.310 --> 00:00:04.530
+but now let's look at CloudHSM.
+
+3
+00:00:04.530 --> 00:00:08.670
+So with KMS, AWS will manage the software for the encryption
+
+4
+00:00:08.670 --> 00:00:11.310
+and will have control over the encryption keys.
+
+5
+00:00:11.310 --> 00:00:12.512
+But with CloudHSM,
+
+6
+00:00:12.512 --> 00:00:15.270
+AWS will provision some encryption hardware.
+
+7
+00:00:15.270 --> 00:00:17.820
+It's called an HSM device, so a dedicated hardware,
+
+8
+00:00:17.820 --> 00:00:19.980
+which is a hardware security module.
+
+9
+00:00:19.980 --> 00:00:21.300
+And then we are going
+
+10
+00:00:21.300 --> 00:00:25.170
+to manage our own encryption keys entirely, not AWS.
+
+11
+00:00:25.170 --> 00:00:28.290
+So we have full control over the encryption keys.
+
+12
+00:00:28.290 --> 00:00:31.440
+The HSM device is going to be set up within the cloud
+
+13
+00:00:31.440 --> 00:00:34.170
+of AWS, but it is tamper resistant
+
+14
+00:00:34.170 --> 00:00:38.040
+with FIPS 140-2 Level 3 compliance, which means
+
+15
+00:00:38.040 --> 00:00:41.460
+that if anyone tries to access your HSM device manually,
+
+16
+00:00:41.460 --> 00:00:44.160
+then they're going to be stopped and blocked.
+
+17
+00:00:44.160 --> 00:00:46.650
+The CloudHSM device supports both symmetric
+
+18
+00:00:46.650 --> 00:00:48.630
+and asymmetric encryption keys.
+
+19
+00:00:48.630 --> 00:00:50.423
+So that means that you can have, for example, SSL
+
+20
+00:00:50.423 --> 00:00:52.830
+and TLS keys on top of it.
+
+21
+00:00:52.830 --> 00:00:56.400
+There is no free tier and to use the CloudHSM device,
+
+22
+00:00:56.400 --> 00:00:57.660
+you need to use the client software,
+
+23
+00:00:57.660 --> 00:01:00.453
+which is quite complicated and out of scope right now.
+
+24
+00:01:01.290 --> 00:01:02.820
+There is an integration
+
+25
+00:01:02.820 --> 00:01:04.590
+between Redshift and CloudHSM
+
+26
+00:01:04.590 --> 00:01:06.210
+if you wanted to leverage CloudHSM
+
+27
+00:01:06.210 --> 00:01:08.760
+for your database encryption and key managements.
+
+28
+00:01:08.760 --> 00:01:11.010
+CloudHSM is a really, really good candidate
+
+29
+00:01:11.010 --> 00:01:13.260
+if you want to implement SSE-C type
+
+30
+00:01:13.260 --> 00:01:15.990
+of encryption on top of S3, for example,
+
+31
+00:01:15.990 --> 00:01:18.600
+because you are managing your own encryption keys
+
+32
+00:01:18.600 --> 00:01:21.480
+and you are storing them into this CloudHSM.
+
+33
+00:01:21.480 --> 00:01:25.170
+So with the CloudHSM, AWS will manage your hardware,
+
+34
+00:01:25.170 --> 00:01:27.510
+whereas the service itself can be used on your own.
+
+35
+00:01:27.510 --> 00:01:30.090
+The CloudHSM client is something you have to use
+
+36
+00:01:30.090 --> 00:01:33.360
+to establish a connection into the CloudHSM service.
+
+37
+00:01:33.360 --> 00:01:35.940
+And then you are going to manage the keys overall.
+
+38
+00:01:35.940 --> 00:01:37.980
+So the IAM permissions are going to be used
+
+39
+00:01:37.980 --> 00:01:42.540
+to do a create, read, update, a delete of an HSM cluster
+
+40
+00:01:42.540 --> 00:01:43.650
+at a high level,
+
+41
+00:01:43.650 --> 00:01:45.960
+but then you're going to use your CloudHSM software
+
+42
+00:01:45.960 --> 00:01:48.300
+to manage the keys and manage the users
+
+43
+00:01:48.300 --> 00:01:50.670
+and their permissions to access the keys,
+
+44
+00:01:50.670 --> 00:01:52.500
+which is different from KMS
+
+45
+00:01:52.500 --> 00:01:55.950
+because in KMS, well, everything is managed using IAM.
+
+46
+00:01:55.950 --> 00:01:58.950
+Now, the CloudHSM clusters can have high availability
+
+47
+00:01:58.950 --> 00:02:00.720
+and they're spread across multiple AZ.
+
+48
+00:02:00.720 --> 00:02:03.480
+So they're HA, and this is super important to understand.
+
+49
+00:02:03.480 --> 00:02:04.873
+So you can have two AZs.
+
+50
+00:02:04.873 --> 00:02:07.980
+One is going to be replicated from another
+
+51
+00:02:07.980 --> 00:02:10.920
+and your HSM client can connect to either.
+
+52
+00:02:10.920 --> 00:02:13.890
+So how do we transparently leverage CloudHSM
+
+53
+00:02:13.890 --> 00:02:16.620
+within the AWS services encryption?
+
+54
+00:02:16.620 --> 00:02:20.160
+Well, there is an integration between CloudHSM and KMS.
+
+55
+00:02:20.160 --> 00:02:20.993
+How does that work?
+
+56
+00:02:20.993 --> 00:02:24.690
+Well, in KMS, we're going to define a KMS custom key store,
+
+57
+00:02:24.690 --> 00:02:26.460
+and that will be CloudHSM.
+
+58
+00:02:26.460 --> 00:02:29.040
+And that means we can get CloudHSM encryption for EBS,
+
+59
+00:02:29.040 --> 00:02:31.560
+S3, RDS and so on.
+
+60
+00:02:31.560 --> 00:02:32.393
+So how does that work?
+
+61
+00:02:32.393 --> 00:02:34.410
+Well, we create the CloudHSM cluster,
+
+62
+00:02:34.410 --> 00:02:37.260
+and we define a KMS custom key store that is going
+
+63
+00:02:37.260 --> 00:02:40.530
+to be connected to our CloudHSM cluster.
+
+64
+00:02:40.530 --> 00:02:43.230
+From there, if we create an RDS database instance
+
+65
+00:02:43.230 --> 00:02:46.857
+that has an encrypted EBS volume with KMS encryption,
+
+66
+00:02:46.857 --> 00:02:49.920
+well, internally this KMS encryption is going
+
+67
+00:02:49.920 --> 00:02:51.930
+to be leveraging encryption keys
+
+68
+00:02:51.930 --> 00:02:54.270
+within your CloudHSM cluster.
+
+69
+00:02:54.270 --> 00:02:56.130
+The benefit of doing this is number one,
+
+70
+00:02:56.130 --> 00:02:58.830
+we are actually using our CloudHSM cluster.
+
+71
+00:02:58.830 --> 00:03:03.660
+And number two, any API calls made through KMS
+
+72
+00:03:03.660 --> 00:03:06.540
+that reaches our cloud HSM cluster is going
+
+73
+00:03:06.540 --> 00:03:09.360
+to be logged in CloudTrail.
+
+74
+00:03:09.360 --> 00:03:11.850
+So if we compare CloudHSM and KMS,
+
+75
+00:03:11.850 --> 00:03:13.860
+the tendency of KMS is multi-tenant,
+
+76
+00:03:13.860 --> 00:03:16.590
+whereas for CloudHSM, it's single tenants.
+
+77
+00:03:16.590 --> 00:03:18.450
+They both have the same standard.
+
+78
+00:03:18.450 --> 00:03:21.845
+The master keys are three kinds on KMS, they're AWS owned,
+
+79
+00:03:21.845 --> 00:03:24.480
+AWS managed, and customer managed CMK.
+
+80
+00:03:24.480 --> 00:03:27.990
+Whereas for CloudHSM, it's only customer-managed CMK
+
+81
+00:03:27.990 --> 00:03:31.710
+because AWS cannot access your HSM device.
+
+82
+00:03:31.710 --> 00:03:33.960
+In terms of key type, it is very similar, symmetric,
+
+83
+00:03:33.960 --> 00:03:36.480
+asymmetric and digital signing for KMS
+
+84
+00:03:36.480 --> 00:03:38.790
+and symmetric, asymmetric and digital sending
+
+85
+00:03:38.790 --> 00:03:41.550
+and hashing for CloudHSM.
+
+86
+00:03:41.550 --> 00:03:44.130
+In terms of key accessibility, well,
+
+87
+00:03:44.130 --> 00:03:46.620
+KMS is accessible in multiple regions,
+
+88
+00:03:46.620 --> 00:03:49.050
+but because CloudHSM is deployed in a VPC,
+
+89
+00:03:49.050 --> 00:03:52.380
+you can share it across VPCs using VPC for sharing.
+
+90
+00:03:52.380 --> 00:03:53.970
+And so that means that it's going to be accessible
+
+91
+00:03:53.970 --> 00:03:56.670
+across multiple regions if you wanted to.
+
+92
+00:03:56.670 --> 00:03:58.950
+For cryptographic acceleration, well,
+
+93
+00:03:58.950 --> 00:04:02.310
+you can set up none on KMS, but with CloudHSM,
+
+94
+00:04:02.310 --> 00:04:05.010
+you have SSL and TLS acceleration you can use
+
+95
+00:04:05.010 --> 00:04:07.800
+at your load balancer level, or you can use Oracle
+
+96
+00:04:07.800 --> 00:04:10.800
+and TDE acceleration as well for your database.
+
+97
+00:04:10.800 --> 00:04:12.180
+That is Oracle based.
+
+98
+00:04:12.180 --> 00:04:14.850
+For access and authentication, you have IAM for KMS,
+
+99
+00:04:14.850 --> 00:04:17.250
+whereas CloudHSM has its own security mechanism
+
+100
+00:04:17.250 --> 00:04:20.070
+to manage users and their permissions and their keys.
+
+101
+00:04:20.070 --> 00:04:22.050
+And then finally, for high availability,
+
+102
+00:04:22.050 --> 00:04:25.710
+while KMS is a managed service and is always available
+
+103
+00:04:25.710 --> 00:04:28.560
+and CloudHSM will have multiple HSM devices
+
+104
+00:04:28.560 --> 00:04:30.750
+over different availability zones.
+
+105
+00:04:30.750 --> 00:04:33.480
+Other capability is CloudTrail and CloudWatch for KMS,
+
+106
+00:04:33.480 --> 00:04:37.200
+whereas we have MFS support as well for CloudHSM.
+
+107
+00:04:37.200 --> 00:04:39.720
+Finally, KMS is part of the free tier in AWS,
+
+108
+00:04:39.720 --> 00:04:41.760
+whereas CloudHSM is not.
+
+109
+00:04:41.760 --> 00:04:43.800
+So that's it for CloudHSM, I hope you liked it,
+
+110
+00:04:43.800 --> 00:04:45.750
+and I will see you in the next lecture.
+

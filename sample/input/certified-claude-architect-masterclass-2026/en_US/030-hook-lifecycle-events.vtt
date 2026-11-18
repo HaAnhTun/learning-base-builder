@@ -1,0 +1,298 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.400
+Welcome back. Clog code hooks let you run your own commands automatically at specific moments,
+
+2
+00:00:06.400 --> 00:00:12.800
+and there are quite a few of them. The trick is knowing when events fire and which ones let you
+
+3
+00:00:12.800 --> 00:00:19.280
+step in versus just watch. This lesson maps the events by cadence and shows which hooks block
+
+4
+00:00:19.280 --> 00:00:25.280
+and which only observe. Let's get into it. A hook is just a command you register to run
+
+5
+00:00:25.280 --> 00:00:30.399
+automatically when a specific lifecycle event fires. You aren't changing the model,
+
+6
+00:00:30.399 --> 00:00:36.560
+you are attaching your own script to a moment. A lifecycle event is that named moment. It might be
+
+7
+00:00:36.560 --> 00:00:43.439
+a tool call about to happen, a session starting, or a turn ending, and each one gives your hooks
+
+8
+00:00:43.439 --> 00:00:50.159
+a chance to run. A blocking hook is one that can actually stop the action from going through,
+
+9
+00:00:50.159 --> 00:00:56.000
+and the way it signals that is by exiting with code 2. Everything else in this lesson is just
+
+10
+00:00:56.000 --> 00:01:01.520
+events at different moments, and whether the hook at that moment can block or only observe.
+
+11
+00:01:02.240 --> 00:01:08.480
+That single distinction is the whole game. The cleanest way to hold all these events in your
+
+12
+00:01:08.480 --> 00:01:14.400
+head is to group them by cadence, by how often they fire. There are three buckets. The outermost
+
+13
+00:01:14.400 --> 00:01:20.800
+is once per session, session start, and session end fire, one time each, framing the whole session
+
+14
+00:01:20.800 --> 00:01:26.559
+like bookends. The middle bucket is once per turn, prompt submit and stop fire around each
+
+15
+00:01:26.559 --> 00:01:32.400
+individual thing you ask the agent to do, and the innermost, fastest bucket, is every tool call.
+
+16
+00:01:32.959 --> 00:01:38.800
+Pre-tool use and post-tool use wrap each and every tool the agent runs inside its loop,
+
+17
+00:01:38.800 --> 00:01:45.440
+so those can fire many times in a single turn. Session, turn, tool. Outer to inner,
+
+18
+00:01:45.440 --> 00:01:50.879
+slow to fast. If you remember that nesting, the events you will reach for most fall into place.
+
+19
+00:01:52.160 --> 00:01:57.839
+Let's start at the outermost layer, the session events. These fire once as a session opens and
+
+20
+00:01:57.839 --> 00:02:04.400
+once as it closes. Session start runs when a session begins or resumes, so it is your hook
+
+21
+00:02:04.400 --> 00:02:09.679
+for the very beginning. Session end runs when the session terminates, right at shutdown.
+
+22
+00:02:10.240 --> 00:02:15.600
+Here is the key property. Both of these are observe only. They can't block anything,
+
+23
+00:02:15.600 --> 00:02:20.800
+because there is no single action for them to veto. They simply mark the edges, so what are
+
+24
+00:02:20.800 --> 00:02:26.720
+they good for? Session start is where you set up context as you enter, maybe loading project notes
+
+25
+00:02:26.720 --> 00:02:33.119
+or environment details. Session end is where you clean things up on the way out. Think of them as
+
+26
+00:02:33.119 --> 00:02:40.240
+setup and teardown, not as gates. One layer in, we hit the turn events, and these bracket each turn
+
+27
+00:02:40.240 --> 00:02:46.479
+you take with the agent. User prompt submit fires when you send a prompt, before Claude even reads
+
+28
+00:02:46.479 --> 00:02:52.080
+it. Stop fires on the other side when Claude finishes responding. Now here is what makes
+
+29
+00:02:52.080 --> 00:02:58.080
+these interesting. Because prompt submit runs before your prompt is processed, a hook there
+
+30
+00:02:58.080 --> 00:03:04.000
+can reject a prompt outright or add context alongside it. And because stop runs when Claude
+
+31
+00:03:04.000 --> 00:03:09.440
+tries to finish, a blocking hook there can prevent the agent from stopping and push it to keep
+
+32
+00:03:09.440 --> 00:03:15.919
+working. So the turn layer is where you can inspect what goes in and control when the agent is allowed
+
+33
+00:03:15.919 --> 00:03:22.320
+to be done. Now the innermost pair, and this is the contrast I most want you to remember. Pre-tool
+
+34
+00:03:22.320 --> 00:03:29.199
+use and post-tool use sound like a matched set, but they behave very differently. Pre-tool use
+
+35
+00:03:29.199 --> 00:03:35.279
+fires before a tool runs, and it can block the call. That makes it your gate. If you want to guard
+
+36
+00:03:35.279 --> 00:03:42.320
+against a risky command or stop an unwanted tool entirely, this is the hook. And it blocks by exiting
+
+37
+00:03:42.320 --> 00:03:49.759
+with code 2. Post-tool use fires after a tool succeeds, and here is the crucial part. It can't
+
+38
+00:03:49.759 --> 00:03:55.759
+block because the tool has already run. There is nothing left to stop, so you use post-tool use to
+
+39
+00:03:55.759 --> 00:04:02.720
+react to what happened. Log the result, check the output, or trigger a follow-up. Pre-tool guards.
+
+40
+00:04:02.720 --> 00:04:10.479
+Post-tool reacts. Don't mix them up. Beyond the regular cadences, a few events fire at their own
+
+41
+00:04:10.479 --> 00:04:17.200
+specific moments. Pre-compact fires just before context compaction, when Claude code is about to
+
+42
+00:04:17.200 --> 00:04:23.200
+summarize older context to save room. It can block, so you can protect something from being
+
+43
+00:04:23.200 --> 00:04:30.000
+summarized away. Notification fires when Claude code sends a notification, and it only observes,
+
+44
+00:04:30.000 --> 00:04:36.000
+so it is purely for alerting you, maybe pinging your phone or terminal. And permission request
+
+45
+00:04:36.000 --> 00:04:41.359
+fires when a tool call needs a permission decision. It can deny that request, but it is the
+
+46
+00:04:41.359 --> 00:04:47.920
+exception to the exit code rule. It denies by returning a decision object, not by exiting 2.
+
+47
+00:04:48.480 --> 00:04:54.480
+So even outside the tidy session, turn, and tool buckets, the same question always applies.
+
+48
+00:04:54.480 --> 00:05:00.640
+Does this moment let me block or only watch? Let's make the blocking mechanism concrete.
+
+49
+00:05:00.640 --> 00:05:07.519
+Because it comes down to the exit code, your hook returns. Exit 0 means success. Claude code reads
+
+50
+00:05:07.519 --> 00:05:13.519
+any structured output your hook printed and just continues normally. Exit 2 is the special one.
+
+51
+00:05:13.519 --> 00:05:19.760
+It is the blocking signal. For any hook that is allowed to block, exiting 2 stops the action and
+
+52
+00:05:19.760 --> 00:05:25.920
+feeds your message back to Claude as the reason. And any other exit code is treated as a non-blocking
+
+53
+00:05:25.920 --> 00:05:32.880
+error for most events, meaning the action still goes ahead anyway. That last point trips people up.
+
+54
+00:05:32.880 --> 00:05:38.880
+A plain failure code of 1 doesn't block. If you want to enforce a rule, you have to exit 2
+
+55
+00:05:38.880 --> 00:05:46.399
+specifically.0 to allow, 2 to block, everything else just warns. Let's pull the single most useful
+
+56
+00:05:46.399 --> 00:05:52.799
+distinction to the front. For any event, the real question is whether the hook can stop an action
+
+57
+00:05:52.799 --> 00:05:58.480
+or can only watch it. On the blocking side, pre-tool use stops a tool before it runs,
+
+58
+00:05:59.119 --> 00:06:04.720
+stop keeps the agent working instead of finishing, and pre-compact can halt compaction
+
+59
+00:06:04.720 --> 00:06:12.079
+before context gets trimmed. On the observe-only side, post-tool use can react but can't undo
+
+60
+00:06:12.079 --> 00:06:18.399
+because the tool already finished. And session start and notification simply watch and report.
+
+61
+00:06:18.399 --> 00:06:24.640
+So the practical rule is short. When you need a gate, something that can say no pick a blocking
+
+62
+00:06:24.640 --> 00:06:30.799
+event. When you just need a record or an alert, an observe-only event is exactly right and it
+
+63
+00:06:30.799 --> 00:06:36.480
+keeps your hook out of the critical path. Let's put it all together as a decision.
+
+64
+00:06:36.480 --> 00:06:41.600
+To choose the right hook, think about what you want to happen and when. Do you need to guard a
+
+65
+00:06:41.600 --> 00:06:48.320
+dangerous command before it runs? Reach for pre-tool use since it can block. Want to auto-format or
+
+66
+00:06:48.320 --> 00:06:55.359
+lint right after an edit? Use post-tool use, which reacts after the fact. Need to load project
+
+67
+00:06:55.359 --> 00:07:01.760
+context the moment a session opens? Session start is your hook. The pattern is always the same.
+
+68
+00:07:01.760 --> 00:07:08.480
+The cadence, session versus turn versus tool, tells you when the hook fires. And the blocking column
+
+69
+00:07:08.480 --> 00:07:14.480
+tells you whether you can actually intervene or only observe. Answer both of those and the right
+
+70
+00:07:14.480 --> 00:07:20.320
+hook picks itself. There are a couple of questions tangled together here and they aren't the same
+
+71
+00:07:20.320 --> 00:07:26.320
+question. When a hook fires is about cadence. Whether it can stop anything is about power.
+
+72
+00:07:26.320 --> 00:07:32.480
+A hook can sit right in front of a tool call and still be there only to watch. Decide the
+
+73
+00:07:32.480 --> 00:07:37.519
+moment first, then check whether the moment gives you the veto or just a seat to observe.
+
+74
+00:07:38.079 --> 00:07:41.119
+That's where we'll leave this lesson. I'll see you in the next one.
+

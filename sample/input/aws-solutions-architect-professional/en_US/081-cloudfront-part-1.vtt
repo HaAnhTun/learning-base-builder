@@ -1,0 +1,710 @@
+WEBVTT
+
+1
+00:00:00.300 --> 00:00:02.430
+<v Instructor>So now let's talk about Amazon CloudFront.</v>
+
+2
+00:00:02.430 --> 00:00:05.243
+CloudFront is a content delivery network, CDN,
+
+3
+00:00:05.243 --> 00:00:07.172
+and it improves the read performance
+
+4
+00:00:07.172 --> 00:00:08.839
+of whatever you have in the backend
+
+5
+00:00:08.839 --> 00:00:12.510
+because the content is going to be cached at the edge.
+
+6
+00:00:12.510 --> 00:00:14.904
+You have over 200 points of presence globally
+
+7
+00:00:14.904 --> 00:00:17.310
+and it protects you against DDoS attacks
+
+8
+00:00:17.310 --> 00:00:19.470
+because it is distributed at the edge.
+
+9
+00:00:19.470 --> 00:00:23.423
+It has integration with Shield, WAF, and Route 53.
+
+10
+00:00:23.423 --> 00:00:25.620
+Any application on CloudFront
+
+11
+00:00:25.620 --> 00:00:28.290
+is going to be exposed through HTTPS,
+
+12
+00:00:28.290 --> 00:00:30.450
+and then internally you can talk to HTTP
+
+13
+00:00:30.450 --> 00:00:34.590
+or HTTPS to access any kind of internal applications.
+
+14
+00:00:34.590 --> 00:00:37.020
+There's also support for the WebSocket protocol.
+
+15
+00:00:37.020 --> 00:00:37.853
+So how does that look?
+
+16
+00:00:37.853 --> 00:00:39.750
+Well, we have an application, say for example,
+
+17
+00:00:39.750 --> 00:00:42.775
+we deploy a website or files onto an S3 bucket.
+
+18
+00:00:42.775 --> 00:00:45.330
+We want global user to access them.
+
+19
+00:00:45.330 --> 00:00:49.800
+Then a user in America can access a cache in America,
+
+20
+00:00:49.800 --> 00:00:52.740
+which is going to make a request to the S3 buckets.
+
+21
+00:00:52.740 --> 00:00:54.390
+And then after it is going to cache
+
+22
+00:00:54.390 --> 00:00:56.490
+the result of that request in America
+
+23
+00:00:56.490 --> 00:00:57.840
+so that subsequent requests
+
+24
+00:00:57.840 --> 00:01:00.060
+do not have to go back to the S3 bucket.
+
+25
+00:01:00.060 --> 00:01:02.970
+And similarly, for a user in China,
+
+26
+00:01:02.970 --> 00:01:04.980
+we'll go through a point of presence in Asia
+
+27
+00:01:04.980 --> 00:01:06.720
+to access your S3 bucket.
+
+28
+00:01:06.720 --> 00:01:09.360
+So what are the origins of CloudFront?
+
+29
+00:01:09.360 --> 00:01:10.590
+Well, we have an S3 bucket,
+
+30
+00:01:10.590 --> 00:01:14.070
+and this is used for distributing files from S3 to the web
+
+31
+00:01:14.070 --> 00:01:16.830
+or back from the web to S3
+
+32
+00:01:16.830 --> 00:01:19.800
+to upload them using CloudFront as an ingress.
+
+33
+00:01:19.800 --> 00:01:22.650
+And the security is maintained and guaranteed
+
+34
+00:01:22.650 --> 00:01:25.761
+through the use of the CloudFront Origin Access Control
+
+35
+00:01:25.761 --> 00:01:28.050
+or OAC feature.
+
+36
+00:01:28.050 --> 00:01:30.600
+You can also use CloudFront as a MediaStore container
+
+37
+00:01:30.600 --> 00:01:32.550
+and MediaPackage endpoint.
+
+38
+00:01:32.550 --> 00:01:34.980
+This is used to deliver video on demand, VOD,
+
+39
+00:01:34.980 --> 00:01:38.420
+or live streaming videos using AWS Media Services.
+
+40
+00:01:38.420 --> 00:01:40.890
+You also have VPC Origin
+
+41
+00:01:40.890 --> 00:01:43.228
+for application hosted in VPC private subnets,
+
+42
+00:01:43.228 --> 00:01:45.686
+and this is to distribute content hosted
+
+43
+00:01:45.686 --> 00:01:48.240
+through an application load balancer,
+
+44
+00:01:48.240 --> 00:01:51.480
+a network load balancer, or directly on EC2 instances,
+
+45
+00:01:51.480 --> 00:01:54.000
+but all of that in private networks.
+
+46
+00:01:54.000 --> 00:01:57.480
+You can also use a custom origin, which is HTTP based.
+
+47
+00:01:57.480 --> 00:01:59.280
+So this is for anything that's public,
+
+48
+00:01:59.280 --> 00:02:01.560
+so you could use it on top of an API gateway
+
+49
+00:02:01.560 --> 00:02:02.610
+if you wanted more control.
+
+50
+00:02:02.610 --> 00:02:05.460
+Otherwise, you can use straight from API gateway,
+
+51
+00:02:05.460 --> 00:02:07.121
+the API gateway edge feature,
+
+52
+00:02:07.121 --> 00:02:10.290
+or you can use it for example, on an S3 bucket
+
+53
+00:02:10.290 --> 00:02:11.760
+that's configured as a website.
+
+54
+00:02:11.760 --> 00:02:15.300
+First, you need to EM enable a static website hosting
+
+55
+00:02:15.300 --> 00:02:18.952
+or finally any HTP backend you want that is public hosted in
+
+56
+00:02:18.952 --> 00:02:21.573
+or outside of AWS.
+
+57
+00:02:22.679 --> 00:02:25.800
+So what if you use S3 as an origin?
+
+58
+00:02:25.800 --> 00:02:27.900
+Well, we have an Origin S3 bucket,
+
+59
+00:02:27.900 --> 00:02:30.840
+and again, I told you there is tight integration
+
+60
+00:02:30.840 --> 00:02:34.260
+between CloudFront and USU bucket by using OAC.
+
+61
+00:02:34.260 --> 00:02:36.570
+So the origin access control.
+
+62
+00:02:36.570 --> 00:02:38.910
+So this ensures that then the content
+
+63
+00:02:38.910 --> 00:02:39.990
+of your SU bucket is going
+
+64
+00:02:39.990 --> 00:02:42.690
+to be cached at the edge in various locations.
+
+65
+00:02:42.690 --> 00:02:46.778
+For example, Los Angeles, for example, Sao Paolo, Mumbai,
+
+66
+00:02:46.778 --> 00:02:49.470
+and then Melbourne and the public.
+
+67
+00:02:49.470 --> 00:02:51.420
+The idea is that all the requests made
+
+68
+00:02:51.420 --> 00:02:55.080
+to these edge locations if they have cash content will be
+
+69
+00:02:55.080 --> 00:02:58.110
+served from the edge, not from the S3 bucket in the origin.
+
+70
+00:02:58.110 --> 00:03:00.360
+Therefore it improves to you the latency
+
+71
+00:03:00.360 --> 00:03:03.900
+and also the number of requests made on your S3 buckets.
+
+72
+00:03:03.900 --> 00:03:05.171
+So what is the difference between CloudFront
+
+73
+00:03:05.171 --> 00:03:07.560
+and S3 cross reunification?
+
+74
+00:03:07.560 --> 00:03:09.990
+Well, with CloudFront you get a Global Edge network
+
+75
+00:03:09.990 --> 00:03:13.590
+and files are cached for a time to live maybe a day,
+
+76
+00:03:13.590 --> 00:03:14.879
+and it's great for static content
+
+77
+00:03:14.879 --> 00:03:17.580
+that must be available everywhere.
+
+78
+00:03:17.580 --> 00:03:21.030
+If you use S3 cross region replication, you must set up it
+
+79
+00:03:21.030 --> 00:03:24.565
+for every ser, every region you want to replicate to,
+
+80
+00:03:24.565 --> 00:03:27.990
+and the files are going to be updated in near real time.
+
+81
+00:03:27.990 --> 00:03:28.890
+It's read only.
+
+82
+00:03:28.890 --> 00:03:31.710
+And so it's great if you have dynamic content that needs
+
+83
+00:03:31.710 --> 00:03:34.470
+to be available at low latency in the few regions.
+
+84
+00:03:34.470 --> 00:03:36.840
+So they have a very different use cases.
+
+85
+00:03:36.840 --> 00:03:39.596
+So if you want to use the VPC origin functionality,
+
+86
+00:03:39.596 --> 00:03:42.120
+you can actually get content directly
+
+87
+00:03:42.120 --> 00:03:44.430
+from your private subnets into CloudFront
+
+88
+00:03:44.430 --> 00:03:46.980
+using what's called a private origin.
+
+89
+00:03:46.980 --> 00:03:48.810
+So that means that you can deliver traffic
+
+90
+00:03:48.810 --> 00:03:51.690
+to private applicational balancers, network balancers,
+
+91
+00:03:51.690 --> 00:03:53.345
+and EC2 instances.
+
+92
+00:03:53.345 --> 00:03:55.172
+So CloudFront will connect
+
+93
+00:03:55.172 --> 00:03:58.483
+through something called the VPC origin that we must set up,
+
+94
+00:03:58.483 --> 00:04:00.538
+and then we have optimal security
+
+95
+00:04:00.538 --> 00:04:03.107
+and an optimal setup for this.
+
+96
+00:04:03.107 --> 00:04:05.670
+So this is to me the best way of doing things,
+
+97
+00:04:05.670 --> 00:04:09.690
+but you may want to know how to do it also using public IPS
+
+98
+00:04:09.690 --> 00:04:12.150
+and public ARBs and eStore as origins.
+
+99
+00:04:12.150 --> 00:04:14.100
+So this is what I'm gonna show you is just the old way
+
+100
+00:04:14.100 --> 00:04:15.240
+of doing things,
+
+101
+00:04:15.240 --> 00:04:17.220
+but good to know from an exam perspective
+
+102
+00:04:17.220 --> 00:04:19.239
+because the exam might be tricky.
+
+103
+00:04:19.239 --> 00:04:23.700
+You can also use CloudFront with an origin of HTP types,
+
+104
+00:04:23.700 --> 00:04:27.150
+for example, an EC2 instance or an applicational balancer.
+
+105
+00:04:27.150 --> 00:04:29.780
+So in this case, the EC2 instance must be public so
+
+106
+00:04:29.780 --> 00:04:33.510
+that the edge locations can access your EC2 instance,
+
+107
+00:04:33.510 --> 00:04:36.810
+and it's possible for you to customize a security group
+
+108
+00:04:36.810 --> 00:04:41.340
+so that you only allow the public ips of the edge locations.
+
+109
+00:04:41.340 --> 00:04:43.820
+It's also possible for you to expose your application
+
+110
+00:04:43.820 --> 00:04:45.690
+through an applicational bouncer.
+
+111
+00:04:45.690 --> 00:04:47.700
+Again, the ALB must be public.
+
+112
+00:04:47.700 --> 00:04:49.800
+The EC2 instances can be private,
+
+113
+00:04:49.800 --> 00:04:52.560
+and therefore on the security group of the ALB,
+
+114
+00:04:52.560 --> 00:04:55.410
+you allow the public ips of the edge locations
+
+115
+00:04:55.410 --> 00:04:57.570
+and then you now have no more security
+
+116
+00:04:57.570 --> 00:04:59.973
+between your EC2 instances and your ALB.
+
+117
+00:05:01.430 --> 00:05:03.922
+There's also a trick to even further
+
+118
+00:05:03.922 --> 00:05:08.520
+and increase the security of your ALB in CloudFront is that
+
+119
+00:05:08.520 --> 00:05:10.590
+to prevent direct access to your ALB
+
+120
+00:05:10.590 --> 00:05:11.850
+or your custom origin,
+
+121
+00:05:11.850 --> 00:05:15.060
+you can use what's called a custom HTP header.
+
+122
+00:05:15.060 --> 00:05:17.499
+So that CloudFront adds a very secret header
+
+123
+00:05:17.499 --> 00:05:20.126
+and sends it to the ALB for every request made
+
+124
+00:05:20.126 --> 00:05:23.490
+through CloudFront, and then you configure the ALB
+
+125
+00:05:23.490 --> 00:05:26.820
+or your custom origin to only forward request
+
+126
+00:05:26.820 --> 00:05:30.630
+to your backend if that custom HTP header is seen
+
+127
+00:05:30.630 --> 00:05:32.160
+and therefore the header name and the value
+
+128
+00:05:32.160 --> 00:05:33.690
+must be kept secrets.
+
+129
+00:05:33.690 --> 00:05:34.680
+So how does that look?
+
+130
+00:05:34.680 --> 00:05:38.250
+Well, you have your users accessing CloudFront,
+
+131
+00:05:38.250 --> 00:05:41.490
+CloudFront they will perform this kind of HTP request
+
+132
+00:05:41.490 --> 00:05:45.090
+and CloudFront is going to ha to add a custom header
+
+133
+00:05:45.090 --> 00:05:47.310
+with a secret value.
+
+134
+00:05:47.310 --> 00:05:50.610
+And then your origin, would it be your application answer
+
+135
+00:05:50.610 --> 00:05:54.720
+or your custom origin will have some logic so that anything
+
+136
+00:05:54.720 --> 00:05:56.490
+that does not have this custom header
+
+137
+00:05:56.490 --> 00:05:58.521
+and this custom value will be discarded,
+
+138
+00:05:58.521 --> 00:06:01.620
+else it will be forwarded to your backend
+
+139
+00:06:01.620 --> 00:06:03.330
+and therefore any user trying
+
+140
+00:06:03.330 --> 00:06:06.630
+to directly access your origin will get rejected
+
+141
+00:06:06.630 --> 00:06:09.480
+because that custom header will not be present.
+
+142
+00:06:09.480 --> 00:06:10.380
+On top of it,
+
+143
+00:06:10.380 --> 00:06:13.650
+you can also restrict from a network perspective
+
+144
+00:06:13.650 --> 00:06:16.530
+access to your origin by using security groups
+
+145
+00:06:16.530 --> 00:06:20.590
+and only allowing the CloudFront public IP addresses.
+
+146
+00:06:20.590 --> 00:06:23.700
+Okay, finally, we have origin groups.
+
+147
+00:06:23.700 --> 00:06:26.910
+So this is to increase high availability and do failover.
+
+148
+00:06:26.910 --> 00:06:28.800
+So an origin group has one primary
+
+149
+00:06:28.800 --> 00:06:30.870
+and one secondary origin so
+
+150
+00:06:30.870 --> 00:06:33.120
+that if the primary origin fails,
+
+151
+00:06:33.120 --> 00:06:35.190
+then the second one is being used.
+
+152
+00:06:35.190 --> 00:06:36.780
+And the beautiful thing is that the origins
+
+153
+00:06:36.780 --> 00:06:38.850
+can be cross AWS region,
+
+154
+00:06:38.850 --> 00:06:40.931
+which is good for disaster recovery.
+
+155
+00:06:40.931 --> 00:06:42.701
+So we have CloudFront
+
+156
+00:06:42.701 --> 00:06:45.870
+and say we have one origin group in US-east-1
+
+157
+00:06:45.870 --> 00:06:47.880
+that's our primary origin,
+
+158
+00:06:47.880 --> 00:06:52.200
+and then the second origin origin B in EU-west-1.
+
+159
+00:06:52.200 --> 00:06:54.960
+Therefore, we have cross region high availability.
+
+160
+00:06:54.960 --> 00:06:57.335
+So the request will be made to the primary origin,
+
+161
+00:06:57.335 --> 00:06:59.950
+but in case there is an error status code,
+
+162
+00:06:59.950 --> 00:07:02.269
+then the same request is going to be sent
+
+163
+00:07:02.269 --> 00:07:07.170
+to our second origin and hopefully we get an okay back.
+
+164
+00:07:07.170 --> 00:07:09.750
+It's also possible to do this with S3 buckets
+
+165
+00:07:09.750 --> 00:07:11.790
+so that you have region level high availability
+
+166
+00:07:11.790 --> 00:07:12.900
+for S3 buckets.
+
+167
+00:07:12.900 --> 00:07:14.640
+So again, you would have a primary origin
+
+168
+00:07:14.640 --> 00:07:17.490
+and a secondary origin for your S3 buckets,
+
+169
+00:07:17.490 --> 00:07:19.170
+but you would set up a replication
+
+170
+00:07:19.170 --> 00:07:22.410
+between the two buckets so that if one bucket is down,
+
+171
+00:07:22.410 --> 00:07:24.840
+then CloudFront can try the same request
+
+172
+00:07:24.840 --> 00:07:27.300
+on the second bucket in another region
+
+173
+00:07:27.300 --> 00:07:29.880
+that hopefully should have data up to date
+
+174
+00:07:29.880 --> 00:07:30.900
+thanks to replication.
+
+175
+00:07:30.900 --> 00:07:33.491
+And that should be up thanks to availability.
+
+176
+00:07:33.491 --> 00:07:36.810
+Okay, so that's it for CloudFront, the first part,
+
+177
+00:07:36.810 --> 00:07:39.810
+I hope you liked it, and I will see you in the next lecture.
+

@@ -1,0 +1,834 @@
+WEBVTT
+
+1
+00:00:00.570 --> 00:00:01.590
+<v Instructor>Okay, so now let's talk</v>
+
+2
+00:00:01.590 --> 00:00:03.420
+about load balancers on AWS.
+
+3
+00:00:03.420 --> 00:00:06.120
+So you have four kind of managed load balancers.
+
+4
+00:00:06.120 --> 00:00:09.180
+You have the Classic Load Balancer, which is old generation,
+
+5
+00:00:09.180 --> 00:00:12.600
+which supports HTTP, HTTPS, TCP, and SSL,
+
+6
+00:00:12.600 --> 00:00:14.580
+which is secure TCP.
+
+7
+00:00:14.580 --> 00:00:16.560
+You have the ALB, Application Load Balancer,
+
+8
+00:00:16.560 --> 00:00:18.330
+which is V2, new generation,
+
+9
+00:00:18.330 --> 00:00:22.380
+and it supports HTTP, HTTPS, and WebSocket.
+
+10
+00:00:22.380 --> 00:00:25.620
+You have the Network Load Balancer, also newer generation,
+
+11
+00:00:25.620 --> 00:00:27.364
+which supports TCP, TLS,
+
+12
+00:00:27.364 --> 00:00:30.390
+which is secure TCP, as well as UDP.
+
+13
+00:00:30.390 --> 00:00:33.270
+And then you have the Gateway Load Balancer from 2020,
+
+14
+00:00:33.270 --> 00:00:36.150
+GWLB, which operates at a lower level.
+
+15
+00:00:36.150 --> 00:00:38.490
+So layer 3, which is network level,
+
+16
+00:00:38.490 --> 00:00:40.110
+the IP protocol.
+
+17
+00:00:40.110 --> 00:00:41.103
+Overall, it's going to be recommended
+
+18
+00:00:41.103 --> 00:00:43.980
+to use the newer kind of generation load balancers
+
+19
+00:00:43.980 --> 00:00:46.237
+versus the Classic Load Balancer as they have more feature,
+
+20
+00:00:46.237 --> 00:00:48.556
+and they're going to be supported by AWS over time.
+
+21
+00:00:48.556 --> 00:00:50.068
+We're going to do a deep dive on all of those
+
+22
+00:00:50.068 --> 00:00:51.600
+in this lecture.
+
+23
+00:00:51.600 --> 00:00:54.060
+Finally, some load balancers can be set up internally
+
+24
+00:00:54.060 --> 00:00:57.570
+as private or externally as public ELBs.
+
+25
+00:00:57.570 --> 00:00:59.579
+So the first one is the Classic Load Balancer,
+
+26
+00:00:59.579 --> 00:01:00.973
+and you have health checks on it.
+
+27
+00:01:00.973 --> 00:01:03.420
+They can be at the layer 7 with HTTP
+
+28
+00:01:03.420 --> 00:01:07.295
+or at the layer 4 with TCP, including based on SSL.
+
+29
+00:01:07.295 --> 00:01:09.058
+It supports only one SSL certificate,
+
+30
+00:01:09.058 --> 00:01:11.276
+which is a problem, but the SSL certificate
+
+31
+00:01:11.276 --> 00:01:13.710
+can have many subject alternative names.
+
+32
+00:01:13.710 --> 00:01:15.590
+So SAN, but in that case,
+
+33
+00:01:15.590 --> 00:01:18.030
+if you want to add or remove a SAN,
+
+34
+00:01:18.030 --> 00:01:19.828
+then you need to update the SSL certificate
+
+35
+00:01:19.828 --> 00:01:22.440
+with all the subject alternate name.
+
+36
+00:01:22.440 --> 00:01:24.390
+It's not ideal, and therefore,
+
+37
+00:01:24.390 --> 00:01:26.624
+that's why it's recommended to use the newer ALB,
+
+38
+00:01:26.624 --> 00:01:28.950
+which has SNI, server name indication,
+
+39
+00:01:28.950 --> 00:01:30.990
+if possible, because you're going to be able to use
+
+40
+00:01:30.990 --> 00:01:34.740
+multiple SSL certificates on an Application Load Balancer.
+
+41
+00:01:34.740 --> 00:01:36.434
+And if you want to have distinct SSL certificate,
+
+42
+00:01:36.434 --> 00:01:38.760
+then from an architectural perspective,
+
+43
+00:01:38.760 --> 00:01:41.730
+you must use multiple Classic Load Balancer.
+
+44
+00:01:41.730 --> 00:01:44.520
+In case you're doing TCP to TCP traffic,
+
+45
+00:01:44.520 --> 00:01:46.680
+then all the traffic is going to go directly
+
+46
+00:01:46.680 --> 00:01:47.730
+into the EC2 instance.
+
+47
+00:01:47.730 --> 00:01:51.060
+It's going to be transiting through the CLB.
+
+48
+00:01:51.060 --> 00:01:52.560
+And this is the only way you can do
+
+49
+00:01:52.560 --> 00:01:56.160
+two-way SSL authentication on a Classic Load Balancer.
+
+50
+00:01:56.160 --> 00:01:59.940
+So the SSL authentication happens at the EC2 level.
+
+51
+00:01:59.940 --> 00:02:02.790
+So to summarize, the client talks to the CLB,
+
+52
+00:02:02.790 --> 00:02:06.000
+which talks internally to the EC2 instance.
+
+53
+00:02:06.000 --> 00:02:07.173
+Next, we have the ALB.
+
+54
+00:02:08.070 --> 00:02:10.260
+So it's layer 7, only HTTP,
+
+55
+00:02:10.260 --> 00:02:13.140
+and you can load balance to cross multiple machines
+
+56
+00:02:13.140 --> 00:02:14.595
+in a target group.
+
+57
+00:02:14.595 --> 00:02:17.010
+Now, the load balancing can also happen
+
+58
+00:02:17.010 --> 00:02:19.350
+to multiple containers on the same machine,
+
+59
+00:02:19.350 --> 00:02:22.560
+which makes it a great fit to be using with the ECS service,
+
+60
+00:02:22.560 --> 00:02:27.150
+which leverages the dynamic port-mapping feature of the ALB.
+
+61
+00:02:27.150 --> 00:02:29.910
+It also has support for HTTP version 2
+
+62
+00:02:29.910 --> 00:02:32.070
+as well as the WebSocket protocol.
+
+63
+00:02:32.070 --> 00:02:33.974
+And you can have some sort of rules and redirects.
+
+64
+00:02:33.974 --> 00:02:38.130
+For example, you can redirect from HTTP to HTTPS directly
+
+65
+00:02:38.130 --> 00:02:40.230
+at the Application Load Balancer level,
+
+66
+00:02:40.230 --> 00:02:42.570
+but you can also write your own routing rules
+
+67
+00:02:42.570 --> 00:02:45.930
+such as path, headers, query strings, and so on.
+
+68
+00:02:45.930 --> 00:02:46.980
+So for an example,
+
+69
+00:02:46.980 --> 00:02:49.920
+here we have an external Application Load Balancer V2
+
+70
+00:02:49.920 --> 00:02:53.028
+and two target groups, one for the users that is accessible
+
+71
+00:02:53.028 --> 00:02:56.640
+at the route/user, and the other one for search,
+
+72
+00:02:56.640 --> 00:02:59.218
+which is available at the route/search.
+
+73
+00:02:59.218 --> 00:03:01.140
+And as you can see, each target group
+
+74
+00:03:01.140 --> 00:03:03.510
+will have a different health check.
+
+75
+00:03:03.510 --> 00:03:06.450
+Okay, so what are the targets of an ALB?
+
+76
+00:03:06.450 --> 00:03:09.013
+Their target groups, and it could be either EC2 instances,
+
+77
+00:03:09.013 --> 00:03:11.250
+and these EC2 instances can be managed
+
+78
+00:03:11.250 --> 00:03:12.326
+by an Auto Scaling Group.
+
+79
+00:03:12.326 --> 00:03:14.160
+This is a very common pattern.
+
+80
+00:03:14.160 --> 00:03:17.002
+It could be ECS tasks managed by ECS itself.
+
+81
+00:03:17.002 --> 00:03:18.335
+Again, using HTTP.
+
+82
+00:03:18.335 --> 00:03:20.490
+Or it could be Lambda functions
+
+83
+00:03:20.490 --> 00:03:24.360
+in which case your HTTP request is going to be translated
+
+84
+00:03:24.360 --> 00:03:27.183
+for your Lambda function into a JSON event.
+
+85
+00:03:28.020 --> 00:03:30.090
+Then it could also be IP addresses.
+
+86
+00:03:30.090 --> 00:03:32.940
+In this case, you must register private IP addresses
+
+87
+00:03:32.940 --> 00:03:35.190
+as targets of your ALB.
+
+88
+00:03:35.190 --> 00:03:38.940
+Your ALB can also route to multiple target groups at a time,
+
+89
+00:03:38.940 --> 00:03:41.070
+and you have health checks, as I said,
+
+90
+00:03:41.070 --> 00:03:42.933
+at the target group level.
+
+91
+00:03:44.550 --> 00:03:46.776
+Next we have the Network Load Balancer.
+
+92
+00:03:46.776 --> 00:03:50.603
+It's layer 4 and allows you to forward TCP
+
+93
+00:03:50.603 --> 00:03:53.145
+and UDP traffic to your instances
+
+94
+00:03:53.145 --> 00:03:56.010
+and also to handle millions of requests per second.
+
+95
+00:03:56.010 --> 00:03:57.570
+So it's very high performance.
+
+96
+00:03:57.570 --> 00:03:59.771
+It has less latency than the ALB,
+
+97
+00:03:59.771 --> 00:04:03.600
+around 100 milliseconds versus 400 milliseconds for the ALB.
+
+98
+00:04:03.600 --> 00:04:06.804
+And with the NLB, you're going to get one static IP
+
+99
+00:04:06.804 --> 00:04:10.514
+per availability zones, and it supports assigning Elastic IP
+
+100
+00:04:10.514 --> 00:04:14.340
+as the public IP if your NLB is public.
+
+101
+00:04:14.340 --> 00:04:17.518
+So as a use case, NLB are going to be extremely helpful
+
+102
+00:04:17.518 --> 00:04:20.403
+when you need extreme performance such as for TCP
+
+103
+00:04:20.403 --> 00:04:23.820
+or UDP traffic, and the NLB is not included
+
+104
+00:04:23.820 --> 00:04:25.830
+in the AWS feature.
+
+105
+00:04:25.830 --> 00:04:28.680
+For target groups for the NLB, you get EC2 instances.
+
+106
+00:04:28.680 --> 00:04:31.080
+So they get registered directly
+
+107
+00:04:31.080 --> 00:04:33.330
+with the NLB and you're good to go.
+
+108
+00:04:33.330 --> 00:04:34.800
+It could be IP addresses.
+
+109
+00:04:34.800 --> 00:04:35.633
+So in case you have, for example,
+
+110
+00:04:35.633 --> 00:04:39.150
+some on-premises servers you want to register by,
+
+111
+00:04:39.150 --> 00:04:41.790
+or if you wanted to register your EC2 instances
+
+112
+00:04:41.790 --> 00:04:44.220
+with the private IP, you could do this as well.
+
+113
+00:04:44.220 --> 00:04:47.079
+Or finally, a target of your NLB
+
+114
+00:04:47.079 --> 00:04:50.250
+could be an Application Load Balancer.
+
+115
+00:04:50.250 --> 00:04:52.320
+And the use case for this would be to leverage
+
+116
+00:04:52.320 --> 00:04:55.320
+the features of the ALB with, for example,
+
+117
+00:04:55.320 --> 00:05:00.320
+layer 7 routing, but you wanna keep the static IP features
+
+118
+00:05:00.510 --> 00:05:01.950
+of your Network Load Balancers.
+
+119
+00:05:01.950 --> 00:05:03.180
+So you would chain them together.
+
+120
+00:05:03.180 --> 00:05:04.530
+It's a very common pattern.
+
+121
+00:05:05.670 --> 00:05:08.580
+Now, another one is around zonal DNS name.
+
+122
+00:05:08.580 --> 00:05:12.210
+So if you resolve what's called the regional NLB DNS name,
+
+123
+00:05:12.210 --> 00:05:15.450
+which is the DNS name you would use by default,
+
+124
+00:05:15.450 --> 00:05:17.211
+then it's going to return all the IPs
+
+125
+00:05:17.211 --> 00:05:21.030
+for all the NLB nodes in all the enabled AZs.
+
+126
+00:05:21.030 --> 00:05:23.700
+So this is your NLB DNS name.
+
+127
+00:05:23.700 --> 00:05:27.450
+And so if we have the NLB here enabled in three AZ
+
+128
+00:05:27.450 --> 00:05:31.530
+and we do a DNS query for this NLB DNS name,
+
+129
+00:05:31.530 --> 00:05:34.410
+then we're going to get three IP as a return,
+
+130
+00:05:34.410 --> 00:05:37.584
+which will correspond to the three AZ that are enabled.
+
+131
+00:05:37.584 --> 00:05:42.270
+But sometimes you may want to resolve the zonal DNS name.
+
+132
+00:05:42.270 --> 00:05:44.457
+And the idea is that the NLB has DNS name
+
+133
+00:05:44.457 --> 00:05:48.600
+for each of their node, so based on the availability zone.
+
+134
+00:05:48.600 --> 00:05:50.843
+And using this zonal DNS name, we can resolve
+
+135
+00:05:50.843 --> 00:05:54.810
+only one IP address, which is the IP address of each node.
+
+136
+00:05:54.810 --> 00:05:56.670
+So for example, if you wanted to know
+
+137
+00:05:56.670 --> 00:06:00.480
+what was the IP address of the node in US East 1A,
+
+138
+00:06:00.480 --> 00:06:03.690
+then you would add US East 1A to your DNS name,
+
+139
+00:06:03.690 --> 00:06:07.440
+and then it would return only the first IP.
+
+140
+00:06:07.440 --> 00:06:08.430
+So why would you do this?
+
+141
+00:06:08.430 --> 00:06:10.620
+Why would you want to resolve a specific node?
+
+142
+00:06:10.620 --> 00:06:11.790
+Well, this could be, for example,
+
+143
+00:06:11.790 --> 00:06:14.490
+to minimize latency or data transfer costs.
+
+144
+00:06:14.490 --> 00:06:17.130
+For example, say you have an application,
+
+145
+00:06:17.130 --> 00:06:21.597
+and it's deployed on your VPC in three different AZ.
+
+146
+00:06:21.597 --> 00:06:24.750
+And it's going to then talk to an NLB.
+
+147
+00:06:24.750 --> 00:06:27.300
+Then you absolutely want, for example,
+
+148
+00:06:27.300 --> 00:06:30.390
+your instances in US East 1A to talk
+
+149
+00:06:30.390 --> 00:06:32.547
+to the NLB node in US East 1A
+
+150
+00:06:32.547 --> 00:06:36.150
+because there is going to be no data transfer cost
+
+151
+00:06:36.150 --> 00:06:37.620
+and lower latency.
+
+152
+00:06:37.620 --> 00:06:40.062
+So in that case, you would resolve the zonal DNS name
+
+153
+00:06:40.062 --> 00:06:43.440
+for your NLB and only find the one IP
+
+154
+00:06:43.440 --> 00:06:46.080
+that will ensure you don't have any working cost.
+
+155
+00:06:46.080 --> 00:06:48.270
+Because if you use the regional NLB name,
+
+156
+00:06:48.270 --> 00:06:50.250
+then there's a chance for you that your application
+
+157
+00:06:50.250 --> 00:06:53.310
+sends traffic from one AZ to the other one,
+
+158
+00:06:53.310 --> 00:06:55.260
+therefore incurring some cost.
+
+159
+00:06:55.260 --> 00:06:57.611
+So to make sure your application sends traffic
+
+160
+00:06:57.611 --> 00:07:00.363
+to the right NLB node, you need to implement
+
+161
+00:07:00.363 --> 00:07:02.430
+application specific logic.
+
+162
+00:07:02.430 --> 00:07:04.790
+Your application needs to understand in which AZ
+
+163
+00:07:04.790 --> 00:07:08.280
+it is operating from and then how to query
+
+164
+00:07:08.280 --> 00:07:10.057
+the right DNS name for your NLB.
+
+165
+00:07:11.269 --> 00:07:15.750
+The last kind of load balancer is a Gateway Load Balancer.
+
+166
+00:07:15.750 --> 00:07:17.413
+It's used to deploy, scale, and manage
+
+167
+00:07:17.413 --> 00:07:22.230
+a fleet of third-party network virtual appliances in AWS.
+
+168
+00:07:22.230 --> 00:07:24.361
+So the use case for a Gateway Load Balancer
+
+169
+00:07:24.361 --> 00:07:27.043
+is to do firewall, to do intrusion detection
+
+170
+00:07:27.043 --> 00:07:28.770
+and prevention systems,
+
+171
+00:07:28.770 --> 00:07:31.260
+to do deep packet inspection systems,
+
+172
+00:07:31.260 --> 00:07:33.210
+or payload manipulation.
+
+173
+00:07:33.210 --> 00:07:35.790
+It operates at the network layer, so layer 3,
+
+174
+00:07:35.790 --> 00:07:38.640
+which operates directly on the IP packets.
+
+175
+00:07:38.640 --> 00:07:40.290
+And it combines the following functions.
+
+176
+00:07:40.290 --> 00:07:42.000
+It's a transparent network gateway.
+
+177
+00:07:42.000 --> 00:07:43.950
+That means it's a single point of entry and exit
+
+178
+00:07:43.950 --> 00:07:46.114
+for all traffic, and also it's a load balancer,
+
+179
+00:07:46.114 --> 00:07:48.900
+because behind the scenes, it can deploy
+
+180
+00:07:48.900 --> 00:07:52.350
+and distribute the traffic to your virtual appliances.
+
+181
+00:07:52.350 --> 00:07:54.660
+As a technical thing, it uses a GENEVE protocol
+
+182
+00:07:54.660 --> 00:07:57.120
+on port 6081.
+
+183
+00:07:57.120 --> 00:07:58.668
+So a diagram will make it super helpful.
+
+184
+00:07:58.668 --> 00:08:01.620
+So your users wants to access your application,
+
+185
+00:08:01.620 --> 00:08:02.910
+which is a destination,
+
+186
+00:08:02.910 --> 00:08:04.950
+but you want to scan all the traffic
+
+187
+00:08:04.950 --> 00:08:08.220
+using third-party security virtual appliances.
+
+188
+00:08:08.220 --> 00:08:09.180
+So how do you do?
+
+189
+00:08:09.180 --> 00:08:11.130
+Well, you deploy a Gateway Load Balancer,
+
+190
+00:08:11.130 --> 00:08:13.110
+and you edit your route tables.
+
+191
+00:08:13.110 --> 00:08:14.670
+Now all the traffic is going to go
+
+192
+00:08:14.670 --> 00:08:16.920
+through your Gateway Load Balancer.
+
+193
+00:08:16.920 --> 00:08:18.780
+The target group of the Gateway Load Balancer
+
+194
+00:08:18.780 --> 00:08:21.360
+is going to be these third-party virtual appliances,
+
+195
+00:08:21.360 --> 00:08:23.250
+and they're going to receive all the traffic,
+
+196
+00:08:23.250 --> 00:08:25.320
+analyze it, and if it's good,
+
+197
+00:08:25.320 --> 00:08:27.863
+keep on sending it back to the Gateway Load Balancer,
+
+198
+00:08:27.863 --> 00:08:29.937
+which is going to forward that traffic
+
+199
+00:08:29.937 --> 00:08:32.400
+back to your application.
+
+200
+00:08:32.400 --> 00:08:33.653
+So here, the added benefit
+
+201
+00:08:33.653 --> 00:08:35.940
+is that all the traffic is gonna go
+
+202
+00:08:35.940 --> 00:08:39.720
+through your third-party security virtual appliances.
+
+203
+00:08:39.720 --> 00:08:42.390
+So the target groups for your Gateway Load Balancer
+
+204
+00:08:42.390 --> 00:08:45.870
+could be EC 2 instances, or it could be IP addresses,
+
+205
+00:08:45.870 --> 00:08:48.180
+and it must be private IPs.
+
+206
+00:08:48.180 --> 00:08:49.131
+So that's it for an overview
+
+207
+00:08:49.131 --> 00:08:52.260
+of all the load balancers on AWS.
+
+208
+00:08:52.260 --> 00:08:55.260
+I hope you liked it, and I will see you in the next lecture.
+

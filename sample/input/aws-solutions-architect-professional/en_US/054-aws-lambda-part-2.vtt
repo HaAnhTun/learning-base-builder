@@ -1,0 +1,670 @@
+WEBVTT
+
+1
+00:00:00.480 --> 00:00:01.313
+<v Instructor>So now let's talk</v>
+
+2
+00:00:01.313 --> 00:00:02.550
+about how Lambda functions work
+
+3
+00:00:02.550 --> 00:00:04.410
+when you deploy them in a VPC.
+
+4
+00:00:04.410 --> 00:00:06.243
+So by default, when you deploy Lambda,
+
+5
+00:00:06.243 --> 00:00:09.060
+it's deployed in the cloud of AWS.
+
+6
+00:00:09.060 --> 00:00:11.130
+And so you get access to the public internet,
+
+7
+00:00:11.130 --> 00:00:13.980
+you can access the public API of DynamoDB,
+
+8
+00:00:13.980 --> 00:00:16.140
+but in case you have a private RDS database
+
+9
+00:00:16.140 --> 00:00:18.390
+and your private VPC and private subnet,
+
+10
+00:00:18.390 --> 00:00:20.010
+then it's not going to work.
+
+11
+00:00:20.010 --> 00:00:22.860
+If you deploy Lambda function in a VPC,
+
+12
+00:00:22.860 --> 00:00:23.730
+then the Lambda function
+
+13
+00:00:23.730 --> 00:00:26.040
+is going to be assigned a security group.
+
+14
+00:00:26.040 --> 00:00:28.260
+It's going to be deployed within your VPC,
+
+15
+00:00:28.260 --> 00:00:32.280
+and so access to a private RDS database is going to work.
+
+16
+00:00:32.280 --> 00:00:35.190
+But then once you want to access the public internet,
+
+17
+00:00:35.190 --> 00:00:37.470
+you may get into some problems.
+
+18
+00:00:37.470 --> 00:00:41.220
+So if the Lambda function is deployed in the private subnet,
+
+19
+00:00:41.220 --> 00:00:43.620
+what you can do, is that you can deploy a NAT gateway,
+
+20
+00:00:43.620 --> 00:00:47.070
+for example, or a NAT instance in a public subnet.
+
+21
+00:00:47.070 --> 00:00:48.685
+And so, which is going to redirect traffic
+
+22
+00:00:48.685 --> 00:00:52.680
+to an internet gateway onto the public internet.
+
+23
+00:00:52.680 --> 00:00:55.230
+And the same way, if you want to access DynamoDB,
+
+24
+00:00:55.230 --> 00:00:57.840
+which is a public API, first of all,
+
+25
+00:00:57.840 --> 00:01:00.240
+you can access it through the NAT gateway,
+
+26
+00:01:00.240 --> 00:01:03.360
+through the internet gateway to DynamoDB.
+
+27
+00:01:03.360 --> 00:01:04.350
+Or you could create,
+
+28
+00:01:04.350 --> 00:01:06.900
+if you wanted to keep all traffic internal,
+
+29
+00:01:06.900 --> 00:01:09.390
+a VPC endpoint for DynamoDB
+
+30
+00:01:09.390 --> 00:01:10.453
+and have the Lambda function
+
+31
+00:01:10.453 --> 00:01:13.230
+reach out to the endpoint directly.
+
+32
+00:01:13.230 --> 00:01:15.480
+Note that if you deploy a Lambda function
+
+33
+00:01:15.480 --> 00:01:18.990
+in a public subnet, it will not have internet access.
+
+34
+00:01:18.990 --> 00:01:19.823
+This does not work.
+
+35
+00:01:19.823 --> 00:01:21.283
+The only way for it to get internet access
+
+36
+00:01:21.283 --> 00:01:23.560
+is to deploy in a private subnet
+
+37
+00:01:24.520 --> 00:01:26.820
+and to use a NAT device.
+
+38
+00:01:26.820 --> 00:01:31.080
+Now, even if you deploy it in a private subnet
+
+39
+00:01:31.080 --> 00:01:34.410
+without NAT, an internet gateway,
+
+40
+00:01:34.410 --> 00:01:37.140
+the CloudWatch log feature of Lambda will work, okay?
+
+41
+00:01:37.140 --> 00:01:40.470
+This is something embedded in the service itself.
+
+42
+00:01:40.470 --> 00:01:43.680
+So now we know how Lambda in a VPC works,
+
+43
+00:01:43.680 --> 00:01:46.860
+let's discuss how it goes for the IP.
+
+44
+00:01:46.860 --> 00:01:49.140
+So when you deploy a Lambda function
+
+45
+00:01:49.140 --> 00:01:53.550
+in your public cloud on AWS without a VPC setting,
+
+46
+00:01:53.550 --> 00:01:56.130
+then is going to get a random public IP
+
+47
+00:01:56.130 --> 00:01:58.260
+from the AWS public IP.
+
+48
+00:01:58.260 --> 00:02:00.510
+And so when it accesses the internet,
+
+49
+00:02:00.510 --> 00:02:02.336
+the API that you're trying to access
+
+50
+00:02:02.336 --> 00:02:05.280
+just sees traffic from a random public IP.
+
+51
+00:02:05.280 --> 00:02:06.330
+And this is good.
+
+52
+00:02:06.330 --> 00:02:07.800
+But say you control the API
+
+53
+00:02:07.800 --> 00:02:09.075
+and you want to actually filter
+
+54
+00:02:09.075 --> 00:02:11.760
+and you want to have tight network security,
+
+55
+00:02:11.760 --> 00:02:14.700
+and you wanna guarantee that you have a fixed IP
+
+56
+00:02:14.700 --> 00:02:17.670
+that reaches it or a set of fixed IPs.
+
+57
+00:02:17.670 --> 00:02:20.586
+So the way we do it is that we deploy Lambda function
+
+58
+00:02:20.586 --> 00:02:22.560
+in our private subnet,
+
+59
+00:02:22.560 --> 00:02:24.630
+which is going to talk to a NAT gateway,
+
+60
+00:02:24.630 --> 00:02:26.700
+which is going talk to an internet gateway,
+
+61
+00:02:26.700 --> 00:02:29.460
+and then to our API on the internet.
+
+62
+00:02:29.460 --> 00:02:31.320
+So you may say, "Well, this is the same?"
+
+63
+00:02:31.320 --> 00:02:34.140
+No, well, it's actually a little bit different,
+
+64
+00:02:34.140 --> 00:02:36.870
+because when you deploy a NAT gateway
+
+65
+00:02:36.870 --> 00:02:40.260
+you attach a fixed elastic IP to it.
+
+66
+00:02:40.260 --> 00:02:43.590
+And so therefore, any traffic coming through the NAT gateway
+
+67
+00:02:43.590 --> 00:02:45.810
+onto the internet is going to be seen
+
+68
+00:02:45.810 --> 00:02:48.180
+from that fixed elastic IP.
+
+69
+00:02:48.180 --> 00:02:50.520
+And so effectively, all the Lambda function traffic
+
+70
+00:02:50.520 --> 00:02:52.890
+will be seen from the same elastic IP.
+
+71
+00:02:52.890 --> 00:02:54.270
+And with this architecture,
+
+72
+00:02:54.270 --> 00:02:57.000
+we've given our Lambda function a fixed IP
+
+73
+00:02:57.000 --> 00:02:59.430
+when accessing APIs on the internet,
+
+74
+00:02:59.430 --> 00:03:02.010
+and therefore we can use some kind of network security
+
+75
+00:03:02.010 --> 00:03:04.263
+on the API end on the public side.
+
+76
+00:03:06.000 --> 00:03:09.300
+Now, let's talk about synchronous invocations of Lambda.
+
+77
+00:03:09.300 --> 00:03:12.150
+So anytime Lambda is invoked from the CLI,
+
+78
+00:03:12.150 --> 00:03:14.190
+the SDK, or API gateway,
+
+79
+00:03:14.190 --> 00:03:15.810
+it's going to be a synchronous invocation,
+
+80
+00:03:15.810 --> 00:03:17.550
+that means that the results is returned right away
+
+81
+00:03:17.550 --> 00:03:19.740
+or we wait until the results are happening,
+
+82
+00:03:19.740 --> 00:03:22.530
+and any kind of error handling must happen client site,
+
+83
+00:03:22.530 --> 00:03:24.270
+for example, retries,
+
+84
+00:03:24.270 --> 00:03:27.090
+exponential backups, etcetera, etcetera.
+
+85
+00:03:27.090 --> 00:03:29.520
+So in this example, we have the SDK
+
+86
+00:03:29.520 --> 00:03:32.070
+and it's going to invoke our Lambda function.
+
+87
+00:03:32.070 --> 00:03:35.190
+And then the Lambda function will do something,
+
+88
+00:03:35.190 --> 00:03:37.950
+and then we'll get a response.
+
+89
+00:03:37.950 --> 00:03:40.950
+And if you have a look at this architecture right here,
+
+90
+00:03:40.950 --> 00:03:43.560
+the client is going to invoke the API gateway
+
+91
+00:03:43.560 --> 00:03:45.450
+which is going to proxy the request to Lambda,
+
+92
+00:03:45.450 --> 00:03:47.520
+which is going to return a response,
+
+93
+00:03:47.520 --> 00:03:50.790
+and then the response back to the client.
+
+94
+00:03:50.790 --> 00:03:53.130
+In the asynchronous invocations,
+
+95
+00:03:53.130 --> 00:03:57.720
+we have SNS, we have S3, we have Amazon EventBridge,
+
+96
+00:03:57.720 --> 00:04:01.080
+and Lambda will be evoked asynchronously.
+
+97
+00:04:01.080 --> 00:04:03.330
+And in case there is an error on Lambda side,
+
+98
+00:04:03.330 --> 00:04:05.730
+there will be retries on errors,
+
+99
+00:04:05.730 --> 00:04:07.290
+so up to three total.
+
+100
+00:04:07.290 --> 00:04:08.700
+And so therefore, the Lambda function
+
+101
+00:04:08.700 --> 00:04:10.080
+can be run multiple times,
+
+102
+00:04:10.080 --> 00:04:11.040
+and so you need to make sure
+
+103
+00:04:11.040 --> 00:04:13.277
+that in case it runs multiple times,
+
+104
+00:04:13.277 --> 00:04:14.820
+the processing is the same,
+
+105
+00:04:14.820 --> 00:04:16.800
+and therefore it's called idempotency.
+
+106
+00:04:16.800 --> 00:04:18.930
+So for example, if you take Amazon S3,
+
+107
+00:04:18.930 --> 00:04:20.430
+there's a new file event
+
+108
+00:04:20.430 --> 00:04:22.980
+which is an asynchronous invocation on Lambda
+
+109
+00:04:22.980 --> 00:04:24.457
+and it can do retries.
+
+110
+00:04:24.457 --> 00:04:26.220
+And when these retries fail,
+
+111
+00:04:26.220 --> 00:04:29.070
+you can define a dead-letter queue, DLQ,
+
+112
+00:04:29.070 --> 00:04:33.690
+that could be SNS or SQS for processing the failed events.
+
+113
+00:04:33.690 --> 00:04:36.660
+So we've seen asynchronous and synchronous invocations.
+
+114
+00:04:36.660 --> 00:04:39.750
+Now let's discuss two architectures for Lambda,
+
+115
+00:04:39.750 --> 00:04:41.880
+that's for something that looks seemingly similar
+
+116
+00:04:41.880 --> 00:04:44.370
+but has actually some big trade offs.
+
+117
+00:04:44.370 --> 00:04:46.860
+So let's say we upload files in Amazon S3,
+
+118
+00:04:46.860 --> 00:04:51.000
+and we want the S3 to trigger a notification in Amazon SNS
+
+119
+00:04:51.000 --> 00:04:54.360
+and we hook a Lambda function to Amazon SNS.
+
+120
+00:04:54.360 --> 00:04:57.090
+And alternatively, we do Amazon S3,
+
+121
+00:04:57.090 --> 00:04:58.500
+we trigger Amazon SNS,
+
+122
+00:04:58.500 --> 00:05:01.620
+but this time we send the messages into SQS,
+
+123
+00:05:01.620 --> 00:05:05.310
+and SQS is going to be consumed by a Lambda function.
+
+124
+00:05:05.310 --> 00:05:06.360
+So they look like the same,
+
+125
+00:05:06.360 --> 00:05:07.410
+Lambda is going to be invoked
+
+126
+00:05:07.410 --> 00:05:10.710
+whenever an image is put in Amazon S3.
+
+127
+00:05:10.710 --> 00:05:13.890
+But which one do you think starts immediately,
+
+128
+00:05:13.890 --> 00:05:16.110
+is the first one or the second one?
+
+129
+00:05:16.110 --> 00:05:18.180
+Imagine you upload 1000 files a second,
+
+130
+00:05:18.180 --> 00:05:19.260
+something like this.
+
+131
+00:05:19.260 --> 00:05:22.170
+Well, with Amazon S3 and SNS,
+
+132
+00:05:22.170 --> 00:05:24.330
+it's going to start immediately
+
+133
+00:05:24.330 --> 00:05:26.640
+because, well, Amazon S3 will trigger a notification
+
+134
+00:05:26.640 --> 00:05:29.293
+in Amazon SNS which will immediately invoke
+
+135
+00:05:29.293 --> 00:05:30.360
+a Lambda function,
+
+136
+00:05:30.360 --> 00:05:32.670
+and you can go very high on the concurrency level
+
+137
+00:05:32.670 --> 00:05:35.310
+if you have a lot of notifications in SNS.
+
+138
+00:05:35.310 --> 00:05:38.010
+So therefore, for every image in Amazon S3,
+
+139
+00:05:38.010 --> 00:05:40.830
+Lambda is going to be triggered as fast as possible
+
+140
+00:05:40.830 --> 00:05:44.190
+and you're going to get a lot of parallel executions.
+
+141
+00:05:44.190 --> 00:05:46.260
+Now, if some of these do not go well,
+
+142
+00:05:46.260 --> 00:05:47.790
+you may lose some data.
+
+143
+00:05:47.790 --> 00:05:49.410
+You need to use a DLQ
+
+144
+00:05:49.410 --> 00:05:51.520
+to make sure the failed Lambda attempts
+
+145
+00:05:51.520 --> 00:05:53.760
+do end up somewhere.
+
+146
+00:05:53.760 --> 00:05:56.910
+Now, if you are using the second architecture,
+
+147
+00:05:56.910 --> 00:05:59.580
+then the messages go from Amazon S3 into SNS
+
+148
+00:05:59.580 --> 00:06:00.570
+into an SQS queue.
+
+149
+00:06:00.570 --> 00:06:02.850
+So this happens as fast as possible
+
+150
+00:06:02.850 --> 00:06:04.920
+and the SQS queue will fill up.
+
+151
+00:06:04.920 --> 00:06:08.109
+But then Lambda functions will obviously scale as well,
+
+152
+00:06:08.109 --> 00:06:10.440
+but they will consume batch of messages
+
+153
+00:06:10.440 --> 00:06:11.970
+and process them one by one.
+
+154
+00:06:11.970 --> 00:06:13.050
+And so one Lambda function
+
+155
+00:06:13.050 --> 00:06:14.700
+will have 10 messages, for example,
+
+156
+00:06:14.700 --> 00:06:16.260
+and the second one will also have 10.
+
+157
+00:06:16.260 --> 00:06:21.260
+And so the queue will not empty as fast as possible.
+
+158
+00:06:22.110 --> 00:06:23.790
+So you're going to get batch execution,
+
+159
+00:06:23.790 --> 00:06:25.440
+is going to be a bit more efficient,
+
+160
+00:06:25.440 --> 00:06:27.090
+but there's gonna be a bit of delay
+
+161
+00:06:27.090 --> 00:06:29.520
+from when the file is uploaded onto Amazon 3
+
+162
+00:06:29.520 --> 00:06:31.920
+and processed by a Lambda function.
+
+163
+00:06:31.920 --> 00:06:34.020
+But in case you have Lambda function failures,
+
+164
+00:06:34.020 --> 00:06:38.220
+well, the messages are going to be kept in Amazon SQS.
+
+165
+00:06:38.220 --> 00:06:40.980
+Okay, so that's it for the second part of Lambda.
+
+166
+00:06:40.980 --> 00:06:41.940
+I hope you liked it,
+
+167
+00:06:41.940 --> 00:06:44.013
+and I will see you in the next lecture.
+

@@ -1,0 +1,486 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.519
+When you're deploying an MCP server to production, development assumptions break fast.
+
+2
+00:00:05.519 --> 00:00:08.760
+Development servers trust the local process.
+
+3
+00:00:08.760 --> 00:00:12.520
+Production servers need to answer harder questions.
+
+4
+00:00:12.520 --> 00:00:15.159
+Who's calling? Are they authorized?
+
+5
+00:00:15.159 --> 00:00:17.600
+How do you handle multiple client versions?
+
+6
+00:00:17.600 --> 00:00:19.600
+And what happens under load?
+
+7
+00:00:19.600 --> 00:00:25.200
+In this lesson, we'll work through authentication, versioning, rate limiting, and monitoring.
+
+8
+00:00:25.200 --> 00:00:27.200
+Let's get into it.
+
+9
+00:00:27.200 --> 00:00:32.840
+A production MCP server has to answer for itself in ways a local one never does.
+
+10
+00:00:32.840 --> 00:00:39.520
+MCP authentication is the mechanism by which a client proves its identity to a remote MCP
+
+11
+00:00:39.520 --> 00:00:42.799
+server before accessing tools and resources.
+
+12
+00:00:42.799 --> 00:00:49.159
+For remote streamable HTTP servers, MCP defines an optional OAuth 2.1-based authorization
+
+13
+00:00:49.159 --> 00:00:52.200
+flow as the recommended mechanism.
+
+14
+00:00:52.200 --> 00:00:57.360
+Simpler options like API keys still work, but OAuth is the standardized path the spec
+
+15
+00:00:57.360 --> 00:00:58.759
+points you toward.
+
+16
+00:00:58.759 --> 00:01:04.279
+Semantic versioning uses major, minor, and patch numbers to signal how much a change
+
+17
+00:01:04.279 --> 00:01:06.160
+breaks existing consumers.
+
+18
+00:01:06.160 --> 00:01:08.800
+A major bump means breaking changes.
+
+19
+00:01:08.800 --> 00:01:12.080
+Minor means new features that are backward compatible.
+
+20
+00:01:12.080 --> 00:01:13.879
+Patch means bug fixes.
+
+21
+00:01:13.879 --> 00:01:20.360
+And rate limiting is capping how many requests a client or user can send per unit time, protecting
+
+22
+00:01:20.400 --> 00:01:27.160
+shared infrastructure from overload, and preventing one client from crowding out all the others.
+
+23
+00:01:27.160 --> 00:01:33.639
+A local MCP server running on a developer's machine can trust the process that called it.
+
+24
+00:01:33.639 --> 00:01:35.720
+There's no network boundary to cross.
+
+25
+00:01:35.720 --> 00:01:39.160
+A remote production server is completely different.
+
+26
+00:01:39.160 --> 00:01:44.440
+Any client that can reach the endpoint over the network could try to invoke its tools.
+
+27
+00:01:44.440 --> 00:01:47.879
+Without authentication, there's no way to know who is calling.
+
+28
+00:01:47.879 --> 00:01:53.839
+There's no stable identity to attach to audit logs, and no foundation for authorization decisions.
+
+29
+00:01:53.839 --> 00:01:59.720
+You can't limit which tools a client can invoke if you don't know who the client is.
+
+30
+00:01:59.720 --> 00:02:04.519
+Authentication is the prerequisite for everything else in a secure production deployment.
+
+31
+00:02:04.519 --> 00:02:09.240
+It enables authorization, meaningful logging, and per-client rate limiting.
+
+32
+00:02:09.240 --> 00:02:16.440
+A production MCP server without authentication is essentially a public API for every tool it exposes.
+
+33
+00:02:17.000 --> 00:02:23.440
+MCP's specification defines an optional OAuth 2.1 authorization flow as the recommended
+
+34
+00:02:23.440 --> 00:02:27.720
+mechanism for remote streamable HTTP servers.
+
+35
+00:02:27.720 --> 00:02:29.720
+The flow works as you'd expect.
+
+36
+00:02:29.720 --> 00:02:35.839
+The client goes through an OAuth authorization flow with an identity provider to obtain an access token.
+
+37
+00:02:35.839 --> 00:02:39.720
+That token is included with each request to the MCP server.
+
+38
+00:02:39.720 --> 00:02:43.639
+The server validates the token and reads the scopes it carries.
+
+39
+00:02:43.839 --> 00:02:49.520
+Crucially, those scopes can map directly to which tools the client is allowed to invoke.
+
+40
+00:02:49.520 --> 00:02:54.199
+A token with a read-only scope should only be able to call read tools.
+
+41
+00:02:54.199 --> 00:02:57.440
+This design keeps the MCP server stateless.
+
+42
+00:02:57.440 --> 00:03:00.600
+It doesn't manage sessions or store credentials itself.
+
+43
+00:03:00.600 --> 00:03:07.720
+The identity provider handles that complexity, and the MCP server just validates tokens on every request.
+
+44
+00:03:08.360 --> 00:03:13.880
+OAuth 2.1 is the answer to reach for when the question involves authenticating clients
+
+45
+00:03:13.880 --> 00:03:19.880
+to a remote streamable HTTP MCP server, but it's useful to understand the alternatives
+
+46
+00:03:19.880 --> 00:03:22.399
+and why they fall short for this use case.
+
+47
+00:03:22.399 --> 00:03:26.880
+API keys are simple shared secrets passed in request headers.
+
+48
+00:03:26.880 --> 00:03:32.679
+They're easy to implement but provide no per-user identity, no scope granularity, and no standard
+
+49
+00:03:32.679 --> 00:03:34.160
+revocation flow.
+
+50
+00:03:34.160 --> 00:03:37.559
+A shared key can't tell you which user made a call.
+
+51
+00:03:37.559 --> 00:03:44.279
+Mutual TLS, or MTLS, authenticates both client and server using certificates.
+
+52
+00:03:44.279 --> 00:03:49.080
+It's strong for service-to-service scenarios, but adds certificate management overhead that
+
+53
+00:03:49.080 --> 00:03:51.720
+most MCP deployments don't need.
+
+54
+00:03:51.720 --> 00:03:57.479
+OAuth handles the human-in-the-loop case where an actual user needs to authorize a client
+
+55
+00:03:57.479 --> 00:04:00.479
+to access tools on their behalf.
+
+56
+00:04:00.720 --> 00:04:04.880
+Before we leave authentication, there's a set of transport-level security rules the
+
+57
+00:04:04.880 --> 00:04:12.600
+MCP specification is unusually firm about for streamable HTTP servers, and they're easy to miss.
+
+58
+00:04:12.600 --> 00:04:18.440
+First, the server is required to validate the origin header on every incoming connection.
+
+59
+00:04:18.440 --> 00:04:23.760
+This is what stops a DNS rebinding attack, where a malicious web page tricks a browser
+
+60
+00:04:23.760 --> 00:04:25.760
+into talking to your server.
+
+61
+00:04:25.799 --> 00:04:34.519
+Second, when the server runs locally, it should bind only to the loopback address, 127.0.0.1,
+
+62
+00:04:34.519 --> 00:04:37.320
+rather than to all network interfaces.
+
+63
+00:04:37.320 --> 00:04:41.959
+Binding to everything exposes a local server to the whole network.
+
+64
+00:04:41.959 --> 00:04:45.600
+Third, the server should authenticate its connections.
+
+65
+00:04:45.600 --> 00:04:47.679
+Notice the strength here.
+
+66
+00:04:47.679 --> 00:04:50.079
+Validating origin is mandatory in the spec.
+
+67
+00:04:50.079 --> 00:04:52.640
+The other two are strong recommendations.
+
+68
+00:04:52.640 --> 00:05:04.119
+Versioning MCP servers is about managing change without breaking clients that depend on tools
+
+69
+00:05:04.119 --> 00:05:05.839
+that already exist.
+
+70
+00:05:05.839 --> 00:05:07.720
+The rule is straightforward.
+
+71
+00:05:07.720 --> 00:05:12.040
+Backward-compatible changes don't require a version bump that breaks clients.
+
+72
+00:05:12.040 --> 00:05:16.880
+Adding a new optional tool, adding optional fields to an existing schema, or fixing a
+
+73
+00:05:16.880 --> 00:05:23.200
+bug in a handler while clients that haven't updated continue working exactly as before.
+
+74
+00:05:23.200 --> 00:05:25.119
+Breaking changes are different.
+
+75
+00:05:25.119 --> 00:05:30.119
+Removing a tool, renaming it, or changing required argument names or types will break
+
+76
+00:05:30.119 --> 00:05:32.839
+any client that calls that tool.
+
+77
+00:05:32.839 --> 00:05:37.799
+These need a major version bump, a migration window, where both old and new versions are
+
+78
+00:05:37.799 --> 00:05:44.600
+served simultaneously, and explicit deprecation notices before the old version is retired.
+
+79
+00:05:44.600 --> 00:05:47.480
+The pattern is the same as any other API.
+
+80
+00:05:47.480 --> 00:05:51.640
+Communicate changes early and give clients time to adapt.
+
+81
+00:05:51.640 --> 00:05:56.799
+Rate limiting is how a shared MCP server stays healthy when multiple clients are hitting
+
+82
+00:05:56.799 --> 00:05:58.600
+it simultaneously.
+
+83
+00:05:58.600 --> 00:06:03.160
+Without limits, a single client running a heavy batch job can saturate the server's
+
+84
+00:06:03.160 --> 00:06:07.200
+resources and make it unresponsive for everyone else.
+
+85
+00:06:07.200 --> 00:06:11.880
+The baseline practice is a per-client cap, on requests per time window.
+
+86
+00:06:11.880 --> 00:06:15.760
+Beyond that, expensive operations need their own tighter limits.
+
+87
+00:06:15.760 --> 00:06:22.059
+A tool that makes external API calls or runs database queries has a different cost profile
+
+88
+00:06:22.059 --> 00:06:24.399
+than a tool that does a simple lookup.
+
+89
+00:06:24.399 --> 00:06:30.640
+When a client hits a limit, the server should return an HTTP 429 response with a retry after
+
+90
+00:06:30.640 --> 00:06:34.239
+header, so the client knows when it can try again.
+
+91
+00:06:34.239 --> 00:06:40.040
+Rate limits make infrastructure costs predictable and protect all clients equally.
+
+92
+00:06:40.200 --> 00:06:47.160
+Monitoring a production MCP server means treating it like any other API service in your stack.
+
+93
+00:06:47.160 --> 00:06:52.119
+Every tool invocation should generate a log entry that captures the caller's identity,
+
+94
+00:06:52.119 --> 00:06:57.920
+a sanitized summary of the arguments, the result status, and the end-to-end latency.
+
+95
+00:06:57.920 --> 00:07:03.040
+With that data, you can track error rates by tool and detect when a downstream dependency
+
+96
+00:07:03.040 --> 00:07:04.640
+starts degrading.
+
+97
+00:07:04.640 --> 00:07:10.160
+You can set alerts when error rates or P99 latency breach thresholds you define.
+
+98
+00:07:10.160 --> 00:07:15.160
+You can review access patterns to spot unexpected usage or potential misuse.
+
+99
+00:07:15.160 --> 00:07:20.519
+Visibility into which tools are being called, by whom, and at what frequency is also directly
+
+100
+00:07:20.519 --> 00:07:22.880
+useful for capacity planning.
+
+101
+00:07:22.880 --> 00:07:27.799
+Without this observability, you're operating a production service blind.
+
+102
+00:07:27.799 --> 00:07:32.160
+Three reliability practices every production MCP server needs.
+
+103
+00:07:32.160 --> 00:07:38.720
+First, a dedicated health endpoint that load balancers and uptime monitors can pull without
+
+104
+00:07:38.720 --> 00:07:40.559
+invoking real tools.
+
+105
+00:07:40.559 --> 00:07:45.480
+This lets infrastructure verify the server is responsive without creating side effects
+
+106
+00:07:45.480 --> 00:07:47.279
+in the tools themselves.
+
+107
+00:07:47.279 --> 00:07:53.140
+Second, graceful degradation when a downstream dependency is unavailable.
+
+108
+00:07:53.140 --> 00:07:58.239
+Return a structured error result instead of crashing or hanging, so clients can retry
+
+109
+00:07:58.239 --> 00:08:00.600
+or fall back without a hard failure.
+
+110
+00:08:00.600 --> 00:08:07.480
+Third, hard timeouts on tool handler execution, so a slow downstream system can't hold a connection
+
+111
+00:08:07.480 --> 00:08:11.640
+open indefinitely and exhaust the server's connection pool.
+
+112
+00:08:11.640 --> 00:08:16.600
+These three practices cover the most common production failure modes, health checks, graceful
+
+113
+00:08:16.600 --> 00:08:19.920
+errors, and timeouts.
+
+114
+00:08:19.920 --> 00:08:24.239
+An MCP server in production is talking to callers it can't see.
+
+115
+00:08:24.239 --> 00:08:27.600
+Locally, it just trusts the process that started it.
+
+116
+00:08:27.600 --> 00:08:33.119
+Remotely, it has no idea who's asking or how many of them there are.
+
+117
+00:08:33.119 --> 00:08:38.599
+That matters because every assumption you skipped in development shows up later as an incident.
+
+118
+00:08:38.599 --> 00:08:44.359
+One thing to watch is the slow dependency, because it takes the whole server down without
+
+119
+00:08:44.359 --> 00:08:46.919
+ever looking like an attack.
+
+120
+00:08:46.919 --> 00:08:48.200
+That's it for this one.
+
+121
+00:08:48.200 --> 00:08:49.440
+I'll see you in the next video.
+

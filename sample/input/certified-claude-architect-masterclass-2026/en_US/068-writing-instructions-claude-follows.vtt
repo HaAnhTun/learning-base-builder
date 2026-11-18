@@ -1,0 +1,642 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.759
+Some Cloud.md directives change what Cloud Code does,
+
+2
+00:00:03.759 --> 00:00:06.119
+and some just sit there and get read.
+
+3
+00:00:06.119 --> 00:00:08.520
+The difference is mostly craft.
+
+4
+00:00:08.520 --> 00:00:12.279
+In this lesson, we'll work through what makes an instruction land,
+
+5
+00:00:12.279 --> 00:00:16.520
+which repo conventions and process rules are worth encoding,
+
+6
+00:00:16.520 --> 00:00:19.040
+what to leave out because the model already knows it,
+
+7
+00:00:19.040 --> 00:00:22.840
+and how to structure the file so it stays usable.
+
+8
+00:00:22.840 --> 00:00:26.600
+The difference between an instruction Cloud Code follows,
+
+9
+00:00:26.600 --> 00:00:30.200
+and one it skips usually comes down to precision,
+
+10
+00:00:30.200 --> 00:00:33.080
+and precision has a cost in context.
+
+11
+00:00:33.080 --> 00:00:37.599
+An effective instruction is specific, actionable, and unambiguous.
+
+12
+00:00:37.599 --> 00:00:41.799
+Cloud Code can follow it without inferring intent or filling gaps.
+
+13
+00:00:41.799 --> 00:00:44.080
+A vague directive may be read,
+
+14
+00:00:44.080 --> 00:00:46.099
+but not reliably acted on.
+
+15
+00:00:46.099 --> 00:00:51.819
+Context window cost is the trade-off at the center of Cloud.md design.
+
+16
+00:00:51.819 --> 00:00:54.560
+Every token you put in the file counts against
+
+17
+00:00:54.560 --> 00:00:57.599
+available context space during the session.
+
+18
+00:00:57.599 --> 00:01:01.599
+Verbose files leave less room for code and tool output,
+
+19
+00:01:01.599 --> 00:01:05.519
+and instruction encoding is the decision about what belongs in
+
+20
+00:01:05.519 --> 00:01:10.919
+Cloud.md versus what Cloud Code already knows from training.
+
+21
+00:01:10.919 --> 00:01:13.559
+General programming knowledge doesn't belong in
+
+22
+00:01:13.559 --> 00:01:17.180
+Cloud.md repo specific decisions do.
+
+23
+00:01:17.180 --> 00:01:19.199
+That distinction drives most of
+
+24
+00:01:19.199 --> 00:01:22.279
+the design choices we'll cover in this lesson.
+
+25
+00:01:22.279 --> 00:01:27.080
+Three traits define an effective Cloud.md directive.
+
+26
+00:01:27.080 --> 00:01:29.839
+Specific means it names the exact language version,
+
+27
+00:01:29.839 --> 00:01:31.199
+the precise file path,
+
+28
+00:01:31.199 --> 00:01:33.040
+the actual naming convention.
+
+29
+00:01:33.040 --> 00:01:35.239
+Not use consistent naming,
+
+30
+00:01:35.239 --> 00:01:38.160
+but all module files use snake case.
+
+31
+00:01:38.160 --> 00:01:40.199
+Actionable means Cloud Code can
+
+32
+00:01:40.199 --> 00:01:42.959
+follow the instruction without interpretation.
+
+33
+00:01:42.959 --> 00:01:45.400
+If following it requires a judgment call,
+
+34
+00:01:45.400 --> 00:01:47.760
+the instruction isn't actionable enough.
+
+35
+00:01:47.760 --> 00:01:50.559
+Unambiguous means one clear meaning.
+
+36
+00:01:50.639 --> 00:01:53.839
+No sentence that could reasonably be read two ways.
+
+37
+00:01:53.839 --> 00:01:57.000
+Vague instructions produce inconsistent behavior.
+
+38
+00:01:57.000 --> 00:01:58.879
+Cloud Code may read them,
+
+39
+00:01:58.879 --> 00:02:02.459
+but the behavior you see in practice will vary across sessions.
+
+40
+00:02:02.459 --> 00:02:04.160
+The standard is precision.
+
+41
+00:02:04.160 --> 00:02:07.160
+If you can't verify whether the instruction was followed,
+
+42
+00:02:07.160 --> 00:02:09.399
+rewrite it until you can.
+
+43
+00:02:09.399 --> 00:02:13.080
+Cloud Code reads both concise bullet directives and
+
+44
+00:02:13.080 --> 00:02:16.000
+verbose documentation, but concise directives
+
+45
+00:02:16.000 --> 00:02:18.399
+are more reliably followed in practice.
+
+46
+00:02:18.559 --> 00:02:21.759
+A short bullet point stating a specific rule is harder to
+
+47
+00:02:21.759 --> 00:02:23.720
+miss than the same rule buried
+
+48
+00:02:23.720 --> 00:02:26.559
+three paragraphs into a design rationale.
+
+49
+00:02:26.559 --> 00:02:30.160
+Verbose documentation also consumes context space.
+
+50
+00:02:30.160 --> 00:02:33.320
+Every sentence of narrative that doesn't add a new directive
+
+51
+00:02:33.320 --> 00:02:36.880
+is a sentence that could have been code or conversation.
+
+52
+00:02:36.880 --> 00:02:38.800
+The right mental model for writing
+
+53
+00:02:38.800 --> 00:02:41.679
+Cloud.md is a style guide checklist,
+
+54
+00:02:41.679 --> 00:02:43.160
+not a design document.
+
+55
+00:02:43.160 --> 00:02:45.919
+Short bullets, one rule per line,
+
+56
+00:02:45.919 --> 00:02:47.699
+no explanatory paragraphs,
+
+57
+00:02:47.820 --> 00:02:51.259
+unless the instruction can't be understood without context.
+
+58
+00:02:51.259 --> 00:02:52.660
+When in doubt, cut.
+
+59
+00:02:53.679 --> 00:02:57.020
+Four categories belong in almost every production,
+
+60
+00:02:57.020 --> 00:03:00.460
+Cloud.md language and runtime versions.
+
+61
+00:03:00.460 --> 00:03:04.179
+Python 3.11, Node 20 LTS,
+
+62
+00:03:04.179 --> 00:03:07.240
+whatever exact versions this project requires.
+
+63
+00:03:07.240 --> 00:03:09.899
+Cloud Code won't assume a specific version
+
+64
+00:03:09.899 --> 00:03:11.500
+without being told.
+
+65
+00:03:11.500 --> 00:03:14.059
+Style conventions, the naming patterns,
+
+66
+00:03:14.059 --> 00:03:17.419
+import order, and file organization decisions,
+
+67
+00:03:18.100 --> 00:03:21.179
+your team has made for this repo specifically.
+
+68
+00:03:21.179 --> 00:03:23.660
+Test requirements, coverage thresholds,
+
+69
+00:03:23.660 --> 00:03:25.580
+test file naming conventions,
+
+70
+00:03:25.580 --> 00:03:29.220
+fixture organization, and any policies around mocking.
+
+71
+00:03:29.220 --> 00:03:31.759
+And commit format, the message structure,
+
+72
+00:03:31.759 --> 00:03:33.220
+branch naming pattern,
+
+73
+00:03:33.220 --> 00:03:36.460
+and PR description template your team uses.
+
+74
+00:03:36.460 --> 00:03:39.020
+These are all repo specific decisions.
+
+75
+00:03:39.020 --> 00:03:40.500
+They're not universal.
+
+76
+00:03:40.500 --> 00:03:43.500
+Cloud Code can't know them from training data.
+
+77
+00:03:43.500 --> 00:03:46.440
+That's exactly why they belong in Cloud.md.
+
+78
+00:03:47.419 --> 00:03:48.619
+Beyond conventions,
+
+79
+00:03:48.619 --> 00:03:51.979
+Cloud.md is where you document team process
+
+80
+00:03:51.979 --> 00:03:54.500
+and known anti-patterns.
+
+81
+00:03:54.500 --> 00:03:57.300
+PR process rules should be explicit.
+
+82
+00:03:57.300 --> 00:04:00.399
+Who needs to approve, what the merge strategy is,
+
+83
+00:04:00.399 --> 00:04:02.300
+whether commits are squashed.
+
+84
+00:04:02.300 --> 00:04:05.059
+Coding anti-patterns specific to this code base
+
+85
+00:04:05.059 --> 00:04:06.399
+are worth encoding.
+
+86
+00:04:06.399 --> 00:04:08.940
+Patterns that have caused problems before,
+
+87
+00:04:08.940 --> 00:04:11.220
+architectural decisions to avoid,
+
+88
+00:04:11.220 --> 00:04:13.619
+common mistakes that show up in review.
+
+89
+00:04:13.619 --> 00:04:16.260
+And security rules belong here too.
+
+90
+00:04:16.260 --> 00:04:17.959
+No hard-coded credentials,
+
+91
+00:04:17.959 --> 00:04:20.100
+which files are never to be modified,
+
+92
+00:04:20.100 --> 00:04:21.700
+how secrets are handled.
+
+93
+00:04:21.700 --> 00:04:24.299
+These are decisions your team has already made
+
+94
+00:04:24.299 --> 00:04:26.660
+through experience and deliberation.
+
+95
+00:04:26.660 --> 00:04:30.179
+Encoding them in Cloud.md means Cloud Code
+
+96
+00:04:30.179 --> 00:04:33.320
+won't re-suggest the patterns you've already ruled out.
+
+97
+00:04:34.339 --> 00:04:38.500
+What not to encode is as important as what to encode.
+
+98
+00:04:38.500 --> 00:04:41.700
+Cloud.md is for repo specific knowledge,
+
+99
+00:04:41.700 --> 00:04:44.220
+not general programming education.
+
+100
+00:04:44.220 --> 00:04:46.019
+Don't explain what Python is,
+
+101
+00:04:46.779 --> 00:04:48.820
+or document how list comprehensions work.
+
+102
+00:04:48.820 --> 00:04:51.440
+Don't restate standard library behavior
+
+103
+00:04:51.440 --> 00:04:54.299
+that Cloud Code knows thoroughly from training.
+
+104
+00:04:54.299 --> 00:04:57.459
+Don't duplicate rules that your linter or formatter
+
+105
+00:04:57.459 --> 00:04:59.000
+already enforces.
+
+106
+00:04:59.000 --> 00:05:00.779
+If black handles your formatting,
+
+107
+00:05:00.779 --> 00:05:04.739
+you don't need formatting rules in Cloud.md.
+
+108
+00:05:04.739 --> 00:05:07.380
+If ESLint catches an import pattern,
+
+109
+00:05:07.380 --> 00:05:09.839
+don't also encode it as a directive.
+
+110
+00:05:09.839 --> 00:05:12.859
+Duplicating a tool creates a second source of truth
+
+111
+00:05:12.859 --> 00:05:14.899
+that eventually drifts out of sync
+
+112
+00:05:14.899 --> 00:05:16.899
+with the tool's own config.
+
+113
+00:05:16.899 --> 00:05:20.660
+Let tools enforce what tools can enforce.
+
+114
+00:05:20.660 --> 00:05:23.959
+Every line of general knowledge wastes context tokens
+
+115
+00:05:23.959 --> 00:05:26.119
+that could hold actual code output.
+
+116
+00:05:27.140 --> 00:05:31.339
+The encode versus skip decision comes down to one question.
+
+117
+00:05:31.339 --> 00:05:35.299
+Is this something Cloud Code can only know if you tell it?
+
+118
+00:05:35.299 --> 00:05:38.160
+Runtime version pins are a clear yes.
+
+119
+00:05:38.160 --> 00:05:40.500
+Cloud Code doesn't know which Python version
+
+120
+00:05:40.500 --> 00:05:43.420
+your team is targeting without being told.
+
+121
+00:05:43.420 --> 00:05:46.459
+Your PR naming convention is a clear yes.
+
+122
+00:05:46.459 --> 00:05:49.579
+Your team's deployment process is a clear yes.
+
+123
+00:05:49.579 --> 00:05:52.980
+General Python syntax is a clear no.
+
+124
+00:05:52.980 --> 00:05:55.779
+Cloud Code knows how Python works.
+
+125
+00:05:55.779 --> 00:05:58.779
+Standard design patterns are a clear no.
+
+126
+00:05:58.779 --> 00:06:02.019
+How Git branching works is a clear no.
+
+127
+00:06:02.019 --> 00:06:05.119
+The practical test is, if I removed this line,
+
+128
+00:06:05.119 --> 00:06:08.660
+would Cloud Code behave differently in a way that matters?
+
+129
+00:06:08.660 --> 00:06:11.880
+If yes, keep it. If no, cut it.
+
+130
+00:06:11.880 --> 00:06:16.079
+That filter keeps Cloud.md focused and context efficient.
+
+131
+00:06:17.140 --> 00:06:19.679
+Structure matters as much as content.
+
+132
+00:06:19.679 --> 00:06:22.260
+A Cloud.md with clear header sections
+
+133
+00:06:22.260 --> 00:06:24.959
+is faster for Cloud Code to process
+
+134
+00:06:24.959 --> 00:06:28.359
+and easier for you to verify and maintain.
+
+135
+00:06:28.359 --> 00:06:31.299
+Group related rules together, a language section,
+
+136
+00:06:31.299 --> 00:06:33.399
+a style section, a testing section,
+
+137
+00:06:33.399 --> 00:06:35.980
+a Git section, a security section.
+
+138
+00:06:35.980 --> 00:06:38.559
+Use bullet points over paragraphs.
+
+139
+00:06:38.559 --> 00:06:40.299
+One directive per line.
+
+140
+00:06:40.299 --> 00:06:42.380
+Related rules in the same section,
+
+141
+00:06:42.380 --> 00:06:45.980
+so context pressure hits a whole category at once
+
+142
+00:06:45.980 --> 00:06:47.760
+rather than a mixed list.
+
+143
+00:06:47.760 --> 00:06:50.279
+Good structure also makes testing easier.
+
+144
+00:06:50.279 --> 00:06:54.040
+When you sit down to verify that your Cloud.md works,
+
+145
+00:06:54.040 --> 00:06:56.559
+you can work through it section by section
+
+146
+00:06:56.559 --> 00:06:58.720
+instead of hunting for scattered rules
+
+147
+00:06:58.720 --> 00:07:00.540
+across a long document.
+
+148
+00:07:00.540 --> 00:07:03.179
+Headers and bullets are both a readability choice
+
+149
+00:07:03.179 --> 00:07:05.040
+and a reliability choice.
+
+150
+00:07:06.019 --> 00:07:09.480
+Think of that file as a standing tax on every session.
+
+151
+00:07:09.480 --> 00:07:12.059
+Cloud Code reads it before it reads your code.
+
+152
+00:07:12.059 --> 00:07:14.140
+So a line restating general knowledge
+
+153
+00:07:14.140 --> 00:07:18.619
+costs exactly as much as a line that saves the afternoon.
+
+154
+00:07:18.619 --> 00:07:21.980
+Specificity is what earns a directive its place.
+
+155
+00:07:21.980 --> 00:07:24.220
+And repo conventions and process rules
+
+156
+00:07:24.220 --> 00:07:27.859
+are the ones no training run could have supplied.
+
+157
+00:07:27.859 --> 00:07:29.420
+You'll only know a directive works
+
+158
+00:07:29.420 --> 00:07:33.059
+by watching a real session and seeing how it behaves.
+
+159
+00:07:33.059 --> 00:07:34.540
+And that's it for this lesson.
+
+160
+00:07:34.540 --> 00:07:35.980
+I'll see you in the next one.
+

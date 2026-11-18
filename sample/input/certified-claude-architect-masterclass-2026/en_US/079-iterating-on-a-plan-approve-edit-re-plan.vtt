@@ -1,0 +1,386 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.000
+In this video, we'll work through the iteration loop that happens after Claude proposes a plan.
+
+2
+00:00:06.000 --> 00:00:14.000
+You don't have to accept a plan as is. You can edit, reject, or trigger a replan mid-execution.
+
+3
+00:00:14.000 --> 00:00:19.000
+We'll cover the full loop from approval through replanning, look at pairing patterns,
+
+4
+00:00:19.000 --> 00:00:24.000
+and identify the failure modes that undermine plan mode in practice.
+
+5
+00:00:24.000 --> 00:00:28.000
+Every plan Claude proposes arrives as a draft, not a verdict.
+
+6
+00:00:28.000 --> 00:00:33.000
+The approval gate is the checkpoint where you decide what happens to it.
+
+7
+00:00:33.000 --> 00:00:39.000
+You can accept it as is, edit it inline or reject it entirely, and restate your intent.
+
+8
+00:00:39.000 --> 00:00:42.000
+And nothing is written to disk until you pass through.
+
+9
+00:00:42.000 --> 00:00:46.000
+The gate fails when you approve without reading.
+
+10
+00:00:46.000 --> 00:00:50.000
+Skimming a plan and clicking through hands controls straight back to Claude.
+
+11
+00:00:50.000 --> 00:00:55.000
+Treat it the way you treat a code review. Fast is fine. Absent isn't.
+
+12
+00:00:55.000 --> 00:00:59.000
+Iterative refinement is the broader pattern behind that gate.
+
+13
+00:00:59.000 --> 00:01:04.000
+You draft, review, and revise until the plan captures your intent.
+
+14
+00:01:04.000 --> 00:01:09.000
+Plan mode pairing extends it by combining plan mode with subagents that investigate first
+
+15
+00:01:09.000 --> 00:01:14.000
+or hooks that validate steps before execution.
+
+16
+00:01:14.000 --> 00:01:18.000
+Editing a plan before approval is faster than triggering a full replan,
+
+17
+00:01:18.000 --> 00:01:21.000
+so it's worth understanding what you can change.
+
+18
+00:01:21.000 --> 00:01:24.000
+The most common edit is trimming scope.
+
+19
+00:01:24.000 --> 00:01:28.000
+Claude sometimes interprets a request more broadly than you intended,
+
+20
+00:01:28.000 --> 00:01:34.000
+and a plan that proposes touching 8 files when you wanted 3 is a signal to narrow it before proceeding.
+
+21
+00:01:34.000 --> 00:01:37.000
+Reordering steps is also common.
+
+22
+00:01:37.000 --> 00:01:41.000
+You might know that a dependency has to be updated before a migration can run,
+
+23
+00:01:41.000 --> 00:01:43.000
+even if Claude sequenced them differently.
+
+24
+00:01:43.000 --> 00:01:49.000
+And occasionally, you'll add a step Claude omitted, based on your knowledge of the codebase.
+
+25
+00:01:49.000 --> 00:01:52.000
+After you make edits, approve the revised plan.
+
+26
+00:01:52.000 --> 00:01:56.000
+Claude executes your version, not the original.
+
+27
+00:01:56.000 --> 00:02:00.000
+What happens when execution starts and reality doesn't match the plan?
+
+28
+00:02:00.000 --> 00:02:02.000
+This is where replanning comes in.
+
+29
+00:02:02.000 --> 00:02:06.000
+The clearest trigger is when a file Claude expected to exist doesn't,
+
+30
+00:02:06.000 --> 00:02:10.000
+or when an assumption about the codebase turns out to be wrong.
+
+31
+00:02:10.000 --> 00:02:14.000
+The right response is to stop, surface the divergence explicitly,
+
+32
+00:02:14.000 --> 00:02:17.000
+and regenerate the plan before continuing.
+
+33
+00:02:17.000 --> 00:02:22.000
+The question is when replanning is actually necessary versus when it's overkill.
+
+34
+00:02:22.000 --> 00:02:27.000
+If the broken assumption only affects one step and the rest of the plan is still valid,
+
+35
+00:02:27.000 --> 00:02:30.000
+you might be able to patch and proceed.
+
+36
+00:02:30.000 --> 00:02:36.000
+If the broken assumption undermines several downstream steps, replanning is the right call.
+
+37
+00:02:36.000 --> 00:02:42.000
+The decision depends on how much of the remaining work depends on the assumption that broke.
+
+38
+00:02:42.000 --> 00:02:46.000
+Plan mode pairing adds reliability layers to the core pattern.
+
+39
+00:02:46.000 --> 00:02:49.000
+The first pattern is subagent investigation.
+
+40
+00:02:49.000 --> 00:02:53.000
+A subagent reads the codebase, gathers context, and returns findings.
+
+41
+00:02:53.000 --> 00:02:56.000
+The main agent builds the plan from those findings.
+
+42
+00:02:56.000 --> 00:03:02.000
+Investigation and planning stay separate, so the plan rests on richer information.
+
+43
+00:03:02.000 --> 00:03:04.000
+The second pattern is hook validation.
+
+44
+00:03:04.000 --> 00:03:09.000
+Pre-execution hooks verify plan steps before Claude runs them.
+
+45
+00:03:09.000 --> 00:03:13.000
+A hook might check that a file exists or that a linter passes.
+
+46
+00:03:13.000 --> 00:03:17.000
+The third pattern is human in the loop, or staged human review.
+
+47
+00:03:17.000 --> 00:03:22.000
+Instead of one approval gate at the start, you approve after each major phase.
+
+48
+00:03:22.000 --> 00:03:25.000
+Staged gates catch drift before it compounds.
+
+49
+00:03:25.000 --> 00:03:28.000
+The fourth pattern combines all three.
+
+50
+00:03:28.000 --> 00:03:32.000
+A subagent finds, a hook validates, and a human approves.
+
+51
+00:03:32.000 --> 00:03:38.000
+Each layer catches a different failure class, and stacking them yields the highest reliability.
+
+52
+00:03:38.000 --> 00:03:41.000
+The most common failure in plan mode workflows
+
+53
+00:03:41.000 --> 00:03:45.000
+is when Claude abandons the plan and improvises mid-execution.
+
+54
+00:03:45.000 --> 00:03:48.000
+It usually starts with an unexpected file state.
+
+55
+00:03:48.000 --> 00:03:51.000
+Claude encounters something the plan didn't account for
+
+56
+00:03:51.000 --> 00:03:55.000
+and adapts silently rather than surfacing the divergence.
+
+57
+00:03:55.000 --> 00:03:59.000
+It adds steps that weren't in the plan, adjusts its approach,
+
+58
+00:03:59.000 --> 00:04:02.000
+and you end up reviewing code that doesn't match what you approved.
+
+59
+00:04:02.000 --> 00:04:04.000
+The fix is behavioral.
+
+60
+00:04:04.000 --> 00:04:10.000
+Before execution starts, tell Claude explicitly to stop and surface any divergence
+
+61
+00:04:10.000 --> 00:04:12.000
+rather than working around it.
+
+62
+00:04:12.000 --> 00:04:15.000
+Something like, if you encounter anything that contradicts the plan,
+
+63
+00:04:15.000 --> 00:04:18.000
+pause and tell me before proceeding.
+
+64
+00:04:18.000 --> 00:04:21.000
+That instruction doesn't guarantee Claude will always do it,
+
+65
+00:04:21.000 --> 00:04:26.000
+but it reduces the frequency of silent improvisation significantly.
+
+66
+00:04:26.000 --> 00:04:29.000
+A few workflow habits make plan mode consistently useful.
+
+67
+00:04:29.000 --> 00:04:31.000
+Keep plans short.
+
+68
+00:04:31.000 --> 00:04:37.000
+Five to eight discrete steps is the right range for a plan you can actually review.
+
+69
+00:04:37.000 --> 00:04:41.000
+Plans with 20 steps are hard to check and hard to edit.
+
+70
+00:04:41.000 --> 00:04:47.000
+Name files explicitly rather than using vague references like the relevant config file.
+
+71
+00:04:47.000 --> 00:04:51.000
+If Claude can't name the file, the plan isn't complete enough to approve.
+
+72
+00:04:51.000 --> 00:04:53.000
+Always ask for risks.
+
+73
+00:04:53.000 --> 00:04:56.000
+Even when you think you know the code base well,
+
+74
+00:04:56.000 --> 00:05:00.000
+asking Claude to flag assumptions surfaces things you might have overlooked.
+
+75
+00:05:00.000 --> 00:05:05.000
+These three habits, short plans, explicit file names, and explicit risk statements
+
+76
+00:05:05.000 --> 00:05:10.000
+produce plans that are reviewable, editable, and reliable.
+
+77
+00:05:10.000 --> 00:05:15.000
+It's worth stepping back and framing the tradeoff between plan mode and direct execution.
+
+78
+00:05:15.000 --> 00:05:18.000
+Plan mode has higher upfront overhead.
+
+79
+00:05:18.000 --> 00:05:23.000
+You wait for a proposal, read it, possibly edit it, and then approve.
+
+80
+00:05:23.000 --> 00:05:28.000
+That overhead is justified when the work is multi-file, ambiguous, or hard to reverse.
+
+81
+00:05:28.000 --> 00:05:33.000
+If the plan catches a major wrong assumption before any code is written,
+
+82
+00:05:33.000 --> 00:05:37.000
+the total time is lower than discovering the mistake after execution.
+
+83
+00:05:37.000 --> 00:05:40.000
+Direct execution has lower overhead.
+
+84
+00:05:40.000 --> 00:05:46.000
+Claude writes code immediately, which is faster for small, reversible, single-file changes
+
+85
+00:05:46.000 --> 00:05:49.000
+where the cost of a mistake is low.
+
+86
+00:05:49.000 --> 00:05:52.000
+The decision isn't plan mode, always versus never.
+
+87
+00:05:52.000 --> 00:05:56.000
+It's matching the tool to the risk profile of the work.
+
+88
+00:05:56.000 --> 00:05:59.000
+The way this can go wrong is quiet.
+
+89
+00:05:59.000 --> 00:06:03.000
+Claude hits something the plan didn't anticipate, adapts on its own,
+
+90
+00:06:03.000 --> 00:06:07.000
+and you find out later when the diff doesn't match what you agreed on.
+
+91
+00:06:07.000 --> 00:06:11.000
+Editing the proposal before you approve it is cheap.
+
+92
+00:06:11.000 --> 00:06:14.000
+Asking for a fresh plan the moment an assumption breaks
+
+93
+00:06:14.000 --> 00:06:18.000
+is cheaper than untangling work you never sanctioned.
+
+94
+00:06:18.000 --> 00:06:21.000
+Just remember, silence is an agreement.
+
+95
+00:06:21.000 --> 00:06:23.000
+Make sure you review everything.
+
+96
+00:06:23.000 --> 00:06:26.000
+And that brings this one to a close. I'll see you in the next one.
+

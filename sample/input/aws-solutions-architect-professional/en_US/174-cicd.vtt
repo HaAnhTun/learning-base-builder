@@ -1,0 +1,930 @@
+WEBVTT
+
+1
+00:00:00.270 --> 00:00:03.060
+<v Instructor>Okay, so now let's talk about CICD.</v>
+
+2
+00:00:03.060 --> 00:00:06.780
+CICD is a bigger focus in the certified developer exam
+
+3
+00:00:06.780 --> 00:00:08.430
+but you still need to know how it works
+
+4
+00:00:08.430 --> 00:00:10.590
+from a solution architecture perspective.
+
+5
+00:00:10.590 --> 00:00:12.450
+So, let's go back to the basics.
+
+6
+00:00:12.450 --> 00:00:13.950
+Continuous integration helps
+
+7
+00:00:13.950 --> 00:00:16.260
+because developers push the code very often
+
+8
+00:00:16.260 --> 00:00:17.670
+to a code repository
+
+9
+00:00:17.670 --> 00:00:20.340
+and that could be GitHub, CodeCommit, or Bitbucket.
+
+10
+00:00:20.340 --> 00:00:22.320
+So the developers push the code,
+
+11
+00:00:22.320 --> 00:00:24.090
+and what you need to do is make sure that
+
+12
+00:00:24.090 --> 00:00:27.300
+the code that they push is valid and can be built.
+
+13
+00:00:27.300 --> 00:00:29.580
+So, you would have a build or a test server
+
+14
+00:00:29.580 --> 00:00:32.460
+that will check the code as soon as it's pushed.
+
+15
+00:00:32.460 --> 00:00:34.110
+And services that help with this
+
+16
+00:00:34.110 --> 00:00:36.300
+is CodeBuild on AWS for example,
+
+17
+00:00:36.300 --> 00:00:38.610
+or Jenkins CI or other ones.
+
+18
+00:00:38.610 --> 00:00:39.810
+And so the idea is that
+
+19
+00:00:39.810 --> 00:00:41.490
+the build server will retrieve the code
+
+20
+00:00:41.490 --> 00:00:42.900
+from the code repository,
+
+21
+00:00:42.900 --> 00:00:45.420
+build it and test it to see if it validates
+
+22
+00:00:45.420 --> 00:00:46.950
+what it needs to be done.
+
+23
+00:00:46.950 --> 00:00:49.560
+Then the developers will get feedback about the test
+
+24
+00:00:49.560 --> 00:00:51.180
+and checks that have passed or failed.
+
+25
+00:00:51.180 --> 00:00:52.890
+And so in case there's a failure,
+
+26
+00:00:52.890 --> 00:00:55.440
+the good thing is that we are getting bugs early
+
+27
+00:00:55.440 --> 00:00:58.260
+and we can fix them as soon as possible.
+
+28
+00:00:58.260 --> 00:00:59.610
+So continuous integration now
+
+29
+00:00:59.610 --> 00:01:02.850
+is into every modern company's workflow.
+
+30
+00:01:02.850 --> 00:01:03.930
+And the idea is that
+
+31
+00:01:03.930 --> 00:01:06.000
+you are going to deliver your software faster
+
+32
+00:01:06.000 --> 00:01:08.730
+because the code is tested continuously.
+
+33
+00:01:08.730 --> 00:01:10.200
+And finally, thanks to this,
+
+34
+00:01:10.200 --> 00:01:11.970
+we are going to deploy more often
+
+35
+00:01:11.970 --> 00:01:14.010
+and the developers are happier
+
+36
+00:01:14.010 --> 00:01:15.300
+because they don't need to run the test
+
+37
+00:01:15.300 --> 00:01:16.290
+on their own machine,
+
+38
+00:01:16.290 --> 00:01:18.660
+they can wait for the build server to run the test for them
+
+39
+00:01:18.660 --> 00:01:21.753
+and sometimes test suites can take long time to run.
+
+40
+00:01:22.710 --> 00:01:24.480
+And then we have continuous delivery.
+
+41
+00:01:24.480 --> 00:01:26.100
+Continuous delivery is to ensure
+
+42
+00:01:26.100 --> 00:01:29.550
+that the software can be released reliably whenever needed.
+
+43
+00:01:29.550 --> 00:01:32.040
+So the idea is that we are going to deploy often
+
+44
+00:01:32.040 --> 00:01:34.290
+and it needs to be a quick deployment.
+
+45
+00:01:34.290 --> 00:01:35.370
+So we want to shift away
+
+46
+00:01:35.370 --> 00:01:38.280
+from that mindset of one release every three months,
+
+47
+00:01:38.280 --> 00:01:39.570
+that can be catastrophic.
+
+48
+00:01:39.570 --> 00:01:41.430
+Two, let's do five releases a day
+
+49
+00:01:41.430 --> 00:01:43.500
+and then every release is very safe.
+
+50
+00:01:43.500 --> 00:01:45.210
+That usually means that we have to automate
+
+51
+00:01:45.210 --> 00:01:46.920
+the way we deploy our application
+
+52
+00:01:46.920 --> 00:01:48.360
+onto our infrastructure.
+
+53
+00:01:48.360 --> 00:01:50.010
+And some services that can help with this
+
+54
+00:01:50.010 --> 00:01:52.440
+is going to be AWS CodeDeploy
+
+55
+00:01:52.440 --> 00:01:56.940
+or Jenkins Continuous Delivery or Spinnaker or some others.
+
+56
+00:01:56.940 --> 00:01:58.650
+So let's look at what it looks like.
+
+57
+00:01:58.650 --> 00:02:00.600
+The developers push the code often
+
+58
+00:02:00.600 --> 00:02:02.700
+and we have the continuous integration part
+
+59
+00:02:02.700 --> 00:02:05.370
+that gets to code, build it and test it.
+
+60
+00:02:05.370 --> 00:02:07.740
+And then once the build has passed,
+
+61
+00:02:07.740 --> 00:02:10.710
+there will be a deployment server that will be deploying
+
+62
+00:02:10.710 --> 00:02:13.680
+the application every single time the build passes.
+
+63
+00:02:13.680 --> 00:02:16.560
+And so our application is going to be in version one
+
+64
+00:02:16.560 --> 00:02:19.950
+and the deployment after it happens will go to version two.
+
+65
+00:02:19.950 --> 00:02:21.750
+And as we go and push more code,
+
+66
+00:02:21.750 --> 00:02:24.150
+we're gonna get more and more deployments.
+
+67
+00:02:24.150 --> 00:02:28.080
+So, there's the technology stack for CICD in AWS.
+
+68
+00:02:28.080 --> 00:02:31.110
+There is the phase of code, build, test, deploy
+
+69
+00:02:31.110 --> 00:02:34.410
+and then provision the infrastructure to deploy on.
+
+70
+00:02:34.410 --> 00:02:37.140
+So, CodeCommit is a code repository
+
+71
+00:02:37.140 --> 00:02:39.510
+and this is the AWS version.
+
+72
+00:02:39.510 --> 00:02:42.420
+The similar service offered online is GitHub
+
+73
+00:02:42.420 --> 00:02:44.160
+or you can use a third party code repository
+
+74
+00:02:44.160 --> 00:02:46.860
+but this is not in an AWS native.
+
+75
+00:02:46.860 --> 00:02:48.930
+Then once the code is in CodeCommit
+
+76
+00:02:48.930 --> 00:02:51.240
+you're going to have to build it and test it.
+
+77
+00:02:51.240 --> 00:02:54.060
+And for this you use AWS CodeBuild
+
+78
+00:02:54.060 --> 00:02:57.240
+and this is a great service for doing both these things.
+
+79
+00:02:57.240 --> 00:02:59.610
+And the beautiful thing is that there's no time limit
+
+80
+00:02:59.610 --> 00:03:02.130
+to however long your builds can run.
+
+81
+00:03:02.130 --> 00:03:04.680
+So it is better than using say Lambda functions
+
+82
+00:03:04.680 --> 00:03:05.610
+to test your code.
+
+83
+00:03:05.610 --> 00:03:08.580
+So CodeBuild is the way to go
+
+84
+00:03:08.580 --> 00:03:11.190
+when you want to build and test your code on AWS.
+
+85
+00:03:11.190 --> 00:03:13.290
+But a similar alternative is going to be
+
+86
+00:03:13.290 --> 00:03:14.400
+a bit more open source
+
+87
+00:03:14.400 --> 00:03:15.930
+and cross cloud providers
+
+88
+00:03:15.930 --> 00:03:17.970
+is going to be something like Jenkins CI
+
+89
+00:03:17.970 --> 00:03:19.890
+or a third party CI server.
+
+90
+00:03:19.890 --> 00:03:21.690
+And then for deploying and provisioning,
+
+91
+00:03:21.690 --> 00:03:22.950
+we have multiple options.
+
+92
+00:03:22.950 --> 00:03:24.240
+Beanstalk works really well
+
+93
+00:03:24.240 --> 00:03:27.150
+because we can provision the infrastructure with Beanstalk
+
+94
+00:03:27.150 --> 00:03:30.540
+and also use Beanstalk to deploy our application gradually
+
+95
+00:03:30.540 --> 00:03:32.400
+to our EC2 instances.
+
+96
+00:03:32.400 --> 00:03:36.300
+Or we could use a EC2 fleet that we manage ourselves.
+
+97
+00:03:36.300 --> 00:03:38.880
+Maybe we have created it using CloudFormation
+
+98
+00:03:38.880 --> 00:03:40.380
+and then we would use something
+
+99
+00:03:40.380 --> 00:03:43.680
+like CodeDeploy to deploy our code
+
+100
+00:03:43.680 --> 00:03:46.410
+to this EC2 instance fleet.
+
+101
+00:03:46.410 --> 00:03:49.380
+And how do we manage the orchestration
+
+102
+00:03:49.380 --> 00:03:51.840
+of all these steps in our CICD?
+
+103
+00:03:51.840 --> 00:03:55.020
+Well, for this, we're going to use AWS CodePipeline
+
+104
+00:03:55.020 --> 00:03:57.690
+which is allowing us to define a pipeline
+
+105
+00:03:57.690 --> 00:03:59.913
+to orchestrate all the steps.
+
+106
+00:04:00.960 --> 00:04:03.390
+So, let's do through a real example
+
+107
+00:04:03.390 --> 00:04:06.360
+of how CICD architecture looks like in a company
+
+108
+00:04:06.360 --> 00:04:08.130
+and this is something you're expected to know
+
+109
+00:04:08.130 --> 00:04:09.360
+and this is going to be the extent
+
+110
+00:04:09.360 --> 00:04:10.710
+of what you're going to be texted on
+
+111
+00:04:10.710 --> 00:04:13.110
+at the exam from a SA Pro perspective.
+
+112
+00:04:13.110 --> 00:04:15.510
+So, the code is going to be in CodeCommit
+
+113
+00:04:15.510 --> 00:04:17.760
+and you're going to have different branches for your code,
+
+114
+00:04:17.760 --> 00:04:20.910
+the dev branch and the prod branch.
+
+115
+00:04:20.910 --> 00:04:23.220
+A branch is basically a version of the code
+
+116
+00:04:23.220 --> 00:04:25.350
+that's going to be independent from another branch.
+
+117
+00:04:25.350 --> 00:04:27.060
+And so while you do development,
+
+118
+00:04:27.060 --> 00:04:29.160
+you're going to be modifying the development branch.
+
+119
+00:04:29.160 --> 00:04:30.270
+And then when you'll be done,
+
+120
+00:04:30.270 --> 00:04:31.980
+you're going to merge the changes
+
+121
+00:04:31.980 --> 00:04:34.980
+from the development branch into the production branch.
+
+122
+00:04:34.980 --> 00:04:36.690
+So, what happens with the development branch
+
+123
+00:04:36.690 --> 00:04:39.540
+then we're going to define a development code pipeline
+
+124
+00:04:39.540 --> 00:04:40.860
+and what it will do inside
+
+125
+00:04:40.860 --> 00:04:43.200
+is build the code using CodeBuild,
+
+126
+00:04:43.200 --> 00:04:44.400
+maybe test it as well
+
+127
+00:04:44.400 --> 00:04:46.500
+and the CodeBuild is going to source the code
+
+128
+00:04:46.500 --> 00:04:49.110
+from the developer branch of CodeCommits.
+
+129
+00:04:49.110 --> 00:04:50.880
+Then once it's built and tested,
+
+130
+00:04:50.880 --> 00:04:52.080
+we're going to deploy often,
+
+131
+00:04:52.080 --> 00:04:54.780
+so we'll hook it up to CodeDeploy through CodePipeline
+
+132
+00:04:54.780 --> 00:04:58.080
+and then CodeDeploy may deploy us, for example
+
+133
+00:04:58.080 --> 00:05:00.270
+to a Beanstalk environment in depth,
+
+134
+00:05:00.270 --> 00:05:02.670
+or it could be an ASG or something different.
+
+135
+00:05:02.670 --> 00:05:05.550
+So it's really up to you to see how you wanna do it.
+
+136
+00:05:05.550 --> 00:05:09.960
+Then the dev branch will get merged into the prod branch
+
+137
+00:05:09.960 --> 00:05:14.100
+once we're ready to be in a good state for application.
+
+138
+00:05:14.100 --> 00:05:15.540
+So, the way we do it is that
+
+139
+00:05:15.540 --> 00:05:18.000
+we look at the Elastic Beanstalk dev environment
+
+140
+00:05:18.000 --> 00:05:20.520
+and say, yes, the Elastic Beanstalk environment
+
+141
+00:05:20.520 --> 00:05:21.510
+does look good,
+
+142
+00:05:21.510 --> 00:05:23.340
+I'm happy with the state of my application,
+
+143
+00:05:23.340 --> 00:05:25.890
+I want to release it to all my users globally,
+
+144
+00:05:25.890 --> 00:05:28.590
+therefore, I'm going to take the code from my dev branch,
+
+145
+00:05:28.590 --> 00:05:31.620
+do a pull request and merge it into the prod branch.
+
+146
+00:05:31.620 --> 00:05:34.140
+So we're going to create a prod code pipeline
+
+147
+00:05:34.140 --> 00:05:35.790
+and we're going to do a CodeBuild
+
+148
+00:05:35.790 --> 00:05:37.710
+to build that prod branch,
+
+149
+00:05:37.710 --> 00:05:40.530
+a CodeDeploy to deploy the changes into say
+
+150
+00:05:40.530 --> 00:05:42.690
+a production environment for Elastic Beanstalk.
+
+151
+00:05:42.690 --> 00:05:44.100
+But again, you have different options.
+
+152
+00:05:44.100 --> 00:05:45.690
+It could be CloudFormation,
+
+153
+00:05:45.690 --> 00:05:46.950
+all these kind of things, okay?
+
+154
+00:05:46.950 --> 00:05:49.680
+And this is the idea of CICD architecture.
+
+155
+00:05:49.680 --> 00:05:51.900
+So, what you need to get out of this is that
+
+156
+00:05:51.900 --> 00:05:55.230
+you need to create one CodePipeline per branch
+
+157
+00:05:55.230 --> 00:05:56.550
+in your CodeCommit repository.
+
+158
+00:05:56.550 --> 00:05:59.160
+There is no way of doing one CodePipeline for both.
+
+159
+00:05:59.160 --> 00:06:02.040
+And then each pipeline itself will have its own instance
+
+160
+00:06:02.040 --> 00:06:03.540
+of CodeBuild, CodeDeploy
+
+161
+00:06:03.540 --> 00:06:05.520
+and its own Elastic Beanstalk environment
+
+162
+00:06:05.520 --> 00:06:06.930
+to properly separate
+
+163
+00:06:06.930 --> 00:06:08.880
+your dev and your prod environments.
+
+164
+00:06:08.880 --> 00:06:10.260
+Another important architecture
+
+165
+00:06:10.260 --> 00:06:12.780
+is around using Lambda with CodeCommits.
+
+166
+00:06:12.780 --> 00:06:15.060
+So, when you push code into CodeCommits
+
+167
+00:06:15.060 --> 00:06:17.880
+every commit can trigger a Lambda function.
+
+168
+00:06:17.880 --> 00:06:19.620
+And this Lambda function can do a lot of things,
+
+169
+00:06:19.620 --> 00:06:23.130
+but for example it can scan for leaked AWS credentials
+
+170
+00:06:23.130 --> 00:06:24.420
+on every code push
+
+171
+00:06:24.420 --> 00:06:27.000
+and disable them automatically to remedy the issue.
+
+172
+00:06:27.000 --> 00:06:27.833
+So, how does that work?
+
+173
+00:06:27.833 --> 00:06:30.600
+Well, the developer pushes code into CodeCommits,
+
+174
+00:06:30.600 --> 00:06:32.250
+CodeCommit invokes Lambda function
+
+175
+00:06:32.250 --> 00:06:34.740
+and the Lambda function has some special code
+
+176
+00:06:34.740 --> 00:06:36.720
+to scan for credentials.
+
+177
+00:06:36.720 --> 00:06:37.860
+If they are found,
+
+178
+00:06:37.860 --> 00:06:40.050
+then the Lambda function can do an API call
+
+179
+00:06:40.050 --> 00:06:42.630
+to disable access keys in IAM
+
+180
+00:06:42.630 --> 00:06:45.660
+and also lock the CodeCommit repository
+
+181
+00:06:45.660 --> 00:06:49.980
+and also send a notification into an SNS topic
+
+182
+00:06:49.980 --> 00:06:51.240
+that would be directly linked
+
+183
+00:06:51.240 --> 00:06:54.573
+to notify an administrator by email, for example.
+
+184
+00:06:56.130 --> 00:06:58.230
+Other good things to know about CICD is that
+
+185
+00:06:58.230 --> 00:07:01.470
+you can use a manual approval stage in CodePipeline.
+
+186
+00:07:01.470 --> 00:07:03.160
+You can run unit tests using CodeCommit,
+
+187
+00:07:03.160 --> 00:07:04.920
+CodeBuild, and CodePipeline.
+
+188
+00:07:04.920 --> 00:07:05.760
+So, how?
+
+189
+00:07:05.760 --> 00:07:06.960
+So you create a CodePipeline
+
+190
+00:07:06.960 --> 00:07:09.750
+you push code into CodeCommit which is your source
+
+191
+00:07:09.750 --> 00:07:11.220
+and then on every push
+
+192
+00:07:11.220 --> 00:07:15.150
+then your tests are going to be running within CodeBuild.
+
+193
+00:07:15.150 --> 00:07:17.700
+You can also build and store Docker images automatically
+
+194
+00:07:17.700 --> 00:07:18.990
+using CodeBuild an ECR.
+
+195
+00:07:18.990 --> 00:07:19.920
+So how?
+
+196
+00:07:19.920 --> 00:07:22.530
+Well, whenever you are building an image,
+
+197
+00:07:22.530 --> 00:07:24.240
+then the script within CodeBuild
+
+198
+00:07:24.240 --> 00:07:25.770
+is going to build a Docker image
+
+199
+00:07:25.770 --> 00:07:29.610
+and then push it into Amazon ECR using some commands.
+
+200
+00:07:29.610 --> 00:07:30.630
+And then finally,
+
+201
+00:07:30.630 --> 00:07:32.610
+you can do automated CloudFormation deployment
+
+202
+00:07:32.610 --> 00:07:35.160
+using CodePipeline by first pushing it,
+
+203
+00:07:35.160 --> 00:07:36.600
+for example, to a CodeCommit,
+
+204
+00:07:36.600 --> 00:07:38.940
+and then using the CodePipeline deploy stage
+
+205
+00:07:38.940 --> 00:07:41.070
+to deploy your CloudFormation templates.
+
+206
+00:07:41.070 --> 00:07:43.002
+You also need to know how CodePipeline
+
+207
+00:07:43.002 --> 00:07:44.940
+and GitHub have integrations.
+
+208
+00:07:44.940 --> 00:07:46.770
+So, there are two versions of this integration.
+
+209
+00:07:46.770 --> 00:07:48.900
+The first one is the version one
+
+210
+00:07:48.900 --> 00:07:51.120
+and you have GitHub and CodePipeline.
+
+211
+00:07:51.120 --> 00:07:53.340
+And one option within the version one
+
+212
+00:07:53.340 --> 00:07:56.400
+is to make sure that CodePipeline regularly checks
+
+213
+00:07:56.400 --> 00:07:59.220
+your GitHub repository for changes.
+
+214
+00:07:59.220 --> 00:08:01.590
+So it will happen every X number of minutes
+
+215
+00:08:01.590 --> 00:08:03.030
+or X number of seconds,
+
+216
+00:08:03.030 --> 00:08:04.650
+and that's not very efficient.
+
+217
+00:08:04.650 --> 00:08:06.570
+The other more efficient way
+
+218
+00:08:06.570 --> 00:08:10.020
+is to have GitHub actually set up in the HTTP webhook
+
+219
+00:08:10.020 --> 00:08:13.620
+so that they can send notifications to CodePipeline
+
+220
+00:08:13.620 --> 00:08:17.400
+whenever the repository is actually updated.
+
+221
+00:08:17.400 --> 00:08:18.900
+So this is for version one
+
+222
+00:08:18.900 --> 00:08:20.490
+but now there's also a new version
+
+223
+00:08:20.490 --> 00:08:22.530
+of this integration called version two
+
+224
+00:08:22.530 --> 00:08:25.170
+in which GitHub and CodePipeline are linked
+
+225
+00:08:25.170 --> 00:08:28.260
+through what's called a CodeStar Source Connection.
+
+226
+00:08:28.260 --> 00:08:29.760
+The CodeStar Source Connection
+
+227
+00:08:29.760 --> 00:08:32.340
+is actually a GitHub application,
+
+228
+00:08:32.340 --> 00:08:35.100
+and then through this connection automatically
+
+229
+00:08:35.100 --> 00:08:37.140
+any changes pushed to GitHub
+
+230
+00:08:37.140 --> 00:08:39.930
+will be picked up by CodePipeline.
+
+231
+00:08:39.930 --> 00:08:41.970
+So, that's it for this lecture, I hope you liked it
+
+232
+00:08:41.970 --> 00:08:43.920
+and I will see you in the next lecture.
+

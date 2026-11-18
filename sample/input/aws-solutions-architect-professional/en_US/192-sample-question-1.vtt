@@ -1,0 +1,316 @@
+WEBVTT
+
+00:00.360 --> 00:02.400
+So let's go ahead with question one.
+
+00:02.400 --> 00:07.470
+So an enterprise has a large number of accounts owned by a separate business group.
+
+00:07.860 --> 00:12.960
+One of the accounts was recently compromised and the attacker launched a large number of instances,
+
+00:12.960 --> 00:15.020
+resulting in the high bill for that account.
+
+00:15.030 --> 00:20.880
+So, by the way, that is a very common attack against those accounts to start a large number of instances.
+
+00:20.880 --> 00:23.430
+And then, for example, mine for bitcoins.
+
+00:23.850 --> 00:24.300
+Okay.
+
+00:24.330 --> 00:29.490
+The security breach was addressed, but management has asked the solution architect to develop a solution
+
+00:29.490 --> 00:32.700
+to prevent excessive spending in all accounts.
+
+00:32.970 --> 00:36.960
+Each business group wants to retain full control over its accounts.
+
+00:37.410 --> 00:41.880
+Which solution should the solutions architect recommend to meet these requirements?
+
+00:42.300 --> 00:49.020
+So here, the important bits of that question is that, number one, we want to prevent excessive spending.
+
+00:49.020 --> 00:53.350
+And number two, we want to retain full control over the account.
+
+00:53.370 --> 00:55.440
+There are two important things about this question.
+
+00:55.530 --> 00:57.450
+So let's look at the architecture.
+
+00:57.450 --> 01:02.880
+So we have three areas account in this example and then we launch various types of 82 instances.
+
+01:02.880 --> 01:08.370
+So tw to see 5x1e and this is also the case in another account, so we're pretty free.
+
+01:08.370 --> 01:14.370
+But one of these accounts was attacked and there were a lot of instances launched into that accounts
+
+01:14.370 --> 01:17.670
+and this was the problem with excessive billing.
+
+01:17.670 --> 01:23.730
+So we want to be able to prevent that problem while making sure all these accounts still have control
+
+01:23.730 --> 01:25.890
+over the type of stuff they do.
+
+01:26.040 --> 01:33.150
+So Option A is to use organizations to add address accounts to the master accounts and then create a
+
+01:33.150 --> 01:39.870
+service control policy SEP that uses the EC2 instance type condition key to prevent the launch of high
+
+01:39.870 --> 01:42.510
+cost instances in the accounts.
+
+01:42.510 --> 01:44.130
+So let's have a look again.
+
+01:44.130 --> 01:50.760
+So we have this account and now we have created an organization and we have added all the accounts into
+
+01:50.760 --> 01:51.960
+the organization.
+
+01:52.380 --> 01:54.030
+Now we also have an SEP.
+
+01:54.030 --> 02:00.690
+So service control policy and this is helpful to prevent at the account level some API calls from being
+
+02:00.690 --> 02:01.130
+made.
+
+02:01.140 --> 02:01.610
+Okay.
+
+02:01.710 --> 02:08.610
+So here the SEP is defined at the organization level and it is applied to each and every single address
+
+02:08.610 --> 02:09.150
+accounts.
+
+02:09.270 --> 02:15.090
+But this SEP what it is that restricts us from launching high cost instance types.
+
+02:15.090 --> 02:21.420
+So that means that all of these x1e instances that are not authorized to be launched because they are
+
+02:21.420 --> 02:22.530
+too expensive.
+
+02:22.800 --> 02:28.710
+But in that case, even though that would work in preventing the bill from being high, we also preventing
+
+02:28.710 --> 02:33.930
+the accounts from operating normally because for example, account one and Account three in this example
+
+02:33.960 --> 02:38.160
+still would need to launch that very expensive instance type if there was a use case for it.
+
+02:38.160 --> 02:44.580
+So even though that helps us prevent the billing, it does not give us full control over our accounts.
+
+02:44.580 --> 02:46.680
+And so we have to let go of this option.
+
+02:47.430 --> 02:54.570
+Option B is to use an IAM policy into an IM group in each account, and we use the same condition as
+
+02:54.570 --> 02:55.140
+before.
+
+02:55.170 --> 02:57.720
+And then we place all the IAM users in each group.
+
+02:57.780 --> 03:04.890
+So we have these accounts and now this time we put users in a group and then we add a policy and item
+
+03:04.890 --> 03:10.590
+policy to the group and all of a sudden, same as before, we cannot launch these instances and we do
+
+03:10.590 --> 03:12.420
+the exact same thing in the other accounts.
+
+03:12.510 --> 03:19.590
+So this is a problem because again, we are preventing our users from operating normally into each account
+
+03:19.590 --> 03:22.260
+so they don't retain full control over the accounts.
+
+03:22.440 --> 03:28.380
+But also this could be a problem because now a tricky user could have a role and the role would not
+
+03:28.380 --> 03:29.760
+have a policy attached to it.
+
+03:29.760 --> 03:35.250
+And the user, by assuming the role, would probably be able to still launch some accounts, some,
+
+03:35.250 --> 03:37.710
+um, instances that are high cost.
+
+03:37.710 --> 03:42.210
+Just a little tip here, but it doesn't matter for this question, just something I want to give you
+
+03:42.210 --> 03:43.290
+an insight into.
+
+03:43.290 --> 03:48.570
+So again, this option right now, it does not work because we don't have control over our accounts.
+
+03:48.570 --> 03:55.260
+And personally, I would prefer to use an STP and an organization than using users in a group and attached
+
+03:55.260 --> 03:55.890
+policy.
+
+03:56.910 --> 04:00.780
+Option C Enable building alerts on each of account accounts.
+
+04:00.780 --> 04:07.020
+Create an Amazon Cloud Watch alarm that sends an SMS notification to the account administrator whenever
+
+04:07.020 --> 04:09.600
+their accounts exceeds the spending budget.
+
+04:09.720 --> 04:11.700
+So very simple same architecture.
+
+04:11.700 --> 04:16.710
+But now we create a billing alarm, which is a cloud watch metric alongside an alarm.
+
+04:16.710 --> 04:22.410
+And this alarm, because it is a cloud watch alarm, can send notifications into an SMS topic and we
+
+04:22.410 --> 04:24.900
+would apply the exact same into every account.
+
+04:24.960 --> 04:31.080
+So here, as soon as the billing alarm goes over, is a threshold that we would define, for example,
+
+04:31.080 --> 04:38.370
+the average spending, then we would receive an SMS notification and if the administrator is up, then
+
+04:38.370 --> 04:42.150
+they can go ahead and look into the account and see what's happening.
+
+04:42.630 --> 04:48.810
+Or if you wanted to automate stuff, we could have the less nice notification trigger a lambda function
+
+04:48.810 --> 04:52.800
+that would automate some of the tasks that the administrator would do to look at the billing.
+
+04:52.800 --> 04:54.690
+So this looks like a feasible option.
+
+04:54.720 --> 04:57.150
+Just note that enabled us.
+
+04:57.150 --> 04:59.070
+You cannot limit the spending.
+
+04:59.070 --> 04:59.970
+You can only create a.
+
+05:00.060 --> 05:03.690
+Building alarms and then you would receive notifications based on that.
+
+05:03.690 --> 05:08.520
+But you cannot say to the recipients you cannot spend more than $500 each month.
+
+05:08.520 --> 05:11.310
+That does not work and that is not an option in us.
+
+05:11.400 --> 05:13.620
+So this option C is something I really like.
+
+05:13.620 --> 05:19.650
+So we'll keep it in mind and then option Z enable address cost explorer in each account and regularly
+
+05:19.650 --> 05:24.930
+review the customer reports for each account to ensure spending does not exceed the planned budgets.
+
+05:24.930 --> 05:27.480
+So we would enable cost explorer in each of accounts.
+
+05:27.480 --> 05:30.030
+So Cost Explorer is a dash boarding technology.
+
+05:30.060 --> 05:33.030
+It uses the same underlying data as the billing alarm.
+
+05:33.030 --> 05:38.490
+But the difference is the billing alarm is going to send a notification to you, so you are going to
+
+05:38.490 --> 05:40.260
+be alerted as soon as possible.
+
+05:40.260 --> 05:46.200
+But with the cost explorer, the administrator has to go into each account and then explore the reports
+
+05:46.200 --> 05:47.760
+and then find anomalies.
+
+05:47.760 --> 05:53.760
+So in this example, it's going to take a lot longer to find any spending anomalies and any attacks
+
+05:53.760 --> 05:55.350
+happening in your in our accounts.
+
+05:55.350 --> 06:00.840
+And so therefore, Cost Explorer is not something that we would be looking into.
+
+06:02.160 --> 06:06.840
+Lastly, I just want to offer so option C is obviously the right answer in this question, but I just
+
+06:06.840 --> 06:10.050
+want to offer some more insights to what could be done in a real world scenario.
+
+06:10.050 --> 06:16.020
+So if you know, for example, that your instances are being launched, you can use limits to make sure
+
+06:16.020 --> 06:20.520
+that these high cost instances are not launched at greater scale.
+
+06:20.880 --> 06:25.370
+You could also create a lambda function that would be triggered pretty often to generate a report of
+
+06:25.410 --> 06:29.130
+to how many instances of each type are launched and if there is any anomaly.
+
+06:29.130 --> 06:30.450
+So there's a bunch of things you could do.
+
+06:30.450 --> 06:34.440
+Obviously they are not answers in this question, but it could be a way for you to control your spending
+
+06:34.440 --> 06:35.340
+on to a loss.
+
+06:35.340 --> 06:36.930
+And that is such an important topic.
+
+06:36.930 --> 06:41.640
+So please make sure to review your cost once in a while, understand what's happening in your account
+
+06:41.640 --> 06:45.900
+and make sure to create these billing alarms to be alerted in case anything goes wrong.
+
+06:45.900 --> 06:46.380
+All right.
+
+06:46.380 --> 06:46.950
+That's it.
+
+06:46.950 --> 06:48.660
+I will see you in the next lecture.

@@ -1,0 +1,314 @@
+WEBVTT
+
+1
+00:00:00.630 --> 00:00:02.190
+<v Instructor>Okay, so now let's talk about</v>
+
+2
+00:00:02.190 --> 00:00:05.700
+an exciting development, which is called AWS Outposts.
+
+3
+00:00:05.700 --> 00:00:07.710
+So what is hybrid cloud?
+
+4
+00:00:07.710 --> 00:00:10.860
+Businesses that keep an on-premises infrastructure
+
+5
+00:00:10.860 --> 00:00:15.270
+alongside a cloud infrastructure are called hybrid cloud.
+
+6
+00:00:15.270 --> 00:00:17.130
+And when we have that,
+
+7
+00:00:17.130 --> 00:00:20.130
+we have two ways of dealing with IT systems.
+
+8
+00:00:20.130 --> 00:00:23.610
+We have one for the cloud of AWS, for example,
+
+9
+00:00:23.610 --> 00:00:28.610
+using the console of AWS, the CLI, and the APIs from AWS.
+
+10
+00:00:29.010 --> 00:00:32.100
+But also we have another one that is dedicated
+
+11
+00:00:32.100 --> 00:00:34.080
+to on-premises infrastructure.
+
+12
+00:00:34.080 --> 00:00:36.750
+And so that means two different types of skill sets,
+
+13
+00:00:36.750 --> 00:00:40.020
+two different types of API and that may be complicated.
+
+14
+00:00:40.020 --> 00:00:42.270
+So AWS said, okay, we do recognize
+
+15
+00:00:42.270 --> 00:00:44.730
+that some companies will run a hybrid cloud,
+
+16
+00:00:44.730 --> 00:00:47.340
+therefore let's create Outposts.
+
+17
+00:00:47.340 --> 00:00:49.590
+And Outposts are server racks that offer
+
+18
+00:00:49.590 --> 00:00:53.400
+the same AWS infrastructure services, API, and tools
+
+19
+00:00:53.400 --> 00:00:56.070
+to build your own application on-premises,
+
+20
+00:00:56.070 --> 00:00:57.540
+just like in the cloud.
+
+21
+00:00:57.540 --> 00:00:59.400
+So what this means that they will come
+
+22
+00:00:59.400 --> 00:01:03.030
+and set up and manage Outposts racks,
+
+23
+00:01:03.030 --> 00:01:06.600
+which are servers, within your on-premises infrastructure.
+
+24
+00:01:06.600 --> 00:01:11.340
+And then these servers come preloaded with the AWS services,
+
+25
+00:01:11.340 --> 00:01:13.710
+but you can benefit them from on-premises.
+
+26
+00:01:13.710 --> 00:01:16.140
+So as we can see now, on your corporate data center,
+
+27
+00:01:16.140 --> 00:01:20.340
+you will have your Outposts racks directly set up by AWS.
+
+28
+00:01:20.340 --> 00:01:24.510
+And this allows you to extend the AWS services directly
+
+29
+00:01:24.510 --> 00:01:26.400
+onto your on-premises data centers,
+
+30
+00:01:26.400 --> 00:01:28.680
+which is I think, revolutionary.
+
+31
+00:01:28.680 --> 00:01:31.380
+But the difference between an EC2 instance running
+
+32
+00:01:31.380 --> 00:01:33.240
+on the cloud, and an EC2 instance running
+
+33
+00:01:33.240 --> 00:01:36.780
+in your own data center is that now you are responsible
+
+34
+00:01:36.780 --> 00:01:41.190
+for the security, the physical security, of the rack itself,
+
+35
+00:01:41.190 --> 00:01:44.910
+because that rack is within your own data center.
+
+36
+00:01:44.910 --> 00:01:47.850
+So the benefits from using Outposts are many.
+
+37
+00:01:47.850 --> 00:01:49.950
+First of all, you get low latency access
+
+38
+00:01:49.950 --> 00:01:51.570
+to on-premises system.
+
+39
+00:01:51.570 --> 00:01:54.660
+You get local data processing, so the data may actually
+
+40
+00:01:54.660 --> 00:01:56.400
+never leave your on-premises system
+
+41
+00:01:56.400 --> 00:01:57.810
+and never go to the cloud.
+
+42
+00:01:57.810 --> 00:01:58.980
+Data residency, so again,
+
+43
+00:01:58.980 --> 00:02:00.960
+it lives within your own data centers.
+
+44
+00:02:00.960 --> 00:02:03.300
+It's easy, for example, to start a migration
+
+45
+00:02:03.300 --> 00:02:05.430
+from on-premises to Outposts,
+
+46
+00:02:05.430 --> 00:02:08.220
+and then when you're ready from Outposts to the cloud.
+
+47
+00:02:08.220 --> 00:02:09.240
+It's a fully managed service,
+
+48
+00:02:09.240 --> 00:02:11.670
+so AWS will manage the service for you.
+
+49
+00:02:11.670 --> 00:02:15.630
+And with Outposts for now, you can launch a lot of services,
+
+50
+00:02:15.630 --> 00:02:20.630
+such as Amazon EC2, Amazon EBS, Amazon S3, Amazon EKS,
+
+51
+00:02:20.820 --> 00:02:24.810
+Amazon ECS, Amazon RDS, and Amazon EMR.
+
+52
+00:02:24.810 --> 00:02:28.170
+So it's really a cool way to extend the cloud directly
+
+53
+00:02:28.170 --> 00:02:32.430
+onto your own infrastructure on-premises system.
+
+54
+00:02:32.430 --> 00:02:33.720
+And this is revolutionary.
+
+55
+00:02:33.720 --> 00:02:37.890
+So let's take the example of Amazon S3 on AWS Outposts.
+
+56
+00:02:37.890 --> 00:02:40.170
+So you use the S3 APIs to actually store
+
+57
+00:02:40.170 --> 00:02:44.250
+and retrieve data locally on AWS Outposts.
+
+58
+00:02:44.250 --> 00:02:45.750
+This way you keep your data close
+
+59
+00:02:45.750 --> 00:02:47.550
+to your on-premises application
+
+60
+00:02:47.550 --> 00:02:50.970
+and you reduce data transfers to AWS regions.
+
+61
+00:02:50.970 --> 00:02:53.160
+So there is a specific storage class
+
+62
+00:02:53.160 --> 00:02:56.940
+for Outposts on S3 called S3 Outposts.
+
+63
+00:02:56.940 --> 00:02:59.820
+The default and encryption scheme for anything on Outposts
+
+64
+00:02:59.820 --> 00:03:01.800
+is going to be SSE-S3.
+
+65
+00:03:01.800 --> 00:03:06.330
+And so how is the data accessed from Outposts onto AWS?
+
+66
+00:03:06.330 --> 00:03:08.880
+Well, you have S3 on Outposts and you can build
+
+67
+00:03:08.880 --> 00:03:11.460
+an S3 access point on it.
+
+68
+00:03:11.460 --> 00:03:14.010
+And then thanks to this, you can manage security,
+
+69
+00:03:14.010 --> 00:03:16.770
+and make sure that an easy to instance in your VPC
+
+70
+00:03:16.770 --> 00:03:21.540
+can access your S3 on Outposts through this S3 access point.
+
+71
+00:03:21.540 --> 00:03:24.720
+The other option is to actually synchronize the data
+
+72
+00:03:24.720 --> 00:03:29.720
+using the data sync service onto a cloud Amazon S3 bucket,
+
+73
+00:03:29.790 --> 00:03:31.500
+where your instances can access the data
+
+74
+00:03:31.500 --> 00:03:33.180
+directly from there.
+
+75
+00:03:33.180 --> 00:03:34.710
+So these are the two options,
+
+76
+00:03:34.710 --> 00:03:38.520
+and it's one example on how to use AWS Outposts.
+
+77
+00:03:38.520 --> 00:03:40.200
+So that's it, I hope you liked it
+
+78
+00:03:40.200 --> 00:03:42.150
+and I will see you in the next lecture.
+

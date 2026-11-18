@@ -1,0 +1,270 @@
+WEBVTT
+
+1
+00:00:00.400 --> 00:00:02.370
+<v ->Okay so now let's talk about</v>
+
+2
+00:00:02.370 --> 00:00:05.450 line:15% 
+Alexa for business, Lex and Connect.
+
+3
+00:00:05.450 --> 00:00:06.650
+Alexa for business is going
+
+4
+00:00:06.650 --> 00:00:08.920
+to be using the Alexa devices
+
+5
+00:00:08.920 --> 00:00:10.760
+to help employees be more productive
+
+6
+00:00:10.760 --> 00:00:12.330
+when they are in meeting rooms,
+
+7
+00:00:12.330 --> 00:00:13.590
+or at their desk.^
+
+8
+00:00:13.590 --> 00:00:15.830
+So a very simple use case would be to book
+
+9
+00:00:15.830 --> 00:00:18.930
+a meeting room or book calendar invites.
+
+10
+00:00:18.930 --> 00:00:21.150
+The idea is that with Alexa for business,
+
+11
+00:00:21.150 --> 00:00:22.370
+you'll have the capability
+
+12
+00:00:22.370 --> 00:00:24.020
+to ^measure and increase the utilization
+
+13
+00:00:24.020 --> 00:00:25.840
+of meeting rooms in the workplace^
+
+14
+00:00:25.840 --> 00:00:27.229
+by reducing friction.
+
+15
+00:00:27.229 --> 00:00:30.600
+This is all you need to know for Alexa for business.
+
+16
+00:00:30.600 --> 00:00:32.560
+The next thing is ^Amazon Lex
+
+17
+00:00:32.560 --> 00:00:34.890
+and Lex sounds like Alexa.^
+
+18
+00:00:34.890 --> 00:00:37.070
+The reason is, it is the same technology
+
+19
+00:00:37.070 --> 00:00:39.520
+that powers the Alexa devices.
+
+20
+00:00:39.520 --> 00:00:40.830
+So what you get with Lex,
+
+21
+00:00:40.830 --> 00:00:42.890
+you get ^automatic speech recognition
+
+22
+00:00:42.890 --> 00:00:45.990
+or ASR to convert speech to text.
+
+23
+00:00:45.990 --> 00:00:48.190
+It gives you a natural language understanding
+
+24
+00:00:48.190 --> 00:00:49.930
+to recognize the instance,
+
+25
+00:00:49.930 --> 00:00:51.620
+the intent of some texts
+
+26
+00:00:51.620 --> 00:00:53.940
+or anyone who calls so caller.^
+
+27
+00:00:53.940 --> 00:00:54.960
+The reason you would use Lex,
+
+28
+00:00:54.960 --> 00:00:56.300
+is to ^build chatbots,
+
+29
+00:00:56.300 --> 00:00:59.620
+or automated call center bots.
+
+30
+00:00:59.620 --> 00:01:00.600
+Then we have connect,
+
+31
+00:01:00.600 --> 00:01:03.110
+and connect is to receive calls,
+
+32
+00:01:03.110 --> 00:01:04.400
+create contact flows
+
+33
+00:01:04.400 --> 00:01:05.840
+and create a cloud based
+
+34
+00:01:05.840 --> 00:01:07.920
+virtual sent contact center.^
+
+35
+00:01:07.920 --> 00:01:10.230
+So the idea is that you have a phone number.
+
+36
+00:01:10.230 --> 00:01:11.550
+People can call that phone number
+
+37
+00:01:11.550 --> 00:01:12.760
+and they will be connected
+
+38
+00:01:12.760 --> 00:01:14.720
+directly to Amazon Connect.
+
+39
+00:01:14.720 --> 00:01:15.553
+And the beautiful thing
+
+40
+00:01:15.553 --> 00:01:19.610
+is that you ^can integrate with other CRM or AWS.^
+
+41
+00:01:19.610 --> 00:01:21.600
+So, let's go through an architecture
+
+42
+00:01:21.600 --> 00:01:22.920
+to make everything that clear,
+
+43
+00:01:22.920 --> 00:01:24.080
+because I think they will help.
+
+44
+00:01:24.080 --> 00:01:26.900
+So say someone wants to ^schedule an appointment,^
+
+45
+00:01:26.900 --> 00:01:28.650
+and it places a ^phone call.^
+
+46
+00:01:28.650 --> 00:01:30.200
+The call is going to be received
+
+47
+00:01:30.200 --> 00:01:31.820
+by Amazon ^connect.^
+
+48
+00:01:31.820 --> 00:01:33.540
+And Amazon Connect will stream
+
+49
+00:01:33.540 --> 00:01:35.480
+that call into Amazon ^Lex^
+
+50
+00:01:35.480 --> 00:01:37.330
+to understand the ^intent^ of it.
+
+51
+00:01:37.330 --> 00:01:39.820
+So Amazon Lex will look at the speech
+
+52
+00:01:39.820 --> 00:01:41.901
+in will use the automatic speech recognition technology
+
+53
+00:01:41.901 --> 00:01:45.320
+to understand what is the call about.
+
+54
+00:01:45.320 --> 00:01:48.420
+Then, once it has understood what the call is about,
+
+55
+00:01:48.420 --> 00:01:50.620
+you are going to invoke a ^lambda^ function,
+
+56
+00:01:50.620 --> 00:01:53.230
+and that lambda function is going to insert,
+
+57
+00:01:53.230 --> 00:01:55.520
+maybe into your ^CRM,^
+
+58
+00:01:55.520 --> 00:01:56.810
+a new appointment,
+
+59
+00:01:56.810 --> 00:01:59.350
+based on the intent it received from Lex.
+
+60
+00:01:59.350 --> 00:02:00.980
+So there is a very simple architecture,
+
+61
+00:02:00.980 --> 00:02:02.670
+and that is the extent of what the exam
+
+62
+00:02:02.670 --> 00:02:04.240
+will ask you on these technologies,
+
+63
+00:02:04.240 --> 00:02:05.380
+so it's good for you to know,
+
+64
+00:02:05.380 --> 00:02:06.850
+what they are and what they do,
+
+65
+00:02:06.850 --> 00:02:09.190
+but that's it, no details are needed.
+
+66
+00:02:09.190 --> 00:02:10.130
+Alright, that's it.
+
+67
+00:02:10.130 --> 00:02:11.880
+I will see you in the next lecture.
+

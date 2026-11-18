@@ -1,0 +1,562 @@
+WEBVTT
+
+1
+00:00:00.070 --> 00:00:01.380
+<v Instructor>Okay so, finally let's get</v>
+
+2
+00:00:01.380 --> 00:00:05.500
+into some solution architecture around Amazon S3.
+
+3
+00:00:05.500 --> 00:00:08.840
+So a common question is how do you expose static objects
+
+4
+00:00:08.840 --> 00:00:10.410
+to your clients?
+
+5
+00:00:10.410 --> 00:00:12.800
+A option that's very simple would be
+
+6
+00:00:12.800 --> 00:00:15.000
+to have an EC2 instance that's going
+
+7
+00:00:15.000 --> 00:00:17.630
+to be publicly accessible, and maybe you'll have
+
+8
+00:00:17.630 --> 00:00:20.370
+an EBS volume or maybe it'll be an instance store,
+
+9
+00:00:20.370 --> 00:00:22.240
+and the data will be stored on it.
+
+10
+00:00:22.240 --> 00:00:25.160
+It's cheap, it works, it doesn't scale very well
+
+11
+00:00:25.160 --> 00:00:27.920
+it's not very highly available, but it works,
+
+12
+00:00:27.920 --> 00:00:29.940
+it's one way of doing things,
+
+13
+00:00:29.940 --> 00:00:32.770
+a more scalable way, what's a more global way,
+
+14
+00:00:32.770 --> 00:00:34.980
+would be to have CloudFront in front of this.
+
+15
+00:00:34.980 --> 00:00:37.950
+So CloudFront talks to EC2, talks to EBS,
+
+16
+00:00:37.950 --> 00:00:40.630
+and CloudFront gives us a really good benefit
+
+17
+00:00:40.630 --> 00:00:43.820
+is that now our data is going to be cached
+
+18
+00:00:43.820 --> 00:00:46.450
+across the global edge network of AWS,
+
+19
+00:00:46.450 --> 00:00:48.860
+which gives us clients to all around the world,
+
+20
+00:00:48.860 --> 00:00:50.790
+some ability to get the objects
+
+21
+00:00:50.790 --> 00:00:52.490
+maybe a little bit closer to them.
+
+22
+00:00:52.490 --> 00:00:55.570
+So this has a better global availability,
+
+23
+00:00:55.570 --> 00:00:57.660
+still in the back end, it's not perfect
+
+24
+00:00:57.660 --> 00:00:59.470
+because in case our EC2 instance fails
+
+25
+00:00:59.470 --> 00:01:02.040
+then CloudFront will report it that it's unavailable
+
+26
+00:01:02.040 --> 00:01:04.200
+if it's not cached in its edge network.
+
+27
+00:01:04.200 --> 00:01:07.290
+So it's an improvement, but not perfect.
+
+28
+00:01:07.290 --> 00:01:10.060
+Then we can go to a full blown solution
+
+29
+00:01:10.060 --> 00:01:11.380
+where we have cloud fronds in front
+
+30
+00:01:11.380 --> 00:01:13.940
+of an application load balancer,
+
+31
+00:01:13.940 --> 00:01:16.560
+that has a fleet of EC2 instances
+
+32
+00:01:16.560 --> 00:01:18.560
+behind another scaling group.
+
+33
+00:01:18.560 --> 00:01:22.703
+And then these EC2 instances need to share some data,
+
+34
+00:01:22.703 --> 00:01:24.310
+they need to have the same access to the same files
+
+35
+00:01:24.310 --> 00:01:26.620
+so EBS does not work in this file.
+
+36
+00:01:26.620 --> 00:01:28.270
+In this use case, sorry.
+
+37
+00:01:28.270 --> 00:01:30.550
+And then we have to use something like EFS
+
+38
+00:01:30.550 --> 00:01:32.550
+as a network file system.
+
+39
+00:01:32.550 --> 00:01:36.260
+The cool thing about EFS, that's an network file system,
+
+40
+00:01:36.260 --> 00:01:37.370
+it's POSIX compliant,
+
+41
+00:01:37.370 --> 00:01:40.400
+it does only works for Linux, so it scales.
+
+42
+00:01:40.400 --> 00:01:43.820
+So this works but this is quite expensive, I would say,
+
+43
+00:01:43.820 --> 00:01:46.010
+and I would say the last kind of solution
+
+44
+00:01:46.010 --> 00:01:47.320
+that you would run into
+
+45
+00:01:47.320 --> 00:01:50.050
+would be CloudFront directly in front of S3.
+
+46
+00:01:50.050 --> 00:01:51.390
+And this works great.
+
+47
+00:01:51.390 --> 00:01:55.840
+If you have static objects in S3 that are pretty big.
+
+48
+00:01:55.840 --> 00:01:59.200
+And that doesn't require them to be updated very often.
+
+49
+00:01:59.200 --> 00:02:00.800
+So as you can see there's different ways
+
+50
+00:02:00.800 --> 00:02:04.260
+of exposing static objects, and there's not right way
+
+51
+00:02:04.260 --> 00:02:06.310
+of doing it, obviously I think the preferred way
+
+52
+00:02:06.310 --> 00:02:08.670
+is going to be the one with CloudFront and S3.
+
+53
+00:02:08.670 --> 00:02:11.330
+But still, depends on your architecture, your requirements,
+
+54
+00:02:11.330 --> 00:02:13.080
+and the way your application
+
+55
+00:02:13.080 --> 00:02:14.280
+is going to be designed.
+
+56
+00:02:15.560 --> 00:02:17.400
+Moving on with S3,
+
+57
+00:02:17.400 --> 00:02:20.080
+as I said, there is no indexing facility in S3
+
+58
+00:02:20.080 --> 00:02:23.110
+so you cannot search your S3 buckets for an object.
+
+59
+00:02:23.110 --> 00:02:24.470
+And so the right way of doing things
+
+60
+00:02:24.470 --> 00:02:27.050
+would be to index objects in DynamoDB.
+
+61
+00:02:27.050 --> 00:02:29.100
+So you have rights into Amazon S3,
+
+62
+00:02:29.100 --> 00:02:31.790
+and then maybe through some S3 event notifications,
+
+63
+00:02:31.790 --> 00:02:33.600
+your Lambda function is being triggered,
+
+64
+00:02:33.600 --> 00:02:36.300
+it will read part of the file row, the entire file,
+
+65
+00:02:36.300 --> 00:02:39.780
+but most likely part of the file using a byte range fetch,
+
+66
+00:02:39.780 --> 00:02:42.450
+and then it will insert some metadata,
+
+67
+00:02:42.450 --> 00:02:45.810
+some information about your file into DynamoDB table.
+
+68
+00:02:45.810 --> 00:02:47.720
+And it's really good to have DynamoDB table
+
+69
+00:02:47.720 --> 00:02:50.200
+because from there, we could create an API
+
+70
+00:02:50.200 --> 00:02:52.050
+to search for object metadata.
+
+71
+00:02:52.050 --> 00:02:53.830
+For example, if you have the right index you can search
+
+72
+00:02:53.830 --> 00:02:56.180
+by date, you can look at the total search used
+
+73
+00:02:56.180 --> 00:02:58.440
+by a customer, you can list all the objects
+
+74
+00:02:58.440 --> 00:03:01.340
+with an attribute, and you can find all the objects uploaded
+
+75
+00:03:01.340 --> 00:03:02.560
+within a date range.
+
+76
+00:03:02.560 --> 00:03:04.530
+So having the data in DynamoDB
+
+77
+00:03:04.530 --> 00:03:08.910
+opens up a lot more solutions to search into Amazon S3
+
+78
+00:03:08.910 --> 00:03:11.730
+and they're a very very good combo, usually linked
+
+79
+00:03:11.730 --> 00:03:13.680
+with a Lambda function.
+
+80
+00:03:13.680 --> 00:03:17.340
+So finally some of the best practice we have on Amazon
+
+81
+00:03:17.340 --> 00:03:21.080
+is to separate the dynamic content from the static content.
+
+82
+00:03:21.080 --> 00:03:22.180
+I think this makes a lot of sense
+
+83
+00:03:22.180 --> 00:03:24.270
+but it's good to outline incorrectly.
+
+84
+00:03:24.270 --> 00:03:27.570
+So if you make a DNS request to Route 53,
+
+85
+00:03:27.570 --> 00:03:30.180
+you can be redirected for the dynamic content
+
+86
+00:03:30.180 --> 00:03:33.620
+to for example, your REST API your HTTP server.
+
+87
+00:03:33.620 --> 00:03:36.840
+So this could be an ALB bus EC2, API gateway plus Lambda.
+
+88
+00:03:36.840 --> 00:03:37.673
+It really depends.
+
+89
+00:03:37.673 --> 00:03:40.280
+We've seen this at length already in this course.
+
+90
+00:03:40.280 --> 00:03:43.320
+But the idea is that you get all the dynamic content
+
+91
+00:03:43.320 --> 00:03:47.080
+through this route, there's little to no caching, maybe,
+
+92
+00:03:47.080 --> 00:03:50.350
+and you get access to some fresh, small data.
+
+93
+00:03:50.350 --> 00:03:52.710
+So you can have the database layer to be DynamoDB,
+
+94
+00:03:52.710 --> 00:03:55.660
+you can have a caching or session layer index in DynamoDB.
+
+95
+00:03:55.660 --> 00:03:57.810
+This is just one architecture with the idea I want you
+
+96
+00:03:57.810 --> 00:04:00.720
+to remember is that it's going to be a more dynamic route
+
+97
+00:04:00.720 --> 00:04:02.650
+where there's going to be tons of requests,
+
+98
+00:04:02.650 --> 00:04:04.540
+and for the static content, things
+
+99
+00:04:04.540 --> 00:04:07.240
+that doesn't change very often, then usually you
+
+100
+00:04:07.240 --> 00:04:10.590
+go through a CDN layer, such as CloudFront
+
+101
+00:04:10.590 --> 00:04:13.260
+to cache a content at the edge and save some costs
+
+102
+00:04:13.260 --> 00:04:15.630
+and improve the performance, there's going to be more
+
+103
+00:04:15.630 --> 00:04:19.020
+for your HTML files your big files your videos and so on.
+
+104
+00:04:19.020 --> 00:04:21.290
+And all the static content needs to be stored
+
+105
+00:04:21.290 --> 00:04:25.630
+onto a layer that scales really well, such as Amazon S3.
+
+106
+00:04:25.630 --> 00:04:28.990
+It's very possible that your dynamic content has to interact
+
+107
+00:04:28.990 --> 00:04:32.350
+with Amazon S3 by uploading some files directly in it,
+
+108
+00:04:32.350 --> 00:04:34.310
+it's possible, definitely.
+
+109
+00:04:34.310 --> 00:04:37.160
+And then as I said, we can react to changes happening
+
+110
+00:04:37.160 --> 00:04:39.600
+in our Amazon S3 bucket, using a Lambda function
+
+111
+00:04:39.600 --> 00:04:41.070
+that reacts to these events,
+
+112
+00:04:41.070 --> 00:04:42.910
+and the Lambda function could index,
+
+113
+00:04:42.910 --> 00:04:44.860
+all the data into DynamoDB,
+
+114
+00:04:44.860 --> 00:04:47.303
+which could in turn help the dynamic route.
+
+115
+00:04:48.898 --> 00:04:49.830
+So that means that, you know,
+
+116
+00:04:49.830 --> 00:04:51.160
+even it's though static and dynamic,
+
+117
+00:04:51.160 --> 00:04:53.880
+they can be definitely linked to one another.
+
+118
+00:04:53.880 --> 00:04:56.970
+Finally, we don't have to go through CloudFront
+
+119
+00:04:57.990 --> 00:04:59.630
+to get access to our S3 bucket,
+
+120
+00:04:59.630 --> 00:05:01.240
+unless we set up an OAI.
+
+121
+00:05:01.240 --> 00:05:04.230
+But if we haven't, then we can use a pre signed URL
+
+122
+00:05:04.230 --> 00:05:06.160
+to access our S3 buckets
+
+123
+00:05:06.160 --> 00:05:07.920
+and get the content right away from it.
+
+124
+00:05:07.920 --> 00:05:09.470
+And we've seen this when we were trying
+
+125
+00:05:09.470 --> 00:05:11.300
+to upload files efficiently,
+
+126
+00:05:11.300 --> 00:05:13.790
+directly into our S3 bucket when we were trying
+
+127
+00:05:13.790 --> 00:05:15.436
+to download files as well,
+
+128
+00:05:15.436 --> 00:05:18.430
+in a more performant fashion,
+
+129
+00:05:18.430 --> 00:05:21.210
+without going for some proxies, et cetera, et cetera.
+
+130
+00:05:21.210 --> 00:05:23.490
+So that's it for S3 solution architectures,
+
+131
+00:05:23.490 --> 00:05:25.510
+but hopefully it starts shedding some light
+
+132
+00:05:25.510 --> 00:05:26.343
+into how you should think
+
+133
+00:05:26.343 --> 00:05:27.980
+as a solution architect professional,
+
+134
+00:05:27.980 --> 00:05:30.450
+the exam will ask you stuff like this so it's good
+
+135
+00:05:30.450 --> 00:05:32.420
+that you visualize these infrastructure
+
+136
+00:05:32.420 --> 00:05:34.230
+and architectures is as much as possible.
+
+137
+00:05:34.230 --> 00:05:37.170
+And remember, separating dynamic and static content
+
+138
+00:05:37.170 --> 00:05:39.260
+is some of the best practices.
+
+139
+00:05:39.260 --> 00:05:40.093
+That's it.
+
+140
+00:05:40.093 --> 00:05:41.560
+I will see you in the next lecture.
+

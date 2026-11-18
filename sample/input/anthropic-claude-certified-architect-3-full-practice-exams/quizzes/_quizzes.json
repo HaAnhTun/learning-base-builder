@@ -1,0 +1,76 @@
+{
+  "course_id": 7108671,
+  "slug": "anthropic-claude-certified-architect-3-full-practice-exams",
+  "title": "Claude Certified Architect Foundations - 6 Practice Exams",
+  "url": "/course/anthropic-claude-certified-architect-3-full-practice-exams/",
+  "host": "luvina.udemy.com",
+  "fetched_at": "2026-11-18T17:16:32+00:00",
+  "quizzes": [
+    {
+      "position": 1,
+      "quiz_id": 7570481,
+      "title": "Practice Test 1: Claude Certified Architect Foundations",
+      "filename": "01-practice-test-1-claude-certified-architect-foundations.json",
+      "chapter_index": null,
+      "chapter_title": null,
+      "lectures_before": 0,
+      "questions": 60,
+      "sha256": "dc363592ddcdac242ff6ee4627a85e23d2afc3b23c6f27c9eac24dbc224e9aa0"
+    },
+    {
+      "position": 2,
+      "quiz_id": 7570877,
+      "title": "Practice Test 2: Claude Certified Architect Foundations",
+      "filename": "02-practice-test-2-claude-certified-architect-foundations.json",
+      "chapter_index": null,
+      "chapter_title": null,
+      "lectures_before": 0,
+      "questions": 60,
+      "sha256": "3aa52345c7aa31c9130d218d3b64402ca65f354fdc0fb46b3e5acf8d0395fc01"
+    },
+    {
+      "position": 3,
+      "quiz_id": 7570879,
+      "title": "Practice Test 3: Claude Certified Architect Foundations",
+      "filename": "03-practice-test-3-claude-certified-architect-foundations.json",
+      "chapter_index": null,
+      "chapter_title": null,
+      "lectures_before": 0,
+      "questions": 60,
+      "sha256": "f5793e96765c48baf3f7cd701609bcc5254f919767c9532d70636f11251242cb"
+    },
+    {
+      "position": 4,
+      "quiz_id": 7507695,
+      "title": "Practice Test 4: Claude Certified Architect - Foundations",
+      "filename": "04-practice-test-4-claude-certified-architect-foundations.json",
+      "chapter_index": null,
+      "chapter_title": null,
+      "lectures_before": 0,
+      "questions": 60,
+      "sha256": "5730d8dec603046dee561dbfe1de883a57dc8f4102f96d23811362cfd1421784"
+    },
+    {
+      "position": 5,
+      "quiz_id": 7507873,
+      "title": "Practice Test 5: Claude Certified Architect - Foundations",
+      "filename": "05-practice-test-5-claude-certified-architect-foundations.json",
+      "chapter_index": null,
+      "chapter_title": null,
+      "lectures_before": 0,
+      "questions": 60,
+      "sha256": "fcf77db510b4b18535e187a7fe928ff2199b380c8aa4cad1460aba65455379d1"
+    },
+    {
+      "position": 6,
+      "quiz_id": 7507877,
+      "title": "Practice Test 6: Claude Certified Architect - Foundations",
+      "filename": "06-practice-test-6-claude-certified-architect-foundations.json",
+      "chapter_index": null,
+      "chapter_title": null,
+      "lectures_before": 0,
+      "questions": 60,
+      "sha256": "cd951fb5e96caf589b7651d8e015e4706708d3236a97c400fe3b2e7dd0dc7925"
+    }
+  ]
+}

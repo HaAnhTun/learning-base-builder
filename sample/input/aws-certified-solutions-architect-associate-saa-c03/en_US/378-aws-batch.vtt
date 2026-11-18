@@ -1,0 +1,326 @@
+WEBVTT
+
+1
+00:00:00.240 --> 00:00:01.770
+<v Narrator>So now let's talk about a service</v>
+
+2
+00:00:01.770 --> 00:00:03.450
+that is named after what it does.
+
+3
+00:00:03.450 --> 00:00:05.430
+It is AWS Batch.
+
+4
+00:00:05.430 --> 00:00:08.400
+So Batch is a fully managed Batch processing service
+
+5
+00:00:08.400 --> 00:00:11.340
+that can allow you to do Batch processing at any scale.
+
+6
+00:00:11.340 --> 00:00:12.540
+And with the Batch service,
+
+7
+00:00:12.540 --> 00:00:13.950
+you can efficiently run hundreds
+
+8
+00:00:13.950 --> 00:00:15.840
+of thousands of computing Batch jobs
+
+9
+00:00:15.840 --> 00:00:18.030
+on AWS very easily.
+
+10
+00:00:18.030 --> 00:00:19.530
+So what is a Batch job?
+
+11
+00:00:19.530 --> 00:00:23.100
+Well, a Batch job is a job that has a start and an end.
+
+12
+00:00:23.100 --> 00:00:24.270
+And that is opposed to,
+
+13
+00:00:24.270 --> 00:00:26.550
+say, a continuous or a streaming job
+
+14
+00:00:26.550 --> 00:00:28.260
+that really doesn't ever end.
+
+15
+00:00:28.260 --> 00:00:29.670
+It's always running.
+
+16
+00:00:29.670 --> 00:00:31.110
+But a Batch job, say for example,
+
+17
+00:00:31.110 --> 00:00:34.500
+starts at 1:00 a.m. and finishes at 3:00 a.m.
+
+18
+00:00:34.500 --> 00:00:38.010
+So a Batch job has a point of time when it happens.
+
+19
+00:00:38.010 --> 00:00:40.020
+And so the Batch service
+
+20
+00:00:40.020 --> 00:00:42.390
+will dynamically launch EC2 instances
+
+21
+00:00:42.390 --> 00:00:45.930
+or Spot instances to accommodate with the load
+
+22
+00:00:45.930 --> 00:00:48.510
+that you have to run these Batch jobs.
+
+23
+00:00:48.510 --> 00:00:51.720
+So Batch will provision the right amount of compute
+
+24
+00:00:51.720 --> 00:00:54.840
+and memory for you to deal with your Batch queue,
+
+25
+00:00:54.840 --> 00:00:56.400
+and you just submit
+
+26
+00:00:56.400 --> 00:00:58.620
+or schedule Batch jobs into that Batch queue
+
+27
+00:00:58.620 --> 00:01:01.800
+and the Batch service does the rest.
+
+28
+00:01:01.800 --> 00:01:04.470
+Now, you define a Batch job using a Docker image,
+
+29
+00:01:04.470 --> 00:01:07.380
+and then you can run it on either ECS, EKS,
+
+30
+00:01:07.380 --> 00:01:09.390
+or the Fargate service.
+
+31
+00:01:09.390 --> 00:01:11.580
+And this is going to be very helpful to use Batch
+
+32
+00:01:11.580 --> 00:01:12.990
+to run these Batch jobs.
+
+33
+00:01:12.990 --> 00:01:15.840
+And because it automatically scales the right number
+
+34
+00:01:15.840 --> 00:01:16.920
+of EC2 instances
+
+35
+00:01:16.920 --> 00:01:19.650
+or Spot instances to do these jobs,
+
+36
+00:01:19.650 --> 00:01:21.810
+then you get lots of cost optimizations
+
+37
+00:01:21.810 --> 00:01:24.270
+and you focus a lot less on the infrastructure.
+
+38
+00:01:24.270 --> 00:01:26.490
+You just focus on your Batch jobs.
+
+39
+00:01:26.490 --> 00:01:28.680
+So this should be more than enough for going to the exam.
+
+40
+00:01:28.680 --> 00:01:31.800
+But I just wanna show you a small diagram that I made.
+
+41
+00:01:31.800 --> 00:01:35.100
+So for example, say we wanted to process images submitted
+
+42
+00:01:35.100 --> 00:01:38.130
+by users into Amazon S3 in a Batch way.
+
+43
+00:01:38.130 --> 00:01:41.340
+So image will be put into Amazon S3,
+
+44
+00:01:41.340 --> 00:01:44.250
+and this would trigger a Batch job.
+
+45
+00:01:44.250 --> 00:01:47.430
+And so Batch would automatically have an ECS cluster made
+
+46
+00:01:47.430 --> 00:01:50.220
+of EC2 instances or Spot instances.
+
+47
+00:01:50.220 --> 00:01:52.290
+And Batch would make sure that you have the right amount
+
+48
+00:01:52.290 --> 00:01:54.630
+of instances to accommodate with a load
+
+49
+00:01:54.630 --> 00:01:56.730
+of Batch jobs you have in the Batch queue.
+
+50
+00:01:56.730 --> 00:02:00.660
+And then these instances will be running your Docker images
+
+51
+00:02:00.660 --> 00:02:02.340
+that will be doing your job,
+
+52
+00:02:02.340 --> 00:02:03.570
+and then maybe that job will be
+
+53
+00:02:03.570 --> 00:02:05.580
+to insert the processed object.
+
+54
+00:02:05.580 --> 00:02:06.720
+Maybe it's a filter on top
+
+55
+00:02:06.720 --> 00:02:09.960
+of the image into another Amazon S3 buckets.
+
+56
+00:02:09.960 --> 00:02:11.610
+So the question you may have is what is the difference
+
+57
+00:02:11.610 --> 00:02:13.630
+between Batch and Lambda because it looks similar?
+
+58
+00:02:13.630 --> 00:02:16.110
+So Lambda has a time limit,
+
+59
+00:02:16.110 --> 00:02:18.780
+it's 15 minutes and you only get access
+
+60
+00:02:18.780 --> 00:02:21.450
+to a few programming languages on top of it.
+
+61
+00:02:21.450 --> 00:02:24.390
+You have limited temporary dis space if you want
+
+62
+00:02:24.390 --> 00:02:25.470
+to run your jobs,
+
+63
+00:02:25.470 --> 00:02:26.802
+and it's going to be serverless,
+
+64
+00:02:26.802 --> 00:02:28.710
+whereas Batch is very different.
+
+65
+00:02:28.710 --> 00:02:30.150
+So Batch has no time limit
+
+66
+00:02:30.150 --> 00:02:32.940
+because it relies on EC2 instances.
+
+67
+00:02:32.940 --> 00:02:35.730
+It's any runtime that you want as long as you package it
+
+68
+00:02:35.730 --> 00:02:37.230
+as a Docker image.
+
+69
+00:02:37.230 --> 00:02:40.620
+And for storage, you rely on the storage that comes
+
+70
+00:02:40.620 --> 00:02:42.090
+with an EC2 instance.
+
+71
+00:02:42.090 --> 00:02:43.470
+So it could be an EBS volume
+
+72
+00:02:43.470 --> 00:02:45.933
+or an EC2 instance store for desk space,
+
+73
+00:02:46.890 --> 00:02:49.200
+which can be a lot more than for Lambda functions.
+
+74
+00:02:49.200 --> 00:02:51.840
+And then finally, Batch is not a serverless service,
+
+75
+00:02:51.840 --> 00:02:54.540
+it's a managed service, but it relies on actual EC2
+
+76
+00:02:54.540 --> 00:02:56.070
+instances being created.
+
+77
+00:02:56.070 --> 00:02:59.199
+But these EC2 instances are managed by AWS,
+
+78
+00:02:59.199 --> 00:03:00.240
+so we don't need
+
+79
+00:03:00.240 --> 00:03:02.400
+to worry about the auto-scaling and so on.
+
+80
+00:03:02.400 --> 00:03:03.360
+So I hope that was helpful
+
+81
+00:03:03.360 --> 00:03:05.310
+and I will see you in the next lecture.
+

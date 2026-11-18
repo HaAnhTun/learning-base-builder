@@ -1,0 +1,365 @@
+{
+  "quiz_id": 7572287,
+  "title": "4C Quiz",
+  "type": "simple-quiz",
+  "version": 1,
+  "pass_percent": 70,
+  "description": "",
+  "position": 14,
+  "chapter_index": 15,
+  "chapter_title": "D4: Prompt Engineering - Structured Output & Evaluation",
+  "lectures_before": 106,
+  "assessments": [
+    {
+      "_class": "assessment",
+      "id": 164089243,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A schema for contract extraction marks `counterparty_name` as required. In testing, the engineer discovers that some contracts do not name a counterparty at all — they reference only a contract number. Claude fills the field with a plausible company name rather than leaving it empty. What schema design mistake caused this?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>Marking a field required when the input does not always contain extractable data for it creates pressure for the model to produce a plausible value rather than surface an absence, leading to hallucinated output.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Marking the field required when source data may be absent, pressuring the model to fabricate a value.</p>",
+          "<p>Failing to add an enum constraint on the field, which left the model free to choose arbitrary string values.</p>",
+          "<p>Using a nested schema for the counterparty, which introduced additional compliance risk at each nested level.</p>",
+          "<p>Omitting a field description, which gave the model no guidance on how to populate the counterparty name.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A schema for contract extraction marks `counterparty_name` as required. In testing, the engineer discovers that some contracts do not name a counterparty at all — they reference only a contract number. Claude fills the field with a plausible company name rather than leaving it empty. What schema design mistake caused this?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089339,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A team building an invoice extraction schema wants reliable date values across thousands of varied invoices. Some invoices write dates as `June 4 2026`, others as `04-06-2026`, and others as `06/04/26`. The schema currently has a `invoice_date` string field with no description. What schema design change would most directly reduce inconsistent date formats in extraction output?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "",
+          "<p>Field descriptions are the primary lever for guiding extraction decisions. Specifying the exact expected format — such as ISO 8601 — in the description prevents the model from adapting to the varied surface forms in source documents.</p>"
+        ],
+        "answers": [
+          "<p>Mark the field as optional so the model is not pressured to normalize a date it cannot confidently read.</p>",
+          "<p>Change the field type from string to integer to force the model to output a numeric timestamp instead of a formatted date string.</p>",
+          "<p>Add a second field `invoice_date_raw` to preserve the source form alongside the parsed date for downstream reconciliation.</p>",
+          "<p>Add a field description specifying the expected format (e.g., ISO 8601) so the model normalizes all date variants consistently.</p>"
+        ]
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "",
+      "question_plain": "A team building an invoice extraction schema wants reliable date values across thousands of varied invoices. Some invoices write dates as `June 4 2026`, others as `04-06-2026`, and others as `06/04/26`. The schema currently has a `invoice_date` string field with no description. What schema design change would most directly reduce inconsistent date formats in extraction output?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089343,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>An extraction pipeline processes legal complaints with two distinct entity types: plaintiffs and defendants, each requiring name, role, and address. A single large tool schema with all fields combined is producing compliance errors and confusing entity boundaries. What architectural pattern does the deck recommend?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "",
+          "<p>Composing separate focused tools for logically distinct entities keeps each schema small, reduces the model's simultaneous constraint load, and allows each tool call to be independently validated. Overloading a single schema degrades compliance.</p>"
+        ],
+        "answers": [
+          "<p>Add more detailed field descriptions to the single large schema to clarify the entity boundary for the model.</p>",
+          "<p>Switch to JSON mode, which handles large flat output shapes more reliably than tool use for multi-entity documents.</p>",
+          "<p>Combine all fields into a single nested object under one tool call to give the model a unified structure to populate at once.</p>",
+          "<p>Define separate extraction tools for plaintiff and defendant entities so each schema is independently validated and focused.</p>"
+        ]
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "",
+      "question_plain": "An extraction pipeline processes legal complaints with two distinct entity types: plaintiffs and defendants, each requiring name, role, and address. A single large tool schema with all fields combined is producing compliance errors and confusing entity boundaries. What architectural pattern does the deck recommend?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089345,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A financial data extraction pipeline passes schema validation on every run but occasionally routes transactions to the wrong account because an extracted `account_type` value is structurally valid yet semantically incorrect — the model inferred the wrong category from ambiguous source text. Which validation layer is missing from this pipeline?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>Schema validation is deterministic and catches structural failures but cannot verify that values are meaningful. Business rule validation checks domain logic, and semantic validation confirms that extracted values are consistent with the source text — both are needed to catch failures that pass schema checks.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Business rule or semantic validation, which verifies values satisfy domain logic beyond structural correctness.</p>",
+          "<p>Retry logic, which would catch the error by re-extracting until the value stabilizes across multiple attempts.</p>",
+          "<p>Schema validation, which should be extended to include stricter type checking for string fields like account_type.</p>",
+          "<p>Citation instructions, which would force the model to produce a source passage alongside every extracted field.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A financial data extraction pipeline passes schema validation on every run but occasionally routes transactions to the wrong account because an extracted `account_type` value is structurally valid yet semantically incorrect — the model inferred the wrong category from ambiguous source text. Which validation layer is missing from this pipeline?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089347,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>An extraction pipeline fails validation and the engineer sends a re-prompt that reads: 'Your previous response was incorrect. Please try again.' The model returns another structurally valid but still wrong extraction. What re-prompt design principle did the engineer violate?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>Effective re-prompts include the specific validation error, re-inject the relevant source text so the model extracts from evidence rather than memory, and instruct the model to correct only the failing fields. Vague 'try again' instructions give the model no more information than the original prompt.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>The re-prompt should have asked the model to regenerate the entire output from scratch rather than correcting the failing fields.</p>",
+          "<p>The re-prompt should have switched from tool use to JSON mode on the retry to reduce structural constraints on the model.</p>",
+          "<p>The re-prompt did not name the specific failure or re-include the source text, leaving the model without actionable guidance.</p>",
+          "<p>The re-prompt should have lowered the temperature to zero to force a deterministic extraction on the second attempt.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "An extraction pipeline fails validation and the engineer sends a re-prompt that reads: 'Your previous response was incorrect. Please try again.' The model returns another structurally valid but still wrong extraction. What re-prompt design principle did the engineer violate?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089349,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A pipeline processes thousands of daily insurance claim forms. After deployment, the team observes that one in fifty claims fails schema validation and requires manual rework. The validation loop retries indefinitely until the output passes. What retry budget design principle is being violated?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "<p>A retry budget is a hard cap on attempts — typically two to three — before escalating or returning a structured error. Unlimited retries risk runaway cost and can mask systemic prompt failures that should trigger investigation rather than infinite looping.</p>",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>The pipeline should skip schema validation entirely and route all outputs to human review to avoid any automated retry overhead.</p>",
+          "<p>There is no hard cap on retries, which risks runaway cost and hides systemic prompt problems that should trigger escalation.</p>",
+          "<p>The validation gate should be relaxed to accept partially valid JSON so that fewer outputs need to be retried.</p>",
+          "<p>The retry prompt is too specific, giving the model too many correction targets and causing it to fail repeatedly on different fields.</p>"
+        ]
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "",
+      "question_plain": "A pipeline processes thousands of daily insurance claim forms. After deployment, the team observes that one in fifty claims fails schema validation and requires manual rework. The validation loop retries indefinitely until the output passes. What retry budget design principle is being violated?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089351,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A content generation pipeline retry loop produces outputs that pass format validation on the third attempt but are drifting further from the intended meaning with each successive retry. Which technique does the deck recommend to break a pattern of structurally valid but semantically degrading retries?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>When a model gets stuck producing outputs that look valid but degrade semantically, identical retries don't help. A small temperature bump and slight prompt reframing inject variance to break the failure path, while escalating when repeated semantic failures appear signals a prompt design issue.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Raise the temperature slightly and reframe the instruction on each retry to break the model out of the same failure path.</p>",
+          "<p>Log the failure and silently return the most recent output, since it passes format validation even if semantically imperfect.</p>",
+          "<p>Increase the retry budget to ten attempts to give the model more opportunities to converge on a semantically correct output.</p>",
+          "<p>Switch from format validation to schema-only validation so the model has fewer constraints to satisfy on each retry.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A content generation pipeline retry loop produces outputs that pass format validation on the third attempt but are drifting further from the intended meaning with each successive retry. Which technique does the deck recommend to break a pattern of structurally valid but semantically degrading retries?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089353,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A team ships a multi-pass review pipeline for a legal summarization tool. The reviewer model is the same model that generates the summaries. After several weeks, engineers notice the reviewer frequently approves summaries that human reviewers later flag as missing key clauses. What architectural limitation explains this?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>Self-review uses the same model for both generation and review. The model tends to rate its own outputs favorably — confirmation bias — because it recognizes its own phrasing as intentional. Cross-review uses a different model for an independent perspective, which is more valuable in high-stakes contexts.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Self-review has built-in confirmation bias; the model rates its own phrasing as intentional and approves flawed output.</p>",
+          "<p>Multi-pass review adds too much latency for legal documents, causing the reviewer to time out before completing its evaluation.</p>",
+          "<p>The summarization model is too small to perform meaningful semantic evaluation of its own output in a reviewer role.</p>",
+          "<p>The reviewer prompt lacks a completeness checklist, so the model approves outputs without checking for required sections.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A team ships a multi-pass review pipeline for a legal summarization tool. The reviewer model is the same model that generates the summaries. After several weeks, engineers notice the reviewer frequently approves summaries that human reviewers later flag as missing key clauses. What architectural limitation explains this?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089357,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A product team is designing a reviewer prompt for a medical triage summarization tool and drafts: 'Review this output and identify any issues.' In testing, the reviewer returns vague feedback like 'the tone could be improved' that does not drive useful revisions. What change does the deck recommend to fix this?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "",
+          "<p>Open-ended reviewer instructions produce vague, inconsistent critiques. An explicit checklist with clear pass/fail conditions for each item, plus a structured critique format naming which check failed and why, produces actionable feedback that drives concrete revisions.</p>"
+        ],
+        "answers": [
+          "<p>Lower the reviewer's temperature to near zero so it consistently identifies the same issues across every review pass.</p>",
+          "<p>Switch from self-review to a stronger cross-review model, which will produce more detailed feedback from the same open-ended prompt.</p>",
+          "<p>Remove the reviewer pass and rely on the revision call alone to self-correct without an intermediate critique step.</p>",
+          "<p>Replace the open-ended instruction with an explicit checklist, each item having a pass/fail condition.</p>"
+        ]
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "",
+      "question_plain": "A product team is designing a reviewer prompt for a medical triage summarization tool and drafts: 'Review this output and identify any issues.' In testing, the reviewer returns vague feedback like 'the tone could be improved' that does not drive useful revisions. What change does the deck recommend to fix this?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089359,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A team runs the full eval suite after every prompt change and tracks four metrics. After a recent edit, pass rate rose from 82% to 89%, but three cases that previously passed are now failing. How should the team interpret this result?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>A fix that raises pass rate while introducing newly failing cases is not a net improvement — it has traded one set of problems for another. The regression rate (fraction of previously passing cases now failing) must be zero or declining before a change is promoted to production. Catching regressions before deploy is always cheaper than discovering them from users.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>The change is a net regression because previously passing cases now fail, and the new version should not be deployed until regressions are resolved.</p>",
+          "<p>The result is ambiguous and the team should run spot-checks on the failing cases to judge severity before deciding on deployment.</p>",
+          "<p>The team should add the three failing cases to the dataset as known failures and re-run evals to recalibrate the baseline.</p>",
+          "<p>The change is acceptable because pass rate improved and three failures represent a small fraction of the total eval suite.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A team runs the full eval suite after every prompt change and tracks four metrics. After a recent edit, pass rate rose from 82% to 89%, but three cases that previously passed are now failing. How should the team interpret this result?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089363,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A prompt engineer wants to decide when to run the full eval suite during a development cycle. Which policy is most consistent with the eval-driven workflow taught in this deck?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>The deck identifies three mandatory triggers: before every deployment (no exceptions for small changes), after any dataset update (to recalibrate baseline metrics), and on a regular schedule to surface model-level drift even when no prompt changed. Skipping evals on 'small' changes is explicitly called out as a failure mode.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Run evals before every deployment, after any dataset update, and on a regular schedule to catch model-level drift.</p>",
+          "<p>Run evals only before major prompt rewrites, since minor wording changes are unlikely to affect overall pass rate meaningfully.</p>",
+          "<p>Run evals after deployment to validate that the change performs as expected on real user traffic instead of synthetic test cases.</p>",
+          "<p>Run evals whenever pass rate from the prior cycle dropped below a team-defined threshold, to focus effort on declining prompts.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A prompt engineer wants to decide when to run the full eval suite during a development cycle. Which policy is most consistent with the eval-driven workflow taught in this deck?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089365,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A team is building an eval suite for a summarization prompt that produces free-form paragraph outputs. They need to grade outputs against a quality rubric. Which grading approach is most appropriate, and what additional step does the deck require before trusting the scores?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>Code-based grading only applies when correctness is expressible as a rule; free-form summaries require model-based grading. However, model-graded scores overstate precision without calibration against human judgments. Calibration involves human-labeling a representative sample, comparing grader output, calculating agreement rate, and adjusting the rubric where systematic disagreements appear.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Use model-based grading with a scoring rubric, then calibrate by comparing grader output to human labels on a representative sample.</p>",
+          "<p>Use exact-match grading against a reference summary stored in the test dataset, since summaries should converge on known correct outputs.</p>",
+          "<p>Use code-based regex grading to check whether required keywords appear in the summary output, then track pass rate across eval runs.</p>",
+          "<p>Use model-based grading and treat the scores as ground truth once the grading prompt has been written and version-controlled.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A team is building an eval suite for a summarization prompt that produces free-form paragraph outputs. They need to grade outputs against a quality rubric. Which grading approach is most appropriate, and what additional step does the deck require before trusting the scores?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089367,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A team is bootstrapping a test dataset for a new customer-facing prompt before any production traffic exists. Which dataset construction strategy does this deck recommend as a common starting path?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>The deck describes three dataset sources — handcrafted, synthetic, and production-sampled — and notes that most mature suites combine all three. The recommended bootstrap path when no production data exists is to start with handcrafted cases targeting known failure modes, expand coverage quickly with synthetic generation, and add production samples once the system is live.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>Wait until production traffic accumulates, then sample real user inputs and label them as the primary dataset source.</p>",
+          "<p>Use only handcrafted cases and avoid synthetic generation because model-generated test inputs may replicate the same biases as the prompt under test.</p>",
+          "<p>Begin with handcrafted cases targeting known failure modes, then expand with synthetic generation, and add production samples once the system is live.</p>",
+          "<p>Generate the full dataset synthetically from the prompt's topic area to maximize coverage before any manual case writing.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "A team is bootstrapping a test dataset for a new customer-facing prompt before any production traffic exists. Which dataset construction strategy does this deck recommend as a common starting path?",
+      "related_lectures": []
+    }
+  ]
+}

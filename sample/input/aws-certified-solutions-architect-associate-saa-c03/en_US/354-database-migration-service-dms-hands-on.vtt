@@ -1,0 +1,514 @@
+WEBVTT
+
+1
+00:00:00.390 --> 00:00:04.050
+<v Instructor>So now let's have a look at AWS DMS.</v>
+
+2
+00:00:04.050 --> 00:00:06.000
+So you click on get started,
+
+3
+00:00:06.000 --> 00:00:07.590
+and this gives you just an overview page
+
+4
+00:00:07.590 --> 00:00:09.690
+of what you can do with DMS,
+
+5
+00:00:09.690 --> 00:00:11.730
+but the real magic happens on the left-hand side.
+
+6
+00:00:11.730 --> 00:00:14.700
+So this can change, but the idea remains the same.
+
+7
+00:00:14.700 --> 00:00:17.070
+You can do a discovery and assessment
+
+8
+00:00:17.070 --> 00:00:19.200
+in which you're going to create a data collector,
+
+9
+00:00:19.200 --> 00:00:21.120
+find databases, analyze inventory,
+
+10
+00:00:21.120 --> 00:00:22.860
+and then use the recommendations.
+
+11
+00:00:22.860 --> 00:00:25.560
+You can convert or move to managed,
+
+12
+00:00:25.560 --> 00:00:27.480
+so the idea is that you convert a schema
+
+13
+00:00:27.480 --> 00:00:30.060
+using the DMS Schema Conversion tool.
+
+14
+00:00:30.060 --> 00:00:32.910
+Then you move your data into AWS
+
+15
+00:00:32.910 --> 00:00:34.620
+and you move to a managed service,
+
+16
+00:00:34.620 --> 00:00:37.170
+or you can migrate or replicate data.
+
+17
+00:00:37.170 --> 00:00:39.870
+And here, we choose the end points,
+
+18
+00:00:39.870 --> 00:00:41.220
+we're gonna see this in a second.
+
+19
+00:00:41.220 --> 00:00:42.390
+We create a provision instance
+
+20
+00:00:42.390 --> 00:00:44.550
+and we create a task for the replication.
+
+21
+00:00:44.550 --> 00:00:46.470
+You see that for some of these options,
+
+22
+00:00:46.470 --> 00:00:48.540
+we have Provisioned or Serverless
+
+23
+00:00:48.540 --> 00:00:50.910
+for the migration of the replication.
+
+24
+00:00:50.910 --> 00:00:53.700
+And here to convert a database,
+
+25
+00:00:53.700 --> 00:00:54.900
+we have this schema conversion.
+
+26
+00:00:54.900 --> 00:00:57.090
+Or if we don't convert the schema,
+
+27
+00:00:57.090 --> 00:00:59.700
+we have a homogeneous data migration.
+
+28
+00:00:59.700 --> 00:01:02.460
+So this is just to give you an overview of DMS,
+
+29
+00:01:02.460 --> 00:01:04.350
+but the real magic happens on left-hand side.
+
+30
+00:01:04.350 --> 00:01:08.100
+So here you're going to go into Endpoints
+
+31
+00:01:08.100 --> 00:01:09.030
+and we're going to look at it.
+
+32
+00:01:09.030 --> 00:01:13.140
+So first of all, this is how to move data.
+
+33
+00:01:13.140 --> 00:01:15.660
+So it could be from source to target,
+
+34
+00:01:15.660 --> 00:01:17.520
+and so you must create an endpoint
+
+35
+00:01:17.520 --> 00:01:19.920
+for the source and the target.
+
+36
+00:01:19.920 --> 00:01:22.830
+So the idea is that I will create an endpoint,
+
+37
+00:01:22.830 --> 00:01:24.570
+and here you choose whatever you want.
+
+38
+00:01:24.570 --> 00:01:26.760
+So you enter an identifier,
+
+39
+00:01:26.760 --> 00:01:28.620
+and then you have to choose the source engine.
+
+40
+00:01:28.620 --> 00:01:31.680
+So you have all these options for the source engines.
+
+41
+00:01:31.680 --> 00:01:34.500
+For example, you choose Amazon Aurora MySQL.
+
+42
+00:01:34.500 --> 00:01:35.580
+And then you have to enter
+
+43
+00:01:35.580 --> 00:01:37.470
+all the information about the endpoint.
+
+44
+00:01:37.470 --> 00:01:38.340
+We cannot do this
+
+45
+00:01:38.340 --> 00:01:40.530
+because we don't have an Aurora database ready,
+
+46
+00:01:40.530 --> 00:01:41.850
+but you get the idea.
+
+47
+00:01:41.850 --> 00:01:44.250
+Finally, you have the option for some databases
+
+48
+00:01:44.250 --> 00:01:46.200
+to test the endpoint connection.
+
+49
+00:01:46.200 --> 00:01:48.570
+This is optional, but at least you're able to see
+
+50
+00:01:48.570 --> 00:01:50.970
+whether or not your replication instance,
+
+51
+00:01:50.970 --> 00:01:52.170
+that we'll create in a second,
+
+52
+00:01:52.170 --> 00:01:54.420
+can connect to your source.
+
+53
+00:01:54.420 --> 00:01:57.150
+So you have the same type of idea with target
+
+54
+00:01:57.150 --> 00:02:00.780
+in which you say what you want DMS to write to.
+
+55
+00:02:00.780 --> 00:02:03.480
+And again, you need to choose a target engine
+
+56
+00:02:03.480 --> 00:02:04.650
+amongst the list.
+
+57
+00:02:04.650 --> 00:02:05.940
+And you enter some configuration.
+
+58
+00:02:05.940 --> 00:02:08.730
+For example, if you choose DynamoDB right here,
+
+59
+00:02:08.730 --> 00:02:11.940
+you enter a service role access, endpoint setting,
+
+60
+00:02:11.940 --> 00:02:13.170
+wizard, editor, and so on,
+
+61
+00:02:13.170 --> 00:02:16.320
+and then test again the connection to the endpoint.
+
+62
+00:02:16.320 --> 00:02:18.300
+So you get a lot of information as well
+
+63
+00:02:18.300 --> 00:02:19.920
+when you choose an endpoint on the right-hand side
+
+64
+00:02:19.920 --> 00:02:22.590
+around what to do and the best practices.
+
+65
+00:02:22.590 --> 00:02:25.110
+So once you've created two endpoints,
+
+66
+00:02:25.110 --> 00:02:27.450
+you can create a replication task.
+
+67
+00:02:27.450 --> 00:02:29.310
+And so you have two options.
+
+68
+00:02:29.310 --> 00:02:30.870
+For this task, you can either create
+
+69
+00:02:30.870 --> 00:02:32.820
+a replication instance,
+
+70
+00:02:32.820 --> 00:02:34.380
+and here you create a replication instance
+
+71
+00:02:34.380 --> 00:02:36.870
+by actually creating a physical server.
+
+72
+00:02:36.870 --> 00:02:39.420
+So here, we can choose the size of the server,
+
+73
+00:02:39.420 --> 00:02:40.320
+as you can see.
+
+74
+00:02:40.320 --> 00:02:41.580
+For the bigger replication task,
+
+75
+00:02:41.580 --> 00:02:43.530
+you may want to choose a bigger server.
+
+76
+00:02:43.530 --> 00:02:45.570
+And you can click here to estimate
+
+77
+00:02:45.570 --> 00:02:47.250
+the instance class and storage.
+
+78
+00:02:47.250 --> 00:02:48.630
+And then you can configure it.
+
+79
+00:02:48.630 --> 00:02:51.090
+You say whether or not you want high availability,
+
+80
+00:02:51.090 --> 00:02:52.410
+the networking type,
+
+81
+00:02:52.410 --> 00:02:54.180
+you apply a subnet group,
+
+82
+00:02:54.180 --> 00:02:56.850
+you will apply security groups and so on,
+
+83
+00:02:56.850 --> 00:02:58.170
+and then you have an instance.
+
+84
+00:02:58.170 --> 00:03:01.470
+Or optionally, you can use serverless.
+
+85
+00:03:01.470 --> 00:03:03.150
+And so if it's serverless,
+
+86
+00:03:03.150 --> 00:03:06.480
+then you don't need to provision an instance.
+
+87
+00:03:06.480 --> 00:03:08.280
+So here, when you go to Provisioned instances,
+
+88
+00:03:08.280 --> 00:03:10.920
+it's not to do serverless, it's to do the opposites.
+
+89
+00:03:10.920 --> 00:03:13.020
+So when you go to tasks, here we go,
+
+90
+00:03:13.020 --> 00:03:15.060
+you can create a task,
+
+91
+00:03:15.060 --> 00:03:18.150
+and you're going to specify the source database endpoint
+
+92
+00:03:18.150 --> 00:03:19.860
+that we've created from before,
+
+93
+00:03:19.860 --> 00:03:22.920
+the target database endpoint that we've created after,
+
+94
+00:03:22.920 --> 00:03:23.820
+and then the task mode.
+
+95
+00:03:23.820 --> 00:03:25.170
+So if it's provisioned,
+
+96
+00:03:25.170 --> 00:03:27.030
+we need to select the provisioned instance
+
+97
+00:03:27.030 --> 00:03:28.740
+that we'll have created from before,
+
+98
+00:03:28.740 --> 00:03:30.030
+or if it's serverless,
+
+99
+00:03:30.030 --> 00:03:32.580
+then DMS will automatically adjust
+
+100
+00:03:32.580 --> 00:03:33.630
+the level of compute needed
+
+101
+00:03:33.630 --> 00:03:35.340
+for your migration error application task,
+
+102
+00:03:35.340 --> 00:03:39.270
+and we don't need to select the type of instance we need.
+
+103
+00:03:39.270 --> 00:03:42.570
+So this is an easier option, I would say.
+
+104
+00:03:42.570 --> 00:03:43.590
+Now you choose the test types.
+
+105
+00:03:43.590 --> 00:03:45.810
+So you want to migrate data once,
+
+106
+00:03:45.810 --> 00:03:47.520
+do you want to migrate and replicate?
+
+107
+00:03:47.520 --> 00:03:48.630
+Which means a full load
+
+108
+00:03:48.630 --> 00:03:51.300
+and then anytime the source data changes,
+
+109
+00:03:51.300 --> 00:03:52.950
+you're going to replicate these changes,
+
+110
+00:03:52.950 --> 00:03:54.390
+it's called CDC.
+
+111
+00:03:54.390 --> 00:03:56.580
+Or do you want to just do the replication?
+
+112
+00:03:56.580 --> 00:03:58.050
+And then for how long?
+
+113
+00:03:58.050 --> 00:03:59.490
+And then once you've done that,
+
+114
+00:03:59.490 --> 00:04:01.680
+based on what your source and your target is,
+
+115
+00:04:01.680 --> 00:04:04.530
+you can specify some settings and so on
+
+116
+00:04:04.530 --> 00:04:08.250
+for some logging, some connectivity,
+
+117
+00:04:08.250 --> 00:04:10.560
+how to do it, so it's quite a complete service.
+
+118
+00:04:10.560 --> 00:04:13.530
+To go deep into setting a replication, it takes time.
+
+119
+00:04:13.530 --> 00:04:14.850
+But from this overview,
+
+120
+00:04:14.850 --> 00:04:17.520
+what I want to show you is that you have the idea
+
+121
+00:04:17.520 --> 00:04:21.540
+behind all the steps needed to set up DMS
+
+122
+00:04:21.540 --> 00:04:23.520
+and migrate a database
+
+123
+00:04:23.520 --> 00:04:26.340
+from one source engine to a target engine,
+
+124
+00:04:26.340 --> 00:04:27.540
+and with two options,
+
+125
+00:04:27.540 --> 00:04:30.000
+serverless or provisioned instances.
+
+126
+00:04:30.000 --> 00:04:30.930
+So that's it for this lecture,
+
+127
+00:04:30.930 --> 00:04:31.950
+I hope you liked it,
+
+128
+00:04:31.950 --> 00:04:34.023
+and I will see you in the next lecture.
+

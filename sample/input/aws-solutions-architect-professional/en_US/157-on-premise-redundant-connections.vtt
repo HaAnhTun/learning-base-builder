@@ -1,0 +1,258 @@
+WEBVTT
+
+1
+00:00:00.630 --> 00:00:01.463
+<v Instructor>So the question is,</v>
+
+2
+00:00:01.463 --> 00:00:02.580
+how do you make your connection
+
+3
+00:00:02.580 --> 00:00:05.460
+between data center and AWS redundant?
+
+4
+00:00:05.460 --> 00:00:07.140
+So for this, we can use, for example,
+
+5
+00:00:07.140 --> 00:00:10.290
+in terms of VPN connections, an active-active setup.
+
+6
+00:00:10.290 --> 00:00:11.123
+So as we can see,
+
+7
+00:00:11.123 --> 00:00:13.290
+we have two Corporate Data Centers, 1 and 2,
+
+8
+00:00:13.290 --> 00:00:14.340
+and they're both connected
+
+9
+00:00:14.340 --> 00:00:18.180
+through a dedicated VPN connection into AWS.
+
+10
+00:00:18.180 --> 00:00:19.980
+Now what happens that also your Corporate Data Centers
+
+11
+00:00:19.980 --> 00:00:21.390
+and Corporate Data Center 1 and 2,
+
+12
+00:00:21.390 --> 00:00:22.560
+they are connected with each other
+
+13
+00:00:22.560 --> 00:00:24.480
+with an internal connectivity.
+
+14
+00:00:24.480 --> 00:00:26.490
+So what happens that if, for example,
+
+15
+00:00:26.490 --> 00:00:28.770
+this first VPN connection goes down,
+
+16
+00:00:28.770 --> 00:00:32.400
+then your network can root from Corporate Data Center 1
+
+17
+00:00:32.400 --> 00:00:35.130
+to Corporate Data Center 2 into AWS,
+
+18
+00:00:35.130 --> 00:00:37.710
+thanks to this redundant active-active VPN connection
+
+19
+00:00:37.710 --> 00:00:39.993
+and vice versa if this connection is down.
+
+20
+00:00:40.950 --> 00:00:43.230
+This happens as well when you use Direct Connect.
+
+21
+00:00:43.230 --> 00:00:45.510
+So you have two Direct Connect connections
+
+22
+00:00:45.510 --> 00:00:47.130
+on two Corporate Data Centers,
+
+23
+00:00:47.130 --> 00:00:50.730
+and then these are connected through internal networking.
+
+24
+00:00:50.730 --> 00:00:52.020
+And therefore, if one of these
+
+25
+00:00:52.020 --> 00:00:53.610
+Direct Connect location goes down,
+
+26
+00:00:53.610 --> 00:00:55.050
+then one Corporate Data Center
+
+27
+00:00:55.050 --> 00:00:59.730
+can still access AWS through the other data center location.
+
+28
+00:00:59.730 --> 00:01:02.250
+And then finally, if you wanted to mix them up together,
+
+29
+00:01:02.250 --> 00:01:04.650
+you could of course choose a hybrid backup VPN location.
+
+30
+00:01:04.650 --> 00:01:06.900
+For example, here your Corporate Data Centers
+
+31
+00:01:06.900 --> 00:01:07.770
+are connected with each other,
+
+32
+00:01:07.770 --> 00:01:11.640
+as well as with a rest through a VPN and a Direct Connect.
+
+33
+00:01:11.640 --> 00:01:13.710
+And so if one of these things even failed,
+
+34
+00:01:13.710 --> 00:01:15.600
+then you have a failover route
+
+35
+00:01:15.600 --> 00:01:17.280
+through Corporate Data Center 1
+
+36
+00:01:17.280 --> 00:01:19.500
+or Corporate Data Center 2.
+
+37
+00:01:19.500 --> 00:01:21.150
+Also, another feature you need to know about
+
+38
+00:01:21.150 --> 00:01:24.210
+is that the Direct Connect Gateway SiteLink feature,
+
+39
+00:01:24.210 --> 00:01:25.320
+which allows you to send data
+
+40
+00:01:25.320 --> 00:01:27.660
+from one Direct Connect location to another
+
+41
+00:01:27.660 --> 00:01:30.030
+bypassing the AWS regions.
+
+42
+00:01:30.030 --> 00:01:30.990
+So how does that work?
+
+43
+00:01:30.990 --> 00:01:33.540
+Well, with this, you can create a private network connection
+
+44
+00:01:33.540 --> 00:01:35.430
+between your on-premises data centers
+
+45
+00:01:35.430 --> 00:01:38.640
+by connecting them directly to Direct Connect location,
+
+46
+00:01:38.640 --> 00:01:41.250
+and the data will be sent over the fastest path
+
+47
+00:01:41.250 --> 00:01:42.870
+within these Direct Connect locations.
+
+48
+00:01:42.870 --> 00:01:46.290
+So we have two Corporate Data Centers and they have routers
+
+49
+00:01:46.290 --> 00:01:47.880
+and they're in different locations,
+
+50
+00:01:47.880 --> 00:01:49.470
+so around the world of course.
+
+51
+00:01:49.470 --> 00:01:52.260
+So we connect them to different Direct Connect locations
+
+52
+00:01:52.260 --> 00:01:54.090
+around the world as well.
+
+53
+00:01:54.090 --> 00:01:59.010
+And on the side of AWS, we create a Direct Connect Gateway.
+
+54
+00:01:59.010 --> 00:02:02.190
+What's going to happen is that if we do enable SiteLink,
+
+55
+00:02:02.190 --> 00:02:04.440
+then this kind of traffic can happen
+
+56
+00:02:04.440 --> 00:02:06.150
+where the Corporate Data Center
+
+57
+00:02:06.150 --> 00:02:08.730
+goes for Direct Connect to the Gateway
+
+58
+00:02:08.730 --> 00:02:11.910
+back to another Direct Connect to the customer router,
+
+59
+00:02:11.910 --> 00:02:15.480
+and this happens to connect the Corporate Data Center A
+
+60
+00:02:15.480 --> 00:02:17.910
+with Corporate Data Center B
+
+61
+00:02:17.910 --> 00:02:21.360
+without being routed through the AWS regions.
+
+62
+00:02:21.360 --> 00:02:23.670
+So, that's called Site SiteLink. Okay?
+
+63
+00:02:23.670 --> 00:02:24.660
+So that's it for this lecture.
+
+64
+00:02:24.660 --> 00:02:27.660
+I hope you liked it, and I will see you in the next lecture.
+

@@ -1,0 +1,190 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.519
+Welcome back. Working with a handful of tools is easy, but something breaks when your catalog
+
+2
+00:00:05.519 --> 00:00:11.439
+grows. The model gets quietly worse at choosing among the different options, and all those
+
+3
+00:00:11.439 --> 00:00:17.280
+definitions start eating your context window. In this video, we'll work through the pair that fixes
+
+4
+00:00:17.280 --> 00:00:23.200
+both problems, the tool search tool, and a flag called defer loading. Let's get into it.
+
+5
+00:00:24.159 --> 00:00:30.639
+Scoping tools per agent, which we covered earlier, solves this at one scale. What it can't solve is
+
+6
+00:00:30.639 --> 00:00:36.560
+the catalog itself. Once you're aggregating several servers, the full list runs past roughly
+
+7
+00:00:36.560 --> 00:00:43.119
+30 to 50 tools, and no amount of per agent trimming shrinks a catalog that size. The other
+
+8
+00:00:43.119 --> 00:00:49.840
+cost is context, and here the numbers get concrete. That kind of setup can burn something like 55,000
+
+9
+00:00:49.919 --> 00:00:55.599
+tokens on tool definitions alone, before the model does a single useful thing, and you pay
+
+10
+00:00:55.599 --> 00:01:02.159
+it again on every turn. Here's the fix in one line. Tool search loads only the few tools a given
+
+11
+00:01:02.159 --> 00:01:07.919
+request actually needs, and in practice, that trims those definition tokens by over 85%.
+
+12
+00:01:09.519 --> 00:01:14.879
+So how does tool search work? You add a tool search tool to your tools list, and that tool
+
+13
+00:01:14.879 --> 00:01:20.639
+becomes the model's way of finding others. You still send every tool definition in your request.
+
+14
+00:01:20.639 --> 00:01:26.720
+The difference is that the tools you mark as deferred stay out of the model's active context.
+
+15
+00:01:26.720 --> 00:01:31.199
+They're available to be found, but they're not loaded up front. When the model needs something
+
+16
+00:01:31.199 --> 00:01:37.680
+it doesn't currently have, it runs a search. Sometimes it writes regex patterns, capped at 200
+
+17
+00:01:37.680 --> 00:01:45.199
+characters. Sometimes it uses bm25, with plain natural language queries up to 500. Matching runs
+
+18
+00:01:45.199 --> 00:01:51.919
+across tool names, descriptions, and argument fields, so keyword-rich descriptions genuinely help.
+
+19
+00:01:52.559 --> 00:01:57.680
+Matches come back as lightweight references, the API expands into full definitions on demand.
+
+20
+00:01:58.879 --> 00:02:04.720
+The mechanism that controls all this is a single flag called defer loading. When you set defer
+
+21
+00:02:04.720 --> 00:02:10.399
+loading to true on a tool, you're saying keep this one out of my active context until the model
+
+22
+00:02:10.399 --> 00:02:16.240
+actually searches for it. That's what shrinks the footprint. Two details trip people up, so let me be
+
+23
+00:02:16.240 --> 00:02:22.720
+precise. First, deferring a tool doesn't mean you leave it out of the request. You still include its
+
+24
+00:02:22.720 --> 00:02:29.440
+full definition every time, because the search needs it there to find it and expand it. Defer
+
+25
+00:02:29.440 --> 00:02:35.600
+loading controls what enters the context window, not what you send. Second, you can't defer
+
+26
+00:02:35.600 --> 00:02:41.039
+everything. At least one tool has to stay non-deferred, and normally that's the search tool
+
+27
+00:02:41.039 --> 00:02:47.440
+itself, since the model needs something loaded to start from. Now let's connect this straight back
+
+28
+00:02:47.440 --> 00:02:52.960
+to accuracy, because that's the real payoff. The whole point of deferring tools is to keep the
+
+29
+00:02:52.960 --> 00:02:58.639
+model's active tool set small and focused at any given moment. Instead of staring at hundreds of
+
+30
+00:02:58.639 --> 00:03:04.880
+options, the model typically works with just the three to five relevant tools that a search surfaced
+
+31
+00:03:04.880 --> 00:03:10.800
+for the current request. It's choosing from a short, sharp list rather than a sprawling crowd.
+
+32
+00:03:10.800 --> 00:03:17.039
+And here's the striking result. Because the active set stays small, selection accuracy stays high,
+
+33
+00:03:17.039 --> 00:03:21.759
+even when your total catalog runs into the thousands of tools. You get the reach of an
+
+34
+00:03:21.759 --> 00:03:28.479
+enormous library with the clarity of a tiny menu. That combination is exactly what lets these systems
+
+35
+00:03:28.479 --> 00:03:34.800
+scale without falling off the accuracy cliff we talked about. So when should you actually reach
+
+36
+00:03:34.800 --> 00:03:40.479
+for tool search? It earns its keep once your tool surface passes a few thresholds. A good rule of
+
+37
+00:03:40.479 --> 00:03:46.559
+thumb is 10 or more tools available. Another signal is when your tool definitions start running past
+
+38
+00:03:46.559 --> 00:03:52.720
+10,000 tokens of context, and it's almost a given when you aggregate several servers together,
+
+39
+00:03:52.720 --> 00:03:58.559
+and suddenly you're sitting on hundreds of tools. In any of those cases, tool search pays off.
+
+40
+00:03:58.559 --> 00:04:03.839
+But be honest about the flip side. If you have fewer than 10 tools, or if every tool you've
+
+41
+00:04:03.839 --> 00:04:09.279
+defined gets used on basically every turn, then standard tool calling is simpler, and there's no
+
+42
+00:04:09.279 --> 00:04:14.160
+reason to add the machinery. Match the tool to the scale of the problem, not the other way around.
+
+43
+00:04:15.119 --> 00:04:21.440
+Accuracy and context cost are separate problems, and a big tool catalog creates both of them.
+
+44
+00:04:21.440 --> 00:04:27.600
+The model can choose badly among options that all look plausible. Separately, every definition
+
+45
+00:04:27.600 --> 00:04:33.679
+sits in the window, costing tokens before any work starts. Tool search handles both by keeping
+
+46
+00:04:33.679 --> 00:04:40.799
+the active set small, but only the context cost is really about size. Accuracy is about how much
+
+47
+00:04:40.799 --> 00:04:46.399
+the model has to weigh at once. And that's it for this lesson. I'll see you in the next one.
+

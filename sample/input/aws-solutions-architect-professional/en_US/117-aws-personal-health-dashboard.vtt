@@ -1,0 +1,578 @@
+WEBVTT
+
+1
+00:00:00.310 --> 00:00:01.300
+<v Lecturer>If you wanted to know</v>
+
+2
+00:00:01.300 --> 00:00:05.500
+how events in AWS affects your services and your resources,
+
+3
+00:00:05.500 --> 00:00:08.210
+then you would use the personal health dashboard.
+
+4
+00:00:08.210 --> 00:00:09.830
+So, this is the little bell icon you see
+
+5
+00:00:09.830 --> 00:00:11.890
+on the top right corner of your console,
+
+6
+00:00:11.890 --> 00:00:13.560
+and it is a global service
+
+7
+00:00:13.560 --> 00:00:16.400
+and it will show how outages happening within AWS
+
+8
+00:00:16.400 --> 00:00:18.150
+will directly impact you.
+
+9
+00:00:18.150 --> 00:00:19.590
+It will show you the impact on your resources
+
+10
+00:00:19.590 --> 00:00:22.870
+so you can see if your EC2 instances or EBS volumes
+
+11
+00:00:22.870 --> 00:00:24.500
+have maintenance upcoming,
+
+12
+00:00:24.500 --> 00:00:25.420
+and it will list issues
+
+13
+00:00:25.420 --> 00:00:28.520
+and actions you can do to remediate them.
+
+14
+00:00:28.520 --> 00:00:31.860
+So, the important thing to know is that it show you all
+
+15
+00:00:31.860 --> 00:00:34.220
+the maintenance events from AWS
+
+16
+00:00:34.220 --> 00:00:36.830
+and this is a keyword to look for in the exam.
+
+17
+00:00:36.830 --> 00:00:40.210
+You can also access all this information programmatically
+
+18
+00:00:40.210 --> 00:00:43.480
+using an API called the AWS Health API.
+
+19
+00:00:43.480 --> 00:00:45.620
+And finally, there's a capability,
+
+20
+00:00:45.620 --> 00:00:48.010
+if you have enabled AWS Organizations,
+
+21
+00:00:48.010 --> 00:00:49.640
+to aggregate all the information
+
+22
+00:00:49.640 --> 00:00:54.040 line:15% 
+from all your accounts in your organization in one place,
+
+23
+00:00:54.040 --> 00:00:56.960 line:15% 
+and here is the URL in case you need it.
+
+24
+00:00:56.960 --> 00:00:59.190
+Now, let's talk about health event notifications.
+
+25
+00:00:59.190 --> 00:01:02.020
+So, you can use if EventBridge or CloudWatch Events to react
+
+26
+00:01:02.020 --> 00:01:05.654
+to changes to your health events for your accounts.
+
+27
+00:01:05.654 --> 00:01:09.320
+So we have the personal health dashboard that will trigger
+
+28
+00:01:09.320 --> 00:01:12.410
+an event in CloudWatch Events or EventBridge, okay?
+
+29
+00:01:12.410 --> 00:01:13.243
+For example, you may want
+
+30
+00:01:13.243 --> 00:01:15.970
+to receive notification whenever EC2 instances
+
+31
+00:01:15.970 --> 00:01:18.450
+in your accounts are scheduled for updates.
+
+32
+00:01:18.450 --> 00:01:20.650
+In this case, you would set up this notification
+
+33
+00:01:20.650 --> 00:01:23.490
+and then you would line it up with a target.
+
+34
+00:01:23.490 --> 00:01:25.470
+So this can not be used to return public events,
+
+35
+00:01:25.470 --> 00:01:27.610
+so, all the service health dashboard events
+
+36
+00:01:27.610 --> 00:01:28.880
+cannot be intercepted here.
+
+37
+00:01:28.880 --> 00:01:31.770
+They have to be using the RSS if you remember.
+
+38
+00:01:31.770 --> 00:01:34.090
+But with this, we can enable use cases
+
+39
+00:01:34.090 --> 00:01:36.910
+to capture notifications for our accounts.
+
+40
+00:01:36.910 --> 00:01:38.340
+For example, sending notifications,
+
+41
+00:01:38.340 --> 00:01:39.410
+capture event information,
+
+42
+00:01:39.410 --> 00:01:42.160
+or take automatic corrective actions,
+
+43
+00:01:42.160 --> 00:01:44.260
+if you know how to do so using some automation.
+
+44
+00:01:44.260 --> 00:01:47.460
+So, CloudWatch Events or EventBridge can invoke Lambda,
+
+45
+00:01:47.460 --> 00:01:49.400
+SNS, SQS, or Kinesis Data Streams.
+
+46
+00:01:49.400 --> 00:01:50.840
+And then for example, if you have Lambda,
+
+47
+00:01:50.840 --> 00:01:52.630
+you can do whatever you want with it
+
+48
+00:01:52.630 --> 00:01:53.880
+and take some corrective action
+
+49
+00:01:53.880 --> 00:01:56.650
+if this is something that happens a lot in your accounts.
+
+50
+00:01:56.650 --> 00:01:57.730
+So, that's it.
+
+51
+00:01:57.730 --> 00:02:00.203
+Now let's have a look at the health dashboard.
+
+52
+00:02:01.320 --> 00:02:03.850
+So what I'm going to do now is click on this bell icon.
+
+53
+00:02:03.850 --> 00:02:05.810
+As you can see right now, there's zero open issues,
+
+54
+00:02:05.810 --> 00:02:08.240
+schedule changes, or other notifications.
+
+55
+00:02:08.240 --> 00:02:09.520
+But I can click on "Event Log"
+
+56
+00:02:09.520 --> 00:02:12.220
+and see what has happened in my accounts.
+
+57
+00:02:12.220 --> 00:02:15.350
+And so, as you can see, some days, for example, June 30th,
+
+58
+00:02:15.350 --> 00:02:19.050
+there was an Athena engine version auto upgrade notification
+
+59
+00:02:19.050 --> 00:02:21.220
+and one entity was affected
+
+60
+00:02:21.220 --> 00:02:23.970
+or an EC2 instance recovery, no action,
+
+61
+00:02:23.970 --> 00:02:25.780
+because it's something I triggered during my recording
+
+62
+00:02:25.780 --> 00:02:27.270
+and it affected one resource.
+
+63
+00:02:27.270 --> 00:02:30.040
+So you can see all these kind of issues
+
+64
+00:02:30.040 --> 00:02:31.270
+and whether or not they were closed.
+
+65
+00:02:31.270 --> 00:02:34.680
+For example, there was an EC2 operational issue right here,
+
+66
+00:02:34.680 --> 00:02:37.690
+and it gives you the region, so US-East-2,
+
+67
+00:02:37.690 --> 00:02:38.523
+the category,
+
+68
+00:02:38.523 --> 00:02:40.760
+whether or not it affected some resources,
+
+69
+00:02:40.760 --> 00:02:43.640
+and what was the description of that issue,
+
+70
+00:02:43.640 --> 00:02:45.060
+which was right here.
+
+71
+00:02:45.060 --> 00:02:46.380
+You can also get some information
+
+72
+00:02:46.380 --> 00:02:49.410
+around the affected resources here if you have many.
+
+73
+00:02:49.410 --> 00:02:52.390
+So this becomes very, very, very helpful.
+
+74
+00:02:52.390 --> 00:02:54.910
+Then there is a dashboard, okay?
+
+75
+00:02:54.910 --> 00:02:56.380
+And the dashboard shows you how many issues
+
+76
+00:02:56.380 --> 00:02:58.790
+in the past seven days, scheduled changes,
+
+77
+00:02:58.790 --> 00:03:00.710
+and other notifications.
+
+78
+00:03:00.710 --> 00:03:01.810
+And as you can see,
+
+79
+00:03:01.810 --> 00:03:04.000
+you can create a CloudWatch Event rule
+
+80
+00:03:04.000 --> 00:03:05.929
+to create rules and receive notifications for events
+
+81
+00:03:05.929 --> 00:03:08.880
+that might affect your infrastructure.
+
+82
+00:03:08.880 --> 00:03:10.740
+So let's have a look at it.
+
+83
+00:03:10.740 --> 00:03:13.190
+So what I'm going to do is go to CloudWatch Events,
+
+84
+00:03:13.190 --> 00:03:16.190
+but actually I'm going to go into EventBridge
+
+85
+00:03:16.190 --> 00:03:19.593
+to show you the newer interface, because they're similar.
+
+86
+00:03:22.970 --> 00:03:25.650
+And here we have a rule, and we can create a rule,
+
+87
+00:03:25.650 --> 00:03:29.137
+and I'll call it "PHD Demo Rule."
+
+88
+00:03:30.100 --> 00:03:33.440
+And then we have to look for an event pattern by service
+
+89
+00:03:33.440 --> 00:03:36.730
+and the service provider is going to be "AWS"
+
+90
+00:03:36.730 --> 00:03:40.090
+and the service name is going to be "Health," okay?
+
+91
+00:03:40.090 --> 00:03:41.410
+And then we select an event type.
+
+92
+00:03:41.410 --> 00:03:45.010
+So we can have all events or specific health events,
+
+93
+00:03:45.010 --> 00:03:47.370
+but we're going to use "All Events."
+
+94
+00:03:47.370 --> 00:03:50.700
+And then it shows you what a simple event can be for this.
+
+95
+00:03:50.700 --> 00:03:54.440
+So for example, this is an elastic load balancing issue
+
+96
+00:03:54.440 --> 00:03:56.620
+with a start date and an end date and so on.
+
+97
+00:03:56.620 --> 00:04:00.130
+So we can get notified of all these events right here
+
+98
+00:04:00.130 --> 00:04:01.670
+through CloudWatch Events.
+
+99
+00:04:01.670 --> 00:04:04.460
+And then, the cool thing is that you can select targets
+
+100
+00:04:04.460 --> 00:04:05.860
+and invoke a Lambda function
+
+101
+00:04:05.860 --> 00:04:08.290
+or send a message to an SNS topic and so on,
+
+102
+00:04:08.290 --> 00:04:10.960
+or all really the destinations are listed right here
+
+103
+00:04:10.960 --> 00:04:13.890
+for your health events to be intercepted.
+
+104
+00:04:13.890 --> 00:04:15.030
+So this is one way of doing it.
+
+105
+00:04:15.030 --> 00:04:17.248
+And the other way is to query all this information
+
+106
+00:04:17.248 --> 00:04:19.910
+using the health API.
+
+107
+00:04:19.910 --> 00:04:24.000
+As you can see, you can also get an organization-wide view.
+
+108
+00:04:24.000 --> 00:04:25.840
+And so the idea is that you set up organizations
+
+109
+00:04:25.840 --> 00:04:29.320
+and then you enable organizational view for AWS Health,
+
+110
+00:04:29.320 --> 00:04:31.070
+and you'll be good to go.
+
+111
+00:04:31.070 --> 00:04:33.078
+And I'm pretty lucky because I just got an issue
+
+112
+00:04:33.078 --> 00:04:34.460
+with my PHD.
+
+113
+00:04:34.460 --> 00:04:36.930
+So I'm trying to launch to EC2 instances right now
+
+114
+00:04:36.930 --> 00:04:38.500
+for another lecture.
+
+115
+00:04:38.500 --> 00:04:40.160
+And it turns out that they're
+
+116
+00:04:40.160 --> 00:04:42.370
+in pending states for a long time.
+
+117
+00:04:42.370 --> 00:04:44.310
+And for me this looks a bit odd.
+
+118
+00:04:44.310 --> 00:04:47.930
+So, I looked at my personal health dashboards
+
+119
+00:04:47.930 --> 00:04:50.160
+and see that there's one open issue.
+
+120
+00:04:50.160 --> 00:04:51.846
+So I can click on it and see that
+
+121
+00:04:51.846 --> 00:04:54.020
+there is an open issue that's affecting me right now.
+
+122
+00:04:54.020 --> 00:04:54.980
+So I'm pretty unlucky,
+
+123
+00:04:54.980 --> 00:04:58.140
+but pretty lucky regarding recording purpose.
+
+124
+00:04:58.140 --> 00:05:00.020
+And so, as we can see, in EU-Central-1
+
+125
+00:05:00.020 --> 00:05:02.680
+there is an EC2 operational issue.
+
+126
+00:05:02.680 --> 00:05:04.651
+And the event data is showing me that
+
+127
+00:05:04.651 --> 00:05:07.660
+there is an instance connectivity issue.
+
+128
+00:05:07.660 --> 00:05:09.120
+So there is increased error rates
+
+129
+00:05:09.120 --> 00:05:10.870
+and latencies for the EC2 API
+
+130
+00:05:10.870 --> 00:05:13.000
+and connectivity issues for some instances
+
+131
+00:05:13.000 --> 00:05:16.120
+within a single AZ in the EU central region.
+
+132
+00:05:16.120 --> 00:05:19.310
+So it doesn't detect that my instances are affected.
+
+133
+00:05:19.310 --> 00:05:21.230
+It's probably because my instances are
+
+134
+00:05:21.230 --> 00:05:23.920
+not launched just yet, but as you can see,
+
+135
+00:05:23.920 --> 00:05:25.707
+this was shown in my PHD.
+
+136
+00:05:25.707 --> 00:05:29.631
+And so I can explain what is happening regarding my
+
+137
+00:05:29.631 --> 00:05:31.150
+EC2 instances just yet,
+
+138
+00:05:31.150 --> 00:05:33.240
+even though I find it extremely annoying.
+
+139
+00:05:33.240 --> 00:05:35.470
+So, the only thing I have to do is to wait
+
+140
+00:05:35.470 --> 00:05:36.670
+for this to be resolved.
+
+141
+00:05:37.670 --> 00:05:39.770
+So hopefully that makes sense of what you understand now,
+
+142
+00:05:39.770 --> 00:05:41.130
+the usefulness of the service.
+
+143
+00:05:41.130 --> 00:05:42.110
+I hope you liked this lecture
+
+144
+00:05:42.110 --> 00:05:44.060
+and I will see you in the next lecture.
+

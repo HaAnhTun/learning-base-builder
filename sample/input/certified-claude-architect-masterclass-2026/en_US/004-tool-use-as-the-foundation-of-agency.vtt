@@ -1,0 +1,262 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.679
+The capability that takes an LLM from generating text to actually doing things in the world
+
+2
+00:00:05.679 --> 00:00:11.279
+is tool use. For this video, we'll walk through the full life cycle of a tool call,
+
+3
+00:00:11.279 --> 00:00:16.879
+look at how description quality affects selection reliability, and draw the line between a
+
+4
+00:00:16.879 --> 00:00:22.000
+developer-scripted tool sequence and a model-driven agentic one. Let's get into it.
+
+5
+00:00:23.200 --> 00:00:27.440
+Every tool a model ever touches passes through the same short exchange,
+
+6
+00:00:27.440 --> 00:00:33.200
+and each part of it has a name worth knowing. A tool definition is a schema you pass to the
+
+7
+00:00:33.200 --> 00:00:40.000
+model at inference time. It has a name, a natural language description, and a parameter specification.
+
+8
+00:00:40.000 --> 00:00:45.520
+The model reads this to figure out what the tool does and whether it applies to the current task.
+
+9
+00:00:45.520 --> 00:00:52.080
+A tool call is the structured output the model emits when it decides to use a tool. It's not
+
+10
+00:00:52.080 --> 00:00:58.560
+plain text. It's a formatted object containing the tool name and a JSON argument object. An
+
+11
+00:00:58.560 --> 00:01:05.120
+observation is what comes back after the runtime executes the call. It gets injected into the next
+
+12
+00:01:05.120 --> 00:01:11.440
+context window, and the model uses it to plan its next step. That exchange is the spine of every
+
+13
+00:01:11.440 --> 00:01:18.080
+agentic interaction. Let's make this concrete at the API level because the round trip is specific.
+
+14
+00:01:18.639 --> 00:01:24.239
+When Claude decides it needs a tool, the response comes back with a stop reason of tool use,
+
+15
+00:01:24.239 --> 00:01:30.559
+and the content includes one or more tool use blocks. Each block names the tool and carries
+
+16
+00:01:30.559 --> 00:01:36.959
+the arguments in JSON. That's Claude's half of the exchange. Your half is to run the tool
+
+17
+00:01:36.959 --> 00:01:43.440
+and send back a tool result block that references the same call. One distinction lives here. For
+
+18
+00:01:43.440 --> 00:01:50.400
+client tools, the ones you define, your application executes the call. For server tools,
+
+19
+00:01:50.400 --> 00:01:56.080
+like web search, Anthropic runs the tool for you and returns the result directly.
+
+20
+00:01:56.080 --> 00:02:01.680
+Either way, that tool result becomes the observation Claude reads on its next turn.
+
+21
+00:02:02.319 --> 00:02:08.080
+This exchange is the atomic unit of the whole loop, and it repeats many times in a single task.
+
+22
+00:02:08.960 --> 00:02:14.559
+Here's the distinction that separates a workflow from an agent, stated as precisely as possible.
+
+23
+00:02:14.559 --> 00:02:19.759
+In a pre-scripted workflow, the developer decides at design time which tools run,
+
+24
+00:02:19.759 --> 00:02:25.039
+and in what order. The model might fill in the parameters, but it never chooses the tool.
+
+25
+00:02:25.039 --> 00:02:31.679
+The sequence is fixed. In a model-driven agentic system, the model selects tools at inference time,
+
+26
+00:02:31.679 --> 00:02:36.559
+based on what it's trying to accomplish right now. The sequence isn't known in advance.
+
+27
+00:02:37.039 --> 00:02:43.440
+It varies across runs based on context and intermediate results. That runtime selection
+
+28
+00:02:43.440 --> 00:02:48.559
+is the defining characteristic of agentic behavior. A system where the developer controls
+
+29
+00:02:48.559 --> 00:02:54.160
+the tool order is a workflow, full stop, even if it involves an LLM at every step.
+
+30
+00:02:55.440 --> 00:03:01.440
+Tool description quality is one of the most underappreciated factors in agentic reliability.
+
+31
+00:03:01.440 --> 00:03:05.759
+When Claude needs to decide whether to use a tool, it reads the description,
+
+32
+00:03:05.759 --> 00:03:12.080
+not the implementation. If the description is vague, like processes data, Claude has no reliable
+
+33
+00:03:12.080 --> 00:03:18.960
+basis for selection. If the description is precise, like queries the inventory database by product skew
+
+34
+00:03:18.960 --> 00:03:24.800
+and returns current stock count, Claude can accurately judge when the tool applies. The
+
+35
+00:03:24.800 --> 00:03:29.679
+practical rule is to write descriptions a non-engineer could act on. Describe what the
+
+36
+00:03:29.679 --> 00:03:36.479
+tool does, what inputs it expects, and what it returns. Don't describe how it works internally.
+
+37
+00:03:37.039 --> 00:03:42.080
+Poor descriptions are one of the most common root causes of agents, calling the wrong tool
+
+38
+00:03:42.080 --> 00:03:47.440
+or skipping a tool they should have used. It helps to think about tools in functional
+
+39
+00:03:47.440 --> 00:03:53.279
+categories. Data access tools let the model read from the world, fetching a web page,
+
+40
+00:03:53.279 --> 00:03:59.600
+querying a database, reading a file, or pulling from a knowledge base. Computation tools let the
+
+41
+00:03:59.600 --> 00:04:06.320
+model do things that pure text generation can't, running code in a sandbox, parsing structured data,
+
+42
+00:04:06.320 --> 00:04:13.520
+or executing a calculation. External API tools let the model write to the world, sending a message,
+
+43
+00:04:13.520 --> 00:04:19.600
+creating a calendar event, updating a record, or triggering a downstream workflow. These categories
+
+44
+00:04:19.600 --> 00:04:24.959
+have different latency profiles, different failure modes, and very different security surfaces.
+
+45
+00:04:25.519 --> 00:04:30.320
+Knowing which category a tool falls into is the first step in assessing its risk.
+
+46
+00:04:31.519 --> 00:04:37.519
+The observation phase is where the agentic loop earns its name. A plain pipeline executes steps
+
+47
+00:04:37.519 --> 00:04:44.160
+in sequence and stops. An agent looks at what came back and decides what to do next. A successful
+
+48
+00:04:44.160 --> 00:04:49.679
+tool result gets injected into context as a message, and the model moves forward. That
+
+49
+00:04:49.679 --> 00:04:55.679
+injection step has a name, tool result injection, and it's how every observation reaches the model.
+
+50
+00:04:55.679 --> 00:05:01.679
+An error triggers replanning. The model might retry with different parameters, try an alternative tool,
+
+51
+00:05:01.679 --> 00:05:08.079
+or escalate. A partial result might prompt a follow-up call before proceeding. Call, execute,
+
+52
+00:05:08.079 --> 00:05:14.239
+observe, respond, repeat. That's the tool call loop, and it runs until the agent hits its goal
+
+53
+00:05:14.320 --> 00:05:20.480
+or a stop condition you defined. Let's make this concrete with examples across tool types.
+
+54
+00:05:20.480 --> 00:05:26.640
+Web search. The model calls a search tool, the runtime queries a search API, and ranked results
+
+55
+00:05:26.640 --> 00:05:33.760
+come back as an observation. File, read, and write. The model reads a document, generates edits, and
+
+56
+00:05:33.760 --> 00:05:40.079
+writes the updated content back to disk. Code execution. The model writes a Python snippet,
+
+57
+00:05:40.079 --> 00:05:46.239
+a sandboxed interpreter runs it, and standard output returns as an observation. When these tools
+
+58
+00:05:46.239 --> 00:05:51.920
+are independent, the model can emit several calls in one response, and the runtime executes them
+
+59
+00:05:51.920 --> 00:05:58.799
+concurrently, which cuts latency. Each type carries a distinct failure surface. Search returns stale
+
+60
+00:05:58.799 --> 00:06:05.519
+results. File writes overwrite the wrong target, and a permissive sandbox lets code cause side effects.
+
+61
+00:06:06.160 --> 00:06:11.839
+When tool use breaks, you rarely see an error. You see the model reaching for the wrong tool,
+
+62
+00:06:11.839 --> 00:06:16.880
+or skipping one that it should have called. The usual cause is a description written for
+
+63
+00:06:16.880 --> 00:06:22.160
+engineers instead of a description written for a model. That's why a field that looks
+
+64
+00:06:22.160 --> 00:06:27.839
+like documentation is actually the control surface for tool reliability. That wraps up
+
+65
+00:06:27.839 --> 00:06:30.239
+this lesson. I'll see you in the next one.
+

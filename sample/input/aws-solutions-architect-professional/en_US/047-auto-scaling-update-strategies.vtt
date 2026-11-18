@@ -1,0 +1,558 @@
+WEBVTT
+
+1
+00:00:00.120 --> 00:00:01.508
+<v Instructor>So this lecture I love because,</v>
+
+2
+00:00:01.508 --> 00:00:04.380
+it really shows you what kind of decisions you have
+
+3
+00:00:04.380 --> 00:00:06.350
+to make as a solution architect.
+
+4
+00:00:06.350 --> 00:00:09.470
+What kind of implication it has on the very simple thing.
+
+5
+00:00:09.470 --> 00:00:11.330
+Such as how to update an application
+
+6
+00:00:11.330 --> 00:00:12.840
+in a Auto Scaling group.
+
+7
+00:00:12.840 --> 00:00:14.300
+You may think this is simple.
+
+8
+00:00:14.300 --> 00:00:15.900
+So we have our clients connected
+
+9
+00:00:15.900 --> 00:00:18.560
+to Application Load Balancer.
+
+10
+00:00:18.560 --> 00:00:20.130
+That Application Load Balancer redirects traffic
+
+11
+00:00:20.130 --> 00:00:21.510
+to our Auto Scaling group.
+
+12
+00:00:21.510 --> 00:00:23.826
+Which currently is running all our EC2 instances
+
+13
+00:00:23.826 --> 00:00:26.290
+on these same launch templates.
+
+14
+00:00:26.290 --> 00:00:29.540
+We would like to do is to update our Auto Scaling group
+
+15
+00:00:29.540 --> 00:00:30.650
+and for now what we'll actually do
+
+16
+00:00:30.650 --> 00:00:32.560
+is to have a new launch configuration.
+
+17
+00:00:32.560 --> 00:00:34.690
+This is the way we want to update it, okay.
+
+18
+00:00:34.690 --> 00:00:36.450
+So let's see all the options we have
+
+19
+00:00:36.450 --> 00:00:39.280
+and what they mean in terms of architecture
+
+20
+00:00:39.280 --> 00:00:40.830
+and implications for the way
+
+21
+00:00:40.830 --> 00:00:42.890
+you're rolling out your application.
+
+22
+00:00:42.890 --> 00:00:45.240
+As a game, if you want to stop the video right now,
+
+23
+00:00:45.240 --> 00:00:48.300
+just pause it and then draw something on a sheet of paper.
+
+24
+00:00:48.300 --> 00:00:49.810
+I asked you to find how many ways
+
+25
+00:00:49.810 --> 00:00:51.820
+you can update this Auto Scaling group.
+
+26
+00:00:51.820 --> 00:00:52.653
+What kind of strategy you have
+
+27
+00:00:52.653 --> 00:00:54.240
+and then what kind of architectures
+
+28
+00:00:54.240 --> 00:00:56.010
+are coming through it with it.
+
+29
+00:00:56.010 --> 00:00:57.260
+If you don't, that's okay.
+
+30
+00:00:57.260 --> 00:00:58.600
+Let's get started.
+
+31
+00:00:58.600 --> 00:01:00.380
+So the first thing is that
+
+32
+00:01:00.380 --> 00:01:02.770
+we may want to keep that Auto Scaling group.
+
+33
+00:01:02.770 --> 00:01:04.390
+So we keep the Auto Scaling group
+
+34
+00:01:04.390 --> 00:01:07.410
+but we're going to create a new launch template.
+
+35
+00:01:07.410 --> 00:01:08.480
+What this will do is that,
+
+36
+00:01:08.480 --> 00:01:11.800
+it will go ahead and create new EC2 instances
+
+37
+00:01:11.800 --> 00:01:14.090
+that are launched using this new launch templates
+
+38
+00:01:14.090 --> 00:01:15.980
+and we may need to double the capacity
+
+39
+00:01:15.980 --> 00:01:19.170
+of our Auto Scaling group for these instances to be created.
+
+40
+00:01:19.170 --> 00:01:20.810
+So in the meantime because they belong
+
+41
+00:01:20.810 --> 00:01:22.280
+to the same Auto Scaling group,
+
+42
+00:01:22.280 --> 00:01:24.320
+they will belong to the same target group.
+
+43
+00:01:24.320 --> 00:01:27.220
+So the Application Load Balancer, will redirect request
+
+44
+00:01:27.220 --> 00:01:29.410
+to all these two instances at the same time.
+
+45
+00:01:29.410 --> 00:01:33.620
+So we have both versions of our application sending data
+
+46
+00:01:33.620 --> 00:01:36.310
+and responding to our ALB request.
+
+47
+00:01:36.310 --> 00:01:37.860
+This is fine and then when we're done,
+
+48
+00:01:37.860 --> 00:01:40.080
+we can terminate the EC2 instances
+
+49
+00:01:40.080 --> 00:01:43.260
+of our launch template number one if we are confident enough
+
+50
+00:01:43.260 --> 00:01:45.940
+that our version number two is working great.
+
+51
+00:01:45.940 --> 00:01:47.780
+So this is one way of doing things
+
+52
+00:01:47.780 --> 00:01:49.720
+and I think it works great, okay.
+
+53
+00:01:49.720 --> 00:01:50.703
+But here you have to realize
+
+54
+00:01:50.703 --> 00:01:53.930
+that you have the same target group.
+
+55
+00:01:53.930 --> 00:01:57.340
+Traffic is going to be spread across all your versions.
+
+56
+00:01:57.340 --> 00:01:58.710
+That's number one.
+
+57
+00:01:58.710 --> 00:02:01.450
+Number two is, okay we have the same architecture.
+
+58
+00:02:01.450 --> 00:02:02.520
+We have our first Auto Scaling group
+
+59
+00:02:02.520 --> 00:02:06.200
+but now we decided to create a new Auto Scaling group.
+
+60
+00:02:06.200 --> 00:02:08.120
+Alongside creating this new Auto Scaling group,
+
+61
+00:02:08.120 --> 00:02:11.000
+we are creating a second target group.
+
+62
+00:02:11.000 --> 00:02:13.360
+So now we have our EC2 instances
+
+63
+00:02:13.360 --> 00:02:15.590
+with a launch template on v2.
+
+64
+00:02:15.590 --> 00:02:18.720
+We are able to do at the ALB level,
+
+65
+00:02:18.720 --> 00:02:22.290
+a traffic split between the different two target groups.
+
+66
+00:02:22.290 --> 00:02:24.290
+So it's possible for us in this case
+
+67
+00:02:24.290 --> 00:02:26.086
+to just send a small amount of traffic
+
+68
+00:02:26.086 --> 00:02:27.850
+to the Auto Scaling group two,
+
+69
+00:02:27.850 --> 00:02:30.198
+just to test it out from the ALB side
+
+70
+00:02:30.198 --> 00:02:33.770
+and see if our new application is working fine.
+
+71
+00:02:33.770 --> 00:02:36.500
+If it is, then we can slowly shift traffic
+
+72
+00:02:36.500 --> 00:02:38.130
+between the two target groups.
+
+73
+00:02:38.130 --> 00:02:41.980
+Then eventually we retire the first target group.
+
+74
+00:02:41.980 --> 00:02:44.170
+The beautiful thing here is that the clients,
+
+75
+00:02:44.170 --> 00:02:46.197
+still access the only one ALB.
+
+76
+00:02:47.040 --> 00:02:49.170
+So there's no caching issue on the K inside
+
+77
+00:02:49.170 --> 00:02:52.660
+with the ALB is the one thing that is splitting traffic,
+
+78
+00:02:52.660 --> 00:02:55.540
+shifting traffic from your first Auto Scaling group
+
+79
+00:02:55.540 --> 00:02:57.320
+to your second Auto Scaling group.
+
+80
+00:02:57.320 --> 00:02:59.960
+So there's a different solution architecture.
+
+81
+00:02:59.960 --> 00:03:02.930
+Number three, there is the more complex one.
+
+82
+00:03:02.930 --> 00:03:04.740
+So we have our ALB number one,
+
+83
+00:03:04.740 --> 00:03:06.820
+that is linked to our Auto Scaling group
+
+84
+00:03:06.820 --> 00:03:09.430
+with our EC2 instances and launch template v1
+
+85
+00:03:09.430 --> 00:03:11.115
+and we'll do is that we'll create
+
+86
+00:03:11.115 --> 00:03:14.580
+an entirely new auto Application Load Balancer
+
+87
+00:03:14.580 --> 00:03:19.230
+and an entirely new ASG with the launch template number two.
+
+88
+00:03:19.230 --> 00:03:20.120
+The idea is now we have
+
+89
+00:03:20.120 --> 00:03:23.770
+two very independent type of architectures.
+
+90
+00:03:23.770 --> 00:03:25.320
+So what we need to do is to make sure
+
+91
+00:03:25.320 --> 00:03:27.780
+the clients can talk to our second ALB
+
+92
+00:03:27.780 --> 00:03:30.650
+and for this we can use route 53.
+
+93
+00:03:30.650 --> 00:03:34.020
+So we'll define a CNAME and we can use weighted records.
+
+94
+00:03:34.020 --> 00:03:36.010
+So when the client's makes a DNS query
+
+95
+00:03:36.010 --> 00:03:40.060
+is going to get both ALBs based on the weight.
+
+96
+00:03:40.060 --> 00:03:42.010
+So the clients will be doing some load balancing
+
+97
+00:03:42.010 --> 00:03:44.510
+so part of our clients will be sending traffic
+
+98
+00:03:44.510 --> 00:03:46.860
+to ALB number one and parts of our clients
+
+99
+00:03:46.860 --> 00:03:49.120
+will be sending traffic to ALB number two.
+
+100
+00:03:49.120 --> 00:03:51.530
+That would allow us to have a small amount of traffic
+
+101
+00:03:51.530 --> 00:03:53.330
+going on to AlB be number two.
+
+102
+00:03:53.330 --> 00:03:55.530
+The problem here is that we are reeling on
+
+103
+00:03:55.530 --> 00:03:57.350
+the clients being well behaved
+
+104
+00:03:57.350 --> 00:04:00.012
+and making DNS queries and respecting the TTL.
+
+105
+00:04:00.012 --> 00:04:03.970
+So we have to do a slow migration slowly, slowly, slowly.
+
+106
+00:04:03.970 --> 00:04:06.850
+So there is some risk here, that bad behaving clients
+
+107
+00:04:06.850 --> 00:04:08.630
+will still be talking to our ALB number one
+
+108
+00:04:08.630 --> 00:04:11.990
+even though we have told them to switch to ALB number two
+
+109
+00:04:11.990 --> 00:04:13.860
+with route 53.
+
+110
+00:04:13.860 --> 00:04:16.210
+The advantage though of this architecture
+
+111
+00:04:16.210 --> 00:04:20.010
+is that we are able to independently test the ALB number two
+
+112
+00:04:20.010 --> 00:04:23.340
+before we put it in service at the route 53 level.
+
+113
+00:04:23.340 --> 00:04:25.690
+So it's possible for us to set up test clients
+
+114
+00:04:25.690 --> 00:04:27.040
+to do some manual testing,
+
+115
+00:04:27.040 --> 00:04:28.980
+to do some load testing on their architecture
+
+116
+00:04:28.980 --> 00:04:30.580
+making sure everything is great
+
+117
+00:04:30.580 --> 00:04:32.990
+before we have our client do some load balancing
+
+118
+00:04:32.990 --> 00:04:37.600
+and switch from ALB1 slowly transition to ALB2.
+
+119
+00:04:37.600 --> 00:04:39.606
+So what I wanna show you as part of this lecture
+
+120
+00:04:39.606 --> 00:04:42.927
+is that there's not only one way of doing things in AWS.
+
+121
+00:04:43.840 --> 00:04:46.790
+The kind of architectures you are going to choose
+
+122
+00:04:46.790 --> 00:04:49.582
+depends on how you feel about complexity
+
+123
+00:04:49.582 --> 00:04:52.710
+or the requirements of your solution architecture.
+
+124
+00:04:52.710 --> 00:04:54.600
+How you want to update your applications
+
+125
+00:04:54.600 --> 00:04:57.210
+and how many components do you want to involve in it.
+
+126
+00:04:57.210 --> 00:04:58.905
+So through this one example
+
+127
+00:04:58.905 --> 00:05:01.320
+I wanna show you that in the exam
+
+128
+00:05:01.320 --> 00:05:04.035
+it is very likely that you have multiple answers
+
+129
+00:05:04.035 --> 00:05:05.470
+that are going to be good.
+
+130
+00:05:05.470 --> 00:05:08.720
+Multiple answers will be correct at the exam.
+
+131
+00:05:08.720 --> 00:05:11.270
+But one of those will be the most appropriate
+
+132
+00:05:11.270 --> 00:05:13.010
+based on what you're trying to achieve.
+
+133
+00:05:13.010 --> 00:05:14.330
+This is what you have to identify
+
+134
+00:05:14.330 --> 00:05:16.570
+and this is what makes this
+
+135
+00:05:16.570 --> 00:05:19.650
+Solution Architect Professional exam very tricky.
+
+136
+00:05:19.650 --> 00:05:20.970
+But I hope that was helpful for this lecture,
+
+137
+00:05:20.970 --> 00:05:22.490
+I hope all of it makes sense
+
+138
+00:05:22.490 --> 00:05:24.710
+and you're thinking more like a Solutions Architect now
+
+139
+00:05:24.710 --> 00:05:26.660
+and I will see you in the next lecture.
+

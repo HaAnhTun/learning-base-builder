@@ -1,0 +1,178 @@
+WEBVTT
+
+1
+00:00:00.210 --> 00:00:01.350
+<v Speaker>Just a short lecture</v>
+
+2
+00:00:01.350 --> 00:00:03.570
+around CloudFront geo restriction.
+
+3
+00:00:03.570 --> 00:00:06.210
+So you can restrict who can access your distribution
+
+4
+00:00:06.210 --> 00:00:08.010
+based on the country where they
+
+5
+00:00:08.010 --> 00:00:10.140
+try to access the distribution from.
+
+6
+00:00:10.140 --> 00:00:12.960
+So you can set up an allow list to define a list
+
+7
+00:00:12.960 --> 00:00:14.700
+of approved countries,
+
+8
+00:00:14.700 --> 00:00:18.060
+or you can set up a block list to set up a list
+
+9
+00:00:18.060 --> 00:00:19.980
+of banned countries.
+
+10
+00:00:19.980 --> 00:00:21.720
+Now the country is determined
+
+11
+00:00:21.720 --> 00:00:24.780
+by using a third party geo IP database to match the IP
+
+12
+00:00:24.780 --> 00:00:27.600
+of the user to the country it belongs to.
+
+13
+00:00:27.600 --> 00:00:30.690
+So the use case for using geo restriction would be copyright
+
+14
+00:00:30.690 --> 00:00:33.900
+laws to control access to content.
+
+15
+00:00:33.900 --> 00:00:37.140
+So in order to use the geographic protection,
+
+16
+00:00:37.140 --> 00:00:38.910
+somehow I need to change my plan.
+
+17
+00:00:38.910 --> 00:00:42.240
+So if you look at this plan, the manage free plan
+
+18
+00:00:42.240 --> 00:00:45.270
+and change this plan, as you can see within the list
+
+19
+00:00:45.270 --> 00:00:46.680
+right now, as it says,
+
+20
+00:00:46.680 --> 00:00:49.830
+it says that there is geographic traffic blocking,
+
+21
+00:00:49.830 --> 00:00:52.020
+but this option is not available to me
+
+22
+00:00:52.020 --> 00:00:54.240
+and I need to change to something called
+
+23
+00:00:54.240 --> 00:00:55.980
+the Pay as You Go option,
+
+24
+00:00:55.980 --> 00:00:57.780
+but it's not available to me either here.
+
+25
+00:00:57.780 --> 00:00:59.340
+So it was is a little bit slow
+
+26
+00:00:59.340 --> 00:01:00.480
+and I'm trying to edit my course.
+
+27
+00:01:00.480 --> 00:01:01.680
+But so what I've done is
+
+28
+00:01:01.680 --> 00:01:03.990
+that I've created another distribution, this one,
+
+29
+00:01:03.990 --> 00:01:06.870
+which is Pay as You Go type of billing.
+
+30
+00:01:06.870 --> 00:01:10.800
+And now under security I have the CloudFront geographic
+
+31
+00:01:10.800 --> 00:01:14.130
+restrictions that I can edit and I can have an allow list
+
+32
+00:01:14.130 --> 00:01:16.500
+or block list and then select the countries
+
+33
+00:01:16.500 --> 00:01:17.700
+that I need to block.
+
+34
+00:01:17.700 --> 00:01:19.380
+For example, I wanna block these two countries
+
+35
+00:01:19.380 --> 00:01:21.270
+and then save my changes.
+
+36
+00:01:21.270 --> 00:01:22.650
+I expect over time
+
+37
+00:01:22.650 --> 00:01:25.290
+that CloudFront will have the correct options
+
+38
+00:01:25.290 --> 00:01:27.720
+under security, under the free plan.
+
+39
+00:01:27.720 --> 00:01:28.553
+But let's see.
+
+40
+00:01:28.553 --> 00:01:30.240
+Anyways, now you know how to do it at least.
+
+41
+00:01:30.240 --> 00:01:32.100
+Either you select a paid plan or pay as you go
+
+42
+00:01:32.100 --> 00:01:35.220
+and you'll have access to play with the security options.
+
+43
+00:01:35.220 --> 00:01:36.270
+Alright, that's it for this lecture.
+
+44
+00:01:36.270 --> 00:01:39.220
+I hope you liked it and I will see you in the next lecture.
+

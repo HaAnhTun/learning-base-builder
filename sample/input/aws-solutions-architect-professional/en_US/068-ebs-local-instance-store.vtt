@@ -1,0 +1,866 @@
+WEBVTT
+
+1
+00:00:00.330 --> 00:00:02.730
+<v Instructor>So now let's talk about EBS volumes</v>
+
+2
+00:00:02.730 --> 00:00:04.140
+and EC2 instance store.
+
+3
+00:00:04.140 --> 00:00:06.840
+So first, EBS volumes are network drives.
+
+4
+00:00:06.840 --> 00:00:09.810
+And you attach them to one instance at a time,
+
+5
+00:00:09.810 --> 00:00:11.880
+except with a EBS multi-attached feature
+
+6
+00:00:11.880 --> 00:00:14.070
+that I will show you very, very soon.
+
+7
+00:00:14.070 --> 00:00:16.350
+So they're linked to a specific AZ,
+
+8
+00:00:16.350 --> 00:00:18.810
+and if you wanted to transfer them between a different AZ,
+
+9
+00:00:18.810 --> 00:00:20.640
+you need to first snapshot them,
+
+10
+00:00:20.640 --> 00:00:23.160
+and then restore them into that other AZ.
+
+11
+00:00:23.160 --> 00:00:25.260
+Your volumes can be resized, but only up,
+
+12
+00:00:25.260 --> 00:00:26.790
+so you can increase the volume size
+
+13
+00:00:26.790 --> 00:00:29.220
+without detaching the EBS volume first.
+
+14
+00:00:29.220 --> 00:00:31.650
+You need to make sure also to leverage the EBS volume
+
+15
+00:00:31.650 --> 00:00:33.930
+as much as you can to choose an EC2 instance type
+
+16
+00:00:33.930 --> 00:00:36.030
+that is going to be EBS optimized
+
+17
+00:00:36.030 --> 00:00:38.520
+to enjoy maximum throughputs.
+
+18
+00:00:38.520 --> 00:00:40.170
+So in a diagram here, what it looks like,
+
+19
+00:00:40.170 --> 00:00:41.670
+so we have one EC2 instance,
+
+20
+00:00:41.670 --> 00:00:44.790
+it may have an EBS volume attached to it of 10 gigabytes
+
+21
+00:00:44.790 --> 00:00:46.410
+and another EC2 instance
+
+22
+00:00:46.410 --> 00:00:50.250
+that will have maybe two EBS volumes attached to it.
+
+23
+00:00:50.250 --> 00:00:52.470
+Now for volume types, you have different types of volumes.
+
+24
+00:00:52.470 --> 00:00:57.120
+For EBS, you have the gp2, gp3 family, and g means general.
+
+25
+00:00:57.120 --> 00:00:59.190
+So general purpose SSD volumes
+
+26
+00:00:59.190 --> 00:01:01.920
+that will balance a good price and performance
+
+27
+00:01:01.920 --> 00:01:03.690
+and fits most workloads.
+
+28
+00:01:03.690 --> 00:01:06.240
+But if you want extremely high performance,
+
+29
+00:01:06.240 --> 00:01:08.310
+very high throughput, very low latency,
+
+30
+00:01:08.310 --> 00:01:10.260
+then you need to look into the i family,
+
+31
+00:01:10.260 --> 00:01:13.680
+so the io1 and io2 block express.
+
+32
+00:01:13.680 --> 00:01:17.040
+If you have a need for a low-cost HDD
+
+33
+00:01:17.040 --> 00:01:18.900
+that is going to be designed for frequently accessed
+
+34
+00:01:18.900 --> 00:01:21.900
+and throughput-intensive workload, usually sequential reads,
+
+35
+00:01:21.900 --> 00:01:23.880
+then st1 one is going to be a great choice.
+
+36
+00:01:23.880 --> 00:01:25.380
+And if you want cold storage
+
+37
+00:01:25.380 --> 00:01:27.630
+for less frequently accessed workloads,
+
+38
+00:01:27.630 --> 00:01:30.810
+then sc1 one is going to be a good use case for you.
+
+39
+00:01:30.810 --> 00:01:33.210
+The EBS volumes will have general characteristics,
+
+40
+00:01:33.210 --> 00:01:35.580
+but they will be characterized in terms of size,
+
+41
+00:01:35.580 --> 00:01:39.990
+throughputs, and IOPS, which is IO Operations Per Second.
+
+42
+00:01:39.990 --> 00:01:41.400
+And when you're in doubt, of course,
+
+43
+00:01:41.400 --> 00:01:43.830
+always look at the AWS documentation.
+
+44
+00:01:43.830 --> 00:01:45.000
+In terms of boot volumes,
+
+45
+00:01:45.000 --> 00:01:47.460
+which is where your operating system can be
+
+46
+00:01:47.460 --> 00:01:48.990
+for your EC2 instances,
+
+47
+00:01:48.990 --> 00:01:52.353
+then it can only be on gp2, gp3, or io1, io2.
+
+48
+00:01:53.190 --> 00:01:54.360
+Okay, so now snapshots.
+
+49
+00:01:54.360 --> 00:01:57.390
+So they're very helpful to transfer EBS volumes between AZ.
+
+50
+00:01:57.390 --> 00:01:59.130
+And they're incremental,
+
+51
+00:01:59.130 --> 00:02:03.390
+so you only backup the changed blocks behind the scene.
+
+52
+00:02:03.390 --> 00:02:05.490
+Then the backups will use IO.
+
+53
+00:02:05.490 --> 00:02:07.260
+And so that means that because the volume's going
+
+54
+00:02:07.260 --> 00:02:08.970
+to be read by AWS,
+
+55
+00:02:08.970 --> 00:02:10.470
+if you are running an application
+
+56
+00:02:10.470 --> 00:02:12.660
+that is also handling a lot of read traffic,
+
+57
+00:02:12.660 --> 00:02:14.520
+and you are on top of it doing a backup,
+
+58
+00:02:14.520 --> 00:02:17.730
+then you may experience decreased performance.
+
+59
+00:02:17.730 --> 00:02:20.400
+The snapshots are going to be stored in S3 in the backend,
+
+60
+00:02:20.400 --> 00:02:23.670
+but you're not going to be getting direct access to them.
+
+61
+00:02:23.670 --> 00:02:26.280
+And it's not necessary for you to detach a volume
+
+62
+00:02:26.280 --> 00:02:28.260
+to do a snapshot, but it's recommended
+
+63
+00:02:28.260 --> 00:02:31.170
+because if your volume is being actively used
+
+64
+00:02:31.170 --> 00:02:35.460
+while you do a snapshot, you may get an inconsistent state.
+
+65
+00:02:35.460 --> 00:02:39.000
+You can copy snapshots across AZ, yes, for sure
+
+66
+00:02:39.000 --> 00:02:41.910
+and again, restore snapshots, sorry, across AZ of course,
+
+67
+00:02:41.910 --> 00:02:44.490
+but you can also copy snapshots across region
+
+68
+00:02:44.490 --> 00:02:46.110
+for disaster recovery purposes.
+
+69
+00:02:46.110 --> 00:02:49.200
+So it's a really good practice to snapshot, for example,
+
+70
+00:02:49.200 --> 00:02:51.030
+data in one region
+
+71
+00:02:51.030 --> 00:02:53.070
+and then copy it to another region in case you wanted
+
+72
+00:02:53.070 --> 00:02:56.460
+to restore the data for disaster recovery purposes.
+
+73
+00:02:56.460 --> 00:02:58.110
+Now it's also possible for you
+
+74
+00:02:58.110 --> 00:03:01.140
+to make Amazon machine images from your snapshots
+
+75
+00:03:01.140 --> 00:03:03.120
+using the AMI feature.
+
+76
+00:03:03.120 --> 00:03:04.470
+And this is very common, for example,
+
+77
+00:03:04.470 --> 00:03:06.210
+if you bootstrap an application
+
+78
+00:03:06.210 --> 00:03:08.310
+and then make an AMI out of it.
+
+79
+00:03:08.310 --> 00:03:11.520
+Now when you restore an EBS volume, especially large ones,
+
+80
+00:03:11.520 --> 00:03:13.110
+then you need to prewarm them.
+
+81
+00:03:13.110 --> 00:03:14.940
+That means you need to read all the blocks
+
+82
+00:03:14.940 --> 00:03:16.770
+to have the maximum performance.
+
+83
+00:03:16.770 --> 00:03:19.530
+And to do so, you have two ways of doing it.
+
+84
+00:03:19.530 --> 00:03:22.200
+The first one is using a newer feature of AWS
+
+85
+00:03:22.200 --> 00:03:24.660
+because that was a very popular request.
+
+86
+00:03:24.660 --> 00:03:28.770
+It's called the Fast Snapshot Restore, which is FSR feature.
+
+87
+00:03:28.770 --> 00:03:30.180
+And the idea is that this feature is going
+
+88
+00:03:30.180 --> 00:03:34.770
+to read your EBS snapshot entirely and then give it to you.
+
+89
+00:03:34.770 --> 00:03:37.230
+This way, when you restore it, it's going to be prewarmed.
+
+90
+00:03:37.230 --> 00:03:39.000
+But if you wanted to do it the old way,
+
+91
+00:03:39.000 --> 00:03:41.970
+then you need to just attach this restored EBS volume
+
+92
+00:03:41.970 --> 00:03:45.700
+to your EC2 instance, and then you would issue the fio
+
+93
+00:03:45.700 --> 00:03:49.080
+or dd command directly from within the EC2 instance
+
+94
+00:03:49.080 --> 00:03:51.540
+to read the entire volume.
+
+95
+00:03:51.540 --> 00:03:53.700
+Next, there is a service within EBS
+
+96
+00:03:53.700 --> 00:03:56.430
+called Amazon Data Lifecycle Manager,
+
+97
+00:03:56.430 --> 00:03:58.380
+which is used to automate the creation,
+
+98
+00:03:58.380 --> 00:04:02.280
+retention, and deletion of EBS snapshots and EBS-backed AMI.
+
+99
+00:04:02.280 --> 00:04:04.560
+So it's a way for you to schedule backups,
+
+100
+00:04:04.560 --> 00:04:06.900
+do cross account snapshot copies automatically,
+
+101
+00:04:06.900 --> 00:04:09.843
+or to delete outdated backups using a policy.
+
+102
+00:04:11.040 --> 00:04:13.020
+Use resource tags to identify the resources you want
+
+103
+00:04:13.020 --> 00:04:16.140
+to back up, for example, EC2 instances or EBS volumes.
+
+104
+00:04:16.140 --> 00:04:17.130
+And so here is an example.
+
+105
+00:04:17.130 --> 00:04:19.140
+We can tag an EBS volume
+
+106
+00:04:19.140 --> 00:04:20.790
+with environment prod to make sure
+
+107
+00:04:20.790 --> 00:04:22.170
+that it automatically gets backed up
+
+108
+00:04:22.170 --> 00:04:24.360
+by Amazon Data Lifecycle Manager,
+
+109
+00:04:24.360 --> 00:04:26.430
+or we can tag directly an EC2 instance
+
+110
+00:04:26.430 --> 00:04:28.020
+with this environment prod,
+
+111
+00:04:28.020 --> 00:04:29.693
+and then the instance itself will be,
+
+112
+00:04:29.693 --> 00:04:32.460
+and its EBS volumes will be backed up.
+
+113
+00:04:32.460 --> 00:04:33.870
+So it goes into Data Lifecycle Manager,
+
+114
+00:04:33.870 --> 00:04:37.140
+and we can create snapshots and AMIs out of it.
+
+115
+00:04:37.140 --> 00:04:38.970
+It cannot be used to manage snapshots
+
+116
+00:04:38.970 --> 00:04:40.530
+or AMIs created outside of DLM.
+
+117
+00:04:40.530 --> 00:04:41.940
+So everything has to be contained
+
+118
+00:04:41.940 --> 00:04:43.680
+within Data Lifecycle Manager,
+
+119
+00:04:43.680 --> 00:04:47.460
+and it cannot be used to manage instance-store backed AMIs.
+
+120
+00:04:47.460 --> 00:04:49.410
+So a question you may have is what is the difference
+
+121
+00:04:49.410 --> 00:04:53.430
+between Amazon Data Lifecycle Manager and AWS backup?
+
+122
+00:04:53.430 --> 00:04:55.590
+So you use Data Lifecycle Manager when you want
+
+123
+00:04:55.590 --> 00:04:57.390
+to automate the creation, retention,
+
+124
+00:04:57.390 --> 00:05:00.390
+and deletion of EBS snapshots,
+
+125
+00:05:00.390 --> 00:05:03.030
+whereas you're going to use AWS backups
+
+126
+00:05:03.030 --> 00:05:04.530
+to manage and monitor backups
+
+127
+00:05:04.530 --> 00:05:07.140
+across all the AWS services you use,
+
+128
+00:05:07.140 --> 00:05:09.990
+including EBS volumes, from a single place.
+
+129
+00:05:09.990 --> 00:05:14.220
+So it's about scope, and it's about ease of management.
+
+130
+00:05:14.220 --> 00:05:17.340
+Talking about EBS volumes, we have also EBS encryption.
+
+131
+00:05:17.340 --> 00:05:20.820
+So there is an account level setting to encrypt your volumes
+
+132
+00:05:20.820 --> 00:05:24.210
+because by default, new EBS volumes are not encrypted.
+
+133
+00:05:24.210 --> 00:05:26.070
+But if you turn on this setting,
+
+134
+00:05:26.070 --> 00:05:28.350
+then automatically new EBS volumes
+
+135
+00:05:28.350 --> 00:05:30.690
+and snapshots are going to be encrypted.
+
+136
+00:05:30.690 --> 00:05:32.400
+So in the UI, it looks like this.
+
+137
+00:05:32.400 --> 00:05:35.400
+There is a EC2 dashboard setting, and when you set it,
+
+138
+00:05:35.400 --> 00:05:38.400
+you can always encrypt new EBS volumes.
+
+139
+00:05:38.400 --> 00:05:40.050
+Just so you know, this setting,
+
+140
+00:05:40.050 --> 00:05:41.670
+even though it's an account level setting,
+
+141
+00:05:41.670 --> 00:05:45.003
+needs to be enabled on the per-region basis.
+
+142
+00:05:46.140 --> 00:05:47.940
+Now there's a feature called EBS multi-attach,
+
+143
+00:05:47.940 --> 00:05:51.180
+and it's only available for the io1 and io2 family,
+
+144
+00:05:51.180 --> 00:05:52.560
+which goes against what I told you,
+
+145
+00:05:52.560 --> 00:05:56.010
+but it gives you the ability to attach the same EBS volumes
+
+146
+00:05:56.010 --> 00:05:59.040
+to multiple EC2 instances in the same AZ.
+
+147
+00:05:59.040 --> 00:06:00.690
+And each instance will have full read
+
+148
+00:06:00.690 --> 00:06:02.580
+and write permissions on the volume.
+
+149
+00:06:02.580 --> 00:06:05.250
+So it's only for a specific kind of applications.
+
+150
+00:06:05.250 --> 00:06:06.510
+For example, the ones
+
+151
+00:06:06.510 --> 00:06:10.020
+that need higher application availability, for example,
+
+152
+00:06:10.020 --> 00:06:13.710
+Teradata that has a native support for this feature
+
+153
+00:06:13.710 --> 00:06:17.070
+or applications that must manage concurrent write operations
+
+154
+00:06:17.070 --> 00:06:19.800
+for this very specific use case as well.
+
+155
+00:06:19.800 --> 00:06:21.780
+Now the file system is a little bit different.
+
+156
+00:06:21.780 --> 00:06:25.350
+It's not going to be XFS or EX4 and so on.
+
+157
+00:06:25.350 --> 00:06:27.120
+It's going to be a file system that's cluster aware,
+
+158
+00:06:27.120 --> 00:06:30.270
+and it's not the kind of things you deal with every day.
+
+159
+00:06:30.270 --> 00:06:32.730
+So it's a very unique feature for very unique use cases,
+
+160
+00:06:32.730 --> 00:06:34.140
+but you need to know that it exists.
+
+161
+00:06:34.140 --> 00:06:36.030
+And so the architecture looks like, well,
+
+162
+00:06:36.030 --> 00:06:38.100
+you have one, for example, io2 volume
+
+163
+00:06:38.100 --> 00:06:39.810
+with a multi-attach feature,
+
+164
+00:06:39.810 --> 00:06:43.770
+and it can be attached to multiple EC2 instances at a time.
+
+165
+00:06:43.770 --> 00:06:47.220
+Now when you consider your local EC2 instance store,
+
+166
+00:06:47.220 --> 00:06:48.870
+this one is not a network disc,
+
+167
+00:06:48.870 --> 00:06:51.390
+it is a physical disc that is going to be attached
+
+168
+00:06:51.390 --> 00:06:54.270
+to the physical server where your EC2 is.
+
+169
+00:06:54.270 --> 00:06:55.103
+And while we do this,
+
+170
+00:06:55.103 --> 00:06:57.150
+well, you get very, very high IOPS
+
+171
+00:06:57.150 --> 00:07:02.150
+because well, the disc is attached to your EC2 instance.
+
+172
+00:07:02.460 --> 00:07:03.930
+Now what you get on the right-hand side,
+
+173
+00:07:03.930 --> 00:07:08.007
+for example, for the i3 family is a lot of write IOPS
+
+174
+00:07:08.007 --> 00:07:10.860
+and a lot of read IOPS as you can see.
+
+175
+00:07:10.860 --> 00:07:13.290
+Now the disc can vary in size, and this is just indicative,
+
+176
+00:07:13.290 --> 00:07:15.540
+it can obviously increase over time,
+
+177
+00:07:15.540 --> 00:07:19.290
+but the disc can go up to, for example, 7.5 terabytes.
+
+178
+00:07:19.290 --> 00:07:21.960
+And if you strip them, so if you have them in parallel,
+
+179
+00:07:21.960 --> 00:07:24.420
+you can reach, for example, 60 terabytes.
+
+180
+00:07:24.420 --> 00:07:26.160
+And so you get a lot of IOPS.
+
+181
+00:07:26.160 --> 00:07:28.350
+It is still a block storage just like EBS, okay?
+
+182
+00:07:28.350 --> 00:07:31.110
+But it is a physical device, not a network device.
+
+183
+00:07:31.110 --> 00:07:33.000
+And it cannot be increased in size.
+
+184
+00:07:33.000 --> 00:07:36.690
+And in case your EC2 instance fails or gets shut down,
+
+185
+00:07:36.690 --> 00:07:38.550
+you will lose your data
+
+186
+00:07:38.550 --> 00:07:41.640
+because it is a physical disc attached to your EC2 instance.
+
+187
+00:07:41.640 --> 00:07:45.150
+So if you compare EC2 instance store and EBS volumes,
+
+188
+00:07:45.150 --> 00:07:47.250
+while the instance store is physically attached
+
+189
+00:07:47.250 --> 00:07:49.920
+to the machine, it is considered ephemeral storage,
+
+190
+00:07:49.920 --> 00:07:51.660
+whereas the EBS is a network drive,
+
+191
+00:07:51.660 --> 00:07:54.780
+which is considered a persistent kind of storage.
+
+192
+00:07:54.780 --> 00:07:57.390
+Now the pros of using the EC2 instance store is
+
+193
+00:07:57.390 --> 00:08:00.810
+that you get a lot better IO performance.
+
+194
+00:08:00.810 --> 00:08:03.120
+So the EBS gp2, for example,
+
+195
+00:08:03.120 --> 00:08:05.293
+will have a max IOPS of 16,000,
+
+196
+00:08:05.293 --> 00:08:06.810
+io1, 64,000,
+
+197
+00:08:06.810 --> 00:08:09.870
+and io2 Block Express, 256,000.
+
+198
+00:08:09.870 --> 00:08:11.370
+But we saw that the instance store
+
+199
+00:08:11.370 --> 00:08:13.380
+can have IOPS in the millions.
+
+200
+00:08:13.380 --> 00:08:16.890
+Now it's going to be very good if you want to have a buffer,
+
+201
+00:08:16.890 --> 00:08:19.860
+a cache, scratch data, or temporary content.
+
+202
+00:08:19.860 --> 00:08:21.660
+Remember it is ephemeral storage.
+
+203
+00:08:21.660 --> 00:08:23.910
+And in case you reboot your EC2 instance,
+
+204
+00:08:23.910 --> 00:08:25.290
+your data will survive.
+
+205
+00:08:25.290 --> 00:08:27.420
+But if you happen to stop
+
+206
+00:08:27.420 --> 00:08:29.430
+or terminate your EC2 instance,
+
+207
+00:08:29.430 --> 00:08:32.010
+then all the data on the EC2 instance store
+
+208
+00:08:32.010 --> 00:08:33.420
+is going to be lost.
+
+209
+00:08:33.420 --> 00:08:34.980
+And that means that you need to manage the data.
+
+210
+00:08:34.980 --> 00:08:38.220
+So you need to back up the data automatically to make sure
+
+211
+00:08:38.220 --> 00:08:41.400
+that if you want to keep it, you have a mechanism to do so.
+
+212
+00:08:41.400 --> 00:08:43.530
+And because it is an EC2 instance store,
+
+213
+00:08:43.530 --> 00:08:45.900
+and it's a physical storage, you cannot resize it.
+
+214
+00:08:45.900 --> 00:08:48.810
+Whereas for EBS volumes, of course you could resize it.
+
+215
+00:08:48.810 --> 00:08:50.370
+Okay, so that's it for this lecture.
+
+216
+00:08:50.370 --> 00:08:53.370
+I hope you liked it, and I will see you in the next lecture.
+

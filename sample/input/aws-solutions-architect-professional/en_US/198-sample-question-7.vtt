@@ -1,0 +1,614 @@
+WEBVTT
+
+1
+00:00:00.750 --> 00:00:03.750
+<v ->A solutions architect needs to reduce costs</v>
+
+2
+00:00:03.750 --> 00:00:06.120
+for a big data application.
+
+3
+00:00:06.120 --> 00:00:08.850
+The application environment consists of hundreds
+
+4
+00:00:08.850 --> 00:00:12.990
+of devices that send events to Amazon Kinesis Data Streams.
+
+5
+00:00:12.990 --> 00:00:15.690
+The device ID is used as the partition key,
+
+6
+00:00:15.690 --> 00:00:18.720
+so each device gets a separate shard.
+
+7
+00:00:18.720 --> 00:00:21.060
+Each device sends between 50 kilobytes
+
+8
+00:00:21.060 --> 00:00:24.060
+and 450 kilobytes of data per second.
+
+9
+00:00:24.060 --> 00:00:25.270
+The shards are pulled
+
+10
+00:00:26.144 --> 00:00:27.600
+by Lambda function that processes the data
+
+11
+00:00:27.600 --> 00:00:30.090
+and stores the results on Amazon S3.
+
+12
+00:00:30.090 --> 00:00:33.450
+Every hour, a Lambda function runs an Amazon Athena
+
+13
+00:00:33.450 --> 00:00:37.140
+query against the result data that identifies any outliers
+
+14
+00:00:37.140 --> 00:00:40.290
+and places them in Amazon SQS queue.
+
+15
+00:00:40.290 --> 00:00:43.920
+An Amazon EC2 Auto Scaling group of two EC2 instances
+
+16
+00:00:43.920 --> 00:00:47.520
+monitors the queue and runs a short that lasts approximately
+
+17
+00:00:47.520 --> 00:00:50.790
+30 seconds, process to address the outliers.
+
+18
+00:00:50.790 --> 00:00:53.970
+The devices submit an average of 10 outlying values,
+
+19
+00:00:53.970 --> 00:00:55.380
+every hour.
+
+20
+00:00:55.380 --> 00:00:57.840
+Which combination of changes to the application
+
+21
+00:00:57.840 --> 00:00:59.910
+would most reduce cost?
+
+22
+00:00:59.910 --> 00:01:01.770
+And we have to select two.
+
+23
+00:01:01.770 --> 00:01:04.200
+So this is a very, very, very long question
+
+24
+00:01:04.200 --> 00:01:05.400
+but, I really like it
+
+25
+00:01:05.400 --> 00:01:07.500
+because it's a complete solution architecture
+
+26
+00:01:07.500 --> 00:01:09.570
+and there's lots of things we can discuss on it.
+
+27
+00:01:09.570 --> 00:01:11.220
+So let's draw it out.
+
+28
+00:01:11.220 --> 00:01:13.530
+Kinesis will have multiple shards
+
+29
+00:01:13.530 --> 00:01:15.900
+and have 50 shards in this example.
+
+30
+00:01:15.900 --> 00:01:19.320
+And the question says that we have exactly one chart,
+
+31
+00:01:19.320 --> 00:01:23.520
+per device. So each device that sends us data will get
+
+32
+00:01:23.520 --> 00:01:24.840
+its own shard.
+
+33
+00:01:24.840 --> 00:01:28.110
+We also get some information that each device sends
+
+34
+00:01:28.110 --> 00:01:31.590
+about 50 to 450 kilobytes per second of data,
+
+35
+00:01:31.590 --> 00:01:33.180
+into each shard.
+
+36
+00:01:33.180 --> 00:01:36.270
+Okay? Then we get a Lambda function that reads
+
+37
+00:01:36.270 --> 00:01:38.100
+from the shards, processes the data,
+
+38
+00:01:38.100 --> 00:01:41.133
+and then writes it into Amazon S3.
+
+39
+00:01:41.970 --> 00:01:43.980
+Then we have another Lambda function that is
+
+40
+00:01:43.980 --> 00:01:46.860
+triggered every hour possibly by CloudWatch events
+
+41
+00:01:46.860 --> 00:01:48.210
+but, it's not mentioned in this question
+
+42
+00:01:48.210 --> 00:01:49.713
+so I will not put it here.
+
+43
+00:01:50.750 --> 00:01:54.720
+And so this Lambda function is using Athena to issue a query
+
+44
+00:01:54.720 --> 00:01:57.930
+against S3 and it will use the results
+
+45
+00:01:57.930 --> 00:02:02.930
+of this Athena query to insert into SQS about 10 messages
+
+46
+00:02:03.180 --> 00:02:06.300
+per hour, which represents outlying values.
+
+47
+00:02:06.300 --> 00:02:08.970
+And this SQS queue will be processed
+
+48
+00:02:08.970 --> 00:02:12.120
+by an Auto Scaling group of two EC2 instances,
+
+49
+00:02:12.120 --> 00:02:14.250
+that continuously pull from the queue.
+
+50
+00:02:14.250 --> 00:02:16.530
+And whenever they receive a message,
+
+51
+00:02:16.530 --> 00:02:19.260
+they do about 30 seconds of processing.
+
+52
+00:02:19.260 --> 00:02:21.690
+So, if we look at 30 seconds times 10,
+
+53
+00:02:21.690 --> 00:02:24.810
+this is about, 300 seconds of processing every hour.
+
+54
+00:02:24.810 --> 00:02:26.520
+So, it is deeply inefficient.
+
+55
+00:02:26.520 --> 00:02:29.940
+And so we're asked to find ways to cost optimize
+
+56
+00:02:29.940 --> 00:02:31.560
+this architecture.
+
+57
+00:02:31.560 --> 00:02:33.390
+So, we need to choose two options.
+
+58
+00:02:33.390 --> 00:02:35.550
+And so I'm going to look at all the answers and then
+
+59
+00:02:35.550 --> 00:02:36.780
+group them together.
+
+60
+00:02:36.780 --> 00:02:39.270
+Option A, change the Auto Scaling group
+
+61
+00:02:39.270 --> 00:02:41.820
+launch configuration to use smaller instance types,
+
+62
+00:02:41.820 --> 00:02:43.650
+in the same instance family.
+
+63
+00:02:43.650 --> 00:02:47.070
+B, replace the ASG with a Lambda function triggered
+
+64
+00:02:47.070 --> 00:02:49.950
+by messages arriving in the SQS queue.
+
+65
+00:02:49.950 --> 00:02:53.970
+C, reconfigure the devices and data stream to set ratio
+
+66
+00:02:53.970 --> 00:02:58.530
+of 10 devices to one data shard stream, stream shard, sorry.
+
+67
+00:02:58.530 --> 00:03:01.680
+Question option D, reconfigure the devices and data stream
+
+68
+00:03:01.680 --> 00:03:06.420
+to set a ratio of two devices to one data stream shard.
+
+69
+00:03:06.420 --> 00:03:09.930
+And E, change the desired capacity of the ASG to a single
+
+70
+00:03:09.930 --> 00:03:11.640
+EC2 instances.
+
+71
+00:03:11.640 --> 00:03:15.480
+So again, I look at these options and I group them together
+
+72
+00:03:15.480 --> 00:03:17.910
+to see which one relate to one another.
+
+73
+00:03:17.910 --> 00:03:21.120
+So, option group one is to change the ASG.
+
+74
+00:03:21.120 --> 00:03:23.100
+This would use smaller size instances,
+
+75
+00:03:23.100 --> 00:03:26.280
+use limited function or to only use one EC2 instance.
+
+76
+00:03:26.280 --> 00:03:28.410
+So, the first option is to have the same architecture,
+
+77
+00:03:28.410 --> 00:03:30.660
+but we use small instances.
+
+78
+00:03:30.660 --> 00:03:33.510
+So, this would definitely give us some cost savings,
+
+79
+00:03:33.510 --> 00:03:36.060
+we're not sure how much because we don't, not sure how much
+
+80
+00:03:36.060 --> 00:03:38.670
+how big, how much bigger the instances were in the past
+
+81
+00:03:38.670 --> 00:03:41.550
+but this would definitely give us some cost savings.
+
+82
+00:03:41.550 --> 00:03:44.160
+And then obviously using smaller instances
+
+83
+00:03:44.160 --> 00:03:47.430
+maybe the processing will be longer, who knows?
+
+84
+00:03:47.430 --> 00:03:49.020
+But this is something which you take into account.
+
+85
+00:03:49.020 --> 00:03:51.780
+We have to optimize for cost right now.
+
+86
+00:03:51.780 --> 00:03:54.960
+Number two, is to replace with a Lambda function.
+
+87
+00:03:54.960 --> 00:03:57.000
+And this Lambda function will be triggered whenever
+
+88
+00:03:57.000 --> 00:03:59.490
+a message arrives in the SQS Queue.
+
+89
+00:03:59.490 --> 00:04:03.060
+And then finally, we can only use one EC2 instances
+
+90
+00:04:03.060 --> 00:04:05.040
+instead of two and see how it works.
+
+91
+00:04:05.040 --> 00:04:08.370
+So, all these solutions are feasible, okay?
+
+92
+00:04:08.370 --> 00:04:10.080
+Definitely feasible.
+
+93
+00:04:10.080 --> 00:04:13.410
+They all go under the time limit, and a Lambda function
+
+94
+00:04:13.410 --> 00:04:16.770
+works because Lambda function can have a maximum time out
+
+95
+00:04:16.770 --> 00:04:18.510
+of 15 minutes.
+
+96
+00:04:18.510 --> 00:04:22.020
+And so we are well under with a 30 seconds processing.
+
+97
+00:04:22.020 --> 00:04:25.740
+So in this example what we have to optimize for is an amount
+
+98
+00:04:25.740 --> 00:04:28.710
+of time these EC2 instances will be running
+
+99
+00:04:28.710 --> 00:04:30.330
+and not doing anything.
+
+100
+00:04:30.330 --> 00:04:33.630
+So, in the first example remember, we have 300 seconds
+
+101
+00:04:33.630 --> 00:04:35.190
+of processing per hour.
+
+102
+00:04:35.190 --> 00:04:37.470
+And so that means that for the rest of the time
+
+103
+00:04:37.470 --> 00:04:41.520
+for about 3,300 seconds an hour
+
+104
+00:04:41.520 --> 00:04:43.470
+the EC2 instances will be idle.
+
+105
+00:04:43.470 --> 00:04:46.410
+So in the first case and the third case, no matter what
+
+106
+00:04:46.410 --> 00:04:50.040
+we have unused processing power from our EC2 instances.
+
+107
+00:04:50.040 --> 00:04:52.200
+And that is really, really not efficient.
+
+108
+00:04:52.200 --> 00:04:55.200
+So Lambda is the perfect answer to this question
+
+109
+00:04:55.200 --> 00:04:57.420
+because Lambda will be triggered only when
+
+110
+00:04:57.420 --> 00:05:00.060
+we receive messages in the SQS queue,
+
+111
+00:05:00.060 --> 00:05:02.820
+and it will be triggered only 10 times per hour.
+
+112
+00:05:02.820 --> 00:05:05.310
+So this is perfect, Lambda will give us
+
+113
+00:05:05.310 --> 00:05:07.860
+the best cost optimization.
+
+114
+00:05:07.860 --> 00:05:09.480
+And, option group two.
+
+115
+00:05:09.480 --> 00:05:12.630
+So we reconfigure the devices for a ratio of 10 devices
+
+116
+00:05:12.630 --> 00:05:15.600
+to one data stream or for two to one.
+
+117
+00:05:15.600 --> 00:05:17.100
+So let's have an example.
+
+118
+00:05:17.100 --> 00:05:19.680
+We have 10 devices into one shard,
+
+119
+00:05:19.680 --> 00:05:22.380
+or two devices into one shard.
+
+120
+00:05:22.380 --> 00:05:26.010
+How do we select the one that saves us the most cost?
+
+121
+00:05:26.010 --> 00:05:29.070
+Well, if we look at the first answer we would have
+
+122
+00:05:29.070 --> 00:05:31.980
+a lot less shards because we have more devices per shard.
+
+123
+00:05:31.980 --> 00:05:34.920
+And if we look at the second answer we have less devices
+
+124
+00:05:34.920 --> 00:05:37.470
+per shard, so we would have less cost saving.
+
+125
+00:05:37.470 --> 00:05:39.630
+But are they possible?
+
+126
+00:05:39.630 --> 00:05:43.170
+So, if we have 10 devices giving into one shard,
+
+127
+00:05:43.170 --> 00:05:45.690
+that means that because each device generates
+
+128
+00:05:45.690 --> 00:05:49.650
+between 50 kilobytes and 450 kilobytes of data per second
+
+129
+00:05:49.650 --> 00:05:52.440
+that means that 10 devices together will generate
+
+130
+00:05:52.440 --> 00:05:56.850
+between 500 kilobytes and 4,500 kilobytes per second.
+
+131
+00:05:56.850 --> 00:05:59.610
+Whereas when we have two devices, they will generate
+
+132
+00:05:59.610 --> 00:06:03.450
+between 100 kilobytes and 900 kilobytes per second.
+
+133
+00:06:03.450 --> 00:06:06.420
+So, what is possible and what is not possible?
+
+134
+00:06:06.420 --> 00:06:09.780
+You have to remember for Kinesis data stream that each shard
+
+135
+00:06:09.780 --> 00:06:12.780
+has a limit of one megabytes per second,
+
+136
+00:06:12.780 --> 00:06:15.450
+which represents 1000 kilobytes per second.
+
+137
+00:06:15.450 --> 00:06:18.480
+If we go over that one megabyte per second limit
+
+138
+00:06:18.480 --> 00:06:21.630
+we are going to get a throughput exception.
+
+139
+00:06:21.630 --> 00:06:25.440
+And so, in this case the only feasible solution,
+
+140
+00:06:25.440 --> 00:06:28.920
+is solution number two because we are going to be
+
+141
+00:06:28.920 --> 00:06:31.020
+under the one megabyte per second limit.
+
+142
+00:06:31.020 --> 00:06:33.390
+Unfortunately, solution number one is way
+
+143
+00:06:33.390 --> 00:06:35.070
+over the one megabytes per second limit,
+
+144
+00:06:35.070 --> 00:06:36.510
+and so it is infeasible.
+
+145
+00:06:36.510 --> 00:06:39.360
+Even though it would save more cost for us.
+
+146
+00:06:39.360 --> 00:06:42.090
+So in this example, we have to rule out option one,
+
+147
+00:06:42.090 --> 00:06:43.740
+and we have to go with option D.
+
+148
+00:06:43.740 --> 00:06:46.380
+We have to use a ratio of two devices
+
+149
+00:06:46.380 --> 00:06:49.320
+to one data stream shard, and that is the best practice.
+
+150
+00:06:49.320 --> 00:06:53.670
+Obviously, for Kinesis to have many devices onto one shard,
+
+151
+00:06:53.670 --> 00:06:56.640
+as long as you're under the throughput's limits.
+
+152
+00:06:56.640 --> 00:06:58.410
+So that's it for this question, I hope you liked it
+
+153
+00:06:58.410 --> 00:07:00.360
+and I will see you in the next lecture.
+

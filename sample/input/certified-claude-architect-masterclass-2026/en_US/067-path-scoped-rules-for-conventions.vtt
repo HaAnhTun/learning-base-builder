@@ -1,0 +1,350 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:07.400
+Some conventions don't live in a folder. They follow a file type, and those files are scattered over your tree.
+
+2
+00:00:07.400 --> 00:00:15.000
+Path scoped rules handle that case. Loading instructions only when Claude opens a matching file.
+
+3
+00:00:15.000 --> 00:00:21.912
+In this lesson, we'll cover where these rules live, how the paths field scopes them, and when to
+
+4
+00:00:21.912 --> 00:00:23.927
+reach for one. Let's dig in.
+
+5
+00:00:24.000 --> 00:00:30.500
+A project rule is nothing more exotic than a markdown file in the projects.claude rules folder.
+
+6
+00:00:30.500 --> 00:00:37.250
+Claude code discovers every markdown file in there, including ones nested inside subfolders, so you
+
+7
+00:00:37.250 --> 00:00:39.431
+can group them however you like.
+
+8
+00:00:39.500 --> 00:00:46.500
+Paths frontmatter is a small YAML block at the very top of a rule file, and it holds a list of glob patterns.
+
+9
+00:00:47.000 --> 00:00:50.500
+Conditional loading is what that block buys you.
+
+10
+00:00:50.500 --> 00:00:56.359
+When a rule carries a paths list, it stops loading on every session, and starts loading only when
+
+11
+00:00:56.359 --> 00:00:59.439
+Claude reads a file matching one of those patterns.
+
+12
+00:00:59.500 --> 00:01:07.500
+Leave the paths list out, and the rule loads at launch, exactly like your project claude.md does.
+
+13
+00:01:07.500 --> 00:01:10.500
+Setting rules up is deliberately unremarkable.
+
+14
+00:01:10.500 --> 00:01:15.500
+You make a rules folder inside .claude, and you drop markdown files in it.
+
+15
+00:01:15.500 --> 00:01:23.000
+Each file should cover one topic, with a name that says what it is, like testing.md or apidesign.md.
+
+16
+00:01:23.000 --> 00:01:28.828
+Discovery walks the folder recursively, so if you'd rather organize into a frontend folder and a
+
+17
+00:01:28.828 --> 00:01:31.439
+backend folder underneath, that works fine.
+
+18
+00:01:31.500 --> 00:01:37.880
+A rule with no paths field in its frontmatter behaves the same way your project claude.md does,
+
+19
+00:01:37.880 --> 00:01:40.432
+loading at the start of every session.
+
+20
+00:01:40.500 --> 00:01:44.000
+The one-topic-per-file habit is worth keeping.
+
+21
+00:01:44.000 --> 00:01:51.000
+It makes rules reviewable in a pull request, and easy for a teammate to find and change later.
+
+22
+00:01:51.000 --> 00:01:53.000
+Now the part that makes rules different.
+
+23
+00:01:53.000 --> 00:01:57.500
+Add a paths list to the frontmatter, and the rule becomes conditional.
+
+24
+00:01:57.500 --> 00:02:03.048
+The field takes one or more glob patterns, and you can use brace expansion to cover several
+
+25
+00:02:03.048 --> 00:02:04.939
+extensions in a single pattern.
+
+26
+00:02:05.000 --> 00:02:07.000
+Here's the detail worth holding on to.
+
+27
+00:02:07.000 --> 00:02:15.000
+A path-scoped rule fires when Claude reads a file that matches not on every tool call, and not at startup.
+
+28
+00:02:15.000 --> 00:02:21.000
+So the rule is absent from context right up until the moment it's relevant, and then it's there.
+
+29
+00:02:21.000 --> 00:02:24.000
+That read trigger is the entire mechanism.
+
+30
+00:02:24.000 --> 00:02:30.000
+If you remember one thing about paths, remember that the match happens against files Claude actually opens.
+
+31
+00:02:30.000 --> 00:02:34.500
+Let's read these patterns, because glob syntax is where people slow down.
+
+32
+00:02:34.500 --> 00:02:40.500
+The typescript pattern uses a double star for the directory portion, which means any depth,
+
+33
+00:02:40.500 --> 00:02:45.500
+so it catches every typescript file in the project, however deeply it's buried.
+
+34
+00:02:45.500 --> 00:02:51.064
+The source directory pattern anchors to that folder, and then takes everything underneath it,
+
+35
+00:02:51.064 --> 00:02:52.440
+whatever the extension.
+
+36
+00:02:52.500 --> 00:02:56.500
+The bare markdown pattern is the one that surprises people.
+
+37
+00:02:56.500 --> 00:03:03.500
+With no directory part in front of it, it matches the project root only, so nested files fall outside it.
+
+38
+00:03:03.500 --> 00:03:09.500
+The brace expansion pattern carries two extensions at once, instead of you writing two separate lines.
+
+39
+00:03:09.500 --> 00:03:11.500
+These are ordinary globs.
+
+40
+00:03:11.500 --> 00:03:15.500
+If you've ever written a git in your file, you can already read them.
+
+41
+00:03:15.500 --> 00:03:20.500
+It's worth being explicit about why conditional loading is more than tidiness.
+
+42
+00:03:20.500 --> 00:03:25.500
+Everything that loads at launch occupies the same context window your actual work needs,
+
+43
+00:03:25.500 --> 00:03:28.500
+and adherence drops as that file grows.
+
+44
+00:03:28.500 --> 00:03:36.500
+Once a Claude.md runs past roughly 200 lines, the guidance in it starts getting followed less consistently.
+
+45
+00:03:36.500 --> 00:03:39.500
+Pathscoped rules attack that directly.
+
+46
+00:03:39.500 --> 00:03:43.500
+Instead of one file carrying every convention for every part of the code base,
+
+47
+00:03:43.500 --> 00:03:49.500
+the terraform conventions sit quiet until Claude actually opens a terraform file.
+
+48
+00:03:49.500 --> 00:03:56.500
+The always-on context stays small, and a small always-on context is one the model follows more reliably.
+
+49
+00:03:56.500 --> 00:04:01.500
+You're trading breadth at launch for precision at the moment of use.
+
+50
+00:04:01.500 --> 00:04:03.500
+So, when do you reach for which?
+
+51
+00:04:03.500 --> 00:04:07.500
+A subdirectory Claude.md scopes-by-folder.
+
+52
+00:04:07.500 --> 00:04:14.500
+The file's location is the scope, which fits a convention that genuinely belongs to one area of the tree,
+
+53
+00:04:14.500 --> 00:04:18.500
+like an infrastructure directory that owns its own standards.
+
+54
+00:04:18.500 --> 00:04:24.500
+A pathscoped rule scopes by pattern, and a pattern crosses folders freely.
+
+55
+00:04:24.500 --> 00:04:27.500
+That's the case a subdirectory file simply can't cover.
+
+56
+00:04:27.500 --> 00:04:29.500
+Think about test files.
+
+57
+00:04:29.500 --> 00:04:32.500
+They're scattered through the code base next to the code they exercise,
+
+58
+00:04:32.500 --> 00:04:36.500
+so there's no single folder to put the instructions in.
+
+59
+00:04:36.500 --> 00:04:41.500
+A rule matching every test file catches all of them wherever they live.
+
+60
+00:04:41.500 --> 00:04:44.500
+Convention follows the folder, use a subdirectory file.
+
+61
+00:04:44.500 --> 00:04:48.500
+Convention follows the file type, use a rule.
+
+62
+00:04:48.500 --> 00:04:50.500
+Rules aren't only a project-level tool.
+
+63
+00:04:50.500 --> 00:04:54.500
+You can put personal rules in the rules folder under your home directory,
+
+64
+00:04:54.500 --> 00:04:57.500
+and those apply to every project on your machine.
+
+65
+00:04:57.500 --> 00:05:03.500
+This is the right home for preferences that are about you, rather than about any one code base.
+
+66
+00:05:03.500 --> 00:05:05.500
+Precedence works the way you'd want.
+
+67
+00:05:05.500 --> 00:05:09.500
+User rules load first, and project rules load after,
+
+68
+00:05:09.500 --> 00:05:13.500
+which gives the project the stronger position when the two overlap.
+
+69
+00:05:13.500 --> 00:05:19.500
+The folder also follows symlinks, so a team can keep one shared set of rules in a single place,
+
+70
+00:05:19.500 --> 00:05:26.500
+and link it into several repositories, rather than copying files around and watching them drift apart.
+
+71
+00:05:26.500 --> 00:05:33.500
+One more distinction that shows up constantly, because rules and skills look similar from a distance.
+
+72
+00:05:33.500 --> 00:05:35.500
+Both hold instructions you've written.
+
+73
+00:05:35.500 --> 00:05:37.500
+The difference is when they reach the model.
+
+74
+00:05:37.500 --> 00:05:41.500
+A rule loads every session or whenever a matching file gets opened,
+
+75
+00:05:41.500 --> 00:05:44.500
+so it's always shaping behavior in the background.
+
+76
+00:05:44.500 --> 00:05:51.500
+A skill loads on demand, either because you invoked it, or because Claude judged it relevant to what you asked.
+
+77
+00:05:51.500 --> 00:05:54.500
+That maps cleanly onto the content.
+
+78
+00:05:54.500 --> 00:06:00.500
+A standing convention, something Claude should honor whenever it touches this kind of file, is a rule.
+
+79
+00:06:00.500 --> 00:06:04.500
+A multi-step procedure you run occasionally is a skill.
+
+80
+00:06:04.500 --> 00:06:08.500
+Ask which one you're holding, and the choice usually answers itself.
+
+81
+00:06:08.500 --> 00:06:12.500
+Folder scope and pattern scope aren't the same thing.
+
+82
+00:06:12.500 --> 00:06:16.500
+A subdirectory file covers the branch of the tree it sits in.
+
+83
+00:06:16.500 --> 00:06:21.500
+A path-scoped rule covers every file matching a glob, wherever it lives.
+
+84
+00:06:21.500 --> 00:06:28.132
+When a convention follows the file type instead of the location, like tests scattered next to the
+
+85
+00:06:28.132 --> 00:06:29.431
+code they exercise,
+
+86
+00:06:29.500 --> 00:06:34.500
+the pattern is the only thing that catches all of them, so keep those things in mind.
+
+87
+00:06:34.500 --> 00:06:38.500
+That closes out this lesson. I'll see you in the next one.
+

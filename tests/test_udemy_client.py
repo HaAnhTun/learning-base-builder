@@ -70,6 +70,15 @@ def test_json_403_is_auth_error_html_403_is_block(monkeypatch):
     assert not isinstance(exc.value, AuthError)
 
 
+def test_check_token_calls_courses_endpoint_and_raises_on_rejection(monkeypatch):
+    c, s = client_with([Resp(200, {"results": []})], monkeypatch)
+    c.check_token()
+    assert s.calls[0][0] == "https://www.udemy.com/api-2.0/users/me/subscribed-courses/"
+    c, _ = client_with([Resp(403, {"detail": "no permission"})], monkeypatch)
+    with pytest.raises(AuthError):
+        c.check_token()
+
+
 def test_download_sends_no_token(monkeypatch):
     c, s = client_with([Resp(200, content=b"\xef\xbb\xbfWEBVTT")], monkeypatch)
     assert c.download_text("https://cdn.example.com/a.vtt") == "WEBVTT"

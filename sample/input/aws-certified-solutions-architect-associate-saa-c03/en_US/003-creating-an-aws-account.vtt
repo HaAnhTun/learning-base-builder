@@ -1,0 +1,350 @@
+WEBVTT
+
+1
+00:00:00.450 --> 00:00:03.570
+<v Narrator>So, let's go ahead and create an AWS account.</v>
+
+2
+00:00:03.570 --> 00:00:05.610
+For this on the website of AWS,
+
+3
+00:00:05.610 --> 00:00:07.950
+I'm going to click on Create account.
+
+4
+00:00:07.950 --> 00:00:10.470
+So, if you see a signup page like this,
+
+5
+00:00:10.470 --> 00:00:11.370
+this is not what we want.
+
+6
+00:00:11.370 --> 00:00:15.060
+We want to click on the bottom right to Sign up advanced.
+
+7
+00:00:15.060 --> 00:00:16.920
+And then you are redirected to this URL,
+
+8
+00:00:16.920 --> 00:00:19.380
+which is exactly what we want.
+
+9
+00:00:19.380 --> 00:00:21.870
+Here, I'm taken to the portal signup
+
+10
+00:00:21.870 --> 00:00:24.060
+and I need to put an email address
+
+11
+00:00:24.060 --> 00:00:25.530
+called the root user email address.
+
+12
+00:00:25.530 --> 00:00:28.563
+So this is your email address, as well as an account name.
+
+13
+00:00:29.640 --> 00:00:32.460
+So next, after you verify your email address,
+
+14
+00:00:32.460 --> 00:00:33.720
+put a password.
+
+15
+00:00:33.720 --> 00:00:35.010
+So the password has constraints.
+
+16
+00:00:35.010 --> 00:00:36.510
+It must be eight characters long
+
+17
+00:00:36.510 --> 00:00:39.210
+and must have at least three of the following uppercase,
+
+18
+00:00:39.210 --> 00:00:42.330
+lowercase numbers, and non-alpha numeric characters.
+
+19
+00:00:42.330 --> 00:00:44.220
+And please, please, please, please, please
+
+20
+00:00:44.220 --> 00:00:45.870
+do not lose your passport.
+
+21
+00:00:45.870 --> 00:00:46.970
+Put it somewhere safe.
+
+22
+00:00:47.970 --> 00:00:50.070
+And next, we have an account plan.
+
+23
+00:00:50.070 --> 00:00:52.770
+So here we can choose between free or paid.
+
+24
+00:00:52.770 --> 00:00:57.690
+So in both cases, you are going to be spending money in AWS
+
+25
+00:00:57.690 --> 00:01:00.180
+and you are going to start with about $100 in credit
+
+26
+00:01:00.180 --> 00:01:02.850
+and you can receive up to 200 in total.
+
+27
+00:01:02.850 --> 00:01:05.700
+The difference between free and paid account plan
+
+28
+00:01:05.700 --> 00:01:08.910
+is that in the free plan you don't put a credit card down.
+
+29
+00:01:08.910 --> 00:01:10.440
+And if you run out of credits,
+
+30
+00:01:10.440 --> 00:01:13.230
+then your account will be closed automatically.
+
+31
+00:01:13.230 --> 00:01:14.900
+In the paid account, this is where you want
+
+32
+00:01:14.900 --> 00:01:16.830
+to have production-ready workloads.
+
+33
+00:01:16.830 --> 00:01:18.780
+And so you're going to put your credit card down
+
+34
+00:01:18.780 --> 00:01:20.940
+and in case you go over your credits,
+
+35
+00:01:20.940 --> 00:01:22.710
+then you're going to, of course,
+
+36
+00:01:22.710 --> 00:01:24.450
+be charged on your credit card.
+
+37
+00:01:24.450 --> 00:01:27.450
+So, for us to learn AWS safely,
+
+38
+00:01:27.450 --> 00:01:29.160
+we're going to use a free account
+
+39
+00:01:29.160 --> 00:01:30.540
+and this will be enough for this course.
+
+40
+00:01:30.540 --> 00:01:33.593
+In case you need to do some things that are paid,
+
+41
+00:01:33.593 --> 00:01:36.450
+AWS is going to prompt you to add in your credit card
+
+42
+00:01:36.450 --> 00:01:39.660
+and you will be free to do so, if you choose to.
+
+43
+00:01:39.660 --> 00:01:42.480
+But these amount of credits should be enough for us,
+
+44
+00:01:42.480 --> 00:01:45.900
+more than enough for us, to learn AWS together safely.
+
+45
+00:01:45.900 --> 00:01:47.900
+So, let's go ahead and Choose free plan.
+
+46
+00:01:49.680 --> 00:01:53.280
+And then we put in our contact information for AWS.
+
+47
+00:01:53.280 --> 00:01:56.340
+So, this is a personal project.
+
+48
+00:01:56.340 --> 00:01:57.930
+Here's my full name,
+
+49
+00:01:57.930 --> 00:02:00.300
+and then I'll just enter more information.
+
+50
+00:02:00.300 --> 00:02:02.880
+So here, you have to enter your credit card number.
+
+51
+00:02:02.880 --> 00:02:05.970
+So this is necessary even if you have a free plan.
+
+52
+00:02:05.970 --> 00:02:07.800
+The reason why they want you to have a credit card
+
+53
+00:02:07.800 --> 00:02:10.830
+is that they want to verify your account and prevent fraud.
+
+54
+00:02:10.830 --> 00:02:12.240
+So, if you have a free plan,
+
+55
+00:02:12.240 --> 00:02:14.100
+even if you put a credit card number down,
+
+56
+00:02:14.100 --> 00:02:15.450
+you're going to have no charges
+
+57
+00:02:15.450 --> 00:02:18.330
+until you actually upgrade to a paid plan.
+
+58
+00:02:18.330 --> 00:02:22.380
+So, this is a safe way to put your credit card info,
+
+59
+00:02:22.380 --> 00:02:24.300
+but don't worry, you're not going to be charged.
+
+60
+00:02:24.300 --> 00:02:28.290
+Just $1 is going to be used for the verification process.
+
+61
+00:02:28.290 --> 00:02:29.490
+And of course, that money is going
+
+62
+00:02:29.490 --> 00:02:32.280
+to be refunded to you right away.
+
+63
+00:02:32.280 --> 00:02:34.470
+Next, we must confirm our identity
+
+64
+00:02:34.470 --> 00:02:36.003
+by providing a phone number,
+
+65
+00:02:37.050 --> 00:02:39.750
+and then you may be prompted for a support plan.
+
+66
+00:02:39.750 --> 00:02:42.660
+And here I just choose basic support, which is free,
+
+67
+00:02:42.660 --> 00:02:44.417
+and then complete the signup.
+
+68
+00:02:45.780 --> 00:02:47.850
+Now, your account is being activated
+
+69
+00:02:47.850 --> 00:02:51.120
+and we should receive an email when this is complete.
+
+70
+00:02:51.120 --> 00:02:54.180
+And finally, I am logged in the UI.
+
+71
+00:02:54.180 --> 00:02:55.920
+If somehow you don't see this page
+
+72
+00:02:55.920 --> 00:02:59.670
+and you just need to log in the UI again, just sign out.
+
+73
+00:02:59.670 --> 00:03:02.880
+And when you send out, click on Sign in to console.
+
+74
+00:03:02.880 --> 00:03:06.270
+And by clicking on it, you can go to here, this page.
+
+75
+00:03:06.270 --> 00:03:07.860
+And here you're going to click on
+
+76
+00:03:07.860 --> 00:03:10.320
+Signing using root user email.
+
+77
+00:03:10.320 --> 00:03:11.640
+And actually, we have an improved sign in,
+
+78
+00:03:11.640 --> 00:03:13.620
+so this is the one.
+
+79
+00:03:13.620 --> 00:03:16.080
+So root user, then you enter your email address
+
+80
+00:03:16.080 --> 00:03:18.300
+that you used during signup.
+
+81
+00:03:18.300 --> 00:03:21.000
+And you may be prompted with this upon sign in.
+
+82
+00:03:21.000 --> 00:03:21.840
+Do not worry, we're going to
+
+83
+00:03:21.840 --> 00:03:23.160
+take care of this during the course.
+
+84
+00:03:23.160 --> 00:03:24.573
+So just skip for now.
+
+85
+00:03:25.980 --> 00:03:29.040
+And you are back in the AWS console and you're good to go.
+
+86
+00:03:29.040 --> 00:03:31.530
+That's it. You've created an account. Congratulations.
+
+87
+00:03:31.530 --> 00:03:34.683
+I hope you liked it and I will see you in the next lecture.
+

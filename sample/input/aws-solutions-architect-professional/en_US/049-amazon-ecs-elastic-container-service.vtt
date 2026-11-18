@@ -1,0 +1,1158 @@
+WEBVTT
+
+1
+00:00:00.150 --> 00:00:02.210
+<v Stephane>So now let's talk about Amazon ECS.</v>
+
+2
+00:00:02.210 --> 00:00:03.740
+And first, what is Docker?
+
+3
+00:00:03.740 --> 00:00:05.420
+Because Docker is at the center of ECS.
+
+4
+00:00:05.420 --> 00:00:07.930
+Docker is a software development platform
+
+5
+00:00:07.930 --> 00:00:09.070
+used to deploy apps.
+
+6
+00:00:09.070 --> 00:00:11.400
+And apps are going to be packaged in containers.
+
+7
+00:00:11.400 --> 00:00:13.330
+And these containers have the specificity
+
+8
+00:00:13.330 --> 00:00:15.860
+that they can be run on any operating systems.
+
+9
+00:00:15.860 --> 00:00:17.270
+So apps will run in the same way,
+
+10
+00:00:17.270 --> 00:00:19.200
+regardless of where they're run.
+
+11
+00:00:19.200 --> 00:00:20.890
+That means that any machine can run Docker container,
+
+12
+00:00:20.890 --> 00:00:23.380
+there will be no compatibility issues,
+
+13
+00:00:23.380 --> 00:00:24.990
+and you will have predictable behavior.
+
+14
+00:00:24.990 --> 00:00:26.040
+That means less work.
+
+15
+00:00:26.040 --> 00:00:27.130
+They're easier to maintain,
+
+16
+00:00:27.130 --> 00:00:28.840
+and it works with any language,
+
+17
+00:00:28.840 --> 00:00:31.500
+any operating system and any technology.
+
+18
+00:00:31.500 --> 00:00:33.630
+Thanks to this, we can control how much memory
+
+19
+00:00:33.630 --> 00:00:36.880
+and CPU will be allocated to each container.
+
+20
+00:00:36.880 --> 00:00:38.510
+And then that allows our container
+
+21
+00:00:38.510 --> 00:00:41.570
+to use just the right amount of resources.
+
+22
+00:00:41.570 --> 00:00:42.760
+These containers can be scaled
+
+23
+00:00:42.760 --> 00:00:44.440
+up and down very quickly within seconds.
+
+24
+00:00:44.440 --> 00:00:46.770
+Thanks to the Docker management system.
+
+25
+00:00:46.770 --> 00:00:49.570
+There are therefore for writing applications,
+
+26
+00:00:49.570 --> 00:00:52.610
+more efficient than virtual machines.
+
+27
+00:00:52.610 --> 00:00:53.890
+So Docker container management
+
+28
+00:00:53.890 --> 00:00:55.800
+on AWS can take several forms.
+
+29
+00:00:55.800 --> 00:00:57.230
+We need a container measurement platform.
+
+30
+00:00:57.230 --> 00:00:58.980
+So we have either ECS,
+
+31
+00:00:58.980 --> 00:01:01.750
+which is the Amazon Elastic Container Service,
+
+32
+00:01:01.750 --> 00:01:03.630
+which is Amazon's own container platform.
+
+33
+00:01:03.630 --> 00:01:05.260
+Or we can use EKS,
+
+34
+00:01:05.260 --> 00:01:07.920
+which is Amazon Elastic Kubernetes Service.
+
+35
+00:01:07.920 --> 00:01:10.177
+And this is Amazon's managed version of Kubernetes.
+
+36
+00:01:10.177 --> 00:01:13.020
+And Kubernetes is an open source software
+
+37
+00:01:13.020 --> 00:01:15.910
+that's widely accepted for managing Docker containers.
+
+38
+00:01:15.910 --> 00:01:17.060
+And then we have Fargate,
+
+39
+00:01:17.060 --> 00:01:20.230
+which is Amazon's own serverless container platform.
+
+40
+00:01:20.230 --> 00:01:24.400
+And it works equally well with ECS and EKS.
+
+41
+00:01:24.400 --> 00:01:25.860
+So let's do a deep dive into ECS.
+
+42
+00:01:25.860 --> 00:01:28.800
+So ECS, the use cases are to run microservices,
+
+43
+00:01:28.800 --> 00:01:30.130
+for example, to run multiple Docker container
+
+44
+00:01:30.130 --> 00:01:31.430
+on the same machine,
+
+45
+00:01:31.430 --> 00:01:33.580
+or to have service discovery features
+
+46
+00:01:33.580 --> 00:01:36.000
+to enhance communication between these microservices.
+
+47
+00:01:36.000 --> 00:01:38.260
+We have a direct integration of ECS containers
+
+48
+00:01:38.260 --> 00:01:39.470
+with the Application Load Balancer
+
+49
+00:01:39.470 --> 00:01:40.990
+and the Network Load Balancer.
+
+50
+00:01:40.990 --> 00:01:43.140
+We have Auto Scaling capabilities.
+
+51
+00:01:43.140 --> 00:01:46.040
+It's also very helpful if you wanted to run batch processing
+
+52
+00:01:46.040 --> 00:01:46.873
+or schedule task.
+
+53
+00:01:46.873 --> 00:01:49.510
+So you can schedule ECS task to run on-demand
+
+54
+00:01:49.510 --> 00:01:51.280
+on reserves or on spot instances.
+
+55
+00:01:51.280 --> 00:01:53.170
+And then ECS is also very helpful
+
+56
+00:01:53.170 --> 00:01:54.170
+when you migrate to the cloud
+
+57
+00:01:54.170 --> 00:01:57.170
+because you first Dockerize your applications running
+
+58
+00:01:57.170 --> 00:01:58.003
+on premises,
+
+59
+00:01:58.003 --> 00:02:00.350
+and then you move these Docker containers to run
+
+60
+00:02:00.350 --> 00:02:01.853
+on Amazon ECS.
+
+61
+00:02:02.950 --> 00:02:04.860
+So, concepts you need to know for Amazon ECS,
+
+62
+00:02:04.860 --> 00:02:06.190
+but hopeful this is not new.
+
+63
+00:02:06.190 --> 00:02:07.540
+So we have an ECS cluster,
+
+64
+00:02:07.540 --> 00:02:10.270
+which is a logical grouping of EC2 instances.
+
+65
+00:02:10.270 --> 00:02:11.360
+We have an ECS service,
+
+66
+00:02:11.360 --> 00:02:13.620
+which defines how many tasks should run
+
+67
+00:02:13.620 --> 00:02:15.080
+and how they should be run.
+
+68
+00:02:15.080 --> 00:02:16.390
+We have the task definition,
+
+69
+00:02:16.390 --> 00:02:18.835
+which defines what is the JSON form
+
+70
+00:02:18.835 --> 00:02:21.270
+of the definition of the task to allow
+
+71
+00:02:21.270 --> 00:02:23.640
+and to tell ECS how to run a Docker container.
+
+72
+00:02:23.640 --> 00:02:25.670
+So it could be, what is the image name?
+
+73
+00:02:25.670 --> 00:02:28.430
+How much CPU, how much RAM, et cetera, et cetera.
+
+74
+00:02:28.430 --> 00:02:30.560
+The ECS task itself is an instance
+
+75
+00:02:30.560 --> 00:02:33.010
+of a task definition running within a service.
+
+76
+00:02:33.010 --> 00:02:35.960
+And the ECS task is actually running Docker containers.
+
+77
+00:02:35.960 --> 00:02:37.680
+And then you have the ECS IAM roles.
+
+78
+00:02:37.680 --> 00:02:39.060
+So you have two types of roles.
+
+79
+00:02:39.060 --> 00:02:40.770
+You have the EC2 instance profile
+
+80
+00:02:40.770 --> 00:02:42.670
+that is used by the EC2 instance
+
+81
+00:02:42.670 --> 00:02:45.980
+that will be managed by the ECS cluster.
+
+82
+00:02:45.980 --> 00:02:48.760
+So this EC2 instance is going to make API calls
+
+83
+00:02:48.760 --> 00:02:51.850
+to the ECS service, send logs, et cetera, et cetera.
+
+84
+00:02:51.850 --> 00:02:53.450
+But then for each ECS task,
+
+85
+00:02:53.450 --> 00:02:55.442
+we can attach an ECS task IAM role,
+
+86
+00:02:55.442 --> 00:02:58.920
+which allows each task to have a specific role.
+
+87
+00:02:58.920 --> 00:03:02.080
+And these roles are allowing these task to make API calls
+
+88
+00:03:02.080 --> 00:03:06.430
+to Amazon S3, DynamoDB, and so on.
+
+89
+00:03:06.430 --> 00:03:09.900
+So if we look at all it in a diagram,
+
+90
+00:03:09.900 --> 00:03:12.890
+we have a cluster here, we have an EC2 instance,
+
+91
+00:03:12.890 --> 00:03:14.920
+and we run a service-A.
+
+92
+00:03:14.920 --> 00:03:15.910
+Now, to run the service-A,
+
+93
+00:03:15.910 --> 00:03:18.230
+we need to first provide a task definition.
+
+94
+00:03:18.230 --> 00:03:21.200
+And when this task definition is instantiated,
+
+95
+00:03:21.200 --> 00:03:23.340
+then we're going to get containers running
+
+96
+00:03:23.340 --> 00:03:26.990
+on the EC2 instance for that specific service.
+
+97
+00:03:26.990 --> 00:03:28.050
+So it's possible for you
+
+98
+00:03:28.050 --> 00:03:30.160
+to scale the number of EC2 instances you have.
+
+99
+00:03:30.160 --> 00:03:32.670
+So we can add one here and one there.
+
+100
+00:03:32.670 --> 00:03:36.900
+And then the service may place also ECS tasks
+
+101
+00:03:36.900 --> 00:03:38.990
+onto these EC2 instances.
+
+102
+00:03:38.990 --> 00:03:40.930
+Well, because we have multiple EC2 instances,
+
+103
+00:03:40.930 --> 00:03:43.470
+we can have as well an Auto Scaling group
+
+104
+00:03:43.470 --> 00:03:46.850
+that will manage these EC2 instances.
+
+105
+00:03:46.850 --> 00:03:50.030
+And to make sure that these are part of an ECS cluster,
+
+106
+00:03:50.030 --> 00:03:52.560
+we need to define an EC2 instance profile
+
+107
+00:03:52.560 --> 00:03:55.580
+that will be allowing our EC2 instances to be registered
+
+108
+00:03:55.580 --> 00:03:56.930
+to the ECS service,
+
+109
+00:03:56.930 --> 00:04:00.050
+and also send logs to the CloudWatch logs service.
+
+110
+00:04:00.050 --> 00:04:01.890
+Now, in case my services
+
+111
+00:04:01.890 --> 00:04:05.534
+and my task within my services need to access, for example,
+
+112
+00:04:05.534 --> 00:04:06.590
+on these three buckets,
+
+113
+00:04:06.590 --> 00:04:09.350
+then we need to make sure to provide the task IAM role
+
+114
+00:04:09.350 --> 00:04:11.890
+for my task within my service.
+
+115
+00:04:11.890 --> 00:04:14.190
+And if you wanted to have a second service
+
+116
+00:04:14.190 --> 00:04:15.640
+within your ECS customer, you could,
+
+117
+00:04:15.640 --> 00:04:17.820
+and as well as a third and a fifth, et cetera, et cetera.
+
+118
+00:04:17.820 --> 00:04:19.840
+And so each service will have different tasks
+
+119
+00:04:19.840 --> 00:04:21.290
+and it will be replaced all
+
+120
+00:04:21.290 --> 00:04:24.140
+along your available EC2 instances
+
+121
+00:04:24.140 --> 00:04:26.140
+if there is space for them.
+
+122
+00:04:26.140 --> 00:04:28.780
+So then Amazon ECS has a great integration
+
+123
+00:04:28.780 --> 00:04:30.510
+with an Application Load Balancer.
+
+124
+00:04:30.510 --> 00:04:33.160
+So for this, it's called the dynamic port mapping feature,
+
+125
+00:04:33.160 --> 00:04:35.730
+which allows us to run multiple instances
+
+126
+00:04:35.730 --> 00:04:38.090
+of the same application, same Docker container,
+
+127
+00:04:38.090 --> 00:04:39.740
+on the same EC2 instance.
+
+128
+00:04:39.740 --> 00:04:42.500
+And the ALB, even though each container
+
+129
+00:04:42.500 --> 00:04:44.340
+will have a different mapping port,
+
+130
+00:04:44.340 --> 00:04:46.570
+is able to find the right port on your EC2 instance
+
+131
+00:04:46.570 --> 00:04:49.410
+and map it to the load balancer.
+
+132
+00:04:49.410 --> 00:04:50.700
+So let's have an example.
+
+133
+00:04:50.700 --> 00:04:52.930
+So we have an ECS cluster running one service
+
+134
+00:04:52.930 --> 00:04:55.600
+and we have four tasks across two EC2 instances.
+
+135
+00:04:55.600 --> 00:04:56.900
+And so as we can see,
+
+136
+00:04:56.900 --> 00:04:59.720
+each EC2 instance has two of the same task.
+
+137
+00:04:59.720 --> 00:05:01.680
+Now, we have users accessing our application
+
+138
+00:05:01.680 --> 00:05:03.530
+through our load balancer, okay?
+
+139
+00:05:03.530 --> 00:05:07.590
+And so each ECS task is going to get a different port.
+
+140
+00:05:07.590 --> 00:05:09.880
+So the first ECS task going to get this port
+
+141
+00:05:09.880 --> 00:05:11.680
+and the Application Load Balancer is smart enough
+
+142
+00:05:11.680 --> 00:05:13.060
+to find this port,
+
+143
+00:05:13.060 --> 00:05:15.370
+thanks to the dynamic port mapping feature.
+
+144
+00:05:15.370 --> 00:05:17.848
+Then the second ECS task is going to get a different port,
+
+145
+00:05:17.848 --> 00:05:20.580
+but the ALB is smart enough to find it as well.
+
+146
+00:05:20.580 --> 00:05:22.080
+And so on.
+
+147
+00:05:22.080 --> 00:05:24.340
+So even though the port is not stable
+
+148
+00:05:24.340 --> 00:05:26.120
+across all my ECS tasks,
+
+149
+00:05:26.120 --> 00:05:30.050
+because the service of ECS is mapped to the ALB,
+
+150
+00:05:30.050 --> 00:05:32.320
+this dynamic port mapping future comes in
+
+151
+00:05:32.320 --> 00:05:36.400
+and then the ports are mapped gratefully.
+
+152
+00:05:36.400 --> 00:05:38.530
+So in terms of use cases,
+
+153
+00:05:38.530 --> 00:05:39.780
+well, you get increased resiliency
+
+154
+00:05:39.780 --> 00:05:41.920
+because even if you're running on one EC2 instance,
+
+155
+00:05:41.920 --> 00:05:44.350
+you can have multiple Docker containers running on it.
+
+156
+00:05:44.350 --> 00:05:46.650
+You're going to also maximize the utilization
+
+157
+00:05:46.650 --> 00:05:49.530
+of your CPU and your cores on your EC2 instance.
+
+158
+00:05:49.530 --> 00:05:52.250
+And if you wanna perform rolling upgrades, you can do it,
+
+159
+00:05:52.250 --> 00:05:55.400
+because now you have many Docker containers, ECS tasks,
+
+160
+00:05:55.400 --> 00:05:56.480
+on the one instance,
+
+161
+00:05:56.480 --> 00:05:59.560
+and therefore, you can take them down one by one
+
+162
+00:05:59.560 --> 00:06:03.560
+without impacting your overall app uptime.
+
+163
+00:06:03.560 --> 00:06:06.610
+Okay. So we've seen ECS with EC2 instances.
+
+164
+00:06:06.610 --> 00:06:09.060
+And so we have to provide EC2 instances ahead of time
+
+165
+00:06:09.060 --> 00:06:10.620
+to run ECS tasks on them.
+
+166
+00:06:10.620 --> 00:06:13.128
+But it is possible for you to launch Docker containers
+
+167
+00:06:13.128 --> 00:06:14.530
+on Fargate.
+
+168
+00:06:14.530 --> 00:06:17.620
+And with Fargate, we do not provision the infrastructure,
+
+169
+00:06:17.620 --> 00:06:19.610
+there are no EC2 instances to manage.
+
+170
+00:06:19.610 --> 00:06:20.780
+Instead it's all serverless.
+
+171
+00:06:20.780 --> 00:06:22.410
+We don't even know or see
+
+172
+00:06:22.410 --> 00:06:24.960
+that there are some background hardware.
+
+173
+00:06:24.960 --> 00:06:25.793
+So how does that work?
+
+174
+00:06:25.793 --> 00:06:28.130
+Well, the Fargate service runs on ECS
+
+175
+00:06:28.130 --> 00:06:31.390
+and you can submit Docker containers to a Fargate service.
+
+176
+00:06:31.390 --> 00:06:34.040
+And the ECS tasks other than Fargate,
+
+177
+00:06:34.040 --> 00:06:35.980
+are going to be created automatically
+
+178
+00:06:35.980 --> 00:06:39.810
+without you having you think about EC2 instances at all.
+
+179
+00:06:39.810 --> 00:06:41.650
+So you just create task definitions
+
+180
+00:06:41.650 --> 00:06:45.040
+and then you specify how much CPU and RAM you need per task,
+
+181
+00:06:45.040 --> 00:06:47.130
+and then they will be created for you.
+
+182
+00:06:47.130 --> 00:06:48.260
+And if you need to scale,
+
+183
+00:06:48.260 --> 00:06:49.570
+just increase the number of tasks.
+
+184
+00:06:49.570 --> 00:06:52.480
+Simple, you don't need to manage any EC2 instances
+
+185
+00:06:52.480 --> 00:06:53.313
+in the backend,
+
+186
+00:06:53.313 --> 00:06:55.260
+which makes it a very convenient way
+
+187
+00:06:55.260 --> 00:06:57.440
+of running ECS services.
+
+188
+00:06:57.440 --> 00:06:58.860
+Now, in terms of security and networking.
+
+189
+00:06:58.860 --> 00:07:00.700
+So you can inject secrets
+
+190
+00:07:00.700 --> 00:07:03.150
+and configuration as environment variables
+
+191
+00:07:03.150 --> 00:07:04.950
+into the running Docker containers.
+
+192
+00:07:04.950 --> 00:07:06.580
+So there is deep integration
+
+193
+00:07:06.580 --> 00:07:08.360
+with the SSM Parameter Store
+
+194
+00:07:08.360 --> 00:07:10.340
+and the Secrets Manager service.
+
+195
+00:07:10.340 --> 00:07:12.470
+And you also need to know about the different ways
+
+196
+00:07:12.470 --> 00:07:14.460
+to do networking on ECS tasks.
+
+197
+00:07:14.460 --> 00:07:15.440
+So the first one is none,
+
+198
+00:07:15.440 --> 00:07:18.150
+which gives no network connectivity at all to your task.
+
+199
+00:07:18.150 --> 00:07:19.580
+No port mappings.
+
+200
+00:07:19.580 --> 00:07:23.280
+Bridge will use Docker's virtual container-based network.
+
+201
+00:07:23.280 --> 00:07:25.810
+Host will just bypass Docker network,
+
+202
+00:07:25.810 --> 00:07:28.590
+and will use the underlying host network interface.
+
+203
+00:07:28.590 --> 00:07:31.180
+And then AWSVPC, which is a special one,
+
+204
+00:07:31.180 --> 00:07:34.170
+is going to make sure that every ECS task launched
+
+205
+00:07:34.170 --> 00:07:37.010
+on the instance will get their own elastic network interface
+
+206
+00:07:37.010 --> 00:07:38.960
+and their own private IP address.
+
+207
+00:07:38.960 --> 00:07:41.000
+And it's going to give you simplified networking,
+
+208
+00:07:41.000 --> 00:07:43.670
+enhanced security, security groups,
+
+209
+00:07:43.670 --> 00:07:46.030
+monitoring VPC Flow Logs,
+
+210
+00:07:46.030 --> 00:07:48.450
+and then it is going to be the default mode
+
+211
+00:07:48.450 --> 00:07:50.610
+for Fargate tasks.
+
+212
+00:07:50.610 --> 00:07:54.230
+Okay. Next, for Amazon ECS, we have Service Auto Scaling.
+
+213
+00:07:54.230 --> 00:07:56.870
+So this allows you to automatically increase or decrease
+
+214
+00:07:56.870 --> 00:07:59.400
+the desired number of tasks of your service.
+
+215
+00:07:59.400 --> 00:08:00.900
+And so for it in the backend,
+
+216
+00:08:00.900 --> 00:08:04.350
+the ECS service is going to leverage to Amazon,
+
+217
+00:08:04.350 --> 00:08:06.870
+the AWS Application Auto Scaling Service.
+
+218
+00:08:06.870 --> 00:08:08.570
+So other general facts,
+
+219
+00:08:08.570 --> 00:08:11.570
+CPU and RAM are tracked as metrics in CloudWatch
+
+220
+00:08:11.570 --> 00:08:13.070
+at the ECS service level.
+
+221
+00:08:13.070 --> 00:08:15.720
+And so therefore we can set up target tracking
+
+222
+00:08:15.720 --> 00:08:17.380
+to scale based on the target value
+
+223
+00:08:17.380 --> 00:08:19.060
+of a specific CloudWatch metric,
+
+224
+00:08:19.060 --> 00:08:20.650
+or we can set step scaling,
+
+225
+00:08:20.650 --> 00:08:23.540
+or we can set up schedule scaling, and so on.
+
+226
+00:08:23.540 --> 00:08:25.640
+Just like you would do for an ASG,
+
+227
+00:08:25.640 --> 00:08:28.220
+but this time for an ECS service.
+
+228
+00:08:28.220 --> 00:08:30.690
+So even though you can auto scale your ECS service
+
+229
+00:08:30.690 --> 00:08:32.660
+at the test level and it works really great,
+
+230
+00:08:32.660 --> 00:08:35.370
+if that ECS service is not running on Fargate
+
+231
+00:08:35.370 --> 00:08:38.390
+but it is running instead on EC2 instances,
+
+232
+00:08:38.390 --> 00:08:39.223
+then you should make sure
+
+233
+00:08:39.223 --> 00:08:41.350
+you also auto scale your EC2 instances
+
+234
+00:08:41.350 --> 00:08:44.770
+to add more capacity to your ECS cluster.
+
+235
+00:08:44.770 --> 00:08:47.440
+Therefore, Fargate auto scaling is much easier to set up
+
+236
+00:08:47.440 --> 00:08:48.310
+because is serverless
+
+237
+00:08:48.310 --> 00:08:51.250
+and we don't need to think about the underlying resources
+
+238
+00:08:51.250 --> 00:08:52.643
+to run your auto scaling.
+
+239
+00:08:53.900 --> 00:08:56.550
+Okay, next we have spot instances.
+
+240
+00:08:56.550 --> 00:08:58.430
+So spot instances work on ECS.
+
+241
+00:08:58.430 --> 00:09:00.890
+So for ECS classic, the EC2 launch type,
+
+242
+00:09:00.890 --> 00:09:02.650
+then we can have underlying EC2 instances
+
+243
+00:09:02.650 --> 00:09:05.330
+as spot instances managed by an ASG.
+
+244
+00:09:05.330 --> 00:09:09.960
+And in case the spot instances are going to be removed,
+
+245
+00:09:09.960 --> 00:09:11.600
+then they may go into draining mode,
+
+246
+00:09:11.600 --> 00:09:13.190
+which is going to remove the running tasks
+
+247
+00:09:13.190 --> 00:09:15.360
+and move them over to other instances.
+
+248
+00:09:15.360 --> 00:09:16.680
+So it's good for cost savings,
+
+249
+00:09:16.680 --> 00:09:18.580
+but it can impact reliability
+
+250
+00:09:18.580 --> 00:09:21.110
+because we are using spot instances.
+
+251
+00:09:21.110 --> 00:09:22.010
+For the Fargate type,
+
+252
+00:09:22.010 --> 00:09:26.610
+we can also specify a minimum number of on-demand instances
+
+253
+00:09:26.610 --> 00:09:28.520
+within Fargate, so on-demand tasks.
+
+254
+00:09:28.520 --> 00:09:31.630
+But we can also add tasks using Fargate Spot
+
+255
+00:09:31.630 --> 00:09:32.750
+for cost saving,
+
+256
+00:09:32.750 --> 00:09:33.880
+even though we know that, again,
+
+257
+00:09:33.880 --> 00:09:35.680
+because there are spot instances,
+
+258
+00:09:35.680 --> 00:09:37.133
+they can be reclaimed by AWS.
+
+259
+00:09:38.060 --> 00:09:40.530
+So regardless of on-demand or spot,
+
+260
+00:09:40.530 --> 00:09:42.300
+Fargate is going to scale really easily
+
+261
+00:09:42.300 --> 00:09:44.250
+and well based on the load you give it.
+
+262
+00:09:45.420 --> 00:09:47.440
+Finally, to store these Docker images,
+
+263
+00:09:47.440 --> 00:09:50.750
+we have Amazon ECR, which is the elastic container registry.
+
+264
+00:09:50.750 --> 00:09:53.640
+So to store and manage Docker images on AWS,
+
+265
+00:09:53.640 --> 00:09:56.130
+you have a private registry repository.
+
+266
+00:09:56.130 --> 00:09:57.440
+So for your own accounts.
+
+267
+00:09:57.440 --> 00:09:59.110
+But also public repo in case you wanted
+
+268
+00:09:59.110 --> 00:10:01.240
+to share some images publicly.
+
+269
+00:10:01.240 --> 00:10:04.870
+And so your repo is going to have multiple Docker images.
+
+270
+00:10:04.870 --> 00:10:08.320
+Then in case an ECS cluster needs to pull that image
+
+271
+00:10:08.320 --> 00:10:09.890
+onto EC2 instances,
+
+272
+00:10:09.890 --> 00:10:12.500
+then thanks to the IAM role of the EC2 instance.
+
+273
+00:10:12.500 --> 00:10:15.230
+They can pull images from the ECR repository,
+
+274
+00:10:15.230 --> 00:10:17.880
+and run them as ECS task.
+
+275
+00:10:17.880 --> 00:10:20.910
+So we have deep integration with ECR and ECS
+
+276
+00:10:20.910 --> 00:10:23.470
+and there is access control through IAM.
+
+277
+00:10:23.470 --> 00:10:25.620
+So in case you get permission errors,
+
+278
+00:10:25.620 --> 00:10:28.340
+then it should be an IAM policy issue.
+
+279
+00:10:28.340 --> 00:10:30.780
+Now it's possible for you to pull obviously images
+
+280
+00:10:30.780 --> 00:10:34.200
+from repository A or repository B.
+
+281
+00:10:34.200 --> 00:10:35.033
+Okay.
+
+282
+00:10:35.033 --> 00:10:36.040
+And the ECR is really cool
+
+283
+00:10:36.040 --> 00:10:38.610
+because it supports image vulnerability scanning,
+
+284
+00:10:38.610 --> 00:10:42.480
+versioning, image tags, and image life cycle.
+
+285
+00:10:42.480 --> 00:10:43.920
+Okay. So that's a lot on ECS.
+
+286
+00:10:43.920 --> 00:10:45.970
+I know, but this is necessary for the exam.
+
+287
+00:10:45.970 --> 00:10:47.860
+Hopefully by now you should know everything.
+
+288
+00:10:47.860 --> 00:10:48.960
+I hope you liked it,
+
+289
+00:10:48.960 --> 00:10:50.910
+and I will see you in the next lecture.
+

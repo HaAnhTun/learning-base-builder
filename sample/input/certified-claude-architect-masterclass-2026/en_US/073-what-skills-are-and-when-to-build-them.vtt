@@ -1,0 +1,414 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.119
+Skills are what you build when you want a procedure
+
+2
+00:00:03.119 --> 00:00:06.699
+Claude pulls in automatically whenever it fits a request,
+
+3
+00:00:06.699 --> 00:00:09.720
+without someone having to remember to type a command.
+
+4
+00:00:09.720 --> 00:00:11.119
+Over the next few minutes,
+
+5
+00:00:11.119 --> 00:00:14.680
+we'll look at how skills differ from slash commands and sub-agents,
+
+6
+00:00:14.680 --> 00:00:17.139
+the decision framework for choosing to build one,
+
+7
+00:00:17.139 --> 00:00:20.879
+and where skills sit in the broader instruction stack.
+
+8
+00:00:20.879 --> 00:00:24.000
+Let's dive in. Claude code gives you
+
+9
+00:00:24.000 --> 00:00:27.120
+more than one way to package a repeatable instruction,
+
+10
+00:00:27.120 --> 00:00:30.719
+and picking the wrong one is how workflows get over-engineered.
+
+11
+00:00:30.719 --> 00:00:33.580
+A skill is a reusable instruction package,
+
+12
+00:00:33.580 --> 00:00:38.099
+a skill.md file plus any optional supporting files.
+
+13
+00:00:38.099 --> 00:00:39.900
+Claude loads it automatically when
+
+14
+00:00:39.900 --> 00:00:42.279
+its description matches what you're asking for,
+
+15
+00:00:42.279 --> 00:00:44.479
+or you invoke it directly by name.
+
+16
+00:00:44.479 --> 00:00:47.720
+A slash command is really a subset of skills now,
+
+17
+00:00:47.720 --> 00:00:50.439
+created in the.claude commands directory,
+
+18
+00:00:50.439 --> 00:00:52.479
+and invoked with a slash name.
+
+19
+00:00:52.479 --> 00:00:54.259
+These aren't separate mechanisms,
+
+20
+00:00:54.259 --> 00:00:56.200
+only different loading patterns.
+
+21
+00:00:56.240 --> 00:01:00.479
+A manual-only command sets a disable model invocation flag,
+
+22
+00:01:00.479 --> 00:01:02.860
+so Claude won't fire it on its own,
+
+23
+00:01:02.860 --> 00:01:06.160
+which fits a shortcut you want triggered by hand.
+
+24
+00:01:06.160 --> 00:01:09.639
+A skill can also load itself when its description matches.
+
+25
+00:01:09.639 --> 00:01:14.839
+A sub-agent is a delegated autonomous worker with its own context and tools,
+
+26
+00:01:14.839 --> 00:01:18.440
+an active process rather than a passive template.
+
+27
+00:01:18.440 --> 00:01:22.599
+Skills occupy a specific position in the instruction stack.
+
+28
+00:01:22.599 --> 00:01:25.319
+At the bottom, claude.md holds
+
+29
+00:01:25.319 --> 00:01:30.000
+always applied facts and rules that Claude sees on every interaction.
+
+30
+00:01:30.000 --> 00:01:32.739
+No matching or invocation involved.
+
+31
+00:01:32.739 --> 00:01:36.199
+In the middle, skills are description-gated procedures.
+
+32
+00:01:36.199 --> 00:01:39.160
+Claude reads each skill's description and pulls
+
+33
+00:01:39.160 --> 00:01:43.000
+the skill in only when it's relevant to what you asked.
+
+34
+00:01:43.000 --> 00:01:46.400
+At the top, sub-agents are autonomous workers.
+
+35
+00:01:46.400 --> 00:01:50.400
+You spin up when a task should be completed independently.
+
+36
+00:01:50.400 --> 00:01:53.639
+Choosing the right layer prevents over-engineering.
+
+37
+00:01:53.839 --> 00:01:58.919
+A simple always-on rule buried in a skill adds complexity for nothing,
+
+38
+00:01:58.919 --> 00:02:02.839
+and a frequently needed team pattern marked manual-only
+
+39
+00:02:02.839 --> 00:02:06.519
+means everyone has to remember to invoke it by hand.
+
+40
+00:02:06.519 --> 00:02:10.080
+Match the mechanism to how it should load.
+
+41
+00:02:10.080 --> 00:02:13.600
+Four patterns tell you a skill is the right choice.
+
+42
+00:02:13.600 --> 00:02:17.600
+Recurring multi-step workflows that you run across many sessions
+
+43
+00:02:17.600 --> 00:02:23.080
+or across a team benefit from being captured once in skill.md
+
+44
+00:02:23.080 --> 00:02:25.559
+rather than redescribed each time.
+
+45
+00:02:25.559 --> 00:02:30.320
+Team-wide conventions that should apply consistently for every contributor
+
+46
+00:02:30.320 --> 00:02:35.679
+belong in a shared skill, not in each person's individual claude.md.
+
+47
+00:02:35.679 --> 00:02:39.679
+Procedures that should load automatically when relevant,
+
+48
+00:02:39.679 --> 00:02:44.880
+not on a typed command, fit the way skills get matched by their description.
+
+49
+00:02:44.880 --> 00:02:48.399
+And reusable instruction packages that should run the same way
+
+50
+00:02:48.399 --> 00:02:52.720
+every time benefit from the structure a skill.md gives you.
+
+51
+00:02:52.720 --> 00:02:58.399
+If your workflow fits two or more of these patterns, it belongs in a skill.
+
+52
+00:02:58.399 --> 00:03:01.679
+Knowing when not to build a skill is just as important.
+
+53
+00:03:01.679 --> 00:03:07.279
+One-time tasks don't justify the overhead of writing a formal skill.md.
+
+54
+00:03:07.279 --> 00:03:09.600
+Skills exist for reuse.
+
+55
+00:03:09.600 --> 00:03:13.320
+A task you'll run once is better handled in line.
+
+56
+00:03:13.320 --> 00:03:16.639
+Simple lookups don't need a separate skill at all.
+
+57
+00:03:16.639 --> 00:03:20.240
+A claude.md note or a quick slash command
+
+58
+00:03:20.240 --> 00:03:22.880
+is less friction for straightforward requests,
+
+59
+00:03:22.880 --> 00:03:28.360
+and some patterns are better handled by a claude.md rule that's always on
+
+60
+00:03:28.360 --> 00:03:32.559
+rather than a skill that only loads when it matches a request.
+
+61
+00:03:32.559 --> 00:03:35.639
+If the instruction should apply everywhere unconditionally,
+
+62
+00:03:35.639 --> 00:03:38.360
+claude.md is the right place.
+
+63
+00:03:38.360 --> 00:03:40.279
+Skills add complexity.
+
+64
+00:03:40.279 --> 00:03:45.479
+Only build one when the complexity is justified by real reuse value.
+
+65
+00:03:45.479 --> 00:03:48.360
+The build decision framework comes down to three factors,
+
+66
+00:03:48.360 --> 00:03:52.080
+frequency, complexity, and reusability.
+
+67
+00:03:52.080 --> 00:03:54.880
+Frequency asks how often this workflow appears
+
+68
+00:03:54.880 --> 00:03:57.080
+across sessions or team members.
+
+69
+00:03:57.080 --> 00:04:00.839
+If it's rare, a formal skill may not be worth the investment.
+
+70
+00:04:00.839 --> 00:04:04.399
+Complexity asks whether the workflow is multi-step enough
+
+71
+00:04:04.399 --> 00:04:09.559
+that a reusable template provides meaningful value over describing it in line.
+
+72
+00:04:09.559 --> 00:04:12.360
+Simple one-liners don't justify the overhead.
+
+73
+00:04:12.360 --> 00:04:16.880
+Reusability asks whether more than one person, session, or team context
+
+74
+00:04:16.880 --> 00:04:19.880
+will benefit from the skill running consistently.
+
+75
+00:04:19.880 --> 00:04:23.959
+A workflow that scores high on all three is a strong skill candidate.
+
+76
+00:04:23.959 --> 00:04:27.200
+One that scores low on even one factor should make you consider
+
+77
+00:04:27.200 --> 00:04:30.720
+whether a slash command or a claude.md rule
+
+78
+00:04:30.720 --> 00:04:33.519
+handles it better with less friction.
+
+79
+00:04:33.519 --> 00:04:38.399
+Skills and subagents are both powerful, but they solve different problems.
+
+80
+00:04:38.399 --> 00:04:43.640
+A skill is a passive instruction package stored in skill.md.
+
+81
+00:04:43.679 --> 00:04:45.959
+When its description matches the request,
+
+82
+00:04:45.959 --> 00:04:49.920
+Claude code loads it and follows the instructions itself.
+
+83
+00:04:49.920 --> 00:04:51.679
+The skill is the recipe.
+
+84
+00:04:51.679 --> 00:04:53.559
+Claude code is the cook.
+
+85
+00:04:53.559 --> 00:04:58.040
+A subagent is an active autonomous worker you delegate a task to.
+
+86
+00:04:58.040 --> 00:05:01.799
+It has its own context window, tools, and scope.
+
+87
+00:05:01.799 --> 00:05:05.399
+It runs independently and reports back when done.
+
+88
+00:05:05.399 --> 00:05:09.239
+You'll run into scenarios where you have to choose between these two.
+
+89
+00:05:09.239 --> 00:05:12.359
+The key question is whether you need an instruction package that
+
+90
+00:05:12.359 --> 00:05:15.200
+loads when it matches a request, or whether you
+
+91
+00:05:15.200 --> 00:05:19.359
+need a worker to handle something autonomously in parallel.
+
+92
+00:05:19.359 --> 00:05:20.880
+Packages versus workers.
+
+93
+00:05:20.880 --> 00:05:24.040
+Skills versus subagents.
+
+94
+00:05:24.040 --> 00:05:27.079
+Skills are worth reaching for when a procedure should show up
+
+95
+00:05:27.079 --> 00:05:30.399
+on its own at the moment it fits, without anyone
+
+96
+00:05:30.399 --> 00:05:32.519
+having to remember to ask for it.
+
+97
+00:05:32.519 --> 00:05:36.279
+That is the whole value of a description-gated middle layer.
+
+98
+00:05:36.279 --> 00:05:39.640
+And it's why frequency, complexity, and reusability
+
+99
+00:05:39.640 --> 00:05:42.959
+are the questions to ask before you write a skill.
+
+100
+00:05:42.959 --> 00:05:47.239
+If a workflow only comes up once, or if it should apply unconditionally
+
+101
+00:05:47.239 --> 00:05:52.000
+everywhere, a simpler mechanism might serve you better.
+
+102
+00:05:52.000 --> 00:05:53.480
+That wraps up this lesson.
+
+103
+00:05:53.480 --> 00:05:55.839
+I'll see you in the next one.
+

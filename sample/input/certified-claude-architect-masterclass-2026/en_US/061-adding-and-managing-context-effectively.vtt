@@ -1,0 +1,314 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.199
+Context quality is what determines whether Cloud Code's output is useful or generic.
+
+2
+00:00:05.760 --> 00:00:11.439
+In this video, we'll look at the ways context gets into a session, what to include and what
+
+3
+00:00:11.439 --> 00:00:18.639
+to exclude, how deny rules in your settings file exclude files, why token efficiency matters,
+
+4
+00:00:18.639 --> 00:00:25.200
+and how cloud.md functions as standing context rather than a one-time briefing. Let's get into
+
+5
+00:00:25.200 --> 00:00:31.920
+it. Context is a budget, not a container. Permissions deny rules are entries in your
+
+6
+00:00:31.920 --> 00:00:39.040
+settings.json file that block Cloud Code from reading specified files and directories. You
+
+7
+00:00:39.040 --> 00:00:45.119
+write them as read of a path, like read of your .env file, and they serve two distinct purposes.
+
+8
+00:00:45.119 --> 00:00:51.360
+They keep credentials out of context as a security control, and they keep large or irrelevant files
+
+9
+00:00:51.360 --> 00:00:56.959
+from consuming context window space as a performance control. The context window is
+
+10
+00:00:56.959 --> 00:01:04.000
+the finite text space available in a Cloud Code session. Cloud.md content, tool call results,
+
+11
+00:01:04.000 --> 00:01:10.000
+and code all count against it. When it fills, earlier content is compacted or dropped,
+
+12
+00:01:10.000 --> 00:01:15.680
+and session continuity means the context window starts fresh each session, but knowledge does
+
+13
+00:01:15.680 --> 00:01:21.440
+persist across them through Cloud.md, which loads automatically and through auto memory.
+
+14
+00:01:22.639 --> 00:01:28.080
+Context can enter a Cloud Code session through four main mechanisms. File mentions by path are
+
+15
+00:01:28.080 --> 00:01:33.760
+direct. You reference a file, Cloud Code reads it, and it becomes part of the active context.
+
+16
+00:01:34.319 --> 00:01:40.879
+At sign references let you point to specific files, directories, or MCP resources inline
+
+17
+00:01:40.959 --> 00:01:47.680
+in a prompt. Pasting a URL causes Cloud Code to fetch and read that content as part of the session.
+
+18
+00:01:48.239 --> 00:01:53.120
+And inline instructions are plain text guidance you type directly in the prompt,
+
+19
+00:01:53.120 --> 00:01:57.120
+which is the lightest weight method. Each approach serves a different use case,
+
+20
+00:01:57.120 --> 00:02:03.199
+but they all share one property. They add to the session's token budget. The more context you load,
+
+21
+00:02:03.199 --> 00:02:09.759
+the less room remains for the actual work, code generation, tool calls, and response output.
+
+22
+00:02:11.039 --> 00:02:16.559
+Useful context changes what Cloud Code would do if it didn't have it. Architecture decisions
+
+23
+00:02:16.559 --> 00:02:21.679
+are a clear example. If the code base uses a specific pattern for dependency injection or
+
+24
+00:02:21.679 --> 00:02:28.080
+async handling, Cloud Code needs to know that to produce consistent code rather than guessing from
+
+25
+00:02:28.080 --> 00:02:35.279
+file structure alone. Coding conventions shape output quality directly. Naming rules, formatting
+
+26
+00:02:35.279 --> 00:02:41.360
+requirements, and patterns. The team enforces prevent Cloud Code from generating technically
+
+27
+00:02:41.360 --> 00:02:48.240
+correct code that fails review. Test requirements set expectations for coverage and framework usage.
+
+28
+00:02:48.880 --> 00:02:55.679
+Known constraints belong in cloud.md so the model never has to rediscover them. Rate limits,
+
+29
+00:02:55.679 --> 00:03:01.839
+compatibility floors, and security sensitive paths include these because their absence
+
+30
+00:03:01.839 --> 00:03:08.720
+leads to work that has to be redone. Exclusion happens through deny rules in your settings.json
+
+31
+00:03:08.720 --> 00:03:14.479
+file. You write each one as read of a path and glob patterns work the way you'd expect.
+
+32
+00:03:14.479 --> 00:03:20.320
+A few categories belong on that list. Secrets and credentials, meaning your dot nv files,
+
+33
+00:03:20.320 --> 00:03:25.600
+private key directories, and any auth config that should never appear in session history.
+
+34
+00:03:26.240 --> 00:03:33.119
+Large binaries, so image folders, compiled output, and serialized data that cost far more window
+
+35
+00:03:33.119 --> 00:03:39.919
+space than they contribute. And auto-generated or irrelevant paths, which covers build artifacts,
+
+36
+00:03:39.919 --> 00:03:46.880
+vendored libraries, CI caches, and documentation builds. The framing to remember is that a deny
+
+37
+00:03:46.880 --> 00:03:53.600
+rule is both a security control and a context efficiency tool. A path left off, it either
+
+38
+00:03:53.600 --> 00:03:59.919
+creates risk or quietly wastes your budget. The comparison between over inclusion and targeted
+
+39
+00:03:59.919 --> 00:04:06.399
+inclusion matters because more context doesn't automatically mean better results. Over inclusion
+
+40
+00:04:06.399 --> 00:04:12.800
+means mentioning large numbers of files that are loosely relevant to the task. Every file added
+
+41
+00:04:12.800 --> 00:04:19.119
+takes tokens. When the context window fills, earlier content gets compacted or dropped,
+
+42
+00:04:19.119 --> 00:04:24.079
+including things that actually mattered. The result is that you've paid a token cost
+
+43
+00:04:24.079 --> 00:04:29.119
+for files that didn't improve the output, while pushing out content that would have.
+
+44
+00:04:29.119 --> 00:04:35.359
+Targeted inclusion means loading only the files and rules directly relevant to the current task.
+
+45
+00:04:35.359 --> 00:04:42.320
+A smaller accurate context window consistently outperforms a large noisy one because clod code
+
+46
+00:04:42.320 --> 00:04:48.480
+has more working space for the actual task and less irrelevant material competing for attention
+
+47
+00:04:48.480 --> 00:04:54.239
+in the context. Token budget thinking is a practical discipline for clod code work.
+
+48
+00:04:54.239 --> 00:05:02.399
+Clod.md content is loaded at session start. Before any task begins, a verbose clod.md file
+
+49
+00:05:02.399 --> 00:05:07.679
+that tries to document everything about the project exhaustively reduces the working space
+
+50
+00:05:07.679 --> 00:05:14.880
+available before you've typed a single prompt. Tool call results compound this. When clod code
+
+51
+00:05:14.880 --> 00:05:20.480
+reads a large file or runs a command with extensive output, those results fill the
+
+52
+00:05:20.480 --> 00:05:25.839
+context window further. And the window has a hard limit. When it fills, earlier content is
+
+53
+00:05:25.839 --> 00:05:30.640
+compacted or dropped by the model. Content that was important earlier in the session
+
+54
+00:05:30.640 --> 00:05:35.519
+may no longer be available later. Being intentional about what enters context is
+
+55
+00:05:35.519 --> 00:05:41.200
+a performance decision with direct consequences for the quality and reliability of clod code's
+
+56
+00:05:41.200 --> 00:05:46.880
+work. Here's what happens when a session runs long enough to fill the context window.
+
+57
+00:05:47.519 --> 00:05:53.359
+Rather than failing, clod code compacts. It summarizes the older parts of the conversation
+
+58
+00:05:53.359 --> 00:06:00.000
+into a condensed form and keeps working, trading verbatim history for a summary that preserves the
+
+59
+00:06:00.000 --> 00:06:05.920
+gist. There are two ways this gets triggered. Auto-compaction fires on its own as the context
+
+60
+00:06:05.920 --> 00:06:12.399
+window approaches its limit, so a long session doesn't just stop, it condenses and keeps running.
+
+61
+00:06:12.399 --> 00:06:19.040
+And you can run the slash compact command yourself on demand to summarize before you hit that ceiling.
+
+62
+00:06:19.040 --> 00:06:24.239
+There's one more lever worth knowing. You can put a compact instruction in your clod.md
+
+63
+00:06:24.799 --> 00:06:30.720
+that tells the summarizer what to always keep. If a task id or a file path should survive
+
+64
+00:06:30.720 --> 00:06:35.920
+compaction, name it there. And it persists into the summary every time the window compacts.
+
+65
+00:06:37.119 --> 00:06:43.679
+clod.md is the primary solution to the session continuity problem. The context window starts
+
+66
+00:06:43.679 --> 00:06:48.799
+fresh each session, so the running conversation doesn't carry over on its own. What does carry
+
+67
+00:06:48.799 --> 00:06:55.279
+over is knowledge you've written down through clod.md and through auto-memory. clod.md handles
+
+68
+00:06:55.279 --> 00:07:00.720
+the standing instructions by loading automatically at every session start. Rules, conventions,
+
+69
+00:07:00.720 --> 00:07:06.799
+constraints, and architectural context in clod.md are available from the first message of every
+
+70
+00:07:06.799 --> 00:07:12.880
+session without any manual setup. The practical distinction is that clod.md should contain
+
+71
+00:07:12.880 --> 00:07:19.119
+standing rules, things that are always true about the project and always relevant to clod code's
+
+72
+00:07:19.119 --> 00:07:24.880
+behavior. It's not the right place for one-time instructions or session-specific notes. Those
+
+73
+00:07:24.880 --> 00:07:31.279
+belong in the prompt. clod.md is the persistent instruction set, not a conversation log.
+
+74
+00:07:32.640 --> 00:07:37.679
+Think of the context window as a budget you're spending, not a container that you're filling.
+
+75
+00:07:37.679 --> 00:07:44.000
+Every file you pull in buys you relevance or it buys you noise, and the window doesn't care which.
+
+76
+00:07:44.640 --> 00:07:50.959
+That's the whole reason for deny rules and for compaction, and it's why clod.md earns its place.
+
+77
+00:07:50.959 --> 00:07:56.720
+It's the context you pay for once and keep instead of re-briefing from scratch every
+
+78
+00:07:56.720 --> 00:08:00.160
+morning. That does it for this one. I'll see you in the next video.
+

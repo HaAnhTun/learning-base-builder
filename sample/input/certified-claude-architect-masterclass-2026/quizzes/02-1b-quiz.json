@@ -1,0 +1,338 @@
+{
+  "quiz_id": 7572239,
+  "title": "1B Quiz",
+  "type": "simple-quiz",
+  "version": 1,
+  "pass_percent": 70,
+  "description": "",
+  "position": 2,
+  "chapter_index": 3,
+  "chapter_title": "D1: Agentic Architecture - Task Decomposition & Planning",
+  "lectures_before": 15,
+  "assessments": [
+    {
+      "_class": "assessment",
+      "id": 164086775,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>An orchestrator coordinates three subagents: one retrieves company financial data, one retrieves market benchmark data, and one synthesizes a report from both. The first two run simultaneously; the third waits for both. At each handoff, the full internal context window of each retrieval subagent is passed to the synthesis agent. What design principle is being violated?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "",
+          "<p>The deck's guidance on handoff points is explicit: pass only what the next step actually needs. Dumping entire context windows into the handoff payload creates noise and can cause the receiving agent to focus on irrelevant information. The correct approach is to extract and pass only the structured outputs the synthesis agent requires, using an explicit schema. Passing everything is a handoff design failure that can cause silent errors.</p>"
+        ],
+        "answers": [
+          "<p>The synthesis subagent should be replaced by the orchestrator directly, as synthesizing results is an orchestrator responsibility.</p>",
+          "<p>The orchestrator cannot coordinate more than two subagents without incurring coordination overhead beyond the task budget.</p>",
+          "<p>The parallel execution structure is invalid; retrieval subagents must always run sequentially to avoid race conditions.</p>",
+          "<p>The handoff passes full context windows instead of only the structured outputs the synthesis agent requires.</p>"
+        ]
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "",
+      "question_plain": "An orchestrator coordinates three subagents: one retrieves company financial data, one retrieves market benchmark data, and one synthesizes a report from both. The first two run simultaneously; the third waits for both. At each handoff, the full internal context window of each retrieval subagent is passed to the synthesis agent. What design principle is being violated?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164086777,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A team has decomposed a research task into twelve individual subtasks, each handling one sentence of context enrichment. The orchestration layer now requires more logic to coordinate handoffs than the enrichment work itself takes. A colleague claims this is fine because more subtasks always means better fault isolation. What decomposition principle does this scenario violate?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>The deck explicitly covers the decomposability spectrum and warns that over-decomposition creates coordination overhead that can exceed the cost of the actual work. The goal is subtasks that are meaningful, executable units — not micro-steps that should have been combined. Fault isolation is a real benefit of decomposition, but it stops paying off when the coordination logic becomes the dominant cost. The colleague's claim that more subtasks always equals better isolation is the specific misconception the deck addresses.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>The decomposability spectrum principle: over-decomposition creates coordination overhead that can exceed the work itself.</p>",
+          "<p>Single responsibility: each subtask should perform exactly one function with no additional scope.</p>",
+          "<p>Handoff schema design: each handoff must use a structured schema rather than passing free-form text.</p>",
+          "<p>Dynamic planning: the number of subtasks must be determined at inference time by the agent, not preset by the developer at design.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A team has decomposed a research task into twelve individual subtasks, each handling one sentence of context enrichment. The orchestration layer now requires more logic to coordinate handoffs than the enrichment work itself takes. A colleague claims this is fine because more subtasks always means better fault isolation. What decomposition principle does this scenario violate?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164086779,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A team is designing a multi-agent research system where a top-level orchestrator delegates market analysis to a subagent, which in turn delegates data retrieval to another subagent. The architect is debating how many levels to add. According to the principles taught in this lesson, what is the primary risk of adding each additional hierarchy level?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>Each added level increases the error propagation surface. An error at the bottom of a deep hierarchy travels back up through every intermediate orchestration layer before it is caught, and each layer is a chance for the error to be misinterpreted or swallowed. The lesson explicitly states that depth should earn its cost through genuine specialization gains, not just because the structure looks clean.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>Each added level reduces specialization, because agents at lower tiers must handle broader context from the levels above them.</p>",
+          "<p>Each added level reduces auditability because the top-level orchestrator loses direct visibility into how lower-tier agents complete their work.</p>",
+          "<p>Each added level increases the error propagation surface, giving failures more layers to travel through before being caught.</p>",
+          "<p>Each added level forces sequential execution, eliminating any possibility of running parallel branches within the hierarchy.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "A team is designing a multi-agent research system where a top-level orchestrator delegates market analysis to a subagent, which in turn delegates data retrieval to another subagent. The architect is debating how many levels to add. According to the principles taught in this lesson, what is the primary risk of adding each additional hierarchy level?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164086781,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>An architect is reviewing a parallel agentic pipeline where five independent research tasks run concurrently. After all branches complete, their results are passed to the next stage. The design looks correct, but the architect notices the branches write status flags to a shared object during execution. What design requirement does this violate, and what failure mode does it introduce?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "<p>Parallel decomposition requires that each branch is truly independent with no shared mutable state. When two branches write to the same shared resource without coordination, the result depends on which branch finishes last, making output non-deterministic. The lesson calls this a race condition and identifies it as the core risk when the independence requirement is violated.</p>",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>It violates the fan-in requirement, because the synchronization step cannot collect results when branches write to the same output object during execution.</p>",
+          "<p>It violates the branch independence requirement, allowing shared writes to produce non-deterministic results depending on which branch finishes last.</p>",
+          "<p>It violates the over-decomposition principle, because shared status flags should be managed by the orchestrator rather than by individual parallel agents.</p>",
+          "<p>It violates the sequential fallback rule, which requires any branches sharing state to be converted to a sequential chain before running.</p>"
+        ]
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "",
+      "question_plain": "An architect is reviewing a parallel agentic pipeline where five independent research tasks run concurrently. After all branches complete, their results are passed to the next stage. The design looks correct, but the architect notices the branches write status flags to a shared object during execution. What design requirement does this violate, and what failure mode does it introduce?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164086783,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A developer has built a five-step content-processing pipeline where step 3 enriches records and step 4 formats the output. During a review, the architect discovers that step 4 does not actually use any field produced by step 3 — it only needs the original input from step 2. What does the deck call this situation, and what should the team do about it?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>The deck distinguishes true dependencies (step B reads a field produced by step A) from artificial dependencies (steps are sequential only by convention, not by data need). When a dependency is artificial, removing it unlocks parallel execution, cutting latency without changing correctness. The deck recommends auditing every step boundary before committing to sequential ordering.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>An artificial dependency: steps 3 and 4 are sequential only by convention, so they could run concurrently after step 2 to cut latency.</p>",
+          "<p>A cascade risk: step 3 failing would propagate to step 4, so the steps must stay sequential with explicit error handling added at each boundary.</p>",
+          "<p>A handoff schema mismatch: step 3's output schema is incompatible with step 4's input contract, requiring schema alignment before proceeding.</p>",
+          "<p>An under-decomposition failure: the pipeline needs an intermediate aggregation step between steps 3 and 4 to prevent silent data loss.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A developer has built a five-step content-processing pipeline where step 3 enriches records and step 4 formats the output. During a review, the architect discovers that step 4 does not actually use any field produced by step 3 — it only needs the original input from step 2. What does the deck call this situation, and what should the team do about it?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164086785,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A team builds a document-processing pipeline where step 2 passes its output to step 3 as a JSON object. In production, step 3 occasionally receives responses missing a required field, silently defaults to null, and continues — producing wrong output several steps later that is hard to trace. What design practice would have prevented this, according to the lesson?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>The deck teaches that every step boundary needs a defined schema specifying required fields, types, and nullability. Defining the output schema of step N as the formal input contract for step N+1 catches mismatches at the boundary as an explicit failure, rather than letting malformed data travel downstream and surface as a mysterious wrong result at the pipeline's end.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Defining an explicit handoff schema at each step boundary, with required fields, types, and nullability, so mismatches fail loudly at the boundary.</p>",
+          "<p>Converting steps 2 and 3 to parallel execution so field availability can be validated before either step's output is finalized and passed forward.</p>",
+          "<p>Splitting step 2 into two narrower sub-steps, so each sub-step is responsible for only one output field and reduces the chance of a missing-field failure.</p>",
+          "<p>Adding a retry loop at step 3 that re-requests step 2's output whenever a required field is missing from the incoming response.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A team builds a document-processing pipeline where step 2 passes its output to step 3 as a JSON object. In production, step 3 occasionally receives responses missing a required field, silently defaults to null, and continues — producing wrong output several steps later that is hard to trace. What design practice would have prevented this, according to the lesson?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164086787,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>An engineering team fans out five research tasks to run in parallel. Three branches return results successfully, but two branches time out. The fan-in step collects the three successes and continues the pipeline without any record of the failures. A reviewer flags this as a serious design flaw. Why, according to the lesson?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "",
+          "<p>The deck states unambiguously that silently dropping failed branches and continuing as if they succeeded is always the wrong answer. It introduces incorrect results that are extremely hard to diagnose after the fact. Fan-in must handle partial failures explicitly — either by failing the whole pipeline, proceeding with partial results while flagging failures, or retrying individual failed branches.</p>"
+        ],
+        "answers": [
+          "<p>The fan-in step must use voting aggregation whenever branches fail, so the majority result from the three successful branches determines the final output.</p>",
+          "<p>Continuing with three results violates the independence test, since fan-in aggregation requires all branches to produce output before the merge step can run.</p>",
+          "<p>The fan-in step should always retry every failed branch before continuing, so the pipeline must stop and re-dispatch all five tasks from the beginning.</p>",
+          "<p>Silently dropping failed branches produces incorrect results that are extremely hard to diagnose, because the pipeline treated incomplete data as if it were complete.</p>"
+        ]
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "",
+      "question_plain": "An engineering team fans out five research tasks to run in parallel. Three branches return results successfully, but two branches time out. The fan-in step collects the three successes and continues the pipeline without any record of the failures. A reviewer flags this as a serious design flaw. Why, according to the lesson?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164086789,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A product team is considering switching a sequential five-step pipeline to a parallel fan-out design because it would cut wall-clock time from 50 seconds to 10 seconds. Before approving the change, the architect asks the team to model the cost impact. What does the lesson teach about token spend in parallel execution relative to sequential?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "<p>The deck teaches that parallel execution cuts latency but increases token spend. When branches run simultaneously, token consumption per second multiplies by the number of branches. Total token cost equals the sum across all branches, not just the longest one. Rate limits may also constrain achievable concurrency. The lesson prescribes modeling both dimensions explicitly before choosing parallel over sequential.</p>",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Token cost and latency both decrease in parallel execution, making it strictly superior to sequential for any workflow where steps are independent.</p>",
+          "<p>Parallel execution multiplies token consumption per second by the branch count, so total cost equals the sum across all branches, not just the longest.</p>",
+          "<p>Token cost in parallel execution equals the cost of the longest branch only, since shorter branches complete before the billing window for additional tokens opens.</p>",
+          "<p>Parallel execution reduces total token cost because branches share context, so each branch processes a smaller input than a single sequential step would.</p>"
+        ]
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "",
+      "question_plain": "A product team is considering switching a sequential five-step pipeline to a parallel fan-out design because it would cut wall-clock time from 50 seconds to 10 seconds. Before approving the change, the architect asks the team to model the cost impact. What does the lesson teach about token spend in parallel execution relative to sequential?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164086791,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A customer-support agent is mid-execution when a tool call returns an empty result the plan did not anticipate. The agent must decide whether to replan or continue. The architect reviewing the system asks: according to the framework taught in this lesson, what is the correct question to ask before triggering a replanning cycle?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>The deck teaches that not every surprise warrants a full replanning cycle. The correct decision criterion is whether the original goal is still achievable via the current plan with adjustments. Replanning is warranted only when a core assumption has been invalidated. Unnecessary replanning wastes tokens, adds latency, and increases the risk of goal drift.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Whether the original goal is still achievable via the current plan with adjustments, or whether a core assumption has been invalidated.</p>",
+          "<p>Whether the failed tool call was a transient network error or a permanent data unavailability, since only permanent failures justify triggering a replanning cycle.</p>",
+          "<p>Whether the agent has already exhausted its maximum iteration limit, since replanning is only permitted when iteration cycles remain in the agent's budget.</p>",
+          "<p>Whether a human operator is available to approve the revised plan before execution resumes, since dynamic plans require pre-authorization at each replan step.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A customer-support agent is mid-execution when a tool call returns an empty result the plan did not anticipate. The agent must decide whether to replan or continue. The architect reviewing the system asks: according to the framework taught in this lesson, what is the correct question to ask before triggering a replanning cycle?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164086795,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>After several replanning cycles, an agent's revised plan successfully resolves each immediate obstacle but no longer addresses the original user request. It has pivoted to an adjacent goal that was never specified. What failure mode does the lesson name for this, and what mechanism does it prescribe to prevent it?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>The deck calls this goal drift — one of the most dangerous failure modes in replanning systems. It occurs when successive plan revisions solve immediate obstacles but lose alignment with the original requirements. The prevention mechanism is to preserve the original goal specification as a persistent artifact and explicitly validate every revised plan against it before proceeding. Logging original intent alongside each revision also creates an audit trail.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>Over-decomposition: the agent creates too many sub-plans, and coordination cost between them causes the original goal to become obscured across cycles.</p>",
+          "<p>False parallelism: the agent treats dependent sub-goals as independent, causing plans to diverge. Prevention requires enforcing sequential replanning cycles throughout.</p>",
+          "<p>Goal drift: the agent solves obstacles but loses alignment with original requirements. Prevention requires validating every revised plan against the preserved original goal before resuming.</p>",
+          "<p>Constraint violation: the agent crosses a safety boundary by taking actions outside the original plan. Prevention requires adding boundary checks at each individual replanning step.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "After several replanning cycles, an agent's revised plan successfully resolves each immediate obstacle but no longer addresses the original user request. It has pivoted to an adjacent goal that was never specified. What failure mode does the lesson name for this, and what mechanism does it prescribe to prevent it?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164086797,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A workflow automation agent receives an instruction to clean up old project folders. The instruction does not specify which folders are in scope. The agent is about to begin deleting files. According to the decision criteria taught in this lesson, should the agent clarify upfront or proceed on assumptions — and why?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "<p>The deck identifies three situations that warrant upfront clarification: irreversible actions, high-cost operations, and scope uncertainty. File deletion is both irreversible and scope-uncertain — the agent does not know what is in or out of bounds. Both criteria individually justify clarification, and together they make assuming-and-proceeding clearly inappropriate.</p>",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Clarify upfront only if the operation will exceed the agent's token budget, since high cost is the primary factor the lesson uses to justify clarification delays.</p>",
+          "<p>Clarify upfront, because the action is irreversible and the task boundaries are unclear — two of the three criteria the lesson cites as requiring clarification.</p>",
+          "<p>Proceed on assumptions, because the instruction was user-provided and any reasonable interpretation of 'old project folders' is a valid target.</p>",
+          "<p>Proceed and document the interpretation used in the output log, since documented assumptions are sufficient to make an irreversible action safe without prior clarification.</p>"
+        ]
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "",
+      "question_plain": "A workflow automation agent receives an instruction to clean up old project folders. The instruction does not specify which folders are in scope. The agent is about to begin deleting files. According to the decision criteria taught in this lesson, should the agent clarify upfront or proceed on assumptions — and why?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164086799,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A content-generation agent uses an evaluator-optimizer loop to improve draft quality. After nine iterations, the evaluator still has not confirmed the quality bar is met, and the system keeps looping. What mechanism does the lesson say is non-optional for preventing this, and why?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>The deck states explicitly that an iteration cap — a maximum iteration count — is non-optional for the evaluator-optimizer pattern. Without it, the loop can run indefinitely on tasks where the evaluator is hard to satisfy. The cap is what makes the pattern safe to deploy in production without human supervision of every single run.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>A fallback to a static plan after three failed iterations, since dynamic loops must defer to pre-authored plans when convergence is not achieved quickly.</p>",
+          "<p>A structured critique format for the evaluator, since richer feedback causes faster convergence and effectively eliminates the need for a hard loop limit.</p>",
+          "<p>A maximum iteration cap, which the lesson calls non-optional because without it the loop runs indefinitely when the evaluator remains unsatisfied.</p>",
+          "<p>Human approval at each iteration boundary, since the lesson requires a reviewer to confirm quality before the generator produces the next revised version.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "A content-generation agent uses an evaluator-optimizer loop to improve draft quality. After nine iterations, the evaluator still has not confirmed the quality bar is met, and the system keeps looping. What mechanism does the lesson say is non-optional for preventing this, and why?",
+      "related_lectures": []
+    }
+  ]
+}

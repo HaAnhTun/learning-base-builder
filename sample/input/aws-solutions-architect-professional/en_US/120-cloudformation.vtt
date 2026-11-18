@@ -1,0 +1,786 @@
+WEBVTT
+
+1
+00:00:00.030 --> 00:00:01.459
+<v Lecturer>Okay.</v>
+
+2
+00:00:01.459 --> 00:00:02.790
+So next we're getting into CloudFormation.
+
+3
+00:00:02.790 --> 00:00:04.470
+And CloudFormation is not a service
+
+4
+00:00:04.470 --> 00:00:05.820
+you have to know in depth
+
+5
+00:00:05.820 --> 00:00:09.030
+but you need to understand how it works and a few features.
+
+6
+00:00:09.030 --> 00:00:11.340
+So this is what I'm going to do in this lecture.
+
+7
+00:00:11.340 --> 00:00:14.310
+So as we know, CloudFormation is to bring the concept
+
+8
+00:00:14.310 --> 00:00:17.433
+of infrastructure as code IaC into AWS.
+
+9
+00:00:18.600 --> 00:00:21.570
+The idea is that by writing your infrastructure as code
+
+10
+00:00:21.570 --> 00:00:23.940
+you can port it across multiple accounts
+
+11
+00:00:23.940 --> 00:00:25.770
+and multiple regions so you can reuse
+
+12
+00:00:25.770 --> 00:00:29.100
+and quickly redeploy your infrastructure anywhere you want.
+
+13
+00:00:29.100 --> 00:00:32.010
+This is the backbone of the Elastic Beanstalk service
+
+14
+00:00:32.010 --> 00:00:34.050
+but also the Service Catalog service
+
+15
+00:00:34.050 --> 00:00:36.540
+and the Serverless Application Model framework.
+
+16
+00:00:36.540 --> 00:00:38.910
+So the idea is that it's a low level tool
+
+17
+00:00:38.910 --> 00:00:42.270
+that other services in AWS may rely on
+
+18
+00:00:42.270 --> 00:00:44.520
+to perform their actions.
+
+19
+00:00:44.520 --> 00:00:46.740
+Overall, it's a must know service
+
+20
+00:00:46.740 --> 00:00:49.230
+when you're a developer, a sysops or a devops.
+
+21
+00:00:49.230 --> 00:00:50.700
+But for the SA PRO exam
+
+22
+00:00:50.700 --> 00:00:52.410
+you still need to understand a few quirks.
+
+23
+00:00:52.410 --> 00:00:54.510
+So let's go ahead and learn them.
+
+24
+00:00:54.510 --> 00:00:56.250
+Next, how to retain data
+
+25
+00:00:56.250 --> 00:00:59.100
+when your CloudFormation stack is deleted.
+
+26
+00:00:59.100 --> 00:01:01.830
+So sometimes you don't want your resources
+
+27
+00:01:01.830 --> 00:01:03.780
+in CloudFormation to be deleted
+
+28
+00:01:03.780 --> 00:01:05.335
+because you want to retain the data.
+
+29
+00:01:05.335 --> 00:01:08.730
+And by default everything gets deleted in CloudFormation.
+
+30
+00:01:08.730 --> 00:01:11.552
+But you can define a deletion policy on any resource
+
+31
+00:01:11.552 --> 00:01:13.170
+to control what happens
+
+32
+00:01:13.170 --> 00:01:15.780
+when the CloudFormation template is deleted.
+
+33
+00:01:15.780 --> 00:01:17.694
+So the first one that is extremely obvious
+
+34
+00:01:17.694 --> 00:01:21.000
+is called deletion policy equals retain.
+
+35
+00:01:21.000 --> 00:01:23.700
+In this case, you are specifying which resources
+
+36
+00:01:23.700 --> 00:01:25.530
+you want to preserve or backup
+
+37
+00:01:25.530 --> 00:01:28.590
+in case CloudFormation deletes the stack.
+
+38
+00:01:28.590 --> 00:01:30.687
+To keep a resource, you just specify retain
+
+39
+00:01:30.687 --> 00:01:33.635
+and it works on any resource or any nested stack.
+
+40
+00:01:33.635 --> 00:01:36.351
+The second one applies only to less resources
+
+41
+00:01:36.351 --> 00:01:39.150
+which is called deletion policy equals snapshot.
+
+42
+00:01:39.150 --> 00:01:40.600
+So in this case we're saying,
+
+43
+00:01:41.553 --> 00:01:44.055
+okay, you can delete the underlying resource
+
+44
+00:01:44.055 --> 00:01:45.690
+but please make a snapshot before you do.
+
+45
+00:01:45.690 --> 00:01:48.750
+So this applies to all the things that can be snapshotted.
+
+46
+00:01:48.750 --> 00:01:51.690
+So EBS volumes, ElastiCache Cluster for Redis
+
+47
+00:01:51.690 --> 00:01:54.300
+ElastiCache ReplicationGroup, et cetera, et cetera.
+
+48
+00:01:54.300 --> 00:01:56.340
+It could be RDS DBInstance
+
+49
+00:01:56.340 --> 00:01:58.352
+RDS DBCluster or Redshift Cluster.
+
+50
+00:01:58.352 --> 00:02:00.390
+So anything that can be snapshotted
+
+51
+00:02:00.390 --> 00:02:03.750
+usually is supported with deletion policy equals snapshots
+
+52
+00:02:03.750 --> 00:02:04.920
+for CloudFormation.
+
+53
+00:02:04.920 --> 00:02:08.100
+And then finally, the default behavior for most resources
+
+54
+00:02:08.100 --> 00:02:10.230
+is delete policy equals delete.
+
+55
+00:02:10.230 --> 00:02:12.750
+And that means that everything is deleted
+
+56
+00:02:12.750 --> 00:02:14.734
+when you delete your CloudFormation stack.
+
+57
+00:02:14.734 --> 00:02:15.953
+But there is an exception
+
+58
+00:02:15.953 --> 00:02:18.954
+if you're using an RDS DBCluster resources
+
+59
+00:02:18.954 --> 00:02:21.420
+the default policy is to use snapshots,
+
+60
+00:02:21.420 --> 00:02:23.068
+and if you want to delete an S3 bucket
+
+61
+00:02:23.068 --> 00:02:26.010
+through CloudFormation you need to make sure
+
+62
+00:02:26.010 --> 00:02:28.350
+the bucket is going to be first entirely empty
+
+63
+00:02:28.350 --> 00:02:31.620
+of all its content, otherwise you're going to get a failure.
+
+64
+00:02:31.620 --> 00:02:32.970
+But from an exam perspective
+
+65
+00:02:32.970 --> 00:02:34.778
+remember you can set a deletion policy
+
+66
+00:02:34.778 --> 00:02:39.450
+to control how CloudFormation deletes or not resources.
+
+67
+00:02:39.450 --> 00:02:43.709
+CloudFormation can do custom resources using Lambda.
+
+68
+00:02:43.709 --> 00:02:46.440
+So the customer resources help you address
+
+69
+00:02:46.440 --> 00:02:48.217
+any of the following use cases.
+
+70
+00:02:48.217 --> 00:02:51.415
+For example, AWS just released this new service
+
+71
+00:02:51.415 --> 00:02:54.390
+but it is not yet supported by CloudFormation.
+
+72
+00:02:54.390 --> 00:02:56.250
+Or you have an on-premise resource
+
+73
+00:02:56.250 --> 00:02:58.149
+that you would like to manage through CloudFormation
+
+74
+00:02:58.149 --> 00:03:00.480
+or you would like would like to empty an S3 bucket
+
+75
+00:03:00.480 --> 00:03:04.350
+before deleting it, or you would like to get an AMI ID
+
+76
+00:03:04.350 --> 00:03:06.960
+before applying it in your CloudFormation templates
+
+77
+00:03:06.960 --> 00:03:08.550
+or really anything you want.
+
+78
+00:03:08.550 --> 00:03:10.618
+So the idea is that these custom resources in CloudFormation
+
+79
+00:03:10.618 --> 00:03:13.920
+is going to be backed by a Lambda function
+
+80
+00:03:13.920 --> 00:03:15.780
+that you can create and that Lambda function
+
+81
+00:03:15.780 --> 00:03:18.750
+is going to be responsible for doing whatever you want.
+
+82
+00:03:18.750 --> 00:03:20.070
+Will it be creating a new resource
+
+83
+00:03:20.070 --> 00:03:21.540
+or managing your on-premise resource
+
+84
+00:03:21.540 --> 00:03:23.340
+or emptying your S3 bucket?
+
+85
+00:03:23.340 --> 00:03:24.810
+All these kind of things.
+
+86
+00:03:24.810 --> 00:03:26.250
+And so anytime you create update
+
+87
+00:03:26.250 --> 00:03:28.530
+or delete your confirmation stack
+
+88
+00:03:28.530 --> 00:03:30.570
+then the Lambda function will be invoked
+
+89
+00:03:30.570 --> 00:03:32.340
+and that Lambda function will do
+
+90
+00:03:32.340 --> 00:03:35.580
+based on what CloudFormation tell it, it just happened.
+
+91
+00:03:35.580 --> 00:03:37.410
+The CloudFormation, the Lambda function you have to program
+
+92
+00:03:37.410 --> 00:03:39.533
+will do API calls to whatever you want
+
+93
+00:03:39.533 --> 00:03:43.260
+to manage properly your custom resources.
+
+94
+00:03:43.260 --> 00:03:46.170
+So the idea is as soon as you need to go a little bit crazy
+
+95
+00:03:46.170 --> 00:03:48.733
+out of the box usage of confirmation
+
+96
+00:03:48.733 --> 00:03:50.870
+you have to use custom resources.
+
+97
+00:03:50.870 --> 00:03:52.617
+Next we have StackSets.
+
+98
+00:03:52.617 --> 00:03:55.740
+So using StackSets, you can create, update
+
+99
+00:03:55.740 --> 00:03:58.140
+or delete stacks across multiple accounts
+
+100
+00:03:58.140 --> 00:04:00.540
+and regions within a single operation.
+
+101
+00:04:00.540 --> 00:04:02.613
+So you have two types of accounts for StackSets.
+
+102
+00:04:02.613 --> 00:04:04.230
+You have the administrator accounts
+
+103
+00:04:04.230 --> 00:04:05.629
+that create these StackSets
+
+104
+00:04:05.629 --> 00:04:08.730
+and then the trusted accounts can create, update
+
+105
+00:04:08.730 --> 00:04:12.431
+and delete stack instances from these StackSets.
+
+106
+00:04:12.431 --> 00:04:14.820
+So when you update a stack set
+
+107
+00:04:14.820 --> 00:04:16.830
+and that's to the whole power of StackSets,
+
+108
+00:04:16.830 --> 00:04:20.160
+then every associated stack instances
+
+109
+00:04:20.160 --> 00:04:23.160
+are is going to be updated through all the accounts
+
+110
+00:04:23.160 --> 00:04:24.420
+in all the region.
+
+111
+00:04:24.420 --> 00:04:26.760
+So they gives you one way to manage stacks
+
+112
+00:04:26.760 --> 00:04:29.880
+across multiple accounts and multiple regions.
+
+113
+00:04:29.880 --> 00:04:32.400
+There is also one last feature you need to know about
+
+114
+00:04:32.400 --> 00:04:34.950
+which is called automatic deployments.
+
+115
+00:04:34.950 --> 00:04:37.474
+So in case you're using AWS organization,
+
+116
+00:04:37.474 --> 00:04:40.636
+then you can automatically deploy a StackSets
+
+117
+00:04:40.636 --> 00:04:43.313
+to new accounts and it is extremely powerful
+
+118
+00:04:43.313 --> 00:04:44.607
+to provision whatever you want as a minimal configuration
+
+119
+00:04:46.598 --> 00:04:48.136
+of a new account.
+
+120
+00:04:48.136 --> 00:04:50.460
+So CloudFormation StackSets, again as an admin account
+
+121
+00:04:50.460 --> 00:04:53.760
+and then the same stack can be deployed either in account A
+
+122
+00:04:53.760 --> 00:04:57.720
+in two different regions or account B, a separate account.
+
+123
+00:04:57.720 --> 00:05:00.513
+And remember the automatic deployment feature.
+
+124
+00:05:01.890 --> 00:05:03.030
+Next we have Drift.
+
+125
+00:05:03.030 --> 00:05:04.170
+So what is Drift?
+
+126
+00:05:04.170 --> 00:05:06.510
+Well, we know that we can create infrastructure
+
+127
+00:05:06.510 --> 00:05:07.594
+using CloudFormation
+
+128
+00:05:07.594 --> 00:05:12.240
+but it doesn't protect against manual configuration changes
+
+129
+00:05:12.240 --> 00:05:14.190
+of your CloudFormation resources.
+
+130
+00:05:14.190 --> 00:05:17.250
+And therefore your resources, if they change configuration,
+
+131
+00:05:17.250 --> 00:05:19.170
+we call them drift.
+
+132
+00:05:19.170 --> 00:05:20.994
+So how to know whether they're,
+
+133
+00:05:20.994 --> 00:05:21.827
+whether or not they have drifted?
+
+134
+00:05:21.827 --> 00:05:23.250
+Well, you can use CloudFormation Drift.
+
+135
+00:05:23.250 --> 00:05:25.260
+And CloudFormation Drift is going to evaluate
+
+136
+00:05:25.260 --> 00:05:29.700
+all your resources and have a look at the configuration
+
+137
+00:05:29.700 --> 00:05:31.350
+provided by CloudFormation
+
+138
+00:05:31.350 --> 00:05:33.180
+and maybe the actual configuration
+
+139
+00:05:33.180 --> 00:05:35.587
+after someone modified it manually.
+
+140
+00:05:35.587 --> 00:05:38.310
+And then there's gonna be a comparison algorithm.
+
+141
+00:05:38.310 --> 00:05:40.027
+And then automatically it will tell you,
+
+142
+00:05:40.027 --> 00:05:42.330
+"Well, these resources have drifted."
+
+143
+00:05:42.330 --> 00:05:44.712
+So this can be detected on an entire stack
+
+144
+00:05:44.712 --> 00:05:48.282
+or individual resources within a stack.
+
+145
+00:05:48.282 --> 00:05:50.820
+Okay, so there's just one template issue about
+
+146
+00:05:50.820 --> 00:05:53.850
+it's the integration of Secrets Manager in CloudFormation.
+
+147
+00:05:53.850 --> 00:05:55.020
+So here's what the template is.
+
+148
+00:05:55.020 --> 00:05:56.820
+So in the first part of the template
+
+149
+00:05:56.820 --> 00:05:59.666
+we generate a secret from Secrets Manager.
+
+150
+00:05:59.666 --> 00:06:01.830
+In the second part of the template,
+
+151
+00:06:01.830 --> 00:06:06.492
+you use a reference, a subfunction to find the secret
+
+152
+00:06:06.492 --> 00:06:09.930
+and pass it in into your RDS database instance.
+
+153
+00:06:09.930 --> 00:06:12.167
+Okay? So this is how you inject the secrets.
+
+154
+00:06:12.167 --> 00:06:15.630
+The password is created into the instance of RDS.
+
+155
+00:06:15.630 --> 00:06:17.070
+And then finally, the last part
+
+156
+00:06:17.070 --> 00:06:19.710
+is to create a secret target attachment
+
+157
+00:06:19.710 --> 00:06:23.010
+to link the secret to the RDS database instance.
+
+158
+00:06:23.010 --> 00:06:25.380
+And therefore when the secret rotates
+
+159
+00:06:25.380 --> 00:06:27.810
+so will the password in the RDS database.
+
+160
+00:06:27.810 --> 00:06:30.900
+Then we have a resource imports for CloudFormation.
+
+161
+00:06:30.900 --> 00:06:33.570
+So this allows you to import existing resources
+
+162
+00:06:33.570 --> 00:06:36.991
+that you've created in AWS, outside of CloudFormation
+
+163
+00:06:36.991 --> 00:06:40.590
+into existing or new CloudFormation stacks.
+
+164
+00:06:40.590 --> 00:06:42.300
+So you don't need to actually delete
+
+165
+00:06:42.300 --> 00:06:43.560
+and recreate the resources
+
+166
+00:06:43.560 --> 00:06:45.300
+as part of a new CloudFormation stack.
+
+167
+00:06:45.300 --> 00:06:47.040
+You can just import them.
+
+168
+00:06:47.040 --> 00:06:49.050
+So during the import operation,
+
+169
+00:06:49.050 --> 00:06:50.929
+you will need to create a template
+
+170
+00:06:50.929 --> 00:06:54.093
+that describes exactly the entire stack.
+
+171
+00:06:54.093 --> 00:06:56.270
+That means the original stack resources
+
+172
+00:06:56.270 --> 00:06:58.476
+and the target resources to import.
+
+173
+00:06:58.476 --> 00:07:00.090
+You will also make sure
+
+174
+00:07:00.090 --> 00:07:03.210
+that every target resource has a unique identifier.
+
+175
+00:07:03.210 --> 00:07:04.980
+For example, for S3 buckets,
+
+176
+00:07:04.980 --> 00:07:08.220
+you need to clearly outline the name of the bucket,
+
+177
+00:07:08.220 --> 00:07:09.250
+so the bucket name.
+
+178
+00:07:09.250 --> 00:07:11.432
+So let's say we have a S3 bucket, MyBucket
+
+179
+00:07:11.432 --> 00:07:14.850
+and we want to implement it and import it into a stack.
+
+180
+00:07:14.850 --> 00:07:16.634
+So we're going to create this template
+
+181
+00:07:16.634 --> 00:07:18.369
+with the resources to import
+
+182
+00:07:18.369 --> 00:07:22.530
+and outline exactly the S3 bucket, including its name.
+
+183
+00:07:22.530 --> 00:07:25.312
+Then we'll import resources into CloudFormation
+
+184
+00:07:25.312 --> 00:07:27.570
+which is going to create a stack.
+
+185
+00:07:27.570 --> 00:07:28.992
+And this stack will just include
+
+186
+00:07:28.992 --> 00:07:32.852
+that already existing S3 bucket into the stack resources
+
+187
+00:07:32.852 --> 00:07:35.610
+and will be managed then through CloudFormation.
+
+188
+00:07:35.610 --> 00:07:37.320
+But it's actually not gonna go
+
+189
+00:07:37.320 --> 00:07:39.060
+and delete and recreate that resource for you.
+
+190
+00:07:39.060 --> 00:07:40.620
+It's just going to import it.
+
+191
+00:07:40.620 --> 00:07:42.094
+So each resource you import
+
+192
+00:07:42.094 --> 00:07:45.571
+you must define as well a deletion policy with any value
+
+193
+00:07:45.571 --> 00:07:48.828
+and an identifier, and you cannot of course import
+
+194
+00:07:48.828 --> 00:07:52.352
+the same resources into multiple stacks.
+
+195
+00:07:52.352 --> 00:07:53.652
+So that's it for this lecture.
+
+196
+00:07:53.652 --> 00:07:57.183
+I hope you liked it, and I will see you in the next lecture.
+

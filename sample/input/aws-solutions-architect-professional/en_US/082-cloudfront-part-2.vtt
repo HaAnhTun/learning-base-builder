@@ -1,0 +1,538 @@
+WEBVTT
+
+1
+00:00:00.150 --> 00:00:02.945
+<v Instructor>So let's keep on learning about CloudFront.</v>
+
+2
+00:00:02.945 --> 00:00:04.688
+So first we have geo restriction
+
+3
+00:00:04.688 --> 00:00:07.530
+to restrict who can access your CloudFront distribution.
+
+4
+00:00:07.530 --> 00:00:08.730
+So we have an allow list
+
+5
+00:00:09.607 --> 00:00:12.321
+to say only users from these countries
+
+6
+00:00:12.321 --> 00:00:13.737
+can access CloudFront,
+
+7
+00:00:13.737 --> 00:00:15.330
+or we can have a block list
+
+8
+00:00:15.330 --> 00:00:17.470
+to block users from banned countries
+
+9
+00:00:18.485 --> 00:00:21.420
+or countries that you don't want to access your origin.
+
+10
+00:00:21.420 --> 00:00:23.050
+So the country is determined
+
+11
+00:00:23.911 --> 00:00:26.521
+by using a third-party Geo-IP database
+
+12
+00:00:26.521 --> 00:00:27.608
+from within CloudFront.
+
+13
+00:00:27.608 --> 00:00:29.273
+So the use case for geo restriction
+
+14
+00:00:29.273 --> 00:00:30.749
+is to use copyright laws
+
+15
+00:00:30.749 --> 00:00:32.130
+to control access to content.
+
+16
+00:00:32.130 --> 00:00:33.513
+And on top of restriction,
+
+17
+00:00:34.428 --> 00:00:37.900
+you can just customize your content as well per geolocation,
+
+18
+00:00:37.900 --> 00:00:40.290
+because CloudFront automatically is going to add a header
+
+19
+00:00:40.290 --> 00:00:43.173
+to the request called CloudFront-Viewer-Country,
+
+20
+00:00:44.273 --> 00:00:46.031
+and that is going to be accessible
+
+21
+00:00:46.031 --> 00:00:47.460
+to your origin or to a function
+
+22
+00:00:47.460 --> 00:00:49.413
+such as Lambda@Edge.
+
+23
+00:00:50.370 --> 00:00:51.270
+In terms of pricing,
+
+24
+00:00:51.270 --> 00:00:53.730
+well the Edge Locations are all around the world,
+
+25
+00:00:53.730 --> 00:00:58.050
+and the cost of the data in each location can vary.
+
+26
+00:00:58.050 --> 00:01:00.540
+So we have a price table
+
+27
+00:01:00.540 --> 00:01:02.220
+and it turns out that, well,
+
+28
+00:01:02.220 --> 00:01:04.800
+it goes from lower to higher, based on location.
+
+29
+00:01:04.800 --> 00:01:06.180
+So the cheapest countries are going
+
+30
+00:01:06.180 --> 00:01:08.340
+to be the US, Mexico, and Canada,
+
+31
+00:01:08.340 --> 00:01:11.220
+and the most expensive one is going to be India.
+
+32
+00:01:11.220 --> 00:01:14.970
+Therefore, we can define price classes in CloudFront
+
+33
+00:01:14.970 --> 00:01:18.810
+to reduce the number of Edge Locations for cost reduction.
+
+34
+00:01:18.810 --> 00:01:20.190
+So you have three price classes,
+
+35
+00:01:20.190 --> 00:01:21.660
+the first one, is called All.
+
+36
+00:01:21.660 --> 00:01:22.740
+When you have all the regions
+
+37
+00:01:22.740 --> 00:01:23.970
+that gives you the best performance,
+
+38
+00:01:23.970 --> 00:01:26.970
+but obviously it's the highest cost.
+
+39
+00:01:26.970 --> 00:01:28.710
+Then we have the Class 200.
+
+40
+00:01:28.710 --> 00:01:30.210
+It's most regions,
+
+41
+00:01:30.210 --> 00:01:33.180
+but it will exclude the most expensive regions.
+
+42
+00:01:33.180 --> 00:01:35.190
+And then we have Class 100,
+
+43
+00:01:35.190 --> 00:01:38.490
+to only have the least expensive regions.
+
+44
+00:01:38.490 --> 00:01:41.400
+So this is the table of inclusions
+
+45
+00:01:41.400 --> 00:01:44.010
+of each price class and each location.
+
+46
+00:01:44.010 --> 00:01:45.510
+So you can have a look in your own time.
+
+47
+00:01:45.510 --> 00:01:47.820
+But from a global perspective,
+
+48
+00:01:47.820 --> 00:01:49.560
+this is Price Class 100,
+
+49
+00:01:49.560 --> 00:01:51.210
+so it's the cheapest one.
+
+50
+00:01:51.210 --> 00:01:53.430
+Then we have Price Class 200,
+
+51
+00:01:53.430 --> 00:01:56.220
+and finally, we have the Price Class All,
+
+52
+00:01:56.220 --> 00:01:58.383
+with all the Edge Locations.
+
+53
+00:01:59.910 --> 00:02:01.890
+Now, CloudFront has signed URL,
+
+54
+00:02:01.890 --> 00:02:03.990
+so the idea is that you wanna give
+
+55
+00:02:03.990 --> 00:02:06.120
+a signed URL with an expiration
+
+56
+00:02:06.120 --> 00:02:08.970
+to control access to content in CloudFront.
+
+57
+00:02:08.970 --> 00:02:10.230
+So the idea is that, for example,
+
+58
+00:02:10.230 --> 00:02:13.200
+we have CloudFront that is integrated with Amazon S3
+
+59
+00:02:13.200 --> 00:02:14.670
+through an OAC.
+
+60
+00:02:14.670 --> 00:02:15.870
+And an application server
+
+61
+00:02:15.870 --> 00:02:18.870
+that wants to access some content on CloudFront,
+
+62
+00:02:18.870 --> 00:02:20.610
+but it needs to be protected.
+
+63
+00:02:20.610 --> 00:02:21.443
+So what's going to happen
+
+64
+00:02:21.443 --> 00:02:23.460
+is that the clients will need
+
+65
+00:02:23.460 --> 00:02:27.750
+to talk to an application server to generate a signed URL
+
+66
+00:02:27.750 --> 00:02:28.740
+with a trusted signer.
+
+67
+00:02:28.740 --> 00:02:31.020
+So the clients will talk to your application,
+
+68
+00:02:31.020 --> 00:02:33.750
+will do authentication and authorization,
+
+69
+00:02:33.750 --> 00:02:34.980
+and if it's all good,
+
+70
+00:02:34.980 --> 00:02:36.330
+then your application server
+
+71
+00:02:36.330 --> 00:02:38.550
+is going to generate a signed URL
+
+72
+00:02:38.550 --> 00:02:41.550
+using the SDK onto CloudFront,
+
+73
+00:02:41.550 --> 00:02:44.580
+and return that signed URL to the client.
+
+74
+00:02:44.580 --> 00:02:47.370
+Then the client can directly access CloudFront
+
+75
+00:02:47.370 --> 00:02:49.110
+by using the signed URL
+
+76
+00:02:49.110 --> 00:02:51.690
+and getting the specific bit of content
+
+77
+00:02:51.690 --> 00:02:53.460
+from your Amazon S3 bucket.
+
+78
+00:02:53.460 --> 00:02:56.280
+So you would do this so that your Amazon CloudFront
+
+79
+00:02:56.280 --> 00:02:58.350
+origin distribution, sorry,
+
+80
+00:02:58.350 --> 00:02:59.700
+is not publicly accessible,
+
+81
+00:02:59.700 --> 00:03:02.250
+doesn't have everything accessible to everyone,
+
+82
+00:03:02.250 --> 00:03:05.850
+but instead, some files must be accessed or a signed URL
+
+83
+00:03:05.850 --> 00:03:08.010
+for enhanced security.
+
+84
+00:03:08.010 --> 00:03:09.240
+So you may ask me, what's the difference
+
+85
+00:03:09.240 --> 00:03:10.620
+between using a signed URL
+
+86
+00:03:10.620 --> 00:03:13.320
+and an S3 pre-signed URL?
+
+87
+00:03:13.320 --> 00:03:15.780
+Well, CloudFront signed URL allows you
+
+88
+00:03:15.780 --> 00:03:18.000
+to access a path no matter what the origin is,
+
+89
+00:03:18.000 --> 00:03:20.400
+so it doesn't apply only to S3.
+
+90
+00:03:20.400 --> 00:03:21.840
+And then to sign these URL,
+
+91
+00:03:21.840 --> 00:03:23.400
+there is an account wide key-pair
+
+92
+00:03:23.400 --> 00:03:25.950
+that only the root accounts can manage.
+
+93
+00:03:25.950 --> 00:03:28.410
+So you can filter by IP, by path, by date,
+
+94
+00:03:28.410 --> 00:03:29.310
+you can add an expiration,
+
+95
+00:03:29.310 --> 00:03:32.070
+so they can be quite complicated for the signed URL.
+
+96
+00:03:32.070 --> 00:03:33.630
+And you can leverage caching features
+
+97
+00:03:33.630 --> 00:03:36.570
+so that the signed URL may just access content
+
+98
+00:03:36.570 --> 00:03:38.820
+cashed on Edge Location.
+
+99
+00:03:38.820 --> 00:03:42.120
+The S3 pre-signed URL is just to issue a request
+
+100
+00:03:42.120 --> 00:03:44.460
+as the person who pre-signed the URL.
+
+101
+00:03:44.460 --> 00:03:45.293
+So in that case,
+
+102
+00:03:45.293 --> 00:03:49.140
+you use the IAM key of the signing IAM principle.
+
+103
+00:03:49.140 --> 00:03:50.700
+It has limited lifetime,
+
+104
+00:03:50.700 --> 00:03:51.533
+and then you can use it
+
+105
+00:03:51.533 --> 00:03:53.160
+to upload and download as well.
+
+106
+00:03:53.160 --> 00:03:55.983
+So this is what a pre-signed URL looks like.
+
+107
+00:03:57.150 --> 00:03:58.410
+Okay, next on CloudFront,
+
+108
+00:03:58.410 --> 00:04:00.420
+we can have custom error pages.
+
+109
+00:04:00.420 --> 00:04:01.253
+So the idea is that you want
+
+110
+00:04:01.253 --> 00:04:03.000
+to return an object to the viewer
+
+111
+00:04:03.000 --> 00:04:04.770
+when the origin returns an error code
+
+112
+00:04:04.770 --> 00:04:09.150
+for example, a 400 or a 500 status code to CloudFront.
+
+113
+00:04:09.150 --> 00:04:11.430
+For this, we're going to create custom error pages,
+
+114
+00:04:11.430 --> 00:04:15.150
+and we can also cache them using a caching minimum TTL.
+
+115
+00:04:15.150 --> 00:04:16.110
+So let's have an example,
+
+116
+00:04:16.110 --> 00:04:18.600
+we have a request made to CloudFront,
+
+117
+00:04:18.600 --> 00:04:21.270
+CloudFront forwards the request to your origin,
+
+118
+00:04:21.270 --> 00:04:26.270
+with response to a 400 or 500 type of error message.
+
+119
+00:04:26.430 --> 00:04:27.660
+Then what's going to happen
+
+120
+00:04:27.660 --> 00:04:31.350
+is that instead of sending that response to the client,
+
+121
+00:04:31.350 --> 00:04:33.180
+we can have custom error pages
+
+122
+00:04:33.180 --> 00:04:36.780
+and they can be stored, for example, on an S3 bucket.
+
+123
+00:04:36.780 --> 00:04:39.570
+So that for example, if it was a 403,
+
+124
+00:04:39.570 --> 00:04:41.610
+then the 403 would be shared
+
+125
+00:04:41.610 --> 00:04:43.770
+as an HTML file to the Edge Location,
+
+126
+00:04:43.770 --> 00:04:46.140
+which would put it in the cache, okay?
+
+127
+00:04:46.140 --> 00:04:48.900
+And then sent back to the client.
+
+128
+00:04:48.900 --> 00:04:51.660
+So we would have a customization of error pages
+
+129
+00:04:51.660 --> 00:04:53.460
+because they don't come from the origin,
+
+130
+00:04:53.460 --> 00:04:56.940
+they come from your S3 bucket instead.
+
+131
+00:04:56.940 --> 00:04:57.773
+Okay.
+
+132
+00:04:57.773 --> 00:04:58.980
+So that's it for CloudFront,
+
+133
+00:04:58.980 --> 00:04:59.813
+I hope you liked it.
+
+134
+00:04:59.813 --> 00:05:01.740
+And I will see you in the next lecture.
+

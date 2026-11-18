@@ -1,0 +1,474 @@
+WEBVTT
+
+1
+00:00:00.520 --> 00:00:03.680
+<v ->Now let's talk about the AWS Transfer Family.</v>
+
+2
+00:00:03.680 --> 00:00:05.700
+So the idea is that you want to send data
+
+3
+00:00:05.700 --> 00:00:08.750
+in and out of Amazon S3 or EFS,
+
+4
+00:00:08.750 --> 00:00:10.740
+but you don't wanna use the S3 APIs,
+
+5
+00:00:10.740 --> 00:00:13.760
+you don't want to use the EFS network file system.
+
+6
+00:00:13.760 --> 00:00:15.730
+You just wanna use the FTP protocol.
+
+7
+00:00:15.730 --> 00:00:16.563
+In this case,
+
+8
+00:00:16.563 --> 00:00:19.940
+you need to use the Transfer Family service from AWS.
+
+9
+00:00:19.940 --> 00:00:22.040
+So it supports three kinds of protocols.
+
+10
+00:00:22.040 --> 00:00:24.390
+It supports AWS Transfer for FTP.
+
+11
+00:00:24.390 --> 00:00:27.420
+So the File Transfer Protocol, FTP.
+
+12
+00:00:27.420 --> 00:00:31.360
+FTPS, which is the File Transfer Protocol over SSL,
+
+13
+00:00:31.360 --> 00:00:32.750
+so encrypted form.
+
+14
+00:00:32.750 --> 00:00:35.642
+Or SFTP, which is a Secure File Transfer Protocol.
+
+15
+00:00:35.642 --> 00:00:37.960
+Now you don't need to be an expert on those.
+
+16
+00:00:37.960 --> 00:00:40.120
+Just know that FTP is unencrypted,
+
+17
+00:00:40.120 --> 00:00:44.200
+whereas FTPS and a SFTP are encrypted in flight.
+
+18
+00:00:44.200 --> 00:00:46.040
+Now the idea is that using the FTP protocol,
+
+19
+00:00:46.040 --> 00:00:48.158
+you can upload to S3 or EFS.
+
+20
+00:00:48.158 --> 00:00:51.720
+The Transfer Family has a fully managed infrastructure.
+
+21
+00:00:51.720 --> 00:00:53.650
+It's scalable, reliable, and highly available.
+
+22
+00:00:53.650 --> 00:00:56.360
+So you'd want to manage at all that capability.
+
+23
+00:00:56.360 --> 00:00:57.378
+And in terms of pricing,
+
+24
+00:00:57.378 --> 00:01:00.410
+you're going to pay per provisioned endpoints per hour,
+
+25
+00:01:00.410 --> 00:01:02.941
+plus a fee per gigabytes of data transferred
+
+26
+00:01:02.941 --> 00:01:06.160
+in and out of the Transfer Family.
+
+27
+00:01:06.160 --> 00:01:08.090
+You can store and manage the users' credentials
+
+28
+00:01:08.090 --> 00:01:09.700
+for that service within the service.
+
+29
+00:01:09.700 --> 00:01:11.270
+Or you can also integrate
+
+30
+00:01:11.270 --> 00:01:13.290
+with existing authentication system,
+
+31
+00:01:13.290 --> 00:01:15.224
+such as Microsoft Active Directory,
+
+32
+00:01:15.224 --> 00:01:16.360
+LDAP, Okta,
+
+33
+00:01:16.360 --> 00:01:18.670
+Amazon Cognito, or any custom source.
+
+34
+00:01:18.670 --> 00:01:21.830
+The usage of this is you have an FTP interface
+
+35
+00:01:21.830 --> 00:01:23.820
+into Amazon S3 or EFS.
+
+36
+00:01:23.820 --> 00:01:25.080
+So it's to share files,
+
+37
+00:01:25.080 --> 00:01:26.160
+to share public datasets,
+
+38
+00:01:26.160 --> 00:01:28.920
+to do CRM, ERP, et cetera, et cetera.
+
+39
+00:01:28.920 --> 00:01:30.700
+So just a diagram for you to understand.
+
+40
+00:01:30.700 --> 00:01:33.100
+The Transfer Family has three flavors,
+
+41
+00:01:33.100 --> 00:01:34.780
+and the users can access directly
+
+42
+00:01:34.780 --> 00:01:37.390
+using the endpoints of the FTP.
+
+43
+00:01:37.390 --> 00:01:41.120
+Or optionally, you can use a DNS called Route 53
+
+44
+00:01:41.120 --> 00:01:42.590
+to provide your own host name
+
+45
+00:01:42.590 --> 00:01:44.500
+into the FTP service.
+
+46
+00:01:44.500 --> 00:01:46.380
+And then the FTP service,
+
+47
+00:01:46.380 --> 00:01:48.830
+so the transfer for FTP service
+
+48
+00:01:48.830 --> 00:01:52.000
+will have an IAM Role that will be assumed
+
+49
+00:01:52.000 --> 00:01:53.520
+to send or receive the files
+
+50
+00:01:53.520 --> 00:01:55.940
+from Amazon S3 or Amazon EFS.
+
+51
+00:01:55.940 --> 00:01:56.890
+And this is done transparently.
+
+52
+00:01:56.890 --> 00:01:59.200
+You don't have to set many things up.
+
+53
+00:01:59.200 --> 00:02:00.260
+And finally, if you wanted
+
+54
+00:02:00.260 --> 00:02:03.060
+to secure the Transfer Family services,
+
+55
+00:02:03.060 --> 00:02:05.150
+then you could authenticate your users
+
+56
+00:02:05.150 --> 00:02:07.530
+using an external authentication system,
+
+57
+00:02:07.530 --> 00:02:09.220
+such as Active Directory
+
+58
+00:02:09.220 --> 00:02:11.190
+LDAP or all the things that I just said
+
+59
+00:02:11.190 --> 00:02:12.560
+in the previous slide, okay?
+
+60
+00:02:12.560 --> 00:02:14.930
+Finally, you need to learn about the Endpoint Types
+
+61
+00:02:14.930 --> 00:02:18.470
+for the Transfer Family as, and their associated security.
+
+62
+00:02:18.470 --> 00:02:20.760
+So the Public Endpoint looks like this.
+
+63
+00:02:20.760 --> 00:02:22.630
+So with the endpoint in our Cloud.
+
+64
+00:02:22.630 --> 00:02:24.890
+And then the internet is going to be able
+
+65
+00:02:24.890 --> 00:02:26.550
+to access this point.
+
+66
+00:02:26.550 --> 00:02:29.840
+Now, what is going to happen is that the public IP
+
+67
+00:02:29.840 --> 00:02:33.010
+of this endpoint is going to be managed by AWS.
+
+68
+00:02:33.010 --> 00:02:35.130
+And that is something that can be changing over time.
+
+69
+00:02:35.130 --> 00:02:36.460
+So the IP can change over time.
+
+70
+00:02:36.460 --> 00:02:39.900
+And so the recommendation is for you to use the DNS name,
+
+71
+00:02:39.900 --> 00:02:42.980
+the public DNS name of your endpoint.
+
+72
+00:02:42.980 --> 00:02:45.080
+And that means also that with this setup,
+
+73
+00:02:45.080 --> 00:02:47.350
+you cannot set up allow lists to filter
+
+74
+00:02:47.350 --> 00:02:50.110
+by source IP addresses from the network security.
+
+75
+00:02:50.110 --> 00:02:52.540
+You still get security from within the endpoint,
+
+76
+00:02:52.540 --> 00:02:54.700
+but you cannot have a firewall
+
+77
+00:02:54.700 --> 00:02:57.640
+that will only allow specific IPs.
+
+78
+00:02:57.640 --> 00:02:58.973
+The other option is to use
+
+79
+00:02:58.973 --> 00:03:02.170
+a VPC Endpoint with Internal Access.
+
+80
+00:03:02.170 --> 00:03:04.930
+So in this case, your SFTP, for example
+
+81
+00:03:04.930 --> 00:03:08.300
+is going to be deployed within your VPC
+
+82
+00:03:08.300 --> 00:03:10.930
+and your EC2 instances within your VPC
+
+83
+00:03:10.930 --> 00:03:15.180
+are able to access privately your endpoint
+
+84
+00:03:15.180 --> 00:03:16.420
+and your Corporate Data Center,
+
+85
+00:03:16.420 --> 00:03:19.060
+if connected via VPN or direct connect,
+
+86
+00:03:19.060 --> 00:03:22.490
+can also access your internal endpoint.
+
+87
+00:03:22.490 --> 00:03:25.000
+So here you get static private IPs
+
+88
+00:03:25.000 --> 00:03:27.250
+to access your endpoints,
+
+89
+00:03:27.250 --> 00:03:29.070
+and you can set up allow list
+
+90
+00:03:29.070 --> 00:03:31.900
+because you can leverage now the security group feature
+
+91
+00:03:31.900 --> 00:03:34.130
+or Network ACLs to get access
+
+92
+00:03:34.130 --> 00:03:36.860
+and manage access into your endpoint.
+
+93
+00:03:36.860 --> 00:03:38.070
+So these two make sense
+
+94
+00:03:38.070 --> 00:03:39.870
+but you can get a hybrid version,
+
+95
+00:03:39.870 --> 00:03:43.520
+called the VPC Endpoint with Internet-Facing Access.
+
+96
+00:03:43.520 --> 00:03:44.800
+So in this case,
+
+97
+00:03:44.800 --> 00:03:47.390
+while we get the same VPC deploying
+
+98
+00:03:47.390 --> 00:03:50.430
+and we can have the EC2 instances within our VPC,
+
+99
+00:03:50.430 --> 00:03:52.760
+or any server in our Corporate Data Center
+
+100
+00:03:52.760 --> 00:03:55.090
+to access privately our endpoints.
+
+101
+00:03:55.090 --> 00:03:58.550
+But also we can set up public IPs
+
+102
+00:03:58.550 --> 00:04:01.300
+for our endpoints using an elastic IP.
+
+103
+00:04:01.300 --> 00:04:02.133
+So in this case,
+
+104
+00:04:02.133 --> 00:04:04.210
+we have full control over the elastic IP
+
+105
+00:04:04.210 --> 00:04:06.210
+because we attach it ourselves
+
+106
+00:04:06.210 --> 00:04:08.570
+and therefore the internet can access
+
+107
+00:04:08.570 --> 00:04:11.540
+again our Endpoint using the elastic IP.
+
+108
+00:04:11.540 --> 00:04:13.730
+But because we manage everything,
+
+109
+00:04:13.730 --> 00:04:17.180
+then we can set up security groups to actually control
+
+110
+00:04:17.180 --> 00:04:20.924
+who from the internet can access our SFTP, for example.
+
+111
+00:04:20.924 --> 00:04:23.170
+So it's very important for you to understand
+
+112
+00:04:23.170 --> 00:04:24.330
+the different endpoint types.
+
+113
+00:04:24.330 --> 00:04:26.660
+The exam will ask you to choose the correct one.
+
+114
+00:04:26.660 --> 00:04:27.990
+And hopefully that makes sense
+
+115
+00:04:27.990 --> 00:04:30.280
+from an architectural decision, okay?
+
+116
+00:04:30.280 --> 00:04:31.180
+So that's it for this lecture,
+
+117
+00:04:31.180 --> 00:04:32.013
+I hope you liked it
+
+118
+00:04:32.013 --> 00:04:33.950
+and I will see you in the next lecture.
+

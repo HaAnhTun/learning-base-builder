@@ -1,0 +1,182 @@
+WEBVTT
+
+1
+00:00:00.450 --> 00:00:02.370
+<v Instructor>So here's one more storage class,</v>
+
+2
+00:00:02.370 --> 00:00:03.810
+but I wanted to make a separate lecture for it
+
+3
+00:00:03.810 --> 00:00:05.880
+because it's a bit different than the other ones.
+
+4
+00:00:05.880 --> 00:00:09.270
+So the S3 Express One Zone storage class
+
+5
+00:00:09.270 --> 00:00:10.800
+is high performance,
+
+6
+00:00:10.800 --> 00:00:13.950
+but for a single availability zone type of storage class.
+
+7
+00:00:13.950 --> 00:00:14.820
+What does that mean?
+
+8
+00:00:14.820 --> 00:00:16.860
+That means that your objects are stored
+
+9
+00:00:16.860 --> 00:00:19.590
+not on the standard bucket on S3,
+
+10
+00:00:19.590 --> 00:00:22.350
+but in what's called a directory bucket,
+
+11
+00:00:22.350 --> 00:00:24.750
+and it's a special type of S3 bucket.
+
+12
+00:00:24.750 --> 00:00:27.030
+But this bucket, instead of being distributed
+
+13
+00:00:27.030 --> 00:00:29.400
+across multiple availability zone,
+
+14
+00:00:29.400 --> 00:00:32.160
+it's going to be in a single availability zone only,
+
+15
+00:00:32.160 --> 00:00:35.160
+and you get to choose which one you want it to be in.
+
+16
+00:00:35.160 --> 00:00:36.660
+So it's a different kind of bucket,
+
+17
+00:00:36.660 --> 00:00:38.880
+and that's why there is a different kind
+
+18
+00:00:38.880 --> 00:00:40.830
+as well of storage class.
+
+19
+00:00:40.830 --> 00:00:43.380
+So it's a very specific use case, but the idea is that
+
+20
+00:00:43.380 --> 00:00:45.780
+because you are in a single AZ,
+
+21
+00:00:45.780 --> 00:00:47.340
+then you're going to be able to handle
+
+22
+00:00:47.340 --> 00:00:49.200
+hundreds of thousands of requests per second
+
+23
+00:00:49.200 --> 00:00:51.600
+with single digit millisecond latency,
+
+24
+00:00:51.600 --> 00:00:53.160
+so very high performance.
+
+25
+00:00:53.160 --> 00:00:57.000
+You get about 10 times the performance of S3 standard
+
+26
+00:00:57.000 --> 00:00:59.670
+with about 50% lower the cost.
+
+27
+00:00:59.670 --> 00:01:04.200
+So good durability, but the availability is of course lower
+
+28
+00:01:04.200 --> 00:01:06.630
+because now instead of being three availability zones
+
+29
+00:01:06.630 --> 00:01:09.570
+with some replication, you only have one availability zone.
+
+30
+00:01:09.570 --> 00:01:12.570
+And of course, if there is a problem on this AZ,
+
+31
+00:01:12.570 --> 00:01:14.910
+you're going to be directly affected.
+
+32
+00:01:14.910 --> 00:01:18.300
+So the idea of using S3 Express One Zone is
+
+33
+00:01:18.300 --> 00:01:21.120
+that you're gonna be able to co-locate your storage
+
+34
+00:01:21.120 --> 00:01:24.150
+and compute resources in the same availability zone
+
+35
+00:01:24.150 --> 00:01:25.470
+and therefore reduce latency
+
+36
+00:01:25.470 --> 00:01:27.900
+and maybe even reduce your networking cost.
+
+37
+00:01:27.900 --> 00:01:30.810
+So the use cases are for latency sensitive apps,
+
+38
+00:01:30.810 --> 00:01:34.140
+for data intensive apps, for AI and ML training,
+
+39
+00:01:34.140 --> 00:01:35.670
+financial modeling, media processing,
+
+40
+00:01:35.670 --> 00:01:37.380
+and high performance computing,
+
+41
+00:01:37.380 --> 00:01:39.240
+and it's best integrated with, for example,
+
+42
+00:01:39.240 --> 00:01:42.900
+with SageMaker Model Training, Athena, EMR, Glue,
+
+43
+00:01:42.900 --> 00:01:45.270
+all these kind of data services.
+
+44
+00:01:45.270 --> 00:01:46.650
+All right, so that's it for this lecture.
+
+45
+00:01:46.650 --> 00:01:49.653
+I hope you liked it, and I will see you in the next lecture.
+

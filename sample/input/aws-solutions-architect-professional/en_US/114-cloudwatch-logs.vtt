@@ -1,0 +1,830 @@
+WEBVTT
+
+1
+00:00:00.270 --> 00:00:01.380
+<v Instructor>Now let's talk about</v>
+
+2
+00:00:01.380 --> 00:00:03.300
+the more important topic for you to remember,
+
+3
+00:00:03.300 --> 00:00:04.920
+which is CloudWatch Logs.
+
+4
+00:00:04.920 --> 00:00:06.510
+CloudWatch Logs is going to be very important
+
+5
+00:00:06.510 --> 00:00:08.220
+going into the SA Pro exam.
+
+6
+00:00:08.220 --> 00:00:10.740
+And so first you need to know how to get data
+
+7
+00:00:10.740 --> 00:00:12.120
+into CloudWatch Logs.
+
+8
+00:00:12.120 --> 00:00:13.500
+So the first way to get data
+
+9
+00:00:13.500 --> 00:00:16.620
+is through the SDK, or the CloudWatch Logs Agent,
+
+10
+00:00:16.620 --> 00:00:18.570
+or the CloudWatch Unified Agent.
+
+11
+00:00:18.570 --> 00:00:20.520
+I will show you the difference between the Logs Agent
+
+12
+00:00:20.520 --> 00:00:23.700
+and the Unified Agent in a slide in this lecture.
+
+13
+00:00:23.700 --> 00:00:26.580
+Now we can also get data in CloudWatch Logs
+
+14
+00:00:26.580 --> 00:00:30.240
+through some integration with AWS services.
+
+15
+00:00:30.240 --> 00:00:33.090
+So for example, Elastic Beanstalk can help you
+
+16
+00:00:33.090 --> 00:00:35.310
+collect all the logs from your application
+
+17
+00:00:35.310 --> 00:00:38.040
+and send that to CloudWatch Logs directly.
+
+18
+00:00:38.040 --> 00:00:41.070
+ECS also has a log driver to collect log
+
+19
+00:00:41.070 --> 00:00:44.160
+from the containers and send that into CloudWatch Logs.
+
+20
+00:00:44.160 --> 00:00:46.860
+Lambda has a direct integration with CloudWatch Logs
+
+21
+00:00:46.860 --> 00:00:48.870
+and will give you all the function logs.
+
+22
+00:00:48.870 --> 00:00:51.300
+The VPC Flow Logs can be sent to CloudWatch.
+
+23
+00:00:51.300 --> 00:00:53.457
+API Gateway Access Logs,
+
+24
+00:00:53.457 --> 00:00:56.610
+and CloudTrail based on the filter you wanna set.
+
+25
+00:00:56.610 --> 00:00:58.890
+So good to know the CloudWatch Logs Agent
+
+26
+00:00:58.890 --> 00:01:00.900
+can be installed on EC2 machines,
+
+27
+00:01:00.900 --> 00:01:04.290
+but not only it can be installed on your on-premise Vms
+
+28
+00:01:04.290 --> 00:01:06.180
+or on any server you want
+
+29
+00:01:06.180 --> 00:01:08.190
+as long as it has logs and you wanna send them
+
+30
+00:01:08.190 --> 00:01:09.510
+into CloudWatch Logs.
+
+31
+00:01:09.510 --> 00:01:12.360
+Finally, you can also get DNS queries logged
+
+32
+00:01:12.360 --> 00:01:15.420
+from Route53 into CloudWatch Logs.
+
+33
+00:01:15.420 --> 00:01:19.320
+Okay, so next, how does CloudWatch Logs work in details?
+
+34
+00:01:19.320 --> 00:01:22.680
+So we have log groups, and you can give any name you want
+
+35
+00:01:22.680 --> 00:01:24.720
+that usually represents an application.
+
+36
+00:01:24.720 --> 00:01:25.950
+And within your log groups
+
+37
+00:01:25.950 --> 00:01:27.480
+you're going to have log streams
+
+38
+00:01:27.480 --> 00:01:30.150
+which are going to be instances within your application
+
+39
+00:01:30.150 --> 00:01:32.190
+of the log files or your containers.
+
+40
+00:01:32.190 --> 00:01:34.650
+So it's up to you to organize this the way you want,
+
+41
+00:01:34.650 --> 00:01:37.140
+and usually it doesn't really matter.
+
+42
+00:01:37.140 --> 00:01:39.150
+What matters is what inside log stream is,
+
+43
+00:01:39.150 --> 00:01:40.740
+which is your log itself.
+
+44
+00:01:40.740 --> 00:01:43.200
+You can define log expiration policies,
+
+45
+00:01:43.200 --> 00:01:45.660
+so your log can be chosen to never expire,
+
+46
+00:01:45.660 --> 00:01:48.150
+or expire after 30 days, et cetera, et cetera.
+
+47
+00:01:48.150 --> 00:01:49.590
+And if you do expire your logs,
+
+48
+00:01:49.590 --> 00:01:51.060
+obviously, you need to make sure
+
+49
+00:01:51.060 --> 00:01:52.890
+that they're going to be persisted somewhere
+
+50
+00:01:52.890 --> 00:01:55.740
+in case you need to analyze them in the future.
+
+51
+00:01:55.740 --> 00:01:57.000
+So it is possible
+
+52
+00:01:57.000 --> 00:01:59.730
+for you to encrypt your CloudWatch Logs with KMS.
+
+53
+00:01:59.730 --> 00:02:02.370
+And CloudWatch Logs has the possibility to send these logs
+
+54
+00:02:02.370 --> 00:02:04.860
+to other destinations.
+
+55
+00:02:04.860 --> 00:02:06.210
+So we'll see this in a second
+
+56
+00:02:06.210 --> 00:02:09.360
+where we have Amazon S3 where we can create exports.
+
+57
+00:02:09.360 --> 00:02:10.980
+We have Kinesis Data Stream
+
+58
+00:02:10.980 --> 00:02:13.020
+if you wanted to stream the CloudWatch Logs into something
+
+59
+00:02:13.020 --> 00:02:16.770
+that gives you more ability to analyze them in real time.
+
+60
+00:02:16.770 --> 00:02:17.820
+Kinesis Data Firehose,
+
+61
+00:02:17.820 --> 00:02:20.380
+again, if you want to export these logs into S3,
+
+62
+00:02:20.380 --> 00:02:23.370
+ElasticSearch, Redshift, or Splunk.
+
+63
+00:02:23.370 --> 00:02:27.450
+And Lambda and ElasticSearch through a Lambda integration.
+
+64
+00:02:27.450 --> 00:02:29.250
+We'll go over those in a second.
+
+65
+00:02:29.250 --> 00:02:31.020
+But now let's talk about CloudWatch Logs
+
+66
+00:02:31.020 --> 00:02:32.940
+Metric Filters and Insights.
+
+67
+00:02:32.940 --> 00:02:35.820
+So CloudWatch Logs can use a filter expression,
+
+68
+00:02:35.820 --> 00:02:39.480
+and these filter expression can result in creating a metric,
+
+69
+00:02:39.480 --> 00:02:42.420
+hence the name Logs Metric Filter.
+
+70
+00:02:42.420 --> 00:02:44.250
+So for example, say you are looking
+
+71
+00:02:44.250 --> 00:02:46.200
+for a specific IP inside of a log
+
+72
+00:02:46.200 --> 00:02:48.720
+and you want to have an alarm or a metric at least
+
+73
+00:02:48.720 --> 00:02:51.120
+based on how many times that IP has been found,
+
+74
+00:02:51.120 --> 00:02:53.550
+then you would create a metric filter.
+
+75
+00:02:53.550 --> 00:02:56.310
+Or if you wanted to count the number of occurrences
+
+76
+00:02:56.310 --> 00:02:58.370
+of the word error in your logs, for example,
+
+77
+00:02:58.370 --> 00:02:59.610
+if you wanted to get alerted
+
+78
+00:02:59.610 --> 00:03:02.790
+in case your application goes crazy and has too many errors,
+
+79
+00:03:02.790 --> 00:03:04.230
+then that could be a very good use case
+
+80
+00:03:04.230 --> 00:03:06.060
+for CloudWatch Logs Metric Filter as well.
+
+81
+00:03:06.060 --> 00:03:08.400
+And these metric filters can be used
+
+82
+00:03:08.400 --> 00:03:10.050
+to trigger CloudWatch alarms,
+
+83
+00:03:10.050 --> 00:03:12.720
+and from this you have all your automations you need.
+
+84
+00:03:12.720 --> 00:03:14.760
+And if you wanted to analyze your logs
+
+85
+00:03:14.760 --> 00:03:16.530
+within CloudWatch Logs,
+
+86
+00:03:16.530 --> 00:03:19.440
+you could use something called CloudWatch Logs Insights
+
+87
+00:03:19.440 --> 00:03:22.800
+to query logs directly, and even keep these queries
+
+88
+00:03:22.800 --> 00:03:25.200
+and add them to a CloudWatch Dashboard.
+
+89
+00:03:25.200 --> 00:03:26.910
+So the cool thing about CloudWatch Logs Insights
+
+90
+00:03:26.910 --> 00:03:29.070
+is that it has also simple queries
+
+91
+00:03:29.070 --> 00:03:31.350
+of what you can do directly from within CloudWatch.
+
+92
+00:03:31.350 --> 00:03:34.050
+For example, you can have the number of exceptions
+
+93
+00:03:34.050 --> 00:03:35.670
+logged every five minutes,
+
+94
+00:03:35.670 --> 00:03:38.340
+or the list of log events that are not exceptions.
+
+95
+00:03:38.340 --> 00:03:41.370
+Or something specific to Lambda or Route53
+
+96
+00:03:41.370 --> 00:03:43.770
+or VPC Flow Logs, et cetera, et cetera.
+
+97
+00:03:43.770 --> 00:03:47.130
+Okay, so say you wanted to not analyze your logs
+
+98
+00:03:47.130 --> 00:03:48.090
+within CloudWatch Logs,
+
+99
+00:03:48.090 --> 00:03:50.160
+but you wanted to analyze them with your own tools.
+
+100
+00:03:50.160 --> 00:03:50.993
+And so for this
+
+101
+00:03:50.993 --> 00:03:53.940
+you need to export the data of CloudWatch Logs.
+
+102
+00:03:53.940 --> 00:03:57.360
+So the first thing we have to know is the S3 export.
+
+103
+00:03:57.360 --> 00:03:59.820
+Very simple, we take the CloudWatch Logs
+
+104
+00:03:59.820 --> 00:04:02.190
+and we send it into Amazon S3.
+
+105
+00:04:02.190 --> 00:04:04.590
+There is a feature directly made for that.
+
+106
+00:04:04.590 --> 00:04:07.350
+And to send these logs to Amazon S3 you must encrypt them.
+
+107
+00:04:07.350 --> 00:04:11.069
+And so this feature supports SSE-S3
+
+108
+00:04:11.069 --> 00:04:15.120
+and SSE-KMS as encryption mechanisms.
+
+109
+00:04:15.120 --> 00:04:18.660
+On top of it, log data can take up to 12 hours
+
+110
+00:04:18.660 --> 00:04:20.790
+to become available for an export.
+
+111
+00:04:20.790 --> 00:04:23.310
+So this is definitely not real time,
+
+112
+00:04:23.310 --> 00:04:24.930
+and this is not automated.
+
+113
+00:04:24.930 --> 00:04:27.970
+You have to use the API call named CreateExportTask
+
+114
+00:04:29.460 --> 00:04:33.810
+to get the data from CloudWatch Logs into Amazon S3.
+
+115
+00:04:33.810 --> 00:04:35.160
+So it's not near-real time,
+
+116
+00:04:35.160 --> 00:04:36.300
+it's not real time.
+
+117
+00:04:36.300 --> 00:04:39.303
+For this, we can use CloudWatch Logs Subscriptions instead.
+
+118
+00:04:40.650 --> 00:04:43.350
+So let's talk about CloudWatch Logs Subscription now.
+
+119
+00:04:43.350 --> 00:04:46.320
+So your CloudWatch Logs can get a subscription filter
+
+120
+00:04:46.320 --> 00:04:48.120
+and you can filter the type of logs you want
+
+121
+00:04:48.120 --> 00:04:49.410
+out of CloudWatch Logs.
+
+122
+00:04:49.410 --> 00:04:52.200
+And this subscription filter can send data
+
+123
+00:04:52.200 --> 00:04:54.480
+to many different outputs.
+
+124
+00:04:54.480 --> 00:04:58.020
+So the first one is a managed Lambda function by AWS,
+
+125
+00:04:58.020 --> 00:05:00.750
+and that Lambda function is meant to send data
+
+126
+00:05:00.750 --> 00:05:03.750
+to Amazon ElasticSearch in real time.
+
+127
+00:05:03.750 --> 00:05:05.520
+But it's very possible for you
+
+128
+00:05:05.520 --> 00:05:07.410
+to define your own Lambda function
+
+129
+00:05:07.410 --> 00:05:09.090
+and do whatever you want in real time
+
+130
+00:05:09.090 --> 00:05:11.670
+on top of the subscription filter.
+
+131
+00:05:11.670 --> 00:05:14.910
+Then you have the option to also use a subscription filter
+
+132
+00:05:14.910 --> 00:05:17.130
+with Kinesis Data Firehose.
+
+133
+00:05:17.130 --> 00:05:19.110
+And we know Kinesis Data Firehose now,
+
+134
+00:05:19.110 --> 00:05:22.770
+so we can send data near-real time into Amazon S3,
+
+135
+00:05:22.770 --> 00:05:25.140
+or into Amazon ElasticSearch.
+
+136
+00:05:25.140 --> 00:05:28.320
+So the question is, should we use Kinesis Data Firehose
+
+137
+00:05:28.320 --> 00:05:31.620
+or Lambda to send data to Amazon ES or Amazon S3?
+
+138
+00:05:31.620 --> 00:05:33.270
+Well, it really depends on your requirements.
+
+139
+00:05:33.270 --> 00:05:34.800
+If you have the real time requirements,
+
+140
+00:05:34.800 --> 00:05:36.660
+you have to use a Lambda function.
+
+141
+00:05:36.660 --> 00:05:39.030
+But if you're willing to have one minute of lag,
+
+142
+00:05:39.030 --> 00:05:41.520
+for example, and you are okay with near-real time,
+
+143
+00:05:41.520 --> 00:05:42.990
+then Kinesis Data Firehose
+
+144
+00:05:42.990 --> 00:05:44.670
+is going to be a better choice probably,
+
+145
+00:05:44.670 --> 00:05:48.360
+a bit less expensive, and more scalable.
+
+146
+00:05:48.360 --> 00:05:50.970
+Finally, it is possible for you to take these logs
+
+147
+00:05:50.970 --> 00:05:53.760
+from the subscription filter into Kinesis Data Streams,
+
+148
+00:05:53.760 --> 00:05:56.250
+and from it we can use whatever tool we would need.
+
+149
+00:05:56.250 --> 00:05:59.160
+So Kinesis Data Firehose, Kinesis Data Analytics,
+
+150
+00:05:59.160 --> 00:06:01.470
+EC2 instances that are running the KCL,
+
+151
+00:06:01.470 --> 00:06:02.520
+or a Lambda function.
+
+152
+00:06:03.630 --> 00:06:06.120
+Another good architecture to know with CloudWatch Logs
+
+153
+00:06:06.120 --> 00:06:08.550
+is that you can do it for multi-account
+
+154
+00:06:08.550 --> 00:06:11.340
+and multi-region Log Aggregation.
+
+155
+00:06:11.340 --> 00:06:13.620
+So say you have an Account A, Region 1,
+
+156
+00:06:13.620 --> 00:06:14.820
+you create the CloudWAtch Logs
+
+157
+00:06:14.820 --> 00:06:16.860
+and a subscription filter.
+
+158
+00:06:16.860 --> 00:06:19.440
+And then this sends it into a Kinesis Data Stream
+
+159
+00:06:19.440 --> 00:06:21.990
+in a central logging account.
+
+160
+00:06:21.990 --> 00:06:23.100
+Same for another account.
+
+161
+00:06:23.100 --> 00:06:24.750
+So Account B, Region 2.
+
+162
+00:06:24.750 --> 00:06:26.730
+We have the CloudWatch Logs, subscription filter,
+
+163
+00:06:26.730 --> 00:06:28.560
+and send this into a Kinesis Data stream
+
+164
+00:06:28.560 --> 00:06:30.240
+in the central logging account.
+
+165
+00:06:30.240 --> 00:06:32.520
+And for account B I just showed that it has another region,
+
+166
+00:06:32.520 --> 00:06:35.160
+so it could be multi-account and multi-region.
+
+167
+00:06:35.160 --> 00:06:37.890
+And from this it has to be into Kinesis Data Stream.
+
+168
+00:06:37.890 --> 00:06:40.440
+You can define your own Kinesis Data Firehose
+
+169
+00:06:40.440 --> 00:06:44.910
+and sync that data near-real time into Amazon S3,
+
+170
+00:06:44.910 --> 00:06:47.760
+and this will be into your central security
+
+171
+00:06:47.760 --> 00:06:48.900
+or logging account.
+
+172
+00:06:48.900 --> 00:06:49.800
+So this could be very good,
+
+173
+00:06:49.800 --> 00:06:52.920
+and this is a very, very common architecture.
+
+174
+00:06:52.920 --> 00:06:55.170
+Now you can use the CloudWatch Agent
+
+175
+00:06:55.170 --> 00:06:57.900
+to actually get logs from your EC2 instances.
+
+176
+00:06:57.900 --> 00:07:00.990
+And there is tight integration using the CloudWatch Agent
+
+177
+00:07:00.990 --> 00:07:03.030
+and Systems Manager.
+
+178
+00:07:03.030 --> 00:07:05.550
+So you can install the CloudWatch Agent, for example,
+
+179
+00:07:05.550 --> 00:07:07.590
+using the SSM Run Command.
+
+180
+00:07:07.590 --> 00:07:09.390
+So say we have an EC2 instance,
+
+181
+00:07:09.390 --> 00:07:11.280
+it has the SSM agent running
+
+182
+00:07:11.280 --> 00:07:13.170
+and it's set up with Systems Manager.
+
+183
+00:07:13.170 --> 00:07:17.129
+Then using a Run Command called ConfigureAWSPackage,
+
+184
+00:07:17.129 --> 00:07:19.440
+and the package is AmazonCloudWatchAgent,
+
+185
+00:07:19.440 --> 00:07:21.900
+then the CloudWatch Agent will be automatically set up
+
+186
+00:07:21.900 --> 00:07:23.610
+on your EC2 instance.
+
+187
+00:07:23.610 --> 00:07:25.410
+And the alternative is, again,
+
+188
+00:07:25.410 --> 00:07:29.010
+to use an EC2 instance with the SSM agent installed on it.
+
+189
+00:07:29.010 --> 00:07:30.900
+But this time instead of Run Command
+
+190
+00:07:30.900 --> 00:07:34.440
+you use the Systems Manager State Manager feature
+
+191
+00:07:34.440 --> 00:07:37.050
+to make sure that, again, the CloudWatch Agent
+
+192
+00:07:37.050 --> 00:07:38.460
+is installed on your EC2 instance,
+
+193
+00:07:38.460 --> 00:07:40.170
+and it's two ways of doing it.
+
+194
+00:07:40.170 --> 00:07:44.010
+And finally, if you don't have the SSM agent installed
+
+195
+00:07:44.010 --> 00:07:45.870
+but you still want to use SSM,
+
+196
+00:07:45.870 --> 00:07:49.200
+the EC2 instance can actually be installed
+
+197
+00:07:49.200 --> 00:07:50.640
+with the CloudWatch agent itself.
+
+198
+00:07:50.640 --> 00:07:52.530
+So you can install it with some commands.
+
+199
+00:07:52.530 --> 00:07:55.620
+And then when you configure and start the CloudWatch agent
+
+200
+00:07:55.620 --> 00:07:58.110
+you can instruct it to actually download
+
+201
+00:07:58.110 --> 00:08:00.420
+the agent configuration directly
+
+202
+00:08:00.420 --> 00:08:02.550
+from the SSM Parameter Store,
+
+203
+00:08:02.550 --> 00:08:05.580
+therefore making the CloudWatch Agent very complete
+
+204
+00:08:05.580 --> 00:08:07.860
+and configured out of the box.
+
+205
+00:08:07.860 --> 00:08:09.450
+Okay, so that's it for this lecture.
+
+206
+00:08:09.450 --> 00:08:10.530
+I hope you liked it,
+
+207
+00:08:10.530 --> 00:08:12.480
+and I will see you in the next lecture.
+

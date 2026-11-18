@@ -1,0 +1,918 @@
+WEBVTT
+
+1
+00:00:00.450 --> 00:00:03.060
+<v Instructor>So let's go ahead and create a database.</v>
+
+2
+00:00:03.060 --> 00:00:05.370
+So I'm in the Aurora and RDS console.
+
+3
+00:00:05.370 --> 00:00:07.260
+On the left-hand side, I click on Databases,
+
+4
+00:00:07.260 --> 00:00:10.383
+and then I click on Create database.
+
+5
+00:00:11.790 --> 00:00:13.740
+And as we can see here, we have different options.
+
+6
+00:00:13.740 --> 00:00:16.860
+So it can be a full configuration or an easy create.
+
+7
+00:00:16.860 --> 00:00:18.690
+Because we want to see the different options,
+
+8
+00:00:18.690 --> 00:00:20.490
+we're going to go over full configuration.
+
+9
+00:00:20.490 --> 00:00:22.710
+Here you can select the engine options.
+
+10
+00:00:22.710 --> 00:00:25.950
+So you have Aurora, either MySQL or PostgreSQL-compatible.
+
+11
+00:00:25.950 --> 00:00:26.997
+Then you have MySQL, PostgreSQL,
+
+12
+00:00:26.997 --> 00:00:28.860
+and other types of engines.
+
+13
+00:00:28.860 --> 00:00:29.730
+For this hands-on,
+
+14
+00:00:29.730 --> 00:00:32.730
+we're going to select MySQL to keep it simple.
+
+15
+00:00:32.730 --> 00:00:35.310
+Then you scroll down, and then for engine version,
+
+16
+00:00:35.310 --> 00:00:37.760
+just choose whatever default there is right here.
+
+17
+00:00:38.700 --> 00:00:40.650
+Next, for templates, we can have Production,
+
+18
+00:00:40.650 --> 00:00:42.720
+which gives us access to more settings,
+
+19
+00:00:42.720 --> 00:00:45.000
+or Dev/Test, or Free tier.
+
+20
+00:00:45.000 --> 00:00:47.640
+So Free tier is going to be what we're gonna be choosing.
+
+21
+00:00:47.640 --> 00:00:49.530
+But if you take the Production setting,
+
+22
+00:00:49.530 --> 00:00:51.960
+what's going to happen is that you have the option
+
+23
+00:00:51.960 --> 00:00:56.130
+to have Multi-AZ DB instance deployment with two instances,
+
+24
+00:00:56.130 --> 00:00:58.440
+or even Multi-AZ DB cluster deployment
+
+25
+00:00:58.440 --> 00:01:00.060
+with three instances.
+
+26
+00:01:00.060 --> 00:01:01.380
+So these are production.
+
+27
+00:01:01.380 --> 00:01:02.430
+We don't need this right now,
+
+28
+00:01:02.430 --> 00:01:05.220
+but it gives you an idea of the kind of setup you can have
+
+29
+00:01:05.220 --> 00:01:07.083
+across multiple availability zones.
+
+30
+00:01:08.100 --> 00:01:09.270
+But we're going to use Free tier.
+
+31
+00:01:09.270 --> 00:01:11.430
+And as you can see, the only thing we can use right now
+
+32
+00:01:11.430 --> 00:01:14.910
+is Single-AZ database instance deployment, one instance.
+
+33
+00:01:14.910 --> 00:01:16.620
+Alright, perfect.
+
+34
+00:01:16.620 --> 00:01:17.453
+Let's scroll down.
+
+35
+00:01:17.453 --> 00:01:20.610
+We keep everything as default for database identifier.
+
+36
+00:01:20.610 --> 00:01:22.050
+Master username, yes.
+
+37
+00:01:22.050 --> 00:01:23.550
+And then credentials management.
+
+38
+00:01:23.550 --> 00:01:27.240
+So here we have the option to either create our password
+
+39
+00:01:27.240 --> 00:01:30.150
+and then have RDS manage the password,
+
+40
+00:01:30.150 --> 00:01:33.150
+or we can also have the password managed directly
+
+41
+00:01:33.150 --> 00:01:35.880
+by AWS Secrets Manager.
+
+42
+00:01:35.880 --> 00:01:37.110
+So this is the most secure,
+
+43
+00:01:37.110 --> 00:01:40.560
+but there is a cost to using AWS Secrets Manager.
+
+44
+00:01:40.560 --> 00:01:43.410
+So we won't use this; we'll use self-managed,
+
+45
+00:01:43.410 --> 00:01:45.750
+but you should know that it's an option anyway.
+
+46
+00:01:45.750 --> 00:01:48.720
+So for the master password, I will just enter password,
+
+47
+00:01:48.720 --> 00:01:50.850
+and I will confirm the master password.
+
+48
+00:01:50.850 --> 00:01:52.203
+It's very weak, I know.
+
+49
+00:01:53.310 --> 00:01:56.340
+Then we'll just enable only password authentication.
+
+50
+00:01:56.340 --> 00:01:59.100
+But as you can see, you have the option to also have IAM
+
+51
+00:01:59.100 --> 00:02:01.053
+to authenticate to the database.
+
+52
+00:02:02.250 --> 00:02:04.800
+Then you scroll down, and for instance configuration,
+
+53
+00:02:04.800 --> 00:02:07.920
+we have information around, well, what's free.
+
+54
+00:02:07.920 --> 00:02:10.440
+So we'll use the db.t4g.micro,
+
+55
+00:02:10.440 --> 00:02:12.120
+maybe you have a db.t3.micro,
+
+56
+00:02:12.120 --> 00:02:13.200
+maybe you have something else.
+
+57
+00:02:13.200 --> 00:02:14.033
+It doesn't matter.
+
+58
+00:02:14.033 --> 00:02:16.710
+Just choose whatever the default is right now.
+
+59
+00:02:16.710 --> 00:02:19.080
+For storage type, we'll have 20 gigabytes.
+
+60
+00:02:19.080 --> 00:02:19.980
+But then as you can see,
+
+61
+00:02:19.980 --> 00:02:22.080
+under additional storage configuration,
+
+62
+00:02:22.080 --> 00:02:24.510
+there is the option to enable storage autoscaling.
+
+63
+00:02:24.510 --> 00:02:26.910
+And that means that if you use all the storage,
+
+64
+00:02:26.910 --> 00:02:28.440
+you can autoscale up to, for example,
+
+65
+00:02:28.440 --> 00:02:31.503
+1000 gigabytes of storage.
+
+66
+00:02:32.460 --> 00:02:33.750
+For connectivity,
+
+67
+00:02:33.750 --> 00:02:37.110
+we'll select Don't connect to an EC2 compute resource.
+
+68
+00:02:37.110 --> 00:02:38.460
+We'll select the default VPC,
+
+69
+00:02:38.460 --> 00:02:40.290
+and we don't change anything.
+
+70
+00:02:40.290 --> 00:02:42.780
+For subnet group, no, we don't.
+
+71
+00:02:42.780 --> 00:02:43.613
+We keep it as default.
+
+72
+00:02:43.613 --> 00:02:45.150
+And for public access, we'll say yes,
+
+73
+00:02:45.150 --> 00:02:46.140
+because we want to be able
+
+74
+00:02:46.140 --> 00:02:49.803
+to publicly access our RDS database with a public IP.
+
+75
+00:02:51.030 --> 00:02:55.740
+For the VPC security group, we will choose Create new,
+
+76
+00:02:55.740 --> 00:02:58.590
+and I'll call this one demo-rds.
+
+77
+00:02:58.590 --> 00:03:01.800
+And then we don't have any preference for the AZ.
+
+78
+00:03:01.800 --> 00:03:03.750
+We don't want an RDS proxy.
+
+79
+00:03:03.750 --> 00:03:05.670
+And for additional configuration, we're good to go.
+
+80
+00:03:05.670 --> 00:03:07.410
+We'll use port 3306.
+
+81
+00:03:07.410 --> 00:03:09.300
+That is the port that we're going to connect
+
+82
+00:03:09.300 --> 00:03:11.940
+to on our MySQL database.
+
+83
+00:03:11.940 --> 00:03:13.110
+Let's scroll down.
+
+84
+00:03:13.110 --> 00:03:16.260
+We choose standard insights from monitoring.
+
+85
+00:03:16.260 --> 00:03:18.180
+As you can see, we can enable enhanced monitoring
+
+86
+00:03:18.180 --> 00:03:21.390
+and also export the logs if we wanted to.
+
+87
+00:03:21.390 --> 00:03:23.190
+And then for the additional configuration
+
+88
+00:03:23.190 --> 00:03:26.850
+under database initial name, enter mydb.
+
+89
+00:03:26.850 --> 00:03:28.410
+For estimated monthly cost,
+
+90
+00:03:28.410 --> 00:03:31.020
+it gives you information around the RDS Free Tier,
+
+91
+00:03:31.020 --> 00:03:32.700
+and this is available for 12 months
+
+92
+00:03:32.700 --> 00:03:34.320
+for these instance types.
+
+93
+00:03:34.320 --> 00:03:35.153
+So we're good to go.
+
+94
+00:03:35.153 --> 00:03:37.023
+Now let's click on Create database.
+
+95
+00:03:38.160 --> 00:03:40.530
+So while my database is being created,
+
+96
+00:03:40.530 --> 00:03:44.460
+let's go ahead and download SQL Electron.
+
+97
+00:03:44.460 --> 00:03:46.680
+And this is a SQL client that we're going to use
+
+98
+00:03:46.680 --> 00:03:48.840
+to connect to our database.
+
+99
+00:03:48.840 --> 00:03:49.673
+So very simple.
+
+100
+00:03:49.673 --> 00:03:52.080
+You're going to click on Download GUI,
+
+101
+00:03:52.080 --> 00:03:53.760
+and then click on it.
+
+102
+00:03:53.760 --> 00:03:56.100
+Take the latest version for whatever platform you have.
+
+103
+00:03:56.100 --> 00:03:58.950
+So you have latest Windows,
+
+104
+00:03:58.950 --> 00:04:01.350
+and then for Mac, it's going to be a DMG.
+
+105
+00:04:01.350 --> 00:04:06.350
+So I'm gonna do this one, then open it and install it.
+
+106
+00:04:07.080 --> 00:04:08.850
+Okay, so my database is now created.
+
+107
+00:04:08.850 --> 00:04:10.140
+It took a little bit of time,
+
+108
+00:04:10.140 --> 00:04:12.837
+and now, as you can see, it is available.
+
+109
+00:04:12.837 --> 00:04:15.150
+And so what I'm going to show you are a few options.
+
+110
+00:04:15.150 --> 00:04:17.760
+So first of all, we have the endpoint right here
+
+111
+00:04:17.760 --> 00:04:19.680
+and the port 3306.
+
+112
+00:04:19.680 --> 00:04:22.110
+And it's linked to this security group.
+
+113
+00:04:22.110 --> 00:04:23.070
+And this security group,
+
+114
+00:04:23.070 --> 00:04:25.590
+if you click on it and look at the inbound rules,
+
+115
+00:04:25.590 --> 00:04:27.720
+we can see that we have an inbound rule here
+
+116
+00:04:27.720 --> 00:04:29.880
+on TCP port 3306.
+
+117
+00:04:29.880 --> 00:04:31.260
+So that's great, okay?
+
+118
+00:04:31.260 --> 00:04:33.960
+Coming from just my IP address.
+
+119
+00:04:33.960 --> 00:04:38.040
+Okay, so you should of course modify this security group
+
+120
+00:04:38.040 --> 00:04:40.650
+if you have problems connecting to your database instance
+
+121
+00:04:40.650 --> 00:04:42.600
+to maybe allow it from anywhere (IPv4).
+
+122
+00:04:44.520 --> 00:04:45.450
+Okay.
+
+123
+00:04:45.450 --> 00:04:47.820
+So now let's take this endpoint
+
+124
+00:04:47.820 --> 00:04:50.700
+and we're going to connect to it using SQL Electron.
+
+125
+00:04:50.700 --> 00:04:53.580
+So using SQL Electron, I'm going to add a new database.
+
+126
+00:04:53.580 --> 00:04:54.753
+I'll call it RDSDemo.
+
+127
+00:04:55.860 --> 00:04:58.770
+It's a database of type MySQL.
+
+128
+00:04:58.770 --> 00:05:00.930
+And then for the server address, I'm going to enter
+
+129
+00:05:00.930 --> 00:05:03.330
+what I have right here on port 3306.
+
+130
+00:05:03.330 --> 00:05:07.380
+The user is admin, and the password for me was password.
+
+131
+00:05:07.380 --> 00:05:10.710
+And then the initial database is myDB
+
+132
+00:05:10.710 --> 00:05:12.420
+as I entered it from before.
+
+133
+00:05:12.420 --> 00:05:15.990
+Let's click on Test, and the connection is successful.
+
+134
+00:05:15.990 --> 00:05:17.820
+If it's not successful, please have a look
+
+135
+00:05:17.820 --> 00:05:19.650
+whether or not your database was set
+
+136
+00:05:19.650 --> 00:05:21.450
+to be a public database, number one,
+
+137
+00:05:21.450 --> 00:05:23.850
+and number two, have a look at your security group settings
+
+138
+00:05:23.850 --> 00:05:26.760
+to make sure that your IP is allowed in.
+
+139
+00:05:26.760 --> 00:05:29.610
+So let's save this and connect to our database.
+
+140
+00:05:29.610 --> 00:05:31.320
+And now I'm connected into my database,
+
+141
+00:05:31.320 --> 00:05:32.760
+directly into myDB,
+
+142
+00:05:32.760 --> 00:05:34.650
+which was the database that was created.
+
+143
+00:05:34.650 --> 00:05:35.820
+And in here, I could go ahead
+
+144
+00:05:35.820 --> 00:05:38.640
+and enter some CREATE TABLE statements.
+
+145
+00:05:38.640 --> 00:05:43.560
+So CREATE TABLE mytable,
+
+146
+00:05:43.560 --> 00:05:47.427
+and then just a name of VARCHAR(20),
+
+147
+00:05:48.960 --> 00:05:53.133
+and a first_name of VARCHAR(20).
+
+148
+00:05:54.270 --> 00:05:55.740
+So it's just a very quick statement
+
+149
+00:05:55.740 --> 00:05:57.480
+just to show you how SQL works,
+
+150
+00:05:57.480 --> 00:06:00.420
+but this is definitely out of scope for the exam.
+
+151
+00:06:00.420 --> 00:06:01.253
+Execute this.
+
+152
+00:06:01.253 --> 00:06:03.810
+So now we have my_table that has been created,
+
+153
+00:06:03.810 --> 00:06:06.390
+and then we don't have any content in it, okay?
+
+154
+00:06:06.390 --> 00:06:08.730
+But you could have an INSERT statement
+
+155
+00:06:08.730 --> 00:06:11.130
+to insert some data into your table.
+
+156
+00:06:11.130 --> 00:06:13.020
+So you would say, for example,
+
+157
+00:06:13.020 --> 00:06:14.397
+enter the value ('marrek'),
+
+158
+00:06:15.750 --> 00:06:18.420
+and then the value here ('Stephane').
+
+159
+00:06:18.420 --> 00:06:19.680
+Execute this.
+
+160
+00:06:19.680 --> 00:06:21.870
+And then if you click on Select rows,
+
+161
+00:06:21.870 --> 00:06:24.420
+then you see that my_table has my name and my first name
+
+162
+00:06:24.420 --> 00:06:25.860
+to be marrek and Stephane.
+
+163
+00:06:25.860 --> 00:06:29.610
+So this is how we would use an RDS database with MySQL.
+
+164
+00:06:29.610 --> 00:06:30.960
+But again, out of scope of the exam,
+
+165
+00:06:30.960 --> 00:06:32.400
+I just want to show you the full picture
+
+166
+00:06:32.400 --> 00:06:34.830
+of using SQL Electron.
+
+167
+00:06:34.830 --> 00:06:38.040
+So back in here, my RDS database is fully managed,
+
+168
+00:06:38.040 --> 00:06:38.873
+so this is great.
+
+169
+00:06:38.873 --> 00:06:39.706
+We can use it.
+
+170
+00:06:39.706 --> 00:06:40.539
+This is amazing.
+
+171
+00:06:40.539 --> 00:06:42.660
+Other things we can do that are worthy are
+
+172
+00:06:42.660 --> 00:06:45.360
+to create a read replica directly from this database.
+
+173
+00:06:45.360 --> 00:06:47.550
+So we can create a read replica,
+
+174
+00:06:47.550 --> 00:06:49.510
+and then this read replica would allow us
+
+175
+00:06:49.510 --> 00:06:53.070
+to have more read capacity for our database,
+
+176
+00:06:53.070 --> 00:06:54.600
+which would be very, very helpful.
+
+177
+00:06:54.600 --> 00:06:58.080
+And do we want whether or not that database to be Multi-AZ
+
+178
+00:06:58.080 --> 00:06:59.640
+for recovery purposes?
+
+179
+00:06:59.640 --> 00:07:01.563
+So I'll keep it as no and cancel it.
+
+180
+00:07:02.520 --> 00:07:05.310
+Next, we can have a look at monitoring.
+
+181
+00:07:05.310 --> 00:07:08.400
+And monitoring, for example, has the CPU Utilization.
+
+182
+00:07:08.400 --> 00:07:09.233
+And as we can see,
+
+183
+00:07:09.233 --> 00:07:11.490
+while the CPU Utilization is monitored by my database,
+
+184
+00:07:11.490 --> 00:07:13.080
+and we can monitor this, for example,
+
+185
+00:07:13.080 --> 00:07:14.370
+for scaling our database
+
+186
+00:07:14.370 --> 00:07:17.280
+if in case we have too many connections into it.
+
+187
+00:07:17.280 --> 00:07:19.410
+We can have a look at the database connection count as well
+
+188
+00:07:19.410 --> 00:07:23.040
+to see how many clients are connected into our database.
+
+189
+00:07:23.040 --> 00:07:25.560
+And a lot of metrics overall, okay?
+
+190
+00:07:25.560 --> 00:07:27.660
+Other things you can do with RDS
+
+191
+00:07:27.660 --> 00:07:29.160
+is around creating snapshots.
+
+192
+00:07:29.160 --> 00:07:30.690
+So you can take a snapshot,
+
+193
+00:07:30.690 --> 00:07:32.160
+and this will snapshot your database,
+
+194
+00:07:32.160 --> 00:07:33.960
+and you can restore it wherever you want.
+
+195
+00:07:33.960 --> 00:07:36.600
+You can restore it to a point in time for your database,
+
+196
+00:07:36.600 --> 00:07:38.370
+or you can even migrate a snapshot
+
+197
+00:07:38.370 --> 00:07:41.430
+if you wanted to migrate it into a different region,
+
+198
+00:07:41.430 --> 00:07:42.270
+for example.
+
+199
+00:07:42.270 --> 00:07:44.460
+So all these are a bunch of options that we can use.
+
+200
+00:07:44.460 --> 00:07:46.350
+But as we can see, the whole power of RDS is
+
+201
+00:07:46.350 --> 00:07:48.720
+to manage databases for us.
+
+202
+00:07:48.720 --> 00:07:51.060
+To have replicas, Multi-AZ,
+
+203
+00:07:51.060 --> 00:07:52.980
+you know, we can increase the instance type
+
+204
+00:07:52.980 --> 00:07:54.390
+as we go along, and so on.
+
+205
+00:07:54.390 --> 00:07:55.860
+And that all comes very handy
+
+206
+00:07:55.860 --> 00:07:57.660
+from a managed service perspective.
+
+207
+00:07:57.660 --> 00:07:59.070
+So you've seen all you need to know
+
+208
+00:07:59.070 --> 00:08:00.570
+for your RDS database.
+
+209
+00:08:00.570 --> 00:08:01.530
+I hope you liked it.
+
+210
+00:08:01.530 --> 00:08:02.880
+And just to finish yourself,
+
+211
+00:08:02.880 --> 00:08:05.240
+please make sure to delete the database.
+
+212
+00:08:05.240 --> 00:08:06.390
+So to delete it,
+
+213
+00:08:06.390 --> 00:08:10.230
+first you need to remove the termination protection.
+
+214
+00:08:10.230 --> 00:08:11.943
+So you go to Modify,
+
+215
+00:08:12.960 --> 00:08:15.540
+and then at the very bottom, you will scroll down
+
+216
+00:08:15.540 --> 00:08:17.970
+and find the delete protection setting.
+
+217
+00:08:17.970 --> 00:08:19.500
+So here it is.
+
+218
+00:08:19.500 --> 00:08:22.410
+We'll disable it, press Continue,
+
+219
+00:08:22.410 --> 00:08:24.540
+and then Apply immediately.
+
+220
+00:08:24.540 --> 00:08:27.660
+And then once the delete protection is done,
+
+221
+00:08:27.660 --> 00:08:29.730
+you can go ahead and delete this database.
+
+222
+00:08:29.730 --> 00:08:32.490
+You can remove creating a final snapshot
+
+223
+00:08:32.490 --> 00:08:34.080
+and then say delete me,
+
+224
+00:08:34.080 --> 00:08:36.060
+and acknowledge the fact that upon deletion,
+
+225
+00:08:36.060 --> 00:08:37.350
+everything will be lost.
+
+226
+00:08:37.350 --> 00:08:40.020
+Click on Delete, and you're good to go.
+
+227
+00:08:40.020 --> 00:08:40.890
+So that's it for this lecture.
+
+228
+00:08:40.890 --> 00:08:42.060
+I hope you liked it,
+
+229
+00:08:42.060 --> 00:08:44.010
+and I will see you in the next lecture.
+

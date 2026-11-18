@@ -1,0 +1,902 @@
+WEBVTT
+
+1
+00:00:00.030 --> 00:00:01.140
+<v Person 1>Okay, so now we're getting</v>
+
+2
+00:00:01.140 --> 00:00:02.520
+into data warehousing.
+
+3
+00:00:02.520 --> 00:00:04.415
+And for this we have Amazon Redshift.
+
+4
+00:00:04.415 --> 00:00:08.070
+So Redshift, as you may know, it is based on PostgreSQL,
+
+5
+00:00:08.070 --> 00:00:10.234
+but it is not used for OLTP.
+
+6
+00:00:10.234 --> 00:00:12.517
+OLTP is online transaction processing.
+
+7
+00:00:12.517 --> 00:00:15.510
+And RDS is a much better choice for this.
+
+8
+00:00:15.510 --> 00:00:17.130
+For Redshift, it is OLAP.
+
+9
+00:00:17.130 --> 00:00:19.590
+So online analytical processing,
+
+10
+00:00:19.590 --> 00:00:22.380
+and this is obviously when you want to do, analytics
+
+11
+00:00:22.380 --> 00:00:24.150
+and data warehousing.
+
+12
+00:00:24.150 --> 00:00:25.890
+The idea with Redshift, the cell point,
+
+13
+00:00:25.890 --> 00:00:27.780
+at least it like it has better performance
+
+14
+00:00:27.780 --> 00:00:30.360
+than other data warehouses and it can scale
+
+15
+00:00:30.360 --> 00:00:32.430
+to petabytes of data.
+
+16
+00:00:32.430 --> 00:00:35.310
+The particularity of Redshift is that the data is not stored
+
+17
+00:00:35.310 --> 00:00:37.350
+as a row, it is stored as a column.
+
+18
+00:00:37.350 --> 00:00:39.358
+So it's called a columnar storage of data.
+
+19
+00:00:39.358 --> 00:00:42.000
+And the reason it is so is that if you want, for example,
+
+20
+00:00:42.000 --> 00:00:44.850
+to sum or do the average of a column,
+
+21
+00:00:44.850 --> 00:00:46.950
+then it can read all the values at once.
+
+22
+00:00:46.950 --> 00:00:48.293
+And so it's very efficient in that regards.
+
+23
+00:00:48.293 --> 00:00:52.950
+So this is why Redshift is great for OLAP and not OLTP.
+
+24
+00:00:52.950 --> 00:00:56.820
+There is a engine called Massively Parallel Query Execution
+
+25
+00:00:56.820 --> 00:00:59.490
+or MPP, which allows you to perform queries
+
+26
+00:00:59.490 --> 00:01:01.599
+and distribute them across
+
+27
+00:01:01.599 --> 00:01:03.390
+so many Redshift nodes in your cluster
+
+28
+00:01:03.390 --> 00:01:05.370
+and get the best performance out of it.
+
+29
+00:01:05.370 --> 00:01:08.010
+You now have two modes to run your Redshift cluster.
+
+30
+00:01:08.010 --> 00:01:11.460
+You can have a provision cluster, which is on demand servers
+
+31
+00:01:11.460 --> 00:01:13.440
+that you provision ahead of time,
+
+32
+00:01:13.440 --> 00:01:15.570
+or now you have a serverless cluster.
+
+33
+00:01:15.570 --> 00:01:18.565
+If you don't want to manage any of the infrastructure,
+
+34
+00:01:18.565 --> 00:01:21.090
+it has a SQL interface for performing the queries.
+
+35
+00:01:21.090 --> 00:01:22.012
+So it is standard
+
+36
+00:01:22.012 --> 00:01:25.514
+and you can plug in some tools such as AWS QuickSight,
+
+37
+00:01:25.514 --> 00:01:28.740
+or Tableau to integrate with Redshift
+
+38
+00:01:28.740 --> 00:01:30.390
+and create some dashboards.
+
+39
+00:01:30.390 --> 00:01:33.270
+And Redshift will be running the queries very, very quickly.
+
+40
+00:01:33.270 --> 00:01:35.285
+So your dashboards are very responsive.
+
+41
+00:01:35.285 --> 00:01:39.090
+Okay, so Redshift, how do we load data into it?
+
+42
+00:01:39.090 --> 00:01:41.190
+Well, number one, you can load it from S3
+
+43
+00:01:41.190 --> 00:01:42.600
+using a copy command.
+
+44
+00:01:42.600 --> 00:01:44.250
+We can use Kinesis' data Firehose
+
+45
+00:01:44.250 --> 00:01:46.893
+to load data into Redshift near real time.
+
+46
+00:01:46.893 --> 00:01:49.140
+We can integrate with DynamoDB
+
+47
+00:01:49.140 --> 00:01:51.420
+or use DMS database migration service
+
+48
+00:01:51.420 --> 00:01:53.160
+to load data into Redshift.
+
+49
+00:01:53.160 --> 00:01:54.480
+Cluster can be really, really big.
+
+50
+00:01:54.480 --> 00:01:56.220
+So you can have hundreds of nodes.
+
+51
+00:01:56.220 --> 00:01:58.320
+Okay, the number is 100 plus.
+
+52
+00:01:58.320 --> 00:02:00.780
+It can change over time, obviously it can increase
+
+53
+00:02:00.780 --> 00:02:04.590
+and each node can have up to 16 terabytes of space.
+
+54
+00:02:04.590 --> 00:02:06.600
+And again, that number could increase over time.
+
+55
+00:02:06.600 --> 00:02:09.720
+But what this means is that you can get really massive scale
+
+56
+00:02:09.720 --> 00:02:11.743
+for your Redshift clusters.
+
+57
+00:02:11.743 --> 00:02:14.010
+You can provision multiple nodes
+
+58
+00:02:14.010 --> 00:02:15.960
+and you have single AZ support
+
+59
+00:02:15.960 --> 00:02:17.880
+for most of Redshift clusters.
+
+60
+00:02:17.880 --> 00:02:19.740
+But for some types of cluster,
+
+61
+00:02:19.740 --> 00:02:22.410
+you now have a multi AZ option,
+
+62
+00:02:22.410 --> 00:02:24.210
+which gives you failover capabilities
+
+63
+00:02:24.210 --> 00:02:26.943
+in case you experience a disaster in one specific AZ.
+
+64
+00:02:27.810 --> 00:02:30.090
+So you have two types of node in Redshift,
+
+65
+00:02:30.090 --> 00:02:31.710
+you have the leader node, which is here
+
+66
+00:02:31.710 --> 00:02:32.880
+for doing query planning
+
+67
+00:02:32.880 --> 00:02:36.120
+and aggregate any results from the compute node.
+
+68
+00:02:36.120 --> 00:02:38.070
+And the compute node are gonna be here
+
+69
+00:02:38.070 --> 00:02:39.360
+for performing the queries
+
+70
+00:02:39.360 --> 00:02:42.020
+and they're going to send the results back to the leader.
+
+71
+00:02:42.020 --> 00:02:45.450
+Redshift is a managed service and therefore we get backup
+
+72
+00:02:45.450 --> 00:02:46.950
+and restore facility.
+
+73
+00:02:46.950 --> 00:02:48.450
+It's launched within the VPC.
+
+74
+00:02:48.450 --> 00:02:51.240
+So we have VPC enhancements, IAM security
+
+75
+00:02:51.240 --> 00:02:54.780
+for accessing the cluster, KMS security for encryption
+
+76
+00:02:54.780 --> 00:02:57.204
+of the data and monitoring through CloudWatch.
+
+77
+00:02:57.204 --> 00:02:58.260
+There is this thing
+
+78
+00:02:58.260 --> 00:03:01.170
+called the Redshift enhanced VPC routing, which is
+
+79
+00:03:01.170 --> 00:03:03.900
+to make sure that your copy and unload goes directly
+
+80
+00:03:03.900 --> 00:03:05.100
+through the VPC.
+
+81
+00:03:05.100 --> 00:03:07.510
+So it gives you better performance and lower cost.
+
+82
+00:03:07.510 --> 00:03:09.900
+Finally, remember, Redshift is something you have
+
+83
+00:03:09.900 --> 00:03:11.983
+to provisioned, so it's only worth it
+
+84
+00:03:11.983 --> 00:03:15.180
+when you have a sustained usage of your cluster.
+
+85
+00:03:15.180 --> 00:03:17.946
+If your queries are sporadic instead, Athena is going
+
+86
+00:03:17.946 --> 00:03:20.760
+to be a much greater, better choice.
+
+87
+00:03:20.760 --> 00:03:22.680
+Okay, now let's talk about
+
+88
+00:03:22.680 --> 00:03:24.960
+from an architectural perspective, the snapshots
+
+89
+00:03:24.960 --> 00:03:26.250
+and disaster recovery.
+
+90
+00:03:26.250 --> 00:03:28.530
+This is very important, you know this going into the exam.
+
+91
+00:03:28.530 --> 00:03:30.990
+So snapshots are going to be point in time backups
+
+92
+00:03:30.990 --> 00:03:32.340
+of a cluster and they're going
+
+93
+00:03:32.340 --> 00:03:34.980
+to be internally stored into Amazon S3.
+
+94
+00:03:34.980 --> 00:03:36.600
+And anytime you redo a snapshot,
+
+95
+00:03:36.600 --> 00:03:37.950
+it's going to be incremental.
+
+96
+00:03:37.950 --> 00:03:39.270
+So only what has changed
+
+97
+00:03:39.270 --> 00:03:41.280
+in your Redshift cluster will be saved.
+
+98
+00:03:41.280 --> 00:03:43.890
+And the cool thing is that you can restore a snapshot
+
+99
+00:03:43.890 --> 00:03:45.930
+into a new cluster.
+
+100
+00:03:45.930 --> 00:03:47.940
+So it's not an old cluster
+
+101
+00:03:47.940 --> 00:03:49.260
+that you can restore a snapshot into.
+
+102
+00:03:49.260 --> 00:03:51.780
+You have to create a new cluster from a snapshot.
+
+103
+00:03:51.780 --> 00:03:54.060
+So we have two kinds of snapshots.
+
+104
+00:03:54.060 --> 00:03:55.980
+The first one are automated snapshots,
+
+105
+00:03:55.980 --> 00:03:58.685
+and they happen every eight hours
+
+106
+00:03:58.685 --> 00:04:00.875
+or every five gigabytes of data is changed in your cluster
+
+107
+00:04:00.875 --> 00:04:02.636
+or on the schedule that you set.
+
+108
+00:04:02.636 --> 00:04:04.920
+And you're going to set a retention for your snapshot,
+
+109
+00:04:04.920 --> 00:04:06.180
+for example, 30 days.
+
+110
+00:04:06.180 --> 00:04:07.830
+And after 30 days, your snapshots
+
+111
+00:04:08.743 --> 00:04:10.242
+will be automatically removed.
+
+112
+00:04:10.242 --> 00:04:12.515
+And then if you want to have very long term storage
+
+113
+00:04:12.515 --> 00:04:13.980
+of your data for as a snapshot,
+
+114
+00:04:13.980 --> 00:04:15.570
+then you create a manual snapshot.
+
+115
+00:04:15.570 --> 00:04:18.150
+And in that case, the manual snapshot is retained
+
+116
+00:04:18.150 --> 00:04:19.299
+until you delete it.
+
+117
+00:04:19.299 --> 00:04:22.980
+So this is very, very similar to how RDS works.
+
+118
+00:04:22.980 --> 00:04:25.020
+There's one cool thing though with Redshift is
+
+119
+00:04:25.020 --> 00:04:26.490
+that you can configure Redshift
+
+120
+00:04:26.490 --> 00:04:28.699
+to automatically copy your snapshots either automated
+
+121
+00:04:28.699 --> 00:04:32.880
+or manual to another AWS region.
+
+122
+00:04:32.880 --> 00:04:35.995
+And that is really, really cool because in case you are
+
+123
+00:04:35.995 --> 00:04:37.260
+creating a disaster recovery strategy
+
+124
+00:04:37.260 --> 00:04:39.810
+and you're saying, okay, my Redshift warehouse needs
+
+125
+00:04:39.810 --> 00:04:42.815
+to be recovered into another region very quickly,
+
+126
+00:04:42.815 --> 00:04:45.600
+then you know you can copy automatically your snapshots
+
+127
+00:04:45.600 --> 00:04:48.360
+across regions such as whenever a disaster
+
+128
+00:04:48.360 --> 00:04:49.680
+strikes your first region,
+
+129
+00:04:49.680 --> 00:04:52.713
+you can restore very quickly into the other region.
+
+130
+00:04:53.610 --> 00:04:55.980
+So how do we do a cross region snapshot copy
+
+131
+00:04:55.980 --> 00:04:57.930
+for KMS encrypted Redshift snapshot?
+
+132
+00:04:57.930 --> 00:05:00.150
+So you have the source and your snapshot
+
+133
+00:05:00.150 --> 00:05:01.020
+is in your source region.
+
+134
+00:05:01.020 --> 00:05:03.120
+It's encrypted using the KMS key A,
+
+135
+00:05:03.120 --> 00:05:06.445
+and you want to copy it into destination KMS key B.
+
+136
+00:05:06.445 --> 00:05:07.800
+So what we need to do
+
+137
+00:05:07.800 --> 00:05:11.400
+is call a Redshift snapshot copy grant.
+
+138
+00:05:11.400 --> 00:05:14.520
+And what this is, is that it will allow Redshift the service
+
+139
+00:05:14.520 --> 00:05:18.480
+to perform encryption operations in the destination region.
+
+140
+00:05:18.480 --> 00:05:21.570
+When this is done, then you can copy your snapshot
+
+141
+00:05:21.570 --> 00:05:24.270
+from the region one into the region two,
+
+142
+00:05:24.270 --> 00:05:26.100
+and then it will be encrypted by Redshift
+
+143
+00:05:26.100 --> 00:05:27.870
+with a correct KMS key.
+
+144
+00:05:27.870 --> 00:05:30.390
+So the really magical thing here that happens
+
+145
+00:05:30.390 --> 00:05:31.680
+is that you need to have
+
+146
+00:05:31.680 --> 00:05:34.245
+and create a snapshot copy grant.
+
+147
+00:05:34.245 --> 00:05:36.900
+Redshift spectrum is a way for you
+
+148
+00:05:36.900 --> 00:05:38.910
+to query data in Amazon is free
+
+149
+00:05:38.910 --> 00:05:41.550
+without first loading it into Redshift.
+
+150
+00:05:41.550 --> 00:05:43.680
+For this, you must have a Redshift cluster available
+
+151
+00:05:43.680 --> 00:05:44.880
+to start the query,
+
+152
+00:05:44.880 --> 00:05:47.310
+and then the query is then submitted to thousands
+
+153
+00:05:47.310 --> 00:05:49.590
+of Redshift spectrum nodes.
+
+154
+00:05:49.590 --> 00:05:50.423
+So how does that work?
+
+155
+00:05:50.423 --> 00:05:52.710
+Well, we have our existing Redshift cluster
+
+156
+00:05:52.710 --> 00:05:55.440
+has a leader node and has a bunch of compute nodes.
+
+157
+00:05:55.440 --> 00:05:58.710
+But then if we do a query on data on Amazon S3
+
+158
+00:05:58.710 --> 00:06:01.470
+that will look like this, then what's going to happen
+
+159
+00:06:01.470 --> 00:06:03.450
+is that Redshift is going to spin up a lot
+
+160
+00:06:03.450 --> 00:06:07.110
+of virtual spectrum nodes that will do the computation
+
+161
+00:06:07.110 --> 00:06:09.840
+and the query of our dataset in Amazon S3.
+
+162
+00:06:09.840 --> 00:06:11.430
+And then once the result is there, it's going
+
+163
+00:06:11.430 --> 00:06:14.430
+to be sent back to the compute nodes for aggregation
+
+164
+00:06:14.430 --> 00:06:17.080
+and then it will be rolled back into the leader node.
+
+165
+00:06:17.921 --> 00:06:18.990
+You also have a feature
+
+166
+00:06:18.990 --> 00:06:21.535
+called Redshift Workload Management, WLM.
+
+167
+00:06:21.535 --> 00:06:25.800
+So it enables you to flexibly manage queries priorities
+
+168
+00:06:25.800 --> 00:06:27.120
+within workloads.
+
+169
+00:06:27.120 --> 00:06:28.320
+And the use case for this
+
+170
+00:06:28.320 --> 00:06:31.770
+is to prevent short fast running queries from getting stuck
+
+171
+00:06:31.770 --> 00:06:33.398
+behind long running queries.
+
+172
+00:06:33.398 --> 00:06:35.322
+You can define multiple query queues.
+
+173
+00:06:35.322 --> 00:06:38.310
+You can define, for example, a super user queue,
+
+174
+00:06:38.310 --> 00:06:39.630
+user defined queues, and so on.
+
+175
+00:06:39.630 --> 00:06:41.520
+And then you route your query
+
+176
+00:06:41.520 --> 00:06:43.605
+to the appropriate queue at runtime.
+
+177
+00:06:43.605 --> 00:06:45.750
+So in this example, I have Amazon Redshift
+
+178
+00:06:45.750 --> 00:06:46.650
+and I have three queues.
+
+179
+00:06:46.650 --> 00:06:49.380
+I have the super user queue, the short running queue,
+
+180
+00:06:49.380 --> 00:06:50.760
+and the long running queue.
+
+181
+00:06:50.760 --> 00:06:52.170
+The names are pretty explicit
+
+182
+00:06:52.170 --> 00:06:53.760
+and say we have two kinds of users.
+
+183
+00:06:53.760 --> 00:06:55.435
+We have our admin and our user.
+
+184
+00:06:55.435 --> 00:06:58.170
+So the admin, they want their queries to be done
+
+185
+00:06:58.170 --> 00:06:59.250
+as soon as possible.
+
+186
+00:06:59.250 --> 00:07:00.410
+So they will do system queries,
+
+187
+00:07:00.410 --> 00:07:02.940
+and then these queries will go directly
+
+188
+00:07:02.940 --> 00:07:04.470
+into the super user queue.
+
+189
+00:07:04.470 --> 00:07:06.120
+And this will have priority,
+
+190
+00:07:06.120 --> 00:07:08.550
+the user may have some short running queries,
+
+191
+00:07:08.550 --> 00:07:09.960
+and these we want to have
+
+192
+00:07:09.960 --> 00:07:11.640
+into the short running query queue.
+
+193
+00:07:11.640 --> 00:07:13.525
+This way we are sure that it will just be a lot
+
+194
+00:07:13.525 --> 00:07:15.465
+of short running queries,
+
+195
+00:07:15.465 --> 00:07:18.600
+but if the user is submitting a longer running query
+
+196
+00:07:18.600 --> 00:07:20.250
+and we know it's gonna take a lot of time,
+
+197
+00:07:20.250 --> 00:07:23.190
+then we should send it directly into the long running queue
+
+198
+00:07:23.190 --> 00:07:26.083
+to make sure not to block the short running queries.
+
+199
+00:07:26.083 --> 00:07:28.950
+So we have two kind of workload management.
+
+200
+00:07:28.950 --> 00:07:31.320
+The first one is automatic WLM,
+
+201
+00:07:31.320 --> 00:07:33.720
+where the queues and resources are managed by Redshift.
+
+202
+00:07:33.720 --> 00:07:36.570
+And the second one is manual WLM, where the queues
+
+203
+00:07:36.570 --> 00:07:39.217
+and resources are managed by you, the user.
+
+204
+00:07:39.217 --> 00:07:42.510
+Then we have Redshift concurrency scaling.
+
+205
+00:07:42.510 --> 00:07:47.220
+So this enables you to provide consistently fast performance
+
+206
+00:07:47.220 --> 00:07:49.590
+with virtually unlimited number of users
+
+207
+00:07:49.590 --> 00:07:52.500
+and queries by adding Redshift capacity on the fly.
+
+208
+00:07:52.500 --> 00:07:54.210
+So this additional cluster capacity
+
+209
+00:07:54.210 --> 00:07:56.880
+is called concurrency scaling cluster and allows you
+
+210
+00:07:56.880 --> 00:07:58.860
+to process an increase in requests.
+
+211
+00:07:58.860 --> 00:08:00.690
+So let's say we have a normal Redshift cluster
+
+212
+00:08:00.690 --> 00:08:01.950
+with a few nodes another,
+
+213
+00:08:01.950 --> 00:08:04.380
+and then this sustains a bunch of users
+
+214
+00:08:04.380 --> 00:08:05.730
+that we have normally,
+
+215
+00:08:05.730 --> 00:08:08.640
+but say tomorrow we get a lot more users submitting queries
+
+216
+00:08:08.640 --> 00:08:09.870
+into Amazon Redshift,
+
+217
+00:08:09.870 --> 00:08:12.720
+then automatically the concurrency scaling cluster
+
+218
+00:08:12.720 --> 00:08:15.720
+will add nodes automatically to accommodate
+
+219
+00:08:15.720 --> 00:08:17.083
+for this number of users.
+
+220
+00:08:17.083 --> 00:08:20.160
+Now we get the ability to decide which queries get sent
+
+221
+00:08:20.160 --> 00:08:21.870
+to the concurrency scaling cluster
+
+222
+00:08:21.870 --> 00:08:24.930
+using the WLM feature we just saw before.
+
+223
+00:08:24.930 --> 00:08:27.544
+And this feature is charge per second.
+
+224
+00:08:27.544 --> 00:08:30.360
+So that's all you need to know about Redshift.
+
+225
+00:08:30.360 --> 00:08:33.310
+I hope you liked it and I will see you in the next lecture.
+

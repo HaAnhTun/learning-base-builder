@@ -1,0 +1,974 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.163
+<v ->Okay, so let's get into AWS CodeDeploy.</v>
+
+2
+00:00:03.163 --> 00:00:05.190
+CodeDeploy is obviously going to be
+
+3
+00:00:05.190 --> 00:00:08.910
+a better focus on the DevOps Pro exam, but for the SA Pro
+
+4
+00:00:08.910 --> 00:00:11.850
+you absolutely need to know how CodeDeploy works
+
+5
+00:00:11.850 --> 00:00:15.780
+for deploying to EC2, ASG, ECS and Lambda.
+
+6
+00:00:15.780 --> 00:00:18.480
+And this is what this lecture is going to cover.
+
+7
+00:00:18.480 --> 00:00:21.090
+So CodeDeploy is going to help us deploy our applications
+
+8
+00:00:21.090 --> 00:00:23.820
+to, for example, many EC2 instances.
+
+9
+00:00:23.820 --> 00:00:26.700
+The idea is that they're all on the V1 version
+
+10
+00:00:26.700 --> 00:00:28.830
+and we want to somehow migrate them
+
+11
+00:00:28.830 --> 00:00:32.370
+to a V2 version by deploying new versions of the code.
+
+12
+00:00:32.370 --> 00:00:35.452
+These instances are not managed by Elastic Beanstalk.
+
+13
+00:00:35.452 --> 00:00:39.201
+They are running the DevOps, the CodeDeploy agents
+
+14
+00:00:39.201 --> 00:00:41.220
+and this CodeDeploy agent is going to be
+
+15
+00:00:41.220 --> 00:00:44.910
+the one helping these instances move on to the next version.
+
+16
+00:00:44.910 --> 00:00:47.351
+So there's several ways to do deployments on AWS.
+
+17
+00:00:47.351 --> 00:00:50.070
+There is Ansible, Terraform, Chef, Puppet, et cetera
+
+18
+00:00:50.070 --> 00:00:51.300
+and even Beanstalk.
+
+19
+00:00:51.300 --> 00:00:54.570
+But we can use the managed service AWS could deploy to
+
+20
+00:00:54.570 --> 00:00:57.270
+do this specifically on AWS.
+
+21
+00:00:57.270 --> 00:00:59.550
+Why? Because CodeDeploy has integrations
+
+22
+00:00:59.550 --> 00:01:04.020
+with EC2 auto scaling in groups ECS and Lambda.
+
+23
+00:01:04.020 --> 00:01:05.850
+So let's have a deeper look at
+
+24
+00:01:05.850 --> 00:01:07.530
+to as to how CodeDeploy works
+
+25
+00:01:07.530 --> 00:01:10.650
+for each and every one of these functions.
+
+26
+00:01:10.650 --> 00:01:12.510
+So the first one is EC2.
+
+27
+00:01:12.510 --> 00:01:14.782
+We define how we want to deploy the application
+
+28
+00:01:14.782 --> 00:01:19.680
+in the file named appspec.yml + deployment strategy
+
+29
+00:01:19.680 --> 00:01:20.640
+and deployment strategy
+
+30
+00:01:20.640 --> 00:01:22.590
+could be how fast we want the rollout to be.
+
+31
+00:01:22.590 --> 00:01:23.550
+Is it all at once?
+
+32
+00:01:23.550 --> 00:01:24.540
+Is it gradual?
+
+33
+00:01:24.540 --> 00:01:25.800
+And this is not the focus of this.
+
+34
+00:01:25.800 --> 00:01:28.350
+We just need to understand how it happens at a high level.
+
+35
+00:01:28.350 --> 00:01:30.060
+It will do in place updates
+
+36
+00:01:30.060 --> 00:01:31.800
+to your fleet of EC2 instances.
+
+37
+00:01:31.800 --> 00:01:34.590
+It doesn't create new EC2 instances.
+
+38
+00:01:34.590 --> 00:01:37.410
+And we can define hooks on the EC2 instance to
+
+39
+00:01:37.410 --> 00:01:39.510
+verify the deployment is working great
+
+40
+00:01:39.510 --> 00:01:41.340
+after each deployment phase.
+
+41
+00:01:41.340 --> 00:01:44.010
+So the idea for one example is called half at a time.
+
+42
+00:01:44.010 --> 00:01:46.042
+We have four EC2 instances, they're V1
+
+43
+00:01:46.042 --> 00:01:48.882
+and half of them are going to be taken offline.
+
+44
+00:01:48.882 --> 00:01:50.850
+So we have two of them gone.
+
+45
+00:01:50.850 --> 00:01:52.980
+Then two of them are kept on v1.
+
+46
+00:01:52.980 --> 00:01:55.290
+So right now we're serving half the traffic.
+
+47
+00:01:55.290 --> 00:01:56.970
+Okay? So we may have more load
+
+48
+00:01:56.970 --> 00:01:59.129
+onto these two remaining EC2 instances,
+
+49
+00:01:59.129 --> 00:02:00.810
+but because these two,
+
+50
+00:02:00.810 --> 00:02:02.279
+the other ones have been taken offline
+
+51
+00:02:02.279 --> 00:02:04.980
+then they can be upgraded into a V2 version.
+
+52
+00:02:04.980 --> 00:02:08.610
+So now we're running half of the EC2 instances
+
+53
+00:02:08.610 --> 00:02:11.910
+on V2 and half of the instances on V1.
+
+54
+00:02:11.910 --> 00:02:14.760
+Then we'll take the other half, we'll take it down.
+
+55
+00:02:14.760 --> 00:02:16.950
+I mean CodeDeploy will do this for you obviously.
+
+56
+00:02:16.950 --> 00:02:20.520
+And then the instances will be upgraded to v2.
+
+57
+00:02:20.520 --> 00:02:22.950
+And we have successfully performed half
+
+58
+00:02:22.950 --> 00:02:26.220
+at a time CodeDeploy deployments into EC2.
+
+59
+00:02:26.220 --> 00:02:27.630
+There are different strategies that EC2
+
+60
+00:02:27.630 --> 00:02:30.660
+CodeDeploy can do for EC2, but just remember this one.
+
+61
+00:02:30.660 --> 00:02:33.330
+It is very simple and it gives you an idea of the process.
+
+62
+00:02:33.330 --> 00:02:36.210
+In this example, this is in place updates.
+
+63
+00:02:36.210 --> 00:02:39.150
+So the EC2 instance is going to be changed to take
+
+64
+00:02:39.150 --> 00:02:40.935
+down the V1 application in some way
+
+65
+00:02:40.935 --> 00:02:44.670
+and make the V2 application appear right after.
+
+66
+00:02:44.670 --> 00:02:46.470
+Okay, let's step it up a little bit
+
+67
+00:02:46.470 --> 00:02:50.040
+and talk about CodeDeploy to your auto scaling groups.
+
+68
+00:02:50.040 --> 00:02:53.040
+So you have two kind of updates to your auto scaling group.
+
+69
+00:02:53.040 --> 00:02:55.440
+The first one is in place updates where
+
+70
+00:02:55.440 --> 00:02:58.680
+you update the current existing EC2 instances
+
+71
+00:02:58.680 --> 00:03:00.090
+in your auto scaling group.
+
+72
+00:03:00.090 --> 00:03:01.860
+So this is very, very similar
+
+73
+00:03:01.860 --> 00:03:04.050
+to what we've seen from the past slide.
+
+74
+00:03:04.050 --> 00:03:05.790
+And the instances that get created
+
+75
+00:03:05.790 --> 00:03:08.820
+by an ASG will also get automated deployment.
+
+76
+00:03:08.820 --> 00:03:11.670
+So if your ASG does a scale out
+
+77
+00:03:11.670 --> 00:03:14.340
+so it creates a new EC2 instance during
+
+78
+00:03:14.340 --> 00:03:17.423
+an CodeDeploy deployment that could deploy will also deploy
+
+79
+00:03:17.423 --> 00:03:19.620
+through that new EC2 instance.
+
+80
+00:03:19.620 --> 00:03:21.450
+So this is one way, and I'm not representing it
+
+81
+00:03:21.450 --> 00:03:23.550
+because we've seen it in the past slide
+
+82
+00:03:23.550 --> 00:03:25.855
+but then there is blue green deployment
+
+83
+00:03:25.855 --> 00:03:29.250
+and in that case a new auto scaling group is created
+
+84
+00:03:29.250 --> 00:03:30.447
+the settings are copied
+
+85
+00:03:30.447 --> 00:03:32.640
+and then the instances will be transferred
+
+86
+00:03:32.640 --> 00:03:34.500
+from one auto scaling group to another.
+
+87
+00:03:34.500 --> 00:03:37.860
+And we can choose how long to keep the old instances
+
+88
+00:03:37.860 --> 00:03:40.380
+and we must be using an elastic load balancer
+
+89
+00:03:40.380 --> 00:03:41.839
+for this kind of deployments.
+
+90
+00:03:41.839 --> 00:03:42.672
+So I've simplified it, but here is the example.
+
+91
+00:03:42.672 --> 00:03:44.679
+So ALB is serving traffic
+
+92
+00:03:44.679 --> 00:03:49.530
+and we currently have an auto scaling group that has EC2
+
+93
+00:03:49.530 --> 00:03:52.830
+instances that are launched using the launch template V1
+
+94
+00:03:52.830 --> 00:03:56.040
+and CodeDeploy will deploy your application
+
+95
+00:03:56.040 --> 00:03:57.300
+into these instances
+
+96
+00:03:57.300 --> 00:03:58.920
+in case your auto scaling group
+
+97
+00:03:58.920 --> 00:04:00.900
+starts adding more EC2 instance.
+
+98
+00:04:00.900 --> 00:04:03.103
+So as we scale out for our auto scaling group,
+
+99
+00:04:03.103 --> 00:04:04.680
+CodeDeploy is smart enough
+
+100
+00:04:04.680 --> 00:04:07.890
+to start deploying the application to the instances.
+
+101
+00:04:07.890 --> 00:04:11.070
+But as soon as we initiate a deployment for getting
+
+102
+00:04:11.070 --> 00:04:14.520
+into a v2, we're getting into a blue/greenreen deployment
+
+103
+00:04:14.520 --> 00:04:17.010
+and EC2 instances are going to be created
+
+104
+00:04:17.010 --> 00:04:18.180
+in another auto scaling group.
+
+105
+00:04:18.180 --> 00:04:20.370
+But in this example are just put it under the same
+
+106
+00:04:20.370 --> 00:04:21.330
+it doesn't really matter
+
+107
+00:04:21.330 --> 00:04:23.820
+and they get transferred over to the old auto scaling group.
+
+108
+00:04:23.820 --> 00:04:24.990
+And so now we have
+
+109
+00:04:24.990 --> 00:04:28.512
+both EC2 instances running the V2 and the V1.
+
+110
+00:04:28.512 --> 00:04:31.130
+And so CodeDeploy has to deploy the application
+
+111
+00:04:31.130 --> 00:04:34.770
+to these new EC2 instances running the V2 version.
+
+112
+00:04:34.770 --> 00:04:38.661
+And then our ALB is going to be serving both versions
+
+113
+00:04:38.661 --> 00:04:40.140
+at the same time.
+
+114
+00:04:40.140 --> 00:04:42.660
+And if everything looks fine, then at some point
+
+115
+00:04:42.660 --> 00:04:46.324
+CodeDeploy is going to remove the old EC2 instances
+
+116
+00:04:46.324 --> 00:04:48.870
+and the deployment will have happened.
+
+117
+00:04:48.870 --> 00:04:51.240
+So what we can remember out of this deployment is
+
+118
+00:04:51.240 --> 00:04:54.030
+that if we're doing blue/green deployment with an ASG
+
+119
+00:04:54.030 --> 00:04:57.300
+new EC2 instances are created and so they're clean.
+
+120
+00:04:57.300 --> 00:05:00.060
+And then we just create the application V2
+
+121
+00:05:00.060 --> 00:05:01.980
+on these new EC2 instances.
+
+122
+00:05:01.980 --> 00:05:04.080
+And that may be easier than shutting
+
+123
+00:05:04.080 --> 00:05:06.360
+down the V1 instance of the V1 application
+
+124
+00:05:06.360 --> 00:05:09.900
+and creating the V2 application on the same instance.
+
+125
+00:05:09.900 --> 00:05:12.090
+So it's up to you, it's up to your requirements, but
+
+126
+00:05:12.090 --> 00:05:15.660
+at least you've seen the blue/green deployment on the ASG.
+
+127
+00:05:15.660 --> 00:05:16.980
+Next, let's talk about Lambda.
+
+128
+00:05:16.980 --> 00:05:19.020
+So CodeDeploy can deploy
+
+129
+00:05:19.020 --> 00:05:21.090
+to AWS Lambda and you need to know this.
+
+130
+00:05:21.090 --> 00:05:22.110
+And what it will do is
+
+131
+00:05:22.110 --> 00:05:24.780
+that it will use the traffic shifting feature
+
+132
+00:05:24.780 --> 00:05:26.820
+of your Lambda alias.
+
+133
+00:05:26.820 --> 00:05:27.795
+You can also define a pre
+
+134
+00:05:27.795 --> 00:05:31.140
+and post-traffic hook Lambda functions that will
+
+135
+00:05:31.140 --> 00:05:33.570
+help you validate the deployment itself.
+
+136
+00:05:33.570 --> 00:05:35.082
+I'll show you this in a diagram right now
+
+137
+00:05:35.082 --> 00:05:37.170
+and you can also get easy
+
+138
+00:05:37.170 --> 00:05:39.930
+and automated rollbacks using a CloudWatch alarm
+
+139
+00:05:39.930 --> 00:05:41.100
+that you would set up.
+
+140
+00:05:41.100 --> 00:05:43.140
+And finally, if you're using the serverless
+
+141
+00:05:43.140 --> 00:05:45.660
+application model framework SAML, then
+
+142
+00:05:45.660 --> 00:05:48.570
+in case you deploy new Lambda versions through SAML
+
+143
+00:05:48.570 --> 00:05:51.960
+it will natively use CodeDeploy for doing the deployment.
+
+144
+00:05:51.960 --> 00:05:53.670
+And that is very important to remember.
+
+145
+00:05:53.670 --> 00:05:56.027
+So let's go through a concrete example.
+
+146
+00:05:56.027 --> 00:05:57.570
+We have our Lambda alias
+
+147
+00:05:57.570 --> 00:06:00.210
+and it's running a V1 Lambda function.
+
+148
+00:06:00.210 --> 00:06:02.340
+And so we're going to trigger CodeDeploy, maybe
+
+149
+00:06:02.340 --> 00:06:05.247
+it's our CICD that's going to to trigger CodeDeploy.
+
+150
+00:06:05.247 --> 00:06:09.690
+And CodeDeploy needs to create the V2 function
+
+151
+00:06:09.690 --> 00:06:10.639
+of our Lambda.
+
+152
+00:06:10.639 --> 00:06:13.650
+And right now it's going to be in the alias, but with 0%.
+
+153
+00:06:13.650 --> 00:06:16.033
+So no traffic is going to go to our V2.
+
+154
+00:06:16.033 --> 00:06:19.222
+CodeDeploy will then run if we have specified it
+
+155
+00:06:19.222 --> 00:06:21.621
+a Lambda function, which is another Lambda function.
+
+156
+00:06:21.621 --> 00:06:23.880
+And that Lambda function is called
+
+157
+00:06:23.880 --> 00:06:26.220
+a pre- traffic hook function.
+
+158
+00:06:26.220 --> 00:06:27.792
+And its role is to run some tests
+
+159
+00:06:27.792 --> 00:06:30.180
+on your V2 Lambda function to make sure
+
+160
+00:06:30.180 --> 00:06:32.370
+that it behaves properly.
+
+161
+00:06:32.370 --> 00:06:34.740
+If it does behave properly and it passes the test
+
+162
+00:06:34.740 --> 00:06:37.590
+then CodeDeploy will start using the Lambda alias
+
+163
+00:06:37.590 --> 00:06:40.731
+traffic shifting feature to start shifting traffic
+
+164
+00:06:40.731 --> 00:06:43.740
+between your V1 function and your V2 function.
+
+165
+00:06:43.740 --> 00:06:45.360
+And so now your V2 function is going to
+
+166
+00:06:45.360 --> 00:06:47.070
+start receiving traffic.
+
+167
+00:06:47.070 --> 00:06:49.440
+You can also set up a CloudWatch alarm that is
+
+168
+00:06:49.440 --> 00:06:51.030
+going to monitor maybe some metrics
+
+169
+00:06:51.030 --> 00:06:52.110
+around your Lambda functions
+
+170
+00:06:52.110 --> 00:06:55.050
+or other things such as if the CloudWatch alarm
+
+171
+00:06:55.050 --> 00:06:57.360
+the CloudWatch alarm takes off, then CodeDeploy
+
+172
+00:06:57.360 --> 00:06:59.580
+will automatically roll back your deployment
+
+173
+00:06:59.580 --> 00:07:02.040
+and then you'll be back with just the V1 function.
+
+174
+00:07:02.040 --> 00:07:04.890
+Finally, once the traffic fix shifting has done
+
+175
+00:07:04.890 --> 00:07:08.730
+and is finished, we can run a post traffic hook.
+
+176
+00:07:08.730 --> 00:07:10.320
+This is one more Lambda function
+
+177
+00:07:10.320 --> 00:07:13.500
+that we have to define optionally that will run some tests.
+
+178
+00:07:13.500 --> 00:07:15.390
+After all the traffic has been shifted
+
+179
+00:07:15.390 --> 00:07:17.088
+onto our V2 Lambda function.
+
+180
+00:07:17.088 --> 00:07:21.270
+And if everything passes, then our V1 Lamda function is gone
+
+181
+00:07:21.270 --> 00:07:24.690
+and the Lambda alias only serves the V2 Lambda function.
+
+182
+00:07:24.690 --> 00:07:26.490
+And that's it, fairly simple.
+
+183
+00:07:26.490 --> 00:07:29.040
+It looks like the same from before, but here you
+
+184
+00:07:29.040 --> 00:07:31.230
+have to remember we're using the traffic shifting feature
+
+185
+00:07:31.230 --> 00:07:32.610
+of the Lambda alias.
+
+186
+00:07:32.610 --> 00:07:35.610
+And also we have Lambda functions for pre-traffic hook
+
+187
+00:07:35.610 --> 00:07:38.250
+and post-traffic hook to run some tests during
+
+188
+00:07:38.250 --> 00:07:39.390
+our deployments.
+
+189
+00:07:39.390 --> 00:07:43.740
+Finally, we have CodeDeploy into ECS, and this is
+
+190
+00:07:43.740 --> 00:07:46.950
+supported again with blue/green deployments for Amazon ECS
+
+191
+00:07:46.950 --> 00:07:49.140
+and AWS Fargate.
+
+192
+00:07:49.140 --> 00:07:50.850
+And the setup is going to be done
+
+193
+00:07:50.850 --> 00:07:53.430
+within the ECS service definition.
+
+194
+00:07:53.430 --> 00:07:54.780
+So it's not something you can do currently
+
+195
+00:07:54.780 --> 00:07:56.160
+from the CodeDeploy console.
+
+196
+00:07:56.160 --> 00:07:58.980
+You have to go into the ECS service and define it there.
+
+197
+00:07:58.980 --> 00:08:02.460
+The idea is that a new task set will be created
+
+198
+00:08:02.460 --> 00:08:06.210
+and then the traffic will be rerouted to the new task set.
+
+199
+00:08:06.210 --> 00:08:08.594
+And then after the deployment has been done
+
+200
+00:08:08.594 --> 00:08:12.060
+CodeDeploy will check if everything is stable for X number
+
+201
+00:08:12.060 --> 00:08:12.900
+of minutes.
+
+202
+00:08:12.900 --> 00:08:16.050
+And then if it is, then the old task set is going to
+
+203
+00:08:16.050 --> 00:08:18.720
+be terminated so you have some time to notice issues
+
+204
+00:08:18.720 --> 00:08:19.890
+if you need to.
+
+205
+00:08:19.890 --> 00:08:22.740
+And another strategy is to use Canary deployments so
+
+206
+00:08:22.740 --> 00:08:25.920
+that a Canary is used for 10% for five minutes
+
+207
+00:08:25.920 --> 00:08:29.586
+and then everything is shifted over to the new deployments.
+
+208
+00:08:29.586 --> 00:08:31.620
+So let's go through a diagram again.
+
+209
+00:08:31.620 --> 00:08:34.855
+So our application answer is going to be linked
+
+210
+00:08:34.855 --> 00:08:35.688
+to an ECS service.
+
+211
+00:08:35.688 --> 00:08:38.730
+The ECS service is going to launch ECS task using the task
+
+212
+00:08:38.730 --> 00:08:42.270
+definition number one, and then CodeDeploy is going to say
+
+213
+00:08:42.270 --> 00:08:44.615
+Hey, I want to do a deployment onto ECS.
+
+214
+00:08:44.615 --> 00:08:48.870
+You need to upgrade to a new task version task definition.
+
+215
+00:08:48.870 --> 00:08:50.850
+So there's going to be a blue/green deployment
+
+216
+00:08:50.850 --> 00:08:53.130
+and a traffic shifting feature that will happen.
+
+217
+00:08:53.130 --> 00:08:56.037
+And so ECS service itself will start launching
+
+218
+00:08:56.037 --> 00:08:59.287
+a new task set using task definition number 2
+
+219
+00:08:59.287 --> 00:09:02.580
+and that will be linked into the application balancer.
+
+220
+00:09:02.580 --> 00:09:04.350
+And then CodeDeploy, we'll make sure
+
+221
+00:09:04.350 --> 00:09:06.810
+that there is a traffic shifting feature happening.
+
+222
+00:09:06.810 --> 00:09:09.510
+So this is a screenshot from CodeDeploy itself.
+
+223
+00:09:09.510 --> 00:09:11.203
+And as you can see on the bottom right
+
+224
+00:09:11.203 --> 00:09:13.800
+there's a traffic shifting progress, which is
+
+225
+00:09:13.800 --> 00:09:17.100
+that this original instances right now have 60%
+
+226
+00:09:17.100 --> 00:09:18.180
+of the traffic
+
+227
+00:09:18.180 --> 00:09:21.300
+and the replacement instances have 40% of the traffic.
+
+228
+00:09:21.300 --> 00:09:24.630
+And so the traffic will be shifted gradually over time.
+
+229
+00:09:24.630 --> 00:09:27.630
+And then after everything has been shifted
+
+230
+00:09:27.630 --> 00:09:30.810
+they will check for stability for maybe five minutes.
+
+231
+00:09:30.810 --> 00:09:34.350
+And then if everything is stable, the old task definition
+
+232
+00:09:34.350 --> 00:09:36.990
+the test definition number 1 and the task set associated
+
+233
+00:09:36.990 --> 00:09:39.540
+with a task definition will be deleted.
+
+234
+00:09:39.540 --> 00:09:42.420
+And CodeDeploy will have successfully performed a deployment
+
+235
+00:09:42.420 --> 00:09:43.710
+onto ECS.
+
+236
+00:09:43.710 --> 00:09:45.750
+So you can see the ideas are very similar.
+
+237
+00:09:45.750 --> 00:09:48.210
+It's just that every single service at its quirks.
+
+238
+00:09:48.210 --> 00:09:52.106
+So CodeDeploy uses service features that are gonna be native
+
+239
+00:09:52.106 --> 00:09:54.840
+to that service, but the idea remains the same.
+
+240
+00:09:54.840 --> 00:09:57.510
+And so if you do understand these four kind of deployments
+
+241
+00:09:57.510 --> 00:10:00.180
+you are all set for your essay Pro exam.
+
+242
+00:10:00.180 --> 00:10:01.170
+All right, that's it.
+
+243
+00:10:01.170 --> 00:10:02.920
+I will see you in the next lecture.
+

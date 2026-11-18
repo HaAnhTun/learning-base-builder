@@ -1,5 +1,4 @@
 config.local.yaml
 data/
-data/
 __pycache__/
 .pytest_cache/

@@ -1,0 +1,284 @@
+{
+  "quiz_id": 7572301,
+  "title": "5C Quiz",
+  "type": "simple-quiz",
+  "version": 1,
+  "pass_percent": 70,
+  "description": "",
+  "position": 17,
+  "chapter_index": 18,
+  "chapter_title": "D5: Context Management - Cross-Session Knowledge & Coherence",
+  "lectures_before": 125,
+  "assessments": [
+    {
+      "_class": "assessment",
+      "id": 164089429,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A developer starts a new Claude Code session on a long-running project. The agent re-explores an approach that was ruled out two sessions ago and contradicts a naming convention the team settled earlier. What mechanism does the deck say would have prevented this?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "<p>The deck describes the cross-session problem: every new session opens with a blank context window, making prior decisions and explored dead ends invisible. A scratchpad file read at session start restores that continuity, ensuring the agent respects recorded conventions and does not re-explore what has already been ruled out. The other options are real software practices but not the mechanism the deck teaches for this specific problem.</p>",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>A more detailed CLAUDE.md with all naming conventions spelled out as standing rules.</p>",
+          "<p>A scratchpad file in the repo that the agent reads at session start, containing decisions and dead ends from prior sessions.</p>",
+          "<p>Longer context windows so the agent can retain more conversation history across sessions.</p>",
+          "<p>Committing all exploratory code branches to git so the agent can inspect what was tried before.</p>"
+        ]
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "",
+      "question_plain": "A developer starts a new Claude Code session on a long-running project. The agent re-explores an approach that was ruled out two sessions ago and contradicts a naming convention the team settled earlier. What mechanism does the deck say would have prevented this?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089431,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A developer closes a Claude Code session without updating the scratchpad. The next session reads that same scratchpad and, acting on its outdated contents, makes a decision that contradicts work done in the skipped session. The deck identifies this as a consequence of which failure?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "<p>The deck teaches that the scratchpad discipline has two halves: reading at session start and writing at session end. Skipping the end-of-session write means the next session inherits stale state. The deck explicitly states that a stale scratchpad is worse than no scratchpad because the agent trusts outdated information. The failure here is the missing write, not a structural problem with the file's format.</p>",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Overly broad scratchpad scope — too many fields made it hard for the agent to find the relevant decision.</p>",
+          "<p>Missing end-of-session write — the scratchpad was not updated, so the next session inherited stale state.</p>",
+          "<p>Credential leak — sensitive data in the scratchpad caused the agent to use incorrect context.</p>",
+          "<p>Missing session-start read — the agent never loaded the scratchpad at the beginning of the new session.</p>"
+        ]
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "",
+      "question_plain": "A developer closes a Claude Code session without updating the scratchpad. The next session reads that same scratchpad and, acting on its outdated contents, makes a decision that contradicts work done in the skipped session. The deck identifies this as a consequence of which failure?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089433,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>After six weeks of active development, a scratchpad file has grown from 50 to 600 lines. The agent begins citing approaches that were ruled out a month ago. Which scratchpad hygiene failure does the deck say this illustrates?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>The deck defines the graveyard failure mode as entries accumulating without removal until the file reflects everything that was ever true about the project, including things no longer true. The agent treats all of it as current state. The fix is a line-cap with a pruning trigger, removing resolved entries at the end of the session that resolves them. The other options describe related hygiene issues but not the specific failure the scenario presents.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>Credential exposure — sensitive data in the scratchpad confused the agent's context resolution.</p>",
+          "<p>A CLAUDE.md conflict — stable rules in CLAUDE.md overrode the scratchpad and caused the regression.</p>",
+          "<p>The graveyard failure mode — resolved entries were never pruned, so stale notes propagated into current decisions.</p>",
+          "<p>Missing session-start read — the agent never loaded the scratchpad and defaulted to earlier training priors.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "After six weeks of active development, a scratchpad file has grown from 50 to 600 lines. The agent begins citing approaches that were ruled out a month ago. Which scratchpad hygiene failure does the deck say this illustrates?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089435,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A scratchpad file contains an entry from last week stating 'use module A for caching.' Today's CLAUDE.md says 'use module B for caching — decision finalized.' The agent is about to start a new session. According to the deck, which source takes precedence and why?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "",
+          "<p>The deck draws an explicit boundary: CLAUDE.md holds stable rules that apply across all sessions and changes rarely; the scratchpad holds evolving session state that changes every session. When they conflict, CLAUDE.md wins. That priority must be stated explicitly in CLAUDE.md itself so the agent does not try to reconcile contradictions in unpredictable ways.</p>"
+        ],
+        "answers": [
+          "<p>Whichever file the agent reads first determines which instruction it follows.</p>",
+          "<p>The conflict should be flagged to the developer; neither file should be trusted until a human resolves it.</p>",
+          "<p>The scratchpad takes precedence — it is more recent and reflects the last session's decisions.</p>",
+          "<p>CLAUDE.md takes precedence — it holds stable rules and the scratchpad entry is superseded session state.</p>"
+        ]
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "",
+      "question_plain": "A scratchpad file contains an entry from last week stating 'use module A for caching.' Today's CLAUDE.md says 'use module B for caching — decision finalized.' The agent is about to start a new session. According to the deck, which source takes precedence and why?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089437,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A main agent is investigating a large codebase to locate the request-signing logic. After spawning a subagent, the agent receives a response containing the relevant file path, the function name, and a two-sentence summary — nothing else. What characteristic of this interaction best illustrates the delegation pattern working correctly?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>The delegation pattern isolates verbose discovery work inside a disposable subagent context. The parent benefits because all the intermediate file reads and dead ends never cross the context boundary — only the structured finding arrives. The return contract defines what that finding looks like, and a narrow, structured response is the signal that the contract was honored.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>The subagent's reads stayed inside its disposable context and were discarded on return, keeping the parent's context clean.</p>",
+          "<p>The subagent finished faster than inline discovery would have, reducing the total wall-clock latency of the overall task.</p>",
+          "<p>The subagent used only read-only tools, which prevented it from making any unintended changes to the codebase during the search.</p>",
+          "<p>The subagent flagged its uncertainty so the parent could choose whether to verify the finding before acting on the result.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A main agent is investigating a large codebase to locate the request-signing logic. After spawning a subagent, the agent receives a response containing the relevant file path, the function name, and a two-sentence summary — nothing else. What characteristic of this interaction best illustrates the delegation pattern working correctly?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089439,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A team debates whether to spawn a subagent to look up the value of a single well-known configuration key in a file they already have open. What guidance from the delegation pattern applies here?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>The deck establishes a rough breakeven at three or more sequential file reads. Below that threshold the latency, token cost, and coordination overhead of spawning a subagent outweighs the context-cleanliness benefit. A single known-location lookup is the clearest case where inline discovery is cheaper and simpler.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>The team should spawn a subagent to preserve the parent's token budget for higher-priority reasoning work.</p>",
+          "<p>The answer depends on whether the configuration file has changed recently; stale files always justify a subagent to ensure accuracy.</p>",
+          "<p>Delegation overhead — latency, tokens, and coordination — is not worth it for a single known-location lookup; read the file inline.</p>",
+          "<p>Delegation is appropriate here because even small lookups benefit from a disposable context that isolates noise from the parent.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "A team debates whether to spawn a subagent to look up the value of a single well-known configuration key in a file they already have open. What guidance from the delegation pattern applies here?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089443,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A team writes a subagent prompt that says: 'Investigate the authentication module and explain how it works.' The subagent returns a multi-paragraph narrative. Which failure mode does this illustrate, and what does the deck identify as its root cause?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "",
+          "<p>The deck names the wall-of-text return as the first of three common failure modes. A narrative response defeats the purpose of delegation by re-polluting the parent's context. All three failure modes share the same root cause: insufficient specification in the original prompt, specifically the absence of a defined return shape and stop condition.</p>"
+        ],
+        "answers": [
+          "<p>Scope creep, where the subagent exceeded its specified directories and returned extra findings the parent had not requested.</p>",
+          "<p>Blind trust, where the parent forwarded a large, unverified output downstream without spot-checking any of its claims.</p>",
+          "<p>Tool palette overflow, where giving the subagent write access caused it to generate side effects rather than a clean answer.</p>",
+          "<p>Wall-of-text return, caused by an open-ended prompt with no defined return shape or stop condition.</p>"
+        ]
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "",
+      "question_plain": "A team writes a subagent prompt that says: 'Investigate the authentication module and explain how it works.' The subagent returns a multi-paragraph narrative. Which failure mode does this illustrate, and what does the deck identify as its root cause?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089445,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A subagent prompt specifies: the question to answer, the directories to search, the format of the response (one file path plus one function name), and a rule to stop after reading five files. Which element of a well-formed subagent prompt does the stop rule represent?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>The deck identifies four elements a well-formed subagent prompt must include: the question, the scope, the return shape, and the stop condition. The stop condition tells the subagent when to return what it has rather than continuing to search, preventing late and overly verbose returns on hard lookups.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>The stop condition — the rule telling the subagent when to return what it has rather than continuing its search.</p>",
+          "<p>The trust boundary — the parent-side rule to treat any subagent output as a hypothesis that may require independent verification.</p>",
+          "<p>The scope constraint — the directive specifying which parts of the repository the subagent is permitted to search.</p>",
+          "<p>The return shape — the format specification governing what the subagent delivers at the conclusion of its investigation.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A subagent prompt specifies: the question to answer, the directories to search, the format of the response (one file path plus one function name), and a rule to stop after reading five files. Which element of a well-formed subagent prompt does the stop rule represent?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089447,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A production personal assistant needs to resume a user's weeks-old conversation with full context on their ongoing goals, while also giving the model precise access to the last few exchanges. Which memory strategy does the deck recommend for this requirement?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>The deck describes the hybrid memory pattern as the most practical approach for systems needing both recency and long-term continuity. It combines a persisted session summary header (injected at the top of each API call) with the last N turns kept verbatim in context. This gives the model grounded prior context for cross-session continuity and precise access to recent exchanges simultaneously.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>Use goal anchoring alone, re-stating the user's original objectives at the start of each turn to prevent goal drift.</p>",
+          "<p>Store the complete conversation history in an external database and reload all prior turns at the start of each session.</p>",
+          "<p>Inject a persisted summary header at each API call's start while keeping the last N turns verbatim in context.</p>",
+          "<p>Apply full summarization to compress all prior turns into a single compact paragraph before each new session opens.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "A production personal assistant needs to resume a user's weeks-old conversation with full context on their ongoing goals, while also giving the model precise access to the last few exchanges. Which memory strategy does the deck recommend for this requirement?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164089449,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A long-running code co-pilot session has drifted away from its original refactoring goal after a sequence of tangential questions. Which technique from the deck most directly addresses this drift problem?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "<p>The deck names three coherence techniques for long sessions: the session header pattern, explicit state tracking, and goal anchoring. Goal anchoring re-states the user's original goal at the start of each turn and is described as the simplest technique and often the most effective for multi-step workflows where scope creep is the primary risk.</p>",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Apply full summarization to compress the accumulated tangential turns before the next exchange begins.</p>",
+          "<p>Re-state the user's original refactoring goal at the start of each turn to keep the model anchored to the intended task.</p>",
+          "<p>Apply the sliding window technique to retain only the most recent turns and discard the tangential history.</p>",
+          "<p>Switch to external memory so the tangential turns are stored outside the context window and no longer influence the model.</p>"
+        ]
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "",
+      "question_plain": "A long-running code co-pilot session has drifted away from its original refactoring goal after a sequence of tangential questions. Which technique from the deck most directly addresses this drift problem?",
+      "related_lectures": []
+    }
+  ]
+}

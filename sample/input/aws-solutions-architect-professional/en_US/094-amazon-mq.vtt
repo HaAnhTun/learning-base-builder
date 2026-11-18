@@ -1,0 +1,194 @@
+WEBVTT
+
+1
+00:00:00.150 --> 00:00:02.910
+<v Instructor>So now let's talk about Amazon MQ.</v>
+
+2
+00:00:02.910 --> 00:00:05.340
+So we know about SQS and SNS
+
+3
+00:00:05.340 --> 00:00:07.080
+and they're cloud native services
+
+4
+00:00:07.080 --> 00:00:10.980
+because they are proprietary protocols from AWS,
+
+5
+00:00:10.980 --> 00:00:13.590
+they use their own sets of APIs.
+
+6
+00:00:13.590 --> 00:00:17.340
+But if you were running traditional application on-premises
+
+7
+00:00:17.340 --> 00:00:22.340
+you may use open protocols such as MQTT, AMQP, STOMP,
+
+8
+00:00:23.190 --> 00:00:27.390
+Openwire, WSS, and when you're migrating your application
+
+9
+00:00:27.390 --> 00:00:30.330
+to the cloud, you may not want to re-engineer
+
+10
+00:00:30.330 --> 00:00:34.680
+your application to use the SQS and the SNS protocols
+
+11
+00:00:34.680 --> 00:00:35.910
+or APIs.
+
+12
+00:00:35.910 --> 00:00:39.090
+So instead you want to use the traditional protocols
+
+13
+00:00:39.090 --> 00:00:42.330
+you used to, such as MQTT, AMQP, and so on.
+
+14
+00:00:42.330 --> 00:00:44.850
+So for this, we can use Amazon MQ.
+
+15
+00:00:44.850 --> 00:00:46.830
+So Amazon MQ is very simple,
+
+16
+00:00:46.830 --> 00:00:49.290
+it's a managed message broker service
+
+17
+00:00:49.290 --> 00:00:54.090
+for two technologies for RabbitMQ and for ActiveMQ.
+
+18
+00:00:54.090 --> 00:00:57.030
+So RabbitMQ and ActiveMQ are for example,
+
+19
+00:00:57.030 --> 00:01:00.390
+on premises technologies that provide you access
+
+20
+00:01:00.390 --> 00:01:03.060
+to the open protocols I just mentioned.
+
+21
+00:01:03.060 --> 00:01:04.890
+So then we can get a managed versions
+
+22
+00:01:04.890 --> 00:01:08.850
+of these brokers onto the cloud thanks to Amazon MQ.
+
+23
+00:01:08.850 --> 00:01:11.310
+So as such, you can understand the implications.
+
+24
+00:01:11.310 --> 00:01:15.630
+First of all, Amazon MQ doesn't scale as much as SQS or SNS,
+
+25
+00:01:15.630 --> 00:01:18.540
+which have infinite scaling.
+
+26
+00:01:18.540 --> 00:01:20.550
+And because Amazon MQ runs on servers,
+
+27
+00:01:20.550 --> 00:01:22.410
+you may have server issues.
+
+28
+00:01:22.410 --> 00:01:24.960
+And so you can run Multi-AZ setup
+
+29
+00:01:24.960 --> 00:01:28.350
+with a failover if you want to be highly available.
+
+30
+00:01:28.350 --> 00:01:31.860
+Also, Amazon MQ comes with both a queue feature,
+
+31
+00:01:31.860 --> 00:01:33.900
+so it looks like SQS,
+
+32
+00:01:33.900 --> 00:01:36.510
+and topic features, it looks like SNS,
+
+33
+00:01:36.510 --> 00:01:38.733
+as part of a single broker.
+
+34
+00:01:39.750 --> 00:01:42.720
+<v ->So for Amazon MQ, what can you migrate from?</v>
+
+35
+00:01:42.720 --> 00:01:46.200
+Well, if you have IBM MQ, TIBCO EMS, RabbitMQ,
+
+36
+00:01:46.200 --> 00:01:50.880
+or Apache ActiveMQ, they can all be migrated to Amazon MQ
+
+37
+00:01:50.880 --> 00:01:53.670
+thanks to the compatibility in the protocols.
+
+38
+00:01:53.670 --> 00:01:56.340
+So this is a blog you can read on the AWS blog,
+
+39
+00:01:56.340 --> 00:01:58.470
+which just shows that you can migrate
+
+40
+00:01:58.470 --> 00:02:03.300
+from IBM WebSphere MQ to AWS directly,
+
+41
+00:02:03.300 --> 00:02:07.830
+by leveraging Amazon MQ instead of IBM WebSphere MQ.
+
+42
+00:02:07.830 --> 00:02:08.760
+And this is quite interesting
+
+43
+00:02:08.760 --> 00:02:11.250
+because in this exam you are definitely asked
+
+44
+00:02:11.250 --> 00:02:15.000
+to consider migrations, and think of the right tool
+
+45
+00:02:15.000 --> 00:02:17.730
+for the right type of migration you want to do.
+
+46
+00:02:17.730 --> 00:02:18.960
+So that's it for this lecture.
+
+47
+00:02:18.960 --> 00:02:21.600
+Very, very simple for Amazon MQ, but hopefully important,
+
+48
+00:02:21.600 --> 00:02:23.550
+and I will see you in the next lecture.
+

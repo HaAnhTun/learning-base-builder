@@ -1,0 +1,254 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.079
+Let's talk about the agentic loop, the core cycle that drives every agent. In this video,
+
+2
+00:00:06.079 --> 00:00:12.319
+we'll walk through all four phases, perception, reasoning, action, and observation. We'll see
+
+3
+00:00:12.319 --> 00:00:17.840
+how they connect to one another, and we'll look at an example of how this works to make it concrete.
+
+4
+00:00:17.840 --> 00:00:22.479
+By the end, you'll have a clear mental model of how agents actually work.
+
+5
+00:00:23.600 --> 00:00:28.319
+An agent isn't one call and one answer. It is a cycle that keeps turning
+
+6
+00:00:28.399 --> 00:00:34.319
+until the work is done, and that cycle has a name. The agentic loop is the repeating, perceive,
+
+7
+00:00:34.319 --> 00:00:41.520
+plan, act, observe pattern. The model reads its context, picks an action, runs it, gets a result,
+
+8
+00:00:41.520 --> 00:00:48.319
+then decides whether to keep going or stop. Tool use makes the action half real. The model emits
+
+9
+00:00:48.319 --> 00:00:53.599
+a structured call, the runtime executes it, and the result comes back as an observation.
+
+10
+00:00:54.319 --> 00:01:00.400
+Dynamic planning is what makes the loop powerful. Because the model isn't following a fixed script,
+
+11
+00:01:00.400 --> 00:01:06.080
+it updates its plan every turn based on what it just learned. Put all of that together with
+
+12
+00:01:06.080 --> 00:01:12.879
+a runtime that executes the calls, and you have an agentic system. Perception is the first phase,
+
+13
+00:01:12.879 --> 00:01:18.000
+and it's deceptively simple. The model reads everything currently in the context window.
+
+14
+00:01:18.000 --> 00:01:23.279
+That includes the original instructions, the conversation history, any documents loaded at
+
+15
+00:01:23.279 --> 00:01:30.160
+startup, and critically, every tool result that's accumulated so far. The model uses all of that to
+
+16
+00:01:30.160 --> 00:01:35.599
+figure out where it is in the task, what's been done, what information is available, what's still
+
+17
+00:01:35.599 --> 00:01:41.440
+unknown. Think of perception as the agent taking stock before it decides its next move. If the
+
+18
+00:01:41.440 --> 00:01:47.279
+context window is the agent's working memory, then perception is the act of reading from that memory.
+
+19
+00:01:47.279 --> 00:01:52.639
+It's not passive. The model is actively identifying relevant signals against the
+
+20
+00:01:52.639 --> 00:01:58.480
+background of everything else in context. Reasoning follows perception. Once the model
+
+21
+00:01:58.480 --> 00:02:04.000
+knows what's available, it decides what to do next. This is where dynamic planning shows up.
+
+22
+00:02:04.000 --> 00:02:08.559
+The agent isn't running a fixed workflow where step three always follows step two.
+
+23
+00:02:08.559 --> 00:02:12.800
+It's weighing what it just perceived against the original goal and asking,
+
+24
+00:02:12.800 --> 00:02:18.240
+what action would move me closer to a solution? Sometimes the answer is obvious. Sometimes the
+
+25
+00:02:18.240 --> 00:02:23.199
+agent has to work through ambiguity. The model might recognize that a prior search returned
+
+26
+00:02:23.199 --> 00:02:28.800
+incomplete data and decide to refine the query before proceeding. The key point is that reasoning
+
+27
+00:02:28.800 --> 00:02:34.639
+is adaptive. If the situation has changed since the last iteration, the plan can change too.
+
+28
+00:02:34.639 --> 00:02:39.360
+That flexibility is exactly what makes agentic systems more capable than simple pipelines.
+
+29
+00:02:40.320 --> 00:02:45.839
+Action and observation are two sides of the same coin, so let's look at them together. In the action
+
+30
+00:02:45.839 --> 00:02:52.240
+phase, the model emits a structured tool call. It might call a search API, run a code interpreter,
+
+31
+00:02:52.240 --> 00:02:58.800
+query a database, or write a final response. The tool call is the moment the agent reaches out to
+
+32
+00:02:58.800 --> 00:03:05.759
+the external world. Observation is what comes back. The runtime executes the tool, gets a result,
+
+33
+00:03:05.919 --> 00:03:12.160
+and injects that result into the context window. Now the agent has new information it didn't have
+
+34
+00:03:12.160 --> 00:03:17.839
+before. That observation is what the next perception phase will read. These two phases
+
+35
+00:03:17.839 --> 00:03:23.440
+are tightly linked. Every action should produce a meaningful observation, and every observation
+
+36
+00:03:23.440 --> 00:03:29.279
+should inform the next decision. The context window is the agent's working memory,
+
+37
+00:03:29.279 --> 00:03:34.479
+and it is worth understanding how it fills up over a session. At the start, it holds inputs,
+
+38
+00:03:34.479 --> 00:03:41.679
+the system prompt, the user's request, any initial documents. As the loop runs, actions accumulate,
+
+39
+00:03:41.679 --> 00:03:48.080
+tool calls pile up, observations accumulate too. Every tool result, meaning the structured data,
+
+40
+00:03:48.080 --> 00:03:55.039
+the runtime hands back after a call executes, gets appended. Intermediate reasoning adds to the total
+
+41
+00:03:55.039 --> 00:04:00.800
+as well. All of that is in context memory. It is immediately accessible to the model,
+
+42
+00:04:00.800 --> 00:04:07.199
+and it is completely ephemeral. When the session ends, or the context gets truncated, it is gone.
+
+43
+00:04:07.199 --> 00:04:12.479
+That is why a long-running agent can fill its window, if it makes many calls without summarizing
+
+44
+00:04:12.479 --> 00:04:18.559
+or pruning, and why you design for that constraint from the start. The cyclic nature of the loop is
+
+45
+00:04:18.559 --> 00:04:24.959
+what makes agents capable of complex multi-step tasks. Let's trace the data flow. Perception
+
+46
+00:04:24.959 --> 00:04:30.239
+surfaces what's in context for the reasoning phase. Reasoning produces an action selection
+
+47
+00:04:30.239 --> 00:04:35.359
+based on that view. The action generates an observation that gets returned to context,
+
+48
+00:04:35.359 --> 00:04:42.079
+and then perception reads that updated context at the start of the next iteration. Each phase's output
+
+49
+00:04:42.079 --> 00:04:47.600
+is the next phase's input. This isn't a linear pipeline, it's a feedback loop. That feedback is
+
+50
+00:04:47.600 --> 00:04:54.000
+what allows an agent to course correct, to retry when a tool fails, to revise its approach when the
+
+51
+00:04:54.000 --> 00:05:00.399
+data it expected turns out to be different from what it actually received. Let's make the loop
+
+52
+00:05:00.399 --> 00:05:06.640
+concrete with a research agent example. The user asks the agent to summarize recent findings on a
+
+53
+00:05:06.640 --> 00:05:12.480
+topic. Perception. The agent reads the query and notices it has no prior search results
+
+54
+00:05:12.480 --> 00:05:19.279
+in context yet. Reasoning. It decides to run a search. Action. It calls the search API tool
+
+55
+00:05:19.279 --> 00:05:25.679
+with a targeted query. Observation. The runtime returns a list of article summaries and injects
+
+56
+00:05:25.679 --> 00:05:32.720
+them into context. Now the loop restarts. Perception. The agent reads those results
+
+57
+00:05:32.720 --> 00:05:39.279
+and notices one source looks highly relevant. Reasoning. It decides to fetch the full text
+
+58
+00:05:39.279 --> 00:05:45.040
+of that article, and on it goes. Each iteration makes progress toward the goal, and the agent's
+
+59
+00:05:45.040 --> 00:05:51.839
+plan evolves based on what it finds. When an agent feels dumb, it's usually not the reasoning
+
+60
+00:05:51.839 --> 00:05:57.440
+that broke. It's that the result of the last action never made it back into the context the
+
+61
+00:05:57.440 --> 00:06:03.760
+model reads next. The loop only gets smarter because each pass can see what the previous one
+
+62
+00:06:03.760 --> 00:06:09.440
+already tried. Break that feedback loop, and you've got a very expensive random guesser.
+
+63
+00:06:10.160 --> 00:06:13.040
+That wraps up this lesson. I'll see you in the next one.
+

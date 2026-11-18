@@ -1,0 +1,410 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.639
+Multiple agents working together can beat a single agent, but they're not free.
+
+2
+00:00:04.639 --> 00:00:09.279
+They burn tokens fast and add coordination you have to manage and pay for.
+
+3
+00:00:09.279 --> 00:00:13.199
+This lesson walks through the token economics, the latency tax,
+
+4
+00:00:13.199 --> 00:00:19.760
+and a simple fit rule for deciding when a multi-agent design is actually worth reaching for. Let's dive in.
+
+5
+00:00:20.959 --> 00:00:24.799
+Start with the shape of the thing, because the shape explains the cost.
+
+6
+00:00:24.799 --> 00:00:27.600
+A single agent is one model running in a loop.
+
+7
+00:00:27.600 --> 00:00:33.360
+It calls tools, thinks, and holds the whole task inside one context window.
+
+8
+00:00:33.360 --> 00:00:36.799
+An orchestrator is a lead agent that plans the work,
+
+9
+00:00:36.799 --> 00:00:41.439
+spawns sub-agents to do pieces of it, and later combines what they return.
+
+10
+00:00:42.080 --> 00:00:43.759
+A sub-agent is a worker.
+
+11
+00:00:43.759 --> 00:00:48.720
+It gets a scoped slice of the task and runs in its own separate context,
+
+12
+00:00:48.720 --> 00:00:51.200
+with its own prompt and its own reasoning.
+
+13
+00:00:51.200 --> 00:00:56.479
+So, moving from one agent to many really means adding an orchestrator on top
+
+14
+00:00:56.479 --> 00:00:58.639
+and several independent workers underneath.
+
+15
+00:00:59.200 --> 00:01:04.559
+Hold on to that picture, because it explains everything about the cost we are about to look at.
+
+16
+00:01:05.760 --> 00:01:07.040
+Here's the heart of it.
+
+17
+00:01:07.040 --> 00:01:10.160
+The core cost driver is beautifully simple.
+
+18
+00:01:10.160 --> 00:01:15.199
+More agents means more model calls, and more model calls means more tokens.
+
+19
+00:01:15.199 --> 00:01:19.360
+Anthropic put rough numbers on this from their own research system.
+
+20
+00:01:19.360 --> 00:01:22.000
+Think of a plain chat turn as the baseline.
+
+21
+00:01:22.000 --> 00:01:23.440
+Call it one times.
+
+22
+00:01:23.440 --> 00:01:29.919
+A single agent running in a loop with tools uses roughly four times the tokens of that chat baseline.
+
+23
+00:01:29.919 --> 00:01:35.040
+And a multi-agent system uses about 15 times the chat baseline.
+
+24
+00:01:35.040 --> 00:01:38.480
+So, multi-agent isn't a little more expensive.
+
+25
+00:01:38.480 --> 00:01:43.279
+It is several times more expensive than even a single agent. Why?
+
+26
+00:01:43.279 --> 00:01:48.400
+Because every sub-agent you spawn carries its own prompt and does its own reasoning.
+
+27
+00:01:48.959 --> 00:01:52.959
+Those costs don't overlap, they stack, and they add up fast.
+
+28
+00:01:54.160 --> 00:01:58.239
+Let's break down where that spend actually comes from, because it isn't one thing.
+
+29
+00:01:58.239 --> 00:02:00.239
+First, orchestrator overhead.
+
+30
+00:02:00.239 --> 00:02:06.319
+The lead agent spends tokens planning the job, deciding how to split it, and delegating.
+
+31
+00:02:06.319 --> 00:02:08.160
+All before any real work happens.
+
+32
+00:02:08.800 --> 00:02:10.960
+Second, parallel fan-out.
+
+33
+00:02:10.960 --> 00:02:17.279
+Each sub-agent repeats a chunk of setup context and reasons through its slice independently.
+
+34
+00:02:17.279 --> 00:02:21.520
+So the more workers you launch, the more that base cost multiplies.
+
+35
+00:02:22.240 --> 00:02:24.240
+Third, result stitching.
+
+36
+00:02:24.240 --> 00:02:30.960
+Once the sub-agents finish, the orchestrator has to read their outputs and merge them into one coherent answer.
+
+37
+00:02:30.960 --> 00:02:33.199
+And that is yet another model pass.
+
+38
+00:02:33.839 --> 00:02:36.479
+Planning, fan-out, merging.
+
+39
+00:02:36.479 --> 00:02:42.399
+Three stages, each one paying tokens, and together they explain that 15 times figure.
+
+40
+00:02:43.679 --> 00:02:47.440
+Cost is the headline, but it isn't the only tax you pay.
+
+41
+00:02:47.440 --> 00:02:51.119
+Splitting work across agents also makes the system harder to run well.
+
+42
+00:02:51.679 --> 00:02:55.199
+The orchestrator has to decompose the task cleanly up front.
+
+43
+00:02:55.199 --> 00:02:58.160
+And clean decomposition is genuinely hard.
+
+44
+00:02:58.160 --> 00:03:03.360
+If the split is messy, sub-agents can drift off course or duplicate each other's effort.
+
+45
+00:03:03.360 --> 00:03:05.199
+And you pay for that wasted work.
+
+46
+00:03:05.839 --> 00:03:09.919
+Then, because pieces run in parallel and finish at different times,
+
+47
+00:03:09.919 --> 00:03:13.919
+you have to gather and reconcile their results before you can answer.
+
+48
+00:03:13.919 --> 00:03:16.080
+All of that adds latency and moving parts.
+
+49
+00:03:16.639 --> 00:03:18.399
+The honest framing is this.
+
+50
+00:03:18.399 --> 00:03:22.720
+You are trading latency and complexity for a shot at a better final result.
+
+51
+00:03:23.279 --> 00:03:25.119
+Sometimes that trade pays off.
+
+52
+00:03:25.119 --> 00:03:25.919
+Often it doesn't.
+
+53
+00:03:27.039 --> 00:03:28.639
+So when does it pay off?
+
+54
+00:03:28.639 --> 00:03:30.399
+It comes down to the shape of the work.
+
+55
+00:03:30.960 --> 00:03:34.479
+Multi-agent is a good fit for breadth-first tasks.
+
+56
+00:03:34.479 --> 00:03:38.960
+Work you can split into independent directions that explore in parallel.
+
+57
+00:03:39.520 --> 00:03:42.960
+Researching many sources at once is the classic example.
+
+58
+00:03:42.960 --> 00:03:44.960
+Each thread barely touches the others.
+
+59
+00:03:44.960 --> 00:03:47.520
+So parallel workers genuinely help.
+
+60
+00:03:47.520 --> 00:03:50.000
+It is a poor fit for tightly coupled work,
+
+61
+00:03:50.000 --> 00:03:54.000
+where agents share one context and each step depends on the last.
+
+62
+00:03:54.639 --> 00:03:58.240
+Splitting that just means constantly sinking state between workers.
+
+63
+00:03:58.240 --> 00:04:02.880
+And a single agent holding everything stays cleaner, faster, and cheaper.
+
+64
+00:04:03.600 --> 00:04:05.360
+Coding is the trap here.
+
+65
+00:04:05.360 --> 00:04:08.960
+A code base looks big, so people assume it parallelizes.
+
+66
+00:04:08.960 --> 00:04:14.960
+But most coding tasks have far fewer truly parallel pieces than research does.
+
+67
+00:04:14.960 --> 00:04:16.640
+Files depend on each other.
+
+68
+00:04:16.640 --> 00:04:18.559
+And changes have to stay consistent.
+
+69
+00:04:19.119 --> 00:04:21.519
+Size isn't the same as parallelism.
+
+70
+00:04:22.640 --> 00:04:25.760
+Let's turn that into a rule you can actually apply.
+
+71
+00:04:25.760 --> 00:04:28.799
+Before you reach for multiple agents, ask three questions.
+
+72
+00:04:28.799 --> 00:04:33.359
+One, can the work split into parallel directions that barely touch each other?
+
+73
+00:04:33.920 --> 00:04:40.239
+Two, does each piece fit in its own context without needing shared state passed back and forth?
+
+74
+00:04:40.239 --> 00:04:44.239
+And three, is the task valuable enough to justify a token bill
+
+75
+00:04:44.239 --> 00:04:46.399
+several times higher than a single agent?
+
+76
+00:04:47.040 --> 00:04:53.040
+If you answer yes to all three, multi-agent has a real shot at earning its cost.
+
+77
+00:04:53.040 --> 00:04:57.519
+If you answer no to even one of them, a single agent is almost always the better call.
+
+78
+00:04:58.079 --> 00:04:59.200
+Notice the framing.
+
+79
+00:04:59.200 --> 00:05:01.040
+The default is one agent.
+
+80
+00:05:01.040 --> 00:05:04.959
+And multi-agent is the thing you justify, not the thing you assume.
+
+81
+00:05:06.239 --> 00:05:08.640
+When multi-agent genuinely fits,
+
+82
+00:05:08.640 --> 00:05:12.720
+you can soften the cost by matching models to roles
+
+83
+00:05:12.720 --> 00:05:16.079
+instead of using your most expensive model everywhere.
+
+84
+00:05:16.079 --> 00:05:19.920
+Your strongest, most capable model makes sense as the orchestrator
+
+85
+00:05:19.920 --> 00:05:23.040
+because planning and merging need the best judgment.
+
+86
+00:05:23.040 --> 00:05:27.359
+Then lighter, faster models can handle the scoped sub-tasks
+
+87
+00:05:27.359 --> 00:05:30.160
+where the job is narrow and well-defined.
+
+88
+00:05:30.160 --> 00:05:34.399
+Check the current model documentation for which tiers those are today
+
+89
+00:05:34.399 --> 00:05:36.160
+because the lineup shifts.
+
+90
+00:05:36.160 --> 00:05:40.959
+And you reserve the whole pattern for high-value tasks that repay the spend.
+
+91
+00:05:40.959 --> 00:05:43.679
+The point I want to leave you with is intent.
+
+92
+00:05:43.679 --> 00:05:46.720
+The goal is buying real, measurable performance.
+
+93
+00:05:46.720 --> 00:05:50.880
+It is never adding agents just because the architecture looks impressive on a diagram.
+
+94
+00:05:52.399 --> 00:05:54.720
+Running agents in parallel buys you breadth.
+
+95
+00:05:54.720 --> 00:05:58.559
+You cover more ground because the work splits cleanly and nobody waits.
+
+96
+00:05:59.119 --> 00:06:02.720
+That matters when the sub-tasks don't need to talk to each other.
+
+97
+00:06:02.720 --> 00:06:06.160
+One thing to watch, the bill scales with the fan-out.
+
+98
+00:06:06.160 --> 00:06:09.600
+And so does the wall clock because planning and merging
+
+99
+00:06:09.600 --> 00:06:12.160
+both cost you before any answers get back.
+
+100
+00:06:12.880 --> 00:06:17.440
+If work is coupled, you end up paying the tax and you don't get any benefit for it.
+
+101
+00:06:18.079 --> 00:06:19.600
+That closes out this lesson.
+
+102
+00:06:19.600 --> 00:06:20.880
+I'll see you in the next one.
+

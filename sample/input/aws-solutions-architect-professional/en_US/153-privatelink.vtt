@@ -1,0 +1,474 @@
+WEBVTT
+
+1
+00:00:00.090 --> 00:00:03.090
+<v Narrator>Okay, so now let's talk about AWS PrivateLink,</v>
+
+2
+00:00:03.090 --> 00:00:06.000
+which is also called VPC Endpoint Services.
+
+3
+00:00:06.000 --> 00:00:09.210
+So PrivateLink is going to be the most secure
+
+4
+00:00:09.210 --> 00:00:13.110
+and scalable way to expose the service to thousands of VPC,
+
+5
+00:00:13.110 --> 00:00:15.960
+either your own VPC or other accounts.
+
+6
+00:00:15.960 --> 00:00:16.793
+Why?
+
+7
+00:00:16.793 --> 00:00:19.050
+Because you can expose a service within your own VPC
+
+8
+00:00:19.050 --> 00:00:23.490
+privately to others without doing any sort of VPC peering,
+
+9
+00:00:23.490 --> 00:00:25.710
+using an internet gateway, NAT gateways
+
+10
+00:00:25.710 --> 00:00:28.290
+or NAT instances, and route tables.
+
+11
+00:00:28.290 --> 00:00:30.480
+So the idea is that we still allow other people
+
+12
+00:00:30.480 --> 00:00:31.800
+to access our application,
+
+13
+00:00:31.800 --> 00:00:35.010
+but very securely by really protecting our network
+
+14
+00:00:35.010 --> 00:00:37.200
+to just one PrivateLink.
+
+15
+00:00:37.200 --> 00:00:38.490
+So here's an example.
+
+16
+00:00:38.490 --> 00:00:42.060
+We are the service VPC and we have created an application
+
+17
+00:00:42.060 --> 00:00:43.560
+and it's an application service,
+
+18
+00:00:43.560 --> 00:00:45.660
+and we want to be able to give access
+
+19
+00:00:45.660 --> 00:00:48.210
+to other customers in other accounts access
+
+20
+00:00:48.210 --> 00:00:49.470
+to our application.
+
+21
+00:00:49.470 --> 00:00:51.480
+So here is a customer VPC,
+
+22
+00:00:51.480 --> 00:00:53.610
+and they will have consumer applications,
+
+23
+00:00:53.610 --> 00:00:54.900
+and they want to be able to connect
+
+24
+00:00:54.900 --> 00:00:56.520
+to our application service.
+
+25
+00:00:56.520 --> 00:01:00.060
+We could obviously do a VPC peering and that would work,
+
+26
+00:01:00.060 --> 00:01:02.490
+but the problem of VPC peering would be
+
+27
+00:01:02.490 --> 00:01:06.270
+that all the customer VPC instances would be able to talk
+
+28
+00:01:06.270 --> 00:01:08.730
+to all the instances in my VPC,
+
+29
+00:01:08.730 --> 00:01:10.500
+and that makes me way too exposed
+
+30
+00:01:10.500 --> 00:01:12.030
+from a network perspective.
+
+31
+00:01:12.030 --> 00:01:14.160
+I could also go over the public internet,
+
+32
+00:01:14.160 --> 00:01:15.210
+but this is not really good
+
+33
+00:01:15.210 --> 00:01:17.400
+because then that means that my service needs
+
+34
+00:01:17.400 --> 00:01:20.190
+to be publicly accessible, and I don't like that.
+
+35
+00:01:20.190 --> 00:01:22.230
+So what I really want is to be able to go
+
+36
+00:01:22.230 --> 00:01:24.150
+through a PrivateLink.
+
+37
+00:01:24.150 --> 00:01:27.690
+So for this, I have to create a network load balancer
+
+38
+00:01:27.690 --> 00:01:29.370
+in my service VPC
+
+39
+00:01:29.370 --> 00:01:32.790
+and in the Elastic Network Interface and my customer VPC.
+
+40
+00:01:32.790 --> 00:01:36.690
+So now my application is going to be exposed through an NLB,
+
+41
+00:01:36.690 --> 00:01:38.790
+and on the customer VP side,
+
+42
+00:01:38.790 --> 00:01:40.830
+there will be an ENI being created.
+
+43
+00:01:40.830 --> 00:01:42.540
+And then the magic happens.
+
+44
+00:01:42.540 --> 00:01:45.180
+There's going to be AWS PrivateLink.
+
+45
+00:01:45.180 --> 00:01:46.560
+And with PrivateLink, there's going
+
+46
+00:01:46.560 --> 00:01:49.560
+to be a private connection between the ENI
+
+47
+00:01:49.560 --> 00:01:51.300
+and the network load balancer.
+
+48
+00:01:51.300 --> 00:01:54.480
+And so for our customer VPC,
+
+49
+00:01:54.480 --> 00:01:56.790
+to access our application service, they just need
+
+50
+00:01:56.790 --> 00:01:58.230
+to talk to the ENI.
+
+51
+00:01:58.230 --> 00:01:59.940
+The ENI will forward the traffic
+
+52
+00:01:59.940 --> 00:02:01.445
+onto the network load balancer,
+
+53
+00:02:01.445 --> 00:02:03.810
+and the network load balancer will forward traffic
+
+54
+00:02:03.810 --> 00:02:06.000
+onto the application service.
+
+55
+00:02:06.000 --> 00:02:08.190
+And here we go, we have a PrivateLink.
+
+56
+00:02:08.190 --> 00:02:09.510
+And this is hugely scalable
+
+57
+00:02:09.510 --> 00:02:11.400
+because we can do this a thousand times.
+
+58
+00:02:11.400 --> 00:02:13.410
+We just need one network load balancer
+
+59
+00:02:13.410 --> 00:02:17.520
+and as many ENI as target customer VPC that we have.
+
+60
+00:02:17.520 --> 00:02:21.690
+So if the NLB is going to be in multiple availability zone,
+
+61
+00:02:21.690 --> 00:02:23.760
+then you need to make sure your ENI are also going
+
+62
+00:02:23.760 --> 00:02:26.790
+to be in multiple AZ and then we have a solution
+
+63
+00:02:26.790 --> 00:02:29.190
+that is going to be fault tolerance.
+
+64
+00:02:29.190 --> 00:02:30.724
+So I found PrivateLink
+
+65
+00:02:30.724 --> 00:02:33.300
+to be revolutionary to work really great.
+
+66
+00:02:33.300 --> 00:02:35.820
+It's really scalable, and you have to remember it going
+
+67
+00:02:35.820 --> 00:02:37.110
+into the exam.
+
+68
+00:02:37.110 --> 00:02:39.480
+So let's consider how to make PrivateLink works
+
+69
+00:02:39.480 --> 00:02:41.370
+for Amazon S3 with Direct Connects.
+
+70
+00:02:41.370 --> 00:02:42.210
+So here's the issue.
+
+71
+00:02:42.210 --> 00:02:43.410
+We have a corporate data center
+
+72
+00:02:43.410 --> 00:02:46.136
+and want to access our Amazon S3 bucket
+
+73
+00:02:46.136 --> 00:02:48.810
+through Direct Connect connection.
+
+74
+00:02:48.810 --> 00:02:50.100
+And we have two options, right?
+
+75
+00:02:50.100 --> 00:02:54.240
+Number one is to use a public VIF so that the traffic goes
+
+76
+00:02:54.240 --> 00:02:57.090
+from direct connect to the public URL
+
+77
+00:02:57.090 --> 00:03:00.030
+of Amazon S3, but through Direct Connect.
+
+78
+00:03:00.030 --> 00:03:02.850
+The other option if we wanted to make all traffic go
+
+79
+00:03:02.850 --> 00:03:06.720
+through your VPC would be to create a VPC endpoint.
+
+80
+00:03:06.720 --> 00:03:10.260
+Now you cannot use a gateway endpoint in this case
+
+81
+00:03:10.260 --> 00:03:13.890
+because gateway endpoints only works from within your VPC.
+
+82
+00:03:13.890 --> 00:03:15.750
+So if your EC2 instances wanted to connect
+
+83
+00:03:15.750 --> 00:03:18.780
+to Amazon S3, fine, use a gateway endpoint.
+
+84
+00:03:18.780 --> 00:03:20.590
+But the corporate data center
+
+85
+00:03:20.590 --> 00:03:23.880
+through Direct Connect cannot access the gateway endpoint.
+
+86
+00:03:23.880 --> 00:03:27.210
+Therefore, we have to create an interface VPC endpoint
+
+87
+00:03:27.210 --> 00:03:30.180
+for Amazon S3 that is linked to a PrivateLink.
+
+88
+00:03:30.180 --> 00:03:31.710
+And therefore, for Direct Connect
+
+89
+00:03:31.710 --> 00:03:33.030
+to access your PrivateLink,
+
+90
+00:03:33.030 --> 00:03:35.280
+you must create a private VIF,
+
+91
+00:03:35.280 --> 00:03:38.070
+which then allows you to keep all traffic private
+
+92
+00:03:38.070 --> 00:03:41.970
+through your VPC into your Amazon S3 bucket.
+
+93
+00:03:41.970 --> 00:03:44.460
+Another architecture you must know is how
+
+94
+00:03:44.460 --> 00:03:47.880
+to use PrivateLink VPC endpoints cross region.
+
+95
+00:03:47.880 --> 00:03:48.960
+So here's the idea.
+
+96
+00:03:48.960 --> 00:03:51.960
+You want to access an S3 bucket in eu-west-1,
+
+97
+00:03:51.960 --> 00:03:55.710
+you have EC2 instances as a service in ap-east-1
+
+98
+00:03:55.710 --> 00:03:58.830
+and you want to access those from us-east-1.
+
+99
+00:03:58.830 --> 00:04:02.231
+So the previous solution was requiring VPC peering,
+
+100
+00:04:02.231 --> 00:04:05.520
+but now if you use PrivateLink, you don't even need it.
+
+101
+00:04:05.520 --> 00:04:06.840
+So how to do this?
+
+102
+00:04:06.840 --> 00:04:09.060
+Well, you create a VPC interface endpoint
+
+103
+00:04:09.060 --> 00:04:12.930
+for Amazon S3 directly in your us-east-1 VPC,
+
+104
+00:04:12.930 --> 00:04:16.620
+and you can link it to a service in another region,
+
+105
+00:04:16.620 --> 00:04:18.467
+which gives you private connectivity
+
+106
+00:04:18.467 --> 00:04:22.443
+into your Amazon S3 bucket without the use of VPC peering.
+
+107
+00:04:23.490 --> 00:04:26.036
+Also, if you expose your EC2 instances
+
+108
+00:04:26.036 --> 00:04:29.400
+with a network cloud balancer to expose it as a service,
+
+109
+00:04:29.400 --> 00:04:31.260
+then you can create a VPC endpoint
+
+110
+00:04:31.260 --> 00:04:34.590
+for your application just like you would for the normal NLB,
+
+111
+00:04:34.590 --> 00:04:35.730
+and again cross region.
+
+112
+00:04:35.730 --> 00:04:38.190
+And that would allow you to expose your application
+
+113
+00:04:38.190 --> 00:04:40.470
+without needing for VPC peering.
+
+114
+00:04:40.470 --> 00:04:42.450
+So this announces security
+
+115
+00:04:42.450 --> 00:04:44.940
+and allows you to have clean architectures.
+
+116
+00:04:44.940 --> 00:04:45.773
+Alright, that's it.
+
+117
+00:04:45.773 --> 00:04:46.770
+I hope you liked it,
+
+118
+00:04:46.770 --> 00:04:48.720
+and I will see you in the next lecture.
+

@@ -1,0 +1,138 @@
+WEBVTT
+
+1
+00:00:00.100 --> 00:00:02.890
+<v Narrator>Another service is AWS Device Farm,</v>
+
+2
+00:00:02.890 --> 00:00:04.660
+and just need to know it at a high level.
+
+3
+00:00:04.660 --> 00:00:07.660
+But the idea is that, say you are running a big application
+
+4
+00:00:07.660 --> 00:00:10.640
+that you published on the app store or the IOS store.
+
+5
+00:00:10.640 --> 00:00:13.740
+Then you want to test that application across many devices
+
+6
+00:00:13.740 --> 00:00:15.980
+to make sure it works on all these devices.
+
+7
+00:00:15.980 --> 00:00:19.020
+So Device Farm is going to be an application testing service
+
+8
+00:00:19.020 --> 00:00:21.650
+for your mobile and even your web application.
+
+9
+00:00:21.650 --> 00:00:24.460
+And the cool thing is that you're going to have this test
+
+10
+00:00:24.460 --> 00:00:28.210
+run across real browsers and real mobile devices,
+
+11
+00:00:28.210 --> 00:00:29.750
+and all these tests are going to
+
+12
+00:00:29.750 --> 00:00:32.380
+be fully automated using a framework.
+
+13
+00:00:32.380 --> 00:00:35.270
+The idea is by testing across real devices
+
+14
+00:00:35.270 --> 00:00:37.450
+would be browsers or mobile devices,
+
+15
+00:00:37.450 --> 00:00:39.510
+you're going to be able to improve the quality
+
+16
+00:00:39.510 --> 00:00:41.180
+of the web and your mobile apps
+
+17
+00:00:41.180 --> 00:00:43.080
+by making sure it runs correctly
+
+18
+00:00:43.080 --> 00:00:44.780
+on all the devices you want.
+
+19
+00:00:44.780 --> 00:00:46.570
+And in case it doesn't run correctly,
+
+20
+00:00:46.570 --> 00:00:49.680
+then you can generate automatically videos and logs
+
+21
+00:00:49.680 --> 00:00:52.310
+to document the issues that have been encountered.
+
+22
+00:00:52.310 --> 00:00:55.300
+And then even better, you can remotely log-in
+
+23
+00:00:55.300 --> 00:00:58.000
+to devices for enhanced debugging.
+
+24
+00:00:58.000 --> 00:00:59.960
+So this is what device farm looks like,
+
+25
+00:00:59.960 --> 00:01:02.060
+as you can see, it found some issues,
+
+26
+00:01:02.060 --> 00:01:04.180
+already you can see it very found some issues
+
+27
+00:01:04.180 --> 00:01:07.610
+on the Nexus 6 and an LG G Flex 2,
+
+28
+00:01:07.610 --> 00:01:10.030
+and it tells you what has been going wrong.
+
+29
+00:01:10.030 --> 00:01:12.770
+And so you can look into this failure, for these two devices
+
+30
+00:01:12.770 --> 00:01:17.100
+and understand why the test has passed on say an SCG device
+
+31
+00:01:17.100 --> 00:01:20.140
+but hasn't passed on your Motorola or your LG device.
+
+32
+00:01:20.140 --> 00:01:20.973
+And that's it.
+
+33
+00:01:20.973 --> 00:01:23.170
+That's the whole idea behind AWS Device Farm.
+
+34
+00:01:23.170 --> 00:01:24.920
+I will see you in the next lecture.
+

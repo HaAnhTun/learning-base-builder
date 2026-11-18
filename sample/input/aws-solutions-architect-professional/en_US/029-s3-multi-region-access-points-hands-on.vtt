@@ -1,0 +1,374 @@
+WEBVTT
+
+1
+00:00:00.150 --> 00:00:02.250
+<v Instructor>So let's go ahead and create two buckets.</v>
+
+2
+00:00:02.250 --> 00:00:06.000
+So I'm gonna call this one my-global-app-stephane
+
+3
+00:00:06.000 --> 00:00:08.163
+and then eu-central-1.
+
+4
+00:00:09.060 --> 00:00:11.100
+And I'm just going to go all the way down
+
+5
+00:00:11.100 --> 00:00:12.350
+and create these buckets.
+
+6
+00:00:13.770 --> 00:00:15.780
+And then I'm going to create another bucket,
+
+7
+00:00:15.780 --> 00:00:20.040
+I'll call this one my-global-app-stephane-us-east-1
+
+8
+00:00:20.040 --> 00:00:24.840
+and I will choose another region being us-east-1.
+
+9
+00:00:24.840 --> 00:00:27.450
+Okay, so the reason why I am doing this is
+
+10
+00:00:27.450 --> 00:00:30.060
+that I want to have two buckets in two different regions
+
+11
+00:00:30.060 --> 00:00:32.070
+that will hold the same data and it will be served
+
+12
+00:00:32.070 --> 00:00:34.590
+by the same multi-region access point.
+
+13
+00:00:34.590 --> 00:00:36.540
+So then let's go into Multi-Region Access Points,
+
+14
+00:00:36.540 --> 00:00:39.840
+and here we can create our multi-region access points.
+
+15
+00:00:39.840 --> 00:00:42.043
+So I'll call this one MyGlobalApp,
+
+16
+00:00:44.070 --> 00:00:47.100
+and then we need to add buckets into this access point.
+
+17
+00:00:47.100 --> 00:00:50.370
+So here I will have app in this
+
+18
+00:00:50.370 --> 00:00:52.830
+and we have these two buckets that I wanted to add.
+
+19
+00:00:52.830 --> 00:00:53.850
+So let's add these buckets
+
+20
+00:00:53.850 --> 00:00:56.520
+and you can see I can add more buckets, okay?
+
+21
+00:00:56.520 --> 00:00:59.550
+But you only have one bucket per AWS region
+
+22
+00:00:59.550 --> 00:01:01.920
+as far as it goes right now.
+
+23
+00:01:01.920 --> 00:01:03.930
+Okay, so then, do we want to block
+
+24
+00:01:03.930 --> 00:01:05.640
+or to enable public access
+
+25
+00:01:05.640 --> 00:01:07.950
+for this multi-region access point?
+
+26
+00:01:07.950 --> 00:01:09.420
+And this is if you wanted to, for example,
+
+27
+00:01:09.420 --> 00:01:12.630
+to make this public, but right now I'll leave it as default,
+
+28
+00:01:12.630 --> 00:01:15.603
+and then we'll create this multi-region access point.
+
+29
+00:01:16.920 --> 00:01:18.540
+And for this, I need to make sure
+
+30
+00:01:18.540 --> 00:01:23.310
+that the name is lowercase, my-global-app.
+
+31
+00:01:23.310 --> 00:01:25.923
+All right, now let's create this access point.
+
+32
+00:01:27.720 --> 00:01:30.480
+So as we can see, it can take less than 30 minutes usually,
+
+33
+00:01:30.480 --> 00:01:32.130
+but up to 24 hours to create,
+
+34
+00:01:32.130 --> 00:01:35.640
+so we'll wait for it to be ready and I'll get back to you.
+
+35
+00:01:35.640 --> 00:01:38.250
+So my multi-region access point is now ready.
+
+36
+00:01:38.250 --> 00:01:39.570
+I can click on it,
+
+37
+00:01:39.570 --> 00:01:41.640
+and we have, its ARN, we have its alias,
+
+38
+00:01:41.640 --> 00:01:43.710
+and we have the buckets, that's underneath.
+
+39
+00:01:43.710 --> 00:01:46.710
+So if I click on these buckets, I can open them in new tabs,
+
+40
+00:01:46.710 --> 00:01:49.110
+and before I do so, let's go into Permissions.
+
+41
+00:01:49.110 --> 00:01:50.460
+So Permissions is how
+
+42
+00:01:50.460 --> 00:01:52.890
+to access this multi-region access point,
+
+43
+00:01:52.890 --> 00:01:54.600
+so we need to define an access point policy,
+
+44
+00:01:54.600 --> 00:01:58.290
+which will allow our application to actually go through it.
+
+45
+00:01:58.290 --> 00:02:00.060
+And then for Replication and failover,
+
+46
+00:02:00.060 --> 00:02:01.620
+this is where it gets interesting.
+
+47
+00:02:01.620 --> 00:02:03.840
+So we have a map of what's happening
+
+48
+00:02:03.840 --> 00:02:06.180
+for your replication and your failover.
+
+49
+00:02:06.180 --> 00:02:07.140
+And as you can see right now,
+
+50
+00:02:07.140 --> 00:02:08.910
+we don't have any replication rules.
+
+51
+00:02:08.910 --> 00:02:11.100
+And we even have a warning saying that, yeah,
+
+52
+00:02:11.100 --> 00:02:12.840
+your data replication might be incomplete
+
+53
+00:02:12.840 --> 00:02:14.670
+because we're missing these rules.
+
+54
+00:02:14.670 --> 00:02:15.810
+So fairly simple,
+
+55
+00:02:15.810 --> 00:02:18.270
+we need to just create these replication rules,
+
+56
+00:02:18.270 --> 00:02:20.880
+and there's a facility to do that from within.
+
+57
+00:02:20.880 --> 00:02:23.340
+So let's create a replication rule.
+
+58
+00:02:23.340 --> 00:02:24.330
+And here we have to choose
+
+59
+00:02:24.330 --> 00:02:27.120
+we want to replicate among all specified buckets,
+
+60
+00:02:27.120 --> 00:02:29.610
+or from one, two different destinations.
+
+61
+00:02:29.610 --> 00:02:31.680
+The simplest is obviously the first one,
+
+62
+00:02:31.680 --> 00:02:33.960
+which was going to give us high availability
+
+63
+00:02:33.960 --> 00:02:36.390
+and failover capabilities.
+
+64
+00:02:36.390 --> 00:02:38.640
+So let's choose these buckets,
+
+65
+00:02:38.640 --> 00:02:40.500
+and to enable the replication,
+
+66
+00:02:40.500 --> 00:02:42.480
+we must enable bucket versioning.
+
+67
+00:02:42.480 --> 00:02:45.510
+So this is done directly from this console as well.
+
+68
+00:02:45.510 --> 00:02:48.570
+And then we enable the rules, okay?
+
+69
+00:02:48.570 --> 00:02:50.040
+And do we want to limit the scope
+
+70
+00:02:50.040 --> 00:02:52.770
+or do you want to apply to all objects in the bucket?
+
+71
+00:02:52.770 --> 00:02:54.450
+We'll say all objects.
+
+72
+00:02:54.450 --> 00:02:56.940
+And finally, let's go ahead
+
+73
+00:02:56.940 --> 00:02:59.160
+and create these replication rules.
+
+74
+00:02:59.160 --> 00:03:00.240
+So now they're created,
+
+75
+00:03:00.240 --> 00:03:01.320
+and if you had more buckets,
+
+76
+00:03:01.320 --> 00:03:04.560
+obviously you have replication rules across all the buckets.
+
+77
+00:03:04.560 --> 00:03:07.320
+And when this is done, you can close this,
+
+78
+00:03:07.320 --> 00:03:08.153
+go back to your map
+
+79
+00:03:08.153 --> 00:03:12.090
+and now you can see two-way replication for your buckets.
+
+80
+00:03:12.090 --> 00:03:16.200
+And you can verify this by also going into your Management,
+
+81
+00:03:16.200 --> 00:03:18.840
+and here you can find your replication rules.
+
+82
+00:03:18.840 --> 00:03:19.673
+So that's it,
+
+83
+00:03:19.673 --> 00:03:21.120
+I'm not gonna show you how to actually use it.
+
+84
+00:03:21.120 --> 00:03:24.210
+This is more of an application specific type of API calls,
+
+85
+00:03:24.210 --> 00:03:27.060
+but at least we saw what these are made of.
+
+86
+00:03:27.060 --> 00:03:28.440
+And just to finish, what you can do
+
+87
+00:03:28.440 --> 00:03:30.630
+is just delete this multi-region access point.
+
+88
+00:03:30.630 --> 00:03:32.640
+You're not paying anything for having it,
+
+89
+00:03:32.640 --> 00:03:33.930
+but in case you are using it,
+
+90
+00:03:33.930 --> 00:03:36.450
+you will pay extra charges,
+
+91
+00:03:36.450 --> 00:03:38.700
+based on how many gigabytes go through it.
+
+92
+00:03:38.700 --> 00:03:39.870
+All right, that's it for this lecture.
+
+93
+00:03:39.870 --> 00:03:42.870
+I hope you liked it, and I will see you in the next lecture.
+

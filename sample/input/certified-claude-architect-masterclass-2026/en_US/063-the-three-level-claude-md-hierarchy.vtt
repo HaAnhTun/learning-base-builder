@@ -1,0 +1,274 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.679
+Cloud.md is how Cloud Code gets persistent instructions, and it's organized as a hierarchy
+
+2
+00:00:05.679 --> 00:00:11.039
+at four scopes. For this one, we'll cover those scopes, what each one is designed for,
+
+3
+00:00:11.039 --> 00:00:16.639
+how Cloud Code loads them all at session start, and why separating personal preferences from
+
+4
+00:00:16.639 --> 00:00:22.079
+shared project standards is the core design principle behind the whole system. Let's get into
+
+5
+00:00:22.079 --> 00:00:28.079
+it. Open a session in any repo, and Cloud Code is already reading instructions from more than
+
+6
+00:00:28.079 --> 00:00:34.799
+one place. Managed policy is an org-wide Cloud.md at a system path. It loads first,
+
+7
+00:00:34.799 --> 00:00:40.319
+it's the broadest layer, and it can't be excluded. That's how an organization enforces standards for
+
+8
+00:00:40.319 --> 00:00:46.880
+everyone. User scope is .cloud slash Cloud.md, your personal preferences across every session.
+
+9
+00:00:47.439 --> 00:00:54.319
+Project scope is Cloud.md at the repository root, the shared instructions for all contributors,
+
+10
+00:00:54.319 --> 00:00:59.840
+version controlled, so everyone gets the same setup. There's a fourth and narrowest scope,
+
+11
+00:00:59.840 --> 00:01:07.279
+local, which is Cloud.local.md, and get ignored, and we'll come back to it. The key idea is load
+
+12
+00:01:07.279 --> 00:01:12.879
+order. Cloud Code reads these broadest to most specific and concatenates them into one set of
+
+13
+00:01:12.879 --> 00:01:18.400
+instructions. Nothing gets erased. They all apply together, and on a genuine conflict,
+
+14
+00:01:18.400 --> 00:01:24.639
+there is no reliable winner, so avoid contradictions. Managed policy is the broadest
+
+15
+00:01:24.639 --> 00:01:31.760
+layer, and it loads first. It's an org-wide Cloud.md placed at a system path by the organization,
+
+16
+00:01:31.760 --> 00:01:37.760
+and its defining property is that it can't be excluded. Every user in every project inherits
+
+17
+00:01:37.760 --> 00:01:44.319
+it before any personal or project config loads. That makes it the mechanism for enforcing standards
+
+18
+00:01:44.319 --> 00:01:50.800
+across a whole company, security requirements, compliance language, house style that has to hold
+
+19
+00:01:50.800 --> 00:01:56.000
+everywhere. This is the key correction to internalize. Organization-wide enforcement
+
+20
+00:01:56.000 --> 00:02:02.160
+is managed policy, not a shared project file and not a team-level file type. If a rule truly has
+
+21
+00:02:02.160 --> 00:02:07.440
+to apply to everyone and can't be opted out of, managed policy is the only scope that guarantees
+
+22
+00:02:07.440 --> 00:02:14.000
+it. It sets the floor the rest of the hierarchy builds on. These two scopes sit between managed
+
+23
+00:02:14.000 --> 00:02:21.679
+policy and local. User scope is .cloud slash cloud.md, your personal defaults across every
+
+24
+00:02:21.679 --> 00:02:28.240
+project you touch. Project scope is the cloud.md at the repository root, and it's the workhorse
+
+25
+00:02:28.240 --> 00:02:33.919
+of the hierarchy. It applies to everyone who works on that project. It's the right place for coding
+
+26
+00:02:33.919 --> 00:02:39.119
+conventions the team has agreed on, test requirements, architecture guidelines, and
+
+27
+00:02:39.119 --> 00:02:45.440
+anti-patterns you want cloud code to avoid. The most important detail for project scope
+
+28
+00:02:45.440 --> 00:02:53.360
+is version control. The project cloud.md should be committed to source control alongside the code,
+
+29
+00:02:53.360 --> 00:02:59.199
+so every contributor automatically gets the same instructions with no manual setup. Leaving it out
+
+30
+00:02:59.199 --> 00:03:05.839
+of source control is a concrete anti-pattern. A cloud.md that lives on one developer's machine
+
+31
+00:03:05.919 --> 00:03:11.360
+but isn't in the repo produces inconsistent results and defeats the point of a shared config.
+
+32
+00:03:12.639 --> 00:03:18.240
+The four boxes here all answer one question. Who is this instruction for? Match the instruction
+
+33
+00:03:18.240 --> 00:03:23.440
+to its audience and placement stops being a guess. Anything the whole company answers to
+
+34
+00:03:23.440 --> 00:03:29.919
+belongs in managed policy, including security requirements and standards nobody can opt out of.
+
+35
+00:03:29.919 --> 00:03:35.279
+Anything that is purely yours, your preferred tone, your verbosity, your own shortcuts,
+
+36
+00:03:35.279 --> 00:03:41.279
+belongs at user scope. Anything the team has to stay consistent on belongs at project scope,
+
+37
+00:03:41.839 --> 00:03:47.360
+and anything that is yours but scoped to one repository belongs in your git ignored local file.
+
+38
+00:03:47.919 --> 00:03:51.759
+The trap is putting a personal preference where the whole team inherits it,
+
+39
+00:03:51.759 --> 00:03:57.119
+or a team standard where only you ever see it. Audience first, then scope.
+
+40
+00:03:58.080 --> 00:04:04.639
+Let's close out the scopes with the narrowest one. Local scope is clod.local.md and it's git
+
+41
+00:04:04.639 --> 00:04:10.320
+ignored so it never leaves your machine. Use it for the tweaks that apply to one repository
+
+42
+00:04:10.320 --> 00:04:15.039
+but shouldn't be committed for the whole team. Things like a scratch directory path, a local
+
+43
+00:04:15.039 --> 00:04:20.000
+database name, or notes on how your own machine is set up. There's one more distinction worth
+
+44
+00:04:20.000 --> 00:04:26.480
+drawing here. You can share a clod.md across projects by importing it or symlinking it,
+
+45
+00:04:26.640 --> 00:04:31.760
+and that's a real technique. But sharing and enforcing are different things. An import can
+
+46
+00:04:31.760 --> 00:04:37.760
+be edited or deleted locally by anyone holding the file, so it spreads config without ever
+
+47
+00:04:37.760 --> 00:04:45.200
+guaranteeing it. When you open a session, clod code finds and loads all applicable clod.md files
+
+48
+00:04:45.200 --> 00:04:50.480
+at the same time. Every scope applies simultaneously, and the load order runs
+
+49
+00:04:50.480 --> 00:04:56.880
+managed policy first, then user, then project, then local. If a user scope instruction and a
+
+50
+00:04:56.880 --> 00:05:02.480
+project scope instruction don't conflict, both simply apply. The model follows both.
+
+51
+00:05:02.480 --> 00:05:07.920
+When guidance genuinely conflicts, there's no reliable winner, so the fix is to avoid writing
+
+52
+00:05:07.920 --> 00:05:15.040
+rules that contradict each other. The other key detail here is context window cost. Every clod.md
+
+53
+00:05:15.040 --> 00:05:21.920
+file that gets loaded counts against the session context window. A verbose project, clod.md with
+
+54
+00:05:21.920 --> 00:05:27.839
+hundreds of lines of detail shrinks the working space available for code. Keep config files
+
+55
+00:05:27.839 --> 00:05:34.799
+concise and specific. Clod.md is a standing instruction file that you author by hand,
+
+56
+00:05:34.799 --> 00:05:40.559
+not an auto-updating memory store. It's loaded fresh at every session start and counts against
+
+57
+00:05:40.559 --> 00:05:47.200
+the context window from the start. You manage it like code. It doesn't rewrite itself as you work.
+
+58
+00:05:47.200 --> 00:05:52.160
+That's an important distinction because clod code does have a separate auto-memory system.
+
+59
+00:05:52.720 --> 00:05:58.559
+It lives in your home directory, keyed to the git repo you're in, and stays on your machine
+
+60
+00:05:58.559 --> 00:06:03.760
+rather than being committed to the repo. It persists notes across sessions on its own.
+
+61
+00:06:03.760 --> 00:06:09.600
+So the two serve different jobs. Clod.md is where you put standing instructions and keep them lean.
+
+62
+00:06:10.160 --> 00:06:16.160
+The memory system is where evolving project notes accumulate over time. Treat clod.md like a
+
+63
+00:06:16.160 --> 00:06:20.880
+configuration file, not a journal, and let the memory system carry the running notes.
+
+64
+00:06:22.480 --> 00:06:28.320
+The hierarchy exists so a single file doesn't have to serve an entire organization, a person,
+
+65
+00:06:28.320 --> 00:06:35.279
+and a project all at once. Each layer answers a different question about who the rule belongs to,
+
+66
+00:06:35.279 --> 00:06:41.920
+and putting a rule at the wrong layer is how team standards end up unenforceable. Keep in mind,
+
+67
+00:06:41.920 --> 00:06:46.880
+they all load at session start, so every layer costs a little bit of your context window.
+
+68
+00:06:47.440 --> 00:06:50.160
+That's it for this lesson. I'll see you in the next one.
+

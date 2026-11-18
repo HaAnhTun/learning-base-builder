@@ -1,0 +1,402 @@
+WEBVTT
+
+1
+00:00:00.300 --> 00:00:01.980
+<v Instructor>So question nine now.</v>
+
+2
+00:00:01.980 --> 00:00:03.810
+The company has built an online ticketing
+
+3
+00:00:03.810 --> 00:00:06.210
+web application on AWS.
+
+4
+00:00:06.210 --> 00:00:09.660
+The application runs as containers on Amazon ECS
+
+5
+00:00:09.660 --> 00:00:11.520
+with the AWS Fargate launch type
+
+6
+00:00:11.520 --> 00:00:13.320
+behind an Application Load Balancer
+
+7
+00:00:13.320 --> 00:00:18.150
+and uses images that are stored in Amazon ECR repository.
+
+8
+00:00:18.150 --> 00:00:19.350
+The application will store data
+
+9
+00:00:19.350 --> 00:00:22.110
+in an Amazon Aurora MySQL DB cluster,
+
+10
+00:00:22.110 --> 00:00:26.100
+and the company has set up a domain name in Amazon Route 53.
+
+11
+00:00:26.100 --> 00:00:28.980
+And now we want to deploy the application across two regions
+
+12
+00:00:28.980 --> 00:00:30.840
+with an active-active configuration,
+
+13
+00:00:30.840 --> 00:00:33.570
+which means both of them will receive traffic.
+
+14
+00:00:33.570 --> 00:00:36.780
+So we need to have a combination of steps to make this work
+
+15
+00:00:36.780 --> 00:00:40.020
+with the least amount of change to the architecture.
+
+16
+00:00:40.020 --> 00:00:40.853
+So let's have a look.
+
+17
+00:00:40.853 --> 00:00:42.690
+So this is our current architecture right now.
+
+18
+00:00:42.690 --> 00:00:47.190
+We have Route 53 that is directing traffic to our ALB.
+
+19
+00:00:47.190 --> 00:00:50.700
+We have behind ALB the ECS Fargate service connected
+
+20
+00:00:50.700 --> 00:00:52.770
+to an Aurora MySQL database.
+
+21
+00:00:52.770 --> 00:00:56.970
+The ECS Fargate service receives all the images from ECR.
+
+22
+00:00:56.970 --> 00:00:59.160
+And so everything is in one region right now.
+
+23
+00:00:59.160 --> 00:01:01.980
+So for this question, we have actually three option groups.
+
+24
+00:01:01.980 --> 00:01:05.550
+So let's compare A to B, C to D, and E to F.
+
+25
+00:01:05.550 --> 00:01:08.700
+A is set up cross-region replication to the second region
+
+26
+00:01:08.700 --> 00:01:10.320
+for the ECR images.
+
+27
+00:01:10.320 --> 00:01:11.700
+So that means we have a second region
+
+28
+00:01:11.700 --> 00:01:14.670
+and ECR has a replication feature.
+
+29
+00:01:14.670 --> 00:01:17.610
+Okay, this sounds plausible. What is the second option?
+
+30
+00:01:17.610 --> 00:01:20.280
+Create a VPC endpoint from the ECR repository
+
+31
+00:01:20.280 --> 00:01:21.690
+in the second region.
+
+32
+00:01:21.690 --> 00:01:23.760
+So here we create a VPC endpoint.
+
+33
+00:01:23.760 --> 00:01:25.890
+And one thing we should know is that
+
+34
+00:01:25.890 --> 00:01:29.160
+if an option seems very plausible, the other one doesn't.
+
+35
+00:01:29.160 --> 00:01:31.410
+So the first one seems plausible,
+
+36
+00:01:31.410 --> 00:01:35.610
+cross-region replication of ECR images is a feature of ECR,
+
+37
+00:01:35.610 --> 00:01:37.170
+so it is the right answer.
+
+38
+00:01:37.170 --> 00:01:39.450
+But on top of it, B is the wrong answer
+
+39
+00:01:39.450 --> 00:01:42.720
+because VPC endpoints do not work to get images
+
+40
+00:01:42.720 --> 00:01:44.640
+from ECR across regions.
+
+41
+00:01:44.640 --> 00:01:47.580
+Here, the reason why we have this cross-region replication
+
+42
+00:01:47.580 --> 00:01:51.210
+is that because the images need to be local
+
+43
+00:01:51.210 --> 00:01:53.490
+to the region where they're getting pulled.
+
+44
+00:01:53.490 --> 00:01:57.063
+So the correct answer here is answer A.
+
+45
+00:01:57.900 --> 00:02:00.930
+Then we have edit the ECS service configuration
+
+46
+00:02:00.930 --> 00:02:04.410
+by adding a second deployment target to the second region.
+
+47
+00:02:04.410 --> 00:02:07.920
+So here we have one ECS Fargate service
+
+48
+00:02:07.920 --> 00:02:10.980
+managing two regions, a multi-region deploy.
+
+49
+00:02:10.980 --> 00:02:12.240
+And then the second one is
+
+50
+00:02:12.240 --> 00:02:15.360
+to deploy the ECS cluster, Fargate service,
+
+51
+00:02:15.360 --> 00:02:17.160
+and ALB to the second region
+
+52
+00:02:17.160 --> 00:02:21.180
+and set up Route 53 latency-based routing.
+
+53
+00:02:21.180 --> 00:02:25.110
+So if there was a multi-region deploy for Fargate,
+
+54
+00:02:25.110 --> 00:02:26.190
+this could be a possibility,
+
+55
+00:02:26.190 --> 00:02:28.380
+but still it wouldn't be fully correct,
+
+56
+00:02:28.380 --> 00:02:30.690
+but there is no such feature for Fargate.
+
+57
+00:02:30.690 --> 00:02:33.960
+Here, as we've seen for any active-active type
+
+58
+00:02:33.960 --> 00:02:35.790
+of deployment, it is the best thing
+
+59
+00:02:35.790 --> 00:02:39.750
+to redeploy the entire solution into another region
+
+60
+00:02:39.750 --> 00:02:44.400
+and use indeed a DNS feature of Route 53
+
+61
+00:02:44.400 --> 00:02:47.820
+to redirect to the region that is the closest to the user,
+
+62
+00:02:47.820 --> 00:02:49.740
+for example, based on latency.
+
+63
+00:02:49.740 --> 00:02:52.740
+So here redeploying the architecture is the correct choice.
+
+64
+00:02:52.740 --> 00:02:54.870
+This is answer D.
+
+65
+00:02:54.870 --> 00:02:56.730
+And finally, change the database
+
+66
+00:02:56.730 --> 00:02:59.190
+by using Amazon DynamoDB global tables
+
+67
+00:02:59.190 --> 00:03:01.110
+in the two desired regions.
+
+68
+00:03:01.110 --> 00:03:02.640
+So we have active-active replication
+
+69
+00:03:02.640 --> 00:03:06.240
+and we know that DynamoDB is definitely
+
+70
+00:03:06.240 --> 00:03:08.130
+has a global database feature
+
+71
+00:03:08.130 --> 00:03:10.620
+with this active-active replication.
+
+72
+00:03:10.620 --> 00:03:12.540
+Or to use an Aurora global database
+
+73
+00:03:12.540 --> 00:03:15.390
+with write forwarding enabled in the second region.
+
+74
+00:03:15.390 --> 00:03:18.720
+So we also know that Aurora is a global database.
+
+75
+00:03:18.720 --> 00:03:21.390
+So both these answers could be correct,
+
+76
+00:03:21.390 --> 00:03:24.300
+but the question specifically asked how to do this
+
+77
+00:03:24.300 --> 00:03:26.550
+with the least amount of changes,
+
+78
+00:03:26.550 --> 00:03:28.230
+and we're already using Aurora
+
+79
+00:03:28.230 --> 00:03:31.170
+and this is a feature of Aurora to be able to be replicated
+
+80
+00:03:31.170 --> 00:03:33.300
+and active across regions.
+
+81
+00:03:33.300 --> 00:03:35.340
+So therefore the correct answer here is going
+
+82
+00:03:35.340 --> 00:03:36.840
+to be answer F.
+
+83
+00:03:36.840 --> 00:03:39.060
+So here is our final architecture
+
+84
+00:03:39.060 --> 00:03:41.280
+and this is a classic for AWS.
+
+85
+00:03:41.280 --> 00:03:42.720
+So we have one region
+
+86
+00:03:42.720 --> 00:03:45.120
+with a web application has been deployed,
+
+87
+00:03:45.120 --> 00:03:48.390
+a second region with this exact same deployment,
+
+88
+00:03:48.390 --> 00:03:50.580
+and we enable cross-region replication
+
+89
+00:03:50.580 --> 00:03:52.680
+for whatever is needed to be replicated
+
+90
+00:03:52.680 --> 00:03:55.770
+such as the ECR registry and images,
+
+91
+00:03:55.770 --> 00:03:58.110
+and also make sure that we have a database
+
+92
+00:03:58.110 --> 00:04:01.410
+that is replicated and also accepts the writes.
+
+93
+00:04:01.410 --> 00:04:03.660
+At least here the write requests are forwarded
+
+94
+00:04:03.660 --> 00:04:05.790
+to a main Aurora database.
+
+95
+00:04:05.790 --> 00:04:08.700
+And how to distribute the load between these two regions?
+
+96
+00:04:08.700 --> 00:04:12.210
+Well for this, we use Route 53 with a record name,
+
+97
+00:04:12.210 --> 00:04:14.850
+with latency endpoint, which is going to redirect us
+
+98
+00:04:14.850 --> 00:04:16.800
+to the closest ALB.
+
+99
+00:04:16.800 --> 00:04:18.720
+So that's it for this lecture, I hope you liked it,
+
+100
+00:04:18.720 --> 00:04:20.670
+and I will see you in the next lecture.
+

@@ -1,0 +1,494 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.559
+When you're building agentic systems, one of the earliest design decisions you hit
+
+2
+00:00:04.559 --> 00:00:10.239
+is where state actually lives, inside the active conversation or in external systems.
+
+3
+00:00:10.880 --> 00:00:14.319
+For this video, we'll look at when each approach is correct,
+
+4
+00:00:14.319 --> 00:00:19.840
+how to design stores for agentic systems, and how hybrid approaches combine both tiers.
+
+5
+00:00:19.840 --> 00:00:20.719
+Let's get into it.
+
+6
+00:00:21.920 --> 00:00:25.040
+Every fact an agent uses has to live somewhere,
+
+7
+00:00:25.040 --> 00:00:28.000
+and where it lives changes what the agent can do with it.
+
+8
+00:00:28.479 --> 00:00:32.959
+In-context state is everything the agent knows from the current conversation.
+
+9
+00:00:32.959 --> 00:00:35.599
+Messages, tool results, retrieved documents,
+
+10
+00:00:35.599 --> 00:00:40.159
+all held directly in the context window the model is reading.
+
+11
+00:00:40.159 --> 00:00:42.400
+It's instant, and it's fragile.
+
+12
+00:00:42.400 --> 00:00:45.840
+External memory is state stored outside the model.
+
+13
+00:00:45.840 --> 00:00:50.560
+In key-value databases, relational tables, or vector indexes.
+
+14
+00:00:50.560 --> 00:00:54.000
+It persists across sessions and survives truncation.
+
+15
+00:00:54.000 --> 00:00:56.880
+But every read and write costs a tool call.
+
+16
+00:00:57.360 --> 00:01:00.639
+Semantic retrieval is how you query the vector side of that.
+
+17
+00:01:00.639 --> 00:01:06.559
+By meaning, rather than exact key, using embeddings to return the most relevant stored chunks.
+
+18
+00:01:06.559 --> 00:01:11.760
+Speed, durability, and query model are the axes you'll be trading off all lesson.
+
+19
+00:01:13.040 --> 00:01:16.879
+In-context state is the simplest form of agent memory.
+
+20
+00:01:16.879 --> 00:01:19.599
+It's everything the model reads during inference.
+
+21
+00:01:19.599 --> 00:01:24.639
+The conversation history, tool results, injected documents, and the system prompt.
+
+22
+00:01:25.360 --> 00:01:28.160
+The key advantage is that there's no retrieval step.
+
+23
+00:01:28.720 --> 00:01:34.879
+The model reads in-context state as part of normal inference with zero additional latency.
+
+24
+00:01:35.440 --> 00:01:36.959
+But there's a hard limit.
+
+25
+00:01:36.959 --> 00:01:39.760
+Everything has to fit in the context window.
+
+26
+00:01:39.760 --> 00:01:41.360
+And that limit is fixed.
+
+27
+00:01:41.360 --> 00:01:44.239
+When the window fills up, the system has to truncate.
+
+28
+00:01:44.800 --> 00:01:46.800
+Older content gets dropped.
+
+29
+00:01:46.800 --> 00:01:50.959
+And when the session ends, in-context state is gone entirely.
+
+30
+00:01:50.959 --> 00:01:53.120
+Unless something wrote it to an external store.
+
+31
+00:01:53.760 --> 00:01:59.680
+Fast and convenient, but not durable at all for anything that needs to survive an interruption.
+
+32
+00:02:00.879 --> 00:02:06.080
+External memory is state stored in systems the agent can read and write via tool calls.
+
+33
+00:02:06.080 --> 00:02:12.080
+Key value stores, relational databases, and vector indexes all fall into this category.
+
+34
+00:02:12.639 --> 00:02:14.800
+The big advantage is persistence.
+
+35
+00:02:14.800 --> 00:02:19.119
+External memory survives context truncation and process restarts.
+
+36
+00:02:19.119 --> 00:02:23.600
+A session that ends or crashes doesn't lose the state that was written out.
+
+37
+00:02:23.600 --> 00:02:26.720
+External stores are also queryable.
+
+38
+00:02:26.720 --> 00:02:30.960
+A key value store lets you look up state by identifier.
+
+39
+00:02:30.960 --> 00:02:34.639
+And a vector index lets you retrieve by semantic similarity.
+
+40
+00:02:34.639 --> 00:02:36.399
+The cost is latency.
+
+41
+00:02:36.399 --> 00:02:39.919
+Every read and write requires a tool call, which adds time.
+
+42
+00:02:40.559 --> 00:02:42.479
+In-context reads are free.
+
+43
+00:02:42.479 --> 00:02:43.759
+External reads aren't.
+
+44
+00:02:44.320 --> 00:02:48.720
+That trade-off is the central tension in state design for agentic systems.
+
+45
+00:02:48.720 --> 00:02:51.440
+And the right balance depends on what the state needs to do.
+
+46
+00:02:52.639 --> 00:02:56.559
+With both forms defined, the comparison comes down to speed,
+
+47
+00:02:56.559 --> 00:02:58.880
+durability, and how you query the state.
+
+48
+00:02:59.440 --> 00:03:01.919
+In-context state is instant.
+
+49
+00:03:01.919 --> 00:03:04.800
+The model reads it as part of normal inference.
+
+50
+00:03:04.800 --> 00:03:06.880
+No tool call, no latency.
+
+51
+00:03:06.880 --> 00:03:09.520
+But it's bounded by the context window.
+
+52
+00:03:09.520 --> 00:03:12.720
+When the window fills up, content gets truncated.
+
+53
+00:03:12.720 --> 00:03:15.119
+When the session ends, the state is gone.
+
+54
+00:03:15.679 --> 00:03:18.080
+External memory is the opposite trade-off.
+
+55
+00:03:18.800 --> 00:03:22.639
+Every read and write costs a tool call, which adds latency.
+
+56
+00:03:23.199 --> 00:03:27.279
+But the state persists across sessions, survives truncation,
+
+57
+00:03:27.279 --> 00:03:30.639
+and can be queried by key or by semantic similarity.
+
+58
+00:03:31.279 --> 00:03:33.360
+The two aren't interchangeable.
+
+59
+00:03:33.360 --> 00:03:38.160
+In-context is right for transient, hot state that only matters this turn.
+
+60
+00:03:38.800 --> 00:03:43.919
+External is right for durable state that needs to outlive the current context.
+
+61
+00:03:43.919 --> 00:03:47.839
+With that framing in hand, let's look at the kinds of external stores
+
+62
+00:03:47.839 --> 00:03:49.199
+actually used in production.
+
+63
+00:03:50.479 --> 00:03:54.720
+The three main types of external stores each suit different access patterns.
+
+64
+00:03:55.279 --> 00:03:57.839
+Key value stores are the simplest.
+
+65
+00:03:57.839 --> 00:04:01.600
+They let you look up state by an exact identifier instantly.
+
+66
+00:04:02.160 --> 00:04:07.360
+User profiles, task status, and configuration all fit this pattern well.
+
+67
+00:04:08.160 --> 00:04:12.160
+Relational databases support structured queries, joins, and filtering.
+
+68
+00:04:12.720 --> 00:04:15.440
+They're the right choice for audit logs, records,
+
+69
+00:04:15.440 --> 00:04:19.119
+and anything that needs complex queries across multiple fields.
+
+70
+00:04:19.679 --> 00:04:23.119
+Vector indexes support semantic similarity search.
+
+71
+00:04:23.119 --> 00:04:29.440
+They're used when the agent needs to retrieve information by meaning rather than by exact key,
+
+72
+00:04:29.440 --> 00:04:34.959
+like finding the most relevant prior conversation or the closest document to a current query.
+
+73
+00:04:34.959 --> 00:04:38.720
+Choosing the right store type is about matching the store's query model
+
+74
+00:04:38.720 --> 00:04:41.920
+to how the agent actually needs to access the data.
+
+75
+00:04:42.480 --> 00:04:46.799
+Using a key value store when you need semantic retrieval is a design mismatch.
+
+76
+00:04:48.079 --> 00:04:53.119
+The core decision question for where state lives is whether it needs to survive
+
+77
+00:04:53.119 --> 00:04:54.959
+beyond the current context.
+
+78
+00:04:54.959 --> 00:05:00.000
+Hot state is state that's actively changing this turn and referenced frequently.
+
+79
+00:05:00.000 --> 00:05:04.079
+It belongs in context where the model can read it with zero latency.
+
+80
+00:05:04.079 --> 00:05:08.000
+Cold state is state that's rarely needed during active execution,
+
+81
+00:05:08.000 --> 00:05:10.480
+but has to persist across sessions.
+
+82
+00:05:10.480 --> 00:05:12.559
+It belongs in external storage.
+
+83
+00:05:12.559 --> 00:05:18.720
+Reconstructable state is state that can be derived from source data or tool calls if it's lost.
+
+84
+00:05:18.720 --> 00:05:20.959
+There's often no reason to store it at all.
+
+85
+00:05:20.959 --> 00:05:23.839
+The default should be in context for speed.
+
+86
+00:05:23.839 --> 00:05:28.720
+Escalate to external storage only when there's a specific durability requirement
+
+87
+00:05:28.720 --> 00:05:30.720
+that in context storage can't meet.
+
+88
+00:05:31.279 --> 00:05:34.559
+Over persisting state adds latency cost without adding value
+
+89
+00:05:34.559 --> 00:05:36.640
+when the information could just be regenerated.
+
+90
+00:05:37.040 --> 00:05:41.920
+Four questions help determine whether state needs to survive beyond the active context.
+
+91
+00:05:41.920 --> 00:05:47.920
+First, if the session ended right now, is this state recoverable without external storage?
+
+92
+00:05:47.920 --> 00:05:50.239
+If no, it needs to be persisted.
+
+93
+00:05:50.799 --> 00:05:55.200
+Second, does the agent need to retrieve this state by meaning or similarity
+
+94
+00:05:55.200 --> 00:05:57.040
+rather than by exact key?
+
+95
+00:05:57.040 --> 00:05:59.519
+If yes, a vector store is the right choice.
+
+96
+00:06:00.160 --> 00:06:04.720
+Third, does another session or another user need to read this state later?
+
+97
+00:06:04.880 --> 00:06:08.480
+Cross-session sharing requires external persistence by definition.
+
+98
+00:06:09.040 --> 00:06:14.000
+Fourth, can this state be rebuilt cheaply from source data or tool calls?
+
+99
+00:06:14.000 --> 00:06:17.440
+If yes, it may not need explicit storage at all.
+
+100
+00:06:17.440 --> 00:06:21.760
+Working through these four questions at design time prevents both under persisting,
+
+101
+00:06:22.399 --> 00:06:26.959
+important state, and over persisting state that adds latency cost without any real benefit.
+
+102
+00:06:28.160 --> 00:06:33.279
+Most production agents use both in context and external memory at the same time.
+
+103
+00:06:33.440 --> 00:06:37.839
+The pattern is a hot tier and a cold tier.
+
+104
+00:06:37.839 --> 00:06:41.519
+The hot tier keeps actively changing state in context.
+
+105
+00:06:41.519 --> 00:06:45.600
+Things like the current steps inputs and outputs, the active plan,
+
+106
+00:06:45.600 --> 00:06:48.079
+and any tool results from this turn.
+
+107
+00:06:48.079 --> 00:06:52.320
+The model reads all of this during inference with no extra latency.
+
+108
+00:06:52.320 --> 00:06:58.480
+The cold tier persists completed results, configuration, and history to external stores.
+
+109
+00:06:58.480 --> 00:07:01.519
+When a session resumes after an interruption,
+
+110
+00:07:01.519 --> 00:07:07.200
+the agent loads only the minimal state it needs from the cold tier to pick up where it left off
+
+111
+00:07:07.200 --> 00:07:08.399
+rather than loading everything.
+
+112
+00:07:09.200 --> 00:07:13.119
+Hybrid design combines the speed advantage of in-context access
+
+113
+00:07:13.119 --> 00:07:17.920
+with the durability advantage of external storage without paying the latency cost
+
+114
+00:07:17.920 --> 00:07:21.839
+of externalizing state that doesn't need to leave the context window.
+
+115
+00:07:23.519 --> 00:07:25.279
+State has a temperature.
+
+116
+00:07:25.279 --> 00:07:28.480
+What the model needs every turn stays hot,
+
+117
+00:07:28.480 --> 00:07:31.600
+right in the conversation where reading costs nothing.
+
+118
+00:07:32.320 --> 00:07:35.519
+What has to outlive a restart is in cold storage.
+
+119
+00:07:36.079 --> 00:07:39.200
+It goes into a store you query on demand.
+
+120
+00:07:39.200 --> 00:07:43.440
+The design holds on a single question you ask of each piece of state.
+
+121
+00:07:44.079 --> 00:07:46.320
+Does this need to survive an interruption?
+
+122
+00:07:47.119 --> 00:07:48.640
+That wraps up this lesson.
+
+123
+00:07:48.640 --> 00:07:50.000
+I'll see you in the next one.
+

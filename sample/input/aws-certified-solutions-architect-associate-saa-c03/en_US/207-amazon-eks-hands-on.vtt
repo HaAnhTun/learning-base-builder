@@ -1,0 +1,814 @@
+WEBVTT
+
+1
+00:00:00.600 --> 00:00:01.860
+<v Instructor>So I want to show you</v>
+
+2
+00:00:01.860 --> 00:00:03.450
+how to use the EKS service.
+
+3
+00:00:03.450 --> 00:00:04.860
+You don't have to follow my hands-on,
+
+4
+00:00:04.860 --> 00:00:07.350
+it's just for you to get an idea of how this works
+
+5
+00:00:07.350 --> 00:00:08.730
+and how this gets configured
+
+6
+00:00:08.730 --> 00:00:10.260
+so you have a better understanding of the service,
+
+7
+00:00:10.260 --> 00:00:12.060
+but we're not going to use it
+
+8
+00:00:12.060 --> 00:00:14.130
+and it may cost you money to do so,
+
+9
+00:00:14.130 --> 00:00:15.990
+so just look at what I'm doing.
+
+10
+00:00:15.990 --> 00:00:17.940
+Of course, if you want to, you can follow along.
+
+11
+00:00:17.940 --> 00:00:19.500
+So we are in the EKS console
+
+12
+00:00:19.500 --> 00:00:21.930
+and we're going to create a cluster.
+
+13
+00:00:21.930 --> 00:00:25.260
+So here we have two options, the quick configuration
+
+14
+00:00:25.260 --> 00:00:28.890
+or the custom configuration to choose more options.
+
+15
+00:00:28.890 --> 00:00:30.840
+So let's go over custom configuration
+
+16
+00:00:30.840 --> 00:00:34.110
+and we'll have a look at all the options quickly.
+
+17
+00:00:34.110 --> 00:00:35.220
+So let's scroll down.
+
+18
+00:00:35.220 --> 00:00:38.280
+And now we have the EKS Auto Mode, which is new.
+
+19
+00:00:38.280 --> 00:00:41.040
+We're going to use it, this is going to make sure that
+
+20
+00:00:41.040 --> 00:00:42.330
+when a new pod,
+
+21
+00:00:42.330 --> 00:00:44.910
+so a new task, cannot fit onto existing nodes,
+
+22
+00:00:44.910 --> 00:00:47.070
+EKS will automatically create a new node for us.
+
+23
+00:00:47.070 --> 00:00:49.410
+That means that we have the infrastructure
+
+24
+00:00:49.410 --> 00:00:53.100
+that is managed by EKS, which is great.
+
+25
+00:00:53.100 --> 00:00:55.173
+So I'll call this one DemoEKSCluster.
+
+26
+00:00:56.520 --> 00:00:58.980
+Then there is a cluster role. So this is very important.
+
+27
+00:00:58.980 --> 00:01:01.140
+We currently don't have a role for this cluster.
+
+28
+00:01:01.140 --> 00:01:03.630
+So you click on create recommended role,
+
+29
+00:01:03.630 --> 00:01:05.370
+and this is going to automatically create the role
+
+30
+00:01:05.370 --> 00:01:08.070
+we need for this cluster.
+
+31
+00:01:08.070 --> 00:01:12.330
+So then it needs to also have these managed policy
+
+32
+00:01:12.330 --> 00:01:14.580
+or equivalent to use EKS Auto Mode.
+
+33
+00:01:14.580 --> 00:01:17.640
+So I guess this is not created out of the box for us.
+
+34
+00:01:17.640 --> 00:01:20.850
+So in permission policies we would add policy,
+
+35
+00:01:20.850 --> 00:01:24.750
+attach policies, and then we would look for EKS,
+
+36
+00:01:24.750 --> 00:01:26.610
+and then we would need to match this.
+
+37
+00:01:26.610 --> 00:01:31.610
+So EKS block storage, cluster policy, compute policy,
+
+38
+00:01:31.710 --> 00:01:33.420
+and then load balancing and networking,
+
+39
+00:01:33.420 --> 00:01:37.080
+load balancing and networking.
+
+40
+00:01:37.080 --> 00:01:38.310
+Add permissions.
+
+41
+00:01:38.310 --> 00:01:41.310
+And now we have the proper permissions to this role.
+
+42
+00:01:41.310 --> 00:01:43.890
+Let's refresh this. No more error message.
+
+43
+00:01:43.890 --> 00:01:45.870
+The Kubernetes version, we're good to go.
+
+44
+00:01:45.870 --> 00:01:47.850
+Standard support, yes.
+
+45
+00:01:47.850 --> 00:01:51.600
+We don't need to enable a higher scaling tier.
+
+46
+00:01:51.600 --> 00:01:53.550
+Auto Mode is going to say
+
+47
+00:01:53.550 --> 00:01:56.070
+what we choose the node pools to choose from.
+
+48
+00:01:56.070 --> 00:01:57.810
+So general purpose and system.
+
+49
+00:01:57.810 --> 00:01:58.643
+Node IAM role,
+
+50
+00:01:58.643 --> 00:02:00.450
+this is the IAM role needed for the nodes
+
+51
+00:02:00.450 --> 00:02:02.100
+to be registered with the cluster.
+
+52
+00:02:02.100 --> 00:02:04.350
+So there's a role here, but it's not the right one.
+
+53
+00:02:04.350 --> 00:02:06.540
+So we need to create a recommended role
+
+54
+00:02:06.540 --> 00:02:09.690
+called AmazonEKSAutoNodeRole.
+
+55
+00:02:09.690 --> 00:02:11.580
+It has the default policies right here.
+
+56
+00:02:11.580 --> 00:02:13.380
+Let's create this role.
+
+57
+00:02:13.380 --> 00:02:15.780
+And no error message. So we're good here.
+
+58
+00:02:15.780 --> 00:02:17.430
+Let's remove these notifications.
+
+59
+00:02:18.660 --> 00:02:20.820
+Then we have the cluster access.
+
+60
+00:02:20.820 --> 00:02:24.300
+So we allow cluster administrator access
+
+61
+00:02:24.300 --> 00:02:25.770
+for your IAM principal
+
+62
+00:02:25.770 --> 00:02:27.450
+to make things easy.
+
+63
+00:02:27.450 --> 00:02:29.040
+We don't need to change anything here.
+
+64
+00:02:29.040 --> 00:02:31.200
+We don't need to look at encryption right now.
+
+65
+00:02:31.200 --> 00:02:32.400
+This is a way for you
+
+66
+00:02:32.400 --> 00:02:36.240
+to shift traffic across AZs in case there's a problem in AZ.
+
+67
+00:02:36.240 --> 00:02:38.550
+So for now we'll disable it, but we can enable it after.
+
+68
+00:02:38.550 --> 00:02:41.430
+This is just a way for you to have a better
+
+69
+00:02:41.430 --> 00:02:44.490
+disaster recovery protection.
+
+70
+00:02:44.490 --> 00:02:46.740
+Let's click on next. Networking is more interesting.
+
+71
+00:02:46.740 --> 00:02:50.040
+So you choose the VPC to launch your EKS resources in
+
+72
+00:02:50.040 --> 00:02:53.910
+as well as subnets where to launch your resources.
+
+73
+00:02:53.910 --> 00:02:56.760
+So here are three subnets that are public.
+
+74
+00:02:56.760 --> 00:02:59.130
+You could add security groups if you wanted to,
+
+75
+00:02:59.130 --> 00:03:00.680
+but right now we don't need to.
+
+76
+00:03:01.710 --> 00:03:03.210
+Choose the type of IP you want to use.
+
+77
+00:03:03.210 --> 00:03:04.533
+IPv4 is fine.
+
+78
+00:03:05.370 --> 00:03:07.470
+Then how to access the cluster.
+
+79
+00:03:07.470 --> 00:03:09.870
+Is it public, public and private or just private?
+
+80
+00:03:09.870 --> 00:03:11.373
+We'll use public and private.
+
+81
+00:03:12.330 --> 00:03:14.130
+Next you have all the metrics.
+
+82
+00:03:14.130 --> 00:03:15.660
+So you have metrics
+
+83
+00:03:15.660 --> 00:03:17.100
+that are gonna go directly in CloudWatch,
+
+84
+00:03:17.100 --> 00:03:20.010
+but also you can have Prometheus if you wanted to.
+
+85
+00:03:20.010 --> 00:03:21.003
+To set these up.
+
+86
+00:03:22.230 --> 00:03:24.480
+You have network monitoring, control plane logs.
+
+87
+00:03:24.480 --> 00:03:26.250
+So all these things are Kubernetes specific.
+
+88
+00:03:26.250 --> 00:03:27.690
+Again, I just wanna show you the options,
+
+89
+00:03:27.690 --> 00:03:29.820
+but you can see you can also send all the logs
+
+90
+00:03:29.820 --> 00:03:32.850
+into CloudWatch logs for these things if you need to.
+
+91
+00:03:32.850 --> 00:03:35.220
+So it's quite a lot of options when you
+
+92
+00:03:35.220 --> 00:03:37.410
+configure your EKS cluster.
+
+93
+00:03:37.410 --> 00:03:41.100
+You can also add add-ons for your cluster.
+
+94
+00:03:41.100 --> 00:03:44.700
+This is Kubernetes-related knowledge, so I will not do it,
+
+95
+00:03:44.700 --> 00:03:47.280
+but as you can see, you have lots of options around DNS,
+
+96
+00:03:47.280 --> 00:03:50.250
+around SageMaker, around EFS and so on.
+
+97
+00:03:50.250 --> 00:03:51.183
+So it's great.
+
+98
+00:03:52.230 --> 00:03:54.090
+And then you also have community add-ons
+
+99
+00:03:54.090 --> 00:03:56.820
+if you want around all these things.
+
+100
+00:03:56.820 --> 00:03:58.950
+So let's scroll down.
+
+101
+00:03:58.950 --> 00:04:02.130
+And then you have third party marketplace add-ons
+
+102
+00:04:02.130 --> 00:04:03.510
+if you wanted to.
+
+103
+00:04:03.510 --> 00:04:07.590
+Let's click on next, then this how you configure an add-on
+
+104
+00:04:07.590 --> 00:04:10.860
+and then you review everything and you scroll down
+
+105
+00:04:10.860 --> 00:04:12.810
+and create your cluster.
+
+106
+00:04:12.810 --> 00:04:14.820
+So if you're a Kubernetes expert, you would know
+
+107
+00:04:14.820 --> 00:04:17.310
+that it's difficult to set up your own Kubernetes cluster,
+
+108
+00:04:17.310 --> 00:04:19.950
+but thanks to AWS, it's managed
+
+109
+00:04:19.950 --> 00:04:23.130
+and it has the resources created for you behind the scenes
+
+110
+00:04:23.130 --> 00:04:26.643
+and you make sure that the cluster is properly configured.
+
+111
+00:04:27.480 --> 00:04:29.940
+So my EKS cluster is now created
+
+112
+00:04:29.940 --> 00:04:31.740
+and I wanna show you a few things.
+
+113
+00:04:31.740 --> 00:04:33.900
+First of all, under resources,
+
+114
+00:04:33.900 --> 00:04:36.330
+you have access to the resources within Kubernetes.
+
+115
+00:04:36.330 --> 00:04:39.270
+So you have your pods in here, you have your replica sets,
+
+116
+00:04:39.270 --> 00:04:41.880
+your deployments, your stateful sets and so on.
+
+117
+00:04:41.880 --> 00:04:44.430
+So all these things are Kubernetes specific,
+
+118
+00:04:44.430 --> 00:04:47.100
+but you can see them directly from the UI
+
+119
+00:04:47.100 --> 00:04:50.100
+of the EKS service, which is very handy.
+
+120
+00:04:50.100 --> 00:04:52.020
+Under compute, this is where you're going to see your nodes.
+
+121
+00:04:52.020 --> 00:04:54.930
+So this is a c6g.large
+
+122
+00:04:54.930 --> 00:04:56.970
+that has been created thanks to the Auto Mode.
+
+123
+00:04:56.970 --> 00:04:59.040
+So you can see it's a pretty large instance
+
+124
+00:04:59.040 --> 00:05:00.150
+and you would pay a lot of money
+
+125
+00:05:00.150 --> 00:05:01.470
+if you were to do this on your account.
+
+126
+00:05:01.470 --> 00:05:03.150
+So don't have to follow this hands-on
+
+127
+00:05:03.150 --> 00:05:04.890
+if you don't want to, of course.
+
+128
+00:05:04.890 --> 00:05:07.290
+But this is the built-in node pool.
+
+129
+00:05:07.290 --> 00:05:09.120
+So this is managed by EKS Auto Mode.
+
+130
+00:05:09.120 --> 00:05:11.220
+But if you scroll down, you have two options.
+
+131
+00:05:11.220 --> 00:05:13.800
+You have node groups and fargate profiles.
+
+132
+00:05:13.800 --> 00:05:16.080
+So I'll just show you how to create a node group
+
+133
+00:05:16.080 --> 00:05:17.430
+if you needed to.
+
+134
+00:05:17.430 --> 00:05:21.120
+This is a way for you to create a set of EC2 instances
+
+135
+00:05:21.120 --> 00:05:23.250
+that will be managed by an auto scaling group.
+
+136
+00:05:23.250 --> 00:05:24.900
+So I call this one DemoNodeGroup.
+
+137
+00:05:26.280 --> 00:05:27.720
+You need to select a role.
+
+138
+00:05:27.720 --> 00:05:30.540
+So I click on create recommended role.
+
+139
+00:05:30.540 --> 00:05:32.430
+I scroll down
+
+140
+00:05:32.430 --> 00:05:34.800
+and the policies have been selected for me already,
+
+141
+00:05:34.800 --> 00:05:35.940
+so I don't need to do anything.
+
+142
+00:05:35.940 --> 00:05:40.833
+Click on next and I'll call this one NodeGroupRoleEKS.
+
+143
+00:05:42.420 --> 00:05:43.980
+As you can see, these four policies
+
+144
+00:05:43.980 --> 00:05:44.910
+have been added automatically.
+
+145
+00:05:44.910 --> 00:05:46.200
+So it's perfect.
+
+146
+00:05:46.200 --> 00:05:48.390
+And we create this role.
+
+147
+00:05:48.390 --> 00:05:51.300
+So now we get this role name, we enter it,
+
+148
+00:05:51.300 --> 00:05:53.250
+refresh and enter it.
+
+149
+00:05:53.250 --> 00:05:54.083
+Here we go.
+
+150
+00:05:54.960 --> 00:05:57.570
+Next we can, for example, use a launch template.
+
+151
+00:05:57.570 --> 00:06:00.900
+So this is to indicate how our EC2 instances
+
+152
+00:06:00.900 --> 00:06:05.100
+are going to be launched within our auto scaling group.
+
+153
+00:06:05.100 --> 00:06:07.230
+So you would go ahead and create a launch template,
+
+154
+00:06:07.230 --> 00:06:09.720
+and this is all the information we already know
+
+155
+00:06:09.720 --> 00:06:13.290
+around the AMIs, around the instance type that we want
+
+156
+00:06:13.290 --> 00:06:14.190
+and so on.
+
+157
+00:06:14.190 --> 00:06:15.270
+So we've seen this before,
+
+158
+00:06:15.270 --> 00:06:17.763
+so I'm not going to go over it right now.
+
+159
+00:06:18.930 --> 00:06:20.820
+Then click on next.
+
+160
+00:06:20.820 --> 00:06:24.300
+So here you choose the AMI type, the capacity,
+
+161
+00:06:24.300 --> 00:06:26.490
+the instance types, the disc size,
+
+162
+00:06:26.490 --> 00:06:28.440
+then the minimum and maximum size
+
+163
+00:06:28.440 --> 00:06:30.990
+for your auto scaling group,
+
+164
+00:06:30.990 --> 00:06:33.090
+whether or not you want to use a warm pool.
+
+165
+00:06:33.090 --> 00:06:36.330
+I mean all these things are auto scaling group specific.
+
+166
+00:06:36.330 --> 00:06:39.360
+And enable node repairs in case you have an issue.
+
+167
+00:06:39.360 --> 00:06:42.660
+Then you specify networking. So where to launch these nodes.
+
+168
+00:06:42.660 --> 00:06:45.150
+And then you would go ahead and create this.
+
+169
+00:06:45.150 --> 00:06:48.423
+And this is going to create its own auto scaling group.
+
+170
+00:06:49.320 --> 00:06:51.030
+And so after a bit I can see that
+
+171
+00:06:51.030 --> 00:06:55.050
+two nodes are appearing under this node group.
+
+172
+00:06:55.050 --> 00:06:58.830
+And actually if I go into the EC2 console,
+
+173
+00:06:58.830 --> 00:07:01.800
+within my instances, I can see that I have,
+
+174
+00:07:01.800 --> 00:07:04.170
+this is my management instance, the c6 large,
+
+175
+00:07:04.170 --> 00:07:06.750
+and this is the two t3.medium instances.
+
+176
+00:07:06.750 --> 00:07:07.860
+And so if I go on the left hand side
+
+177
+00:07:07.860 --> 00:07:09.450
+under auto scaling groups,
+
+178
+00:07:09.450 --> 00:07:11.280
+we can see that this auto scaling group
+
+179
+00:07:11.280 --> 00:07:12.600
+was created by EKS
+
+180
+00:07:12.600 --> 00:07:15.090
+and contains the configuration we just did.
+
+181
+00:07:15.090 --> 00:07:19.950
+So we can see how EKS is now managing my node group.
+
+182
+00:07:19.950 --> 00:07:24.120
+So I go back to resources, we would have a computes,
+
+183
+00:07:24.120 --> 00:07:26.730
+we would have a similar type of configuration
+
+184
+00:07:26.730 --> 00:07:28.980
+for fargate profiles in which we define
+
+185
+00:07:28.980 --> 00:07:33.000
+how to launch pods directly on fargates managed by EKS.
+
+186
+00:07:33.000 --> 00:07:35.250
+So I'm not gonna do this, but you get the idea.
+
+187
+00:07:35.250 --> 00:07:37.860
+Under add-ons, I just wanna show you something.
+
+188
+00:07:37.860 --> 00:07:40.050
+So you can click on get on more add-ons,
+
+189
+00:07:40.050 --> 00:07:44.610
+and you can look at something called the EBS CSI driver.
+
+190
+00:07:44.610 --> 00:07:47.910
+And if you add it as well as the EFS CSI driver,
+
+191
+00:07:47.910 --> 00:07:50.610
+this would allow you to use EBS volumes
+
+192
+00:07:50.610 --> 00:07:54.840
+or Amazon EFS file systems within your cluster.
+
+193
+00:07:54.840 --> 00:07:57.810
+And this is something that is important to know,
+
+194
+00:07:57.810 --> 00:07:59.340
+but I won't do this right now.
+
+195
+00:07:59.340 --> 00:08:00.780
+So that's it, I just wanted to show you
+
+196
+00:08:00.780 --> 00:08:02.760
+how to configure your cluster.
+
+197
+00:08:02.760 --> 00:08:04.320
+Now I will delete it.
+
+198
+00:08:04.320 --> 00:08:05.850
+So to do so, I need to make sure
+
+199
+00:08:05.850 --> 00:08:07.650
+I first delete my node groups and the cluster,
+
+200
+00:08:07.650 --> 00:08:09.150
+so I'm going do this offline.
+
+201
+00:08:09.150 --> 00:08:12.750
+But you get the idea of how EKS works now in AWS.
+
+202
+00:08:12.750 --> 00:08:13.950
+So I hope you liked it
+
+203
+00:08:13.950 --> 00:08:15.903
+and I will see you in the next lecture.
+

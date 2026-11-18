@@ -1,0 +1,230 @@
+WEBVTT
+
+1
+00:00:00.810 --> 00:00:03.354
+<v Instructor>Okay, so let's take a step back</v>
+
+2
+00:00:03.354 --> 00:00:05.820
+and have a look at how we can view running jobs on AWS.
+
+3
+00:00:05.820 --> 00:00:08.910
+So the first strategy is to provision an EC2 instance
+
+4
+00:00:08.910 --> 00:00:10.470
+for long running jobs,
+
+5
+00:00:10.470 --> 00:00:12.000
+and you wanna run CRON jobs there.
+
+6
+00:00:12.000 --> 00:00:15.870
+So this is good, and this works for those who know CRON,
+
+7
+00:00:15.870 --> 00:00:18.540
+but the problem is that it's not highly available,
+
+8
+00:00:18.540 --> 00:00:21.630
+it's not scalable, if that EC2 instance goes down,
+
+9
+00:00:21.630 --> 00:00:24.960
+you have problems, so it's really not a great strategy
+
+10
+00:00:24.960 --> 00:00:27.180
+and something that's, as a social architect,
+
+11
+00:00:27.180 --> 00:00:29.550
+you should never vouch for.
+
+12
+00:00:29.550 --> 00:00:31.470
+The second architecture is to use something
+
+13
+00:00:31.470 --> 00:00:34.350
+like Amazon EventBridge and Lambda.
+
+14
+00:00:34.350 --> 00:00:36.970
+So this is a way to get a serverless CRON job
+
+15
+00:00:37.844 --> 00:00:39.330
+because EventBridge can have a rule
+
+16
+00:00:40.492 --> 00:00:42.529
+to invoke and lend a function every hour,
+
+17
+00:00:42.529 --> 00:00:43.500
+and then the functions are purely serverless.
+
+18
+00:00:43.500 --> 00:00:46.140
+So you're limited by Lambda function capabilities
+
+19
+00:00:46.140 --> 00:00:47.340
+in terms of run time,
+
+20
+00:00:47.340 --> 00:00:49.950
+in terms of time before timeout, and so on.
+
+21
+00:00:49.950 --> 00:00:51.510
+But this is a great solution,
+
+22
+00:00:51.510 --> 00:00:53.940
+and AWS is going to push you for that
+
+23
+00:00:53.940 --> 00:00:56.283
+as many times as possible, if possible.
+
+24
+00:00:57.930 --> 00:00:59.280
+Option number three is to have
+
+25
+00:00:59.280 --> 00:01:01.440
+some kind of reactive workflow.
+
+26
+00:01:01.440 --> 00:01:03.360
+So to get a Lambda function invoked
+
+27
+00:01:03.360 --> 00:01:05.190
+by events happening within AWS.
+
+28
+00:01:05.190 --> 00:01:07.290
+So of course EventBridge is a great one
+
+29
+00:01:07.290 --> 00:01:09.616
+in case you want events happening
+
+30
+00:01:09.616 --> 00:01:12.030
+within many different AWS services.
+
+31
+00:01:12.030 --> 00:01:14.550
+But also S3 emits its own kind of events
+
+32
+00:01:14.550 --> 00:01:17.100
+for new object creations, for example.
+
+33
+00:01:17.100 --> 00:01:19.770
+API Gateway can also invoke Lambda functions,
+
+34
+00:01:19.770 --> 00:01:22.616
+SQS and SNS can also be sources of data
+
+35
+00:01:22.616 --> 00:01:26.370
+and invocations for Lambda function, et cetera, et cetera.
+
+36
+00:01:26.370 --> 00:01:27.690
+This is reactive because as soon
+
+37
+00:01:27.690 --> 00:01:30.270
+as something happens in your infrastructure
+
+38
+00:01:30.270 --> 00:01:33.480
+you react to it by running Lambda function.
+
+39
+00:01:33.480 --> 00:01:35.130
+The strategy for us to use batch.
+
+40
+00:01:35.130 --> 00:01:38.232
+So for longer running jobs, for full lock containers
+
+41
+00:01:38.232 --> 00:01:40.680
+you can use Event Bridge with batch two.
+
+42
+00:01:40.680 --> 00:01:44.364
+For example, in Invoca batch job, every three hours, thanks
+
+43
+00:01:44.364 --> 00:01:48.501
+to Rule with time based events in Van Bridge and Batch
+
+44
+00:01:48.501 --> 00:01:50.523
+for long running workloads.
+
+45
+00:01:51.510 --> 00:01:53.558
+The certified is to use Fargate.
+
+46
+00:01:53.558 --> 00:01:55.890
+So Fargate is more bare bones than batch.
+
+47
+00:01:55.890 --> 00:01:59.130
+Batch has a bit more capabilities, more scalability in terms
+
+48
+00:01:59.130 --> 00:02:02.730
+of like how to run a batch job, but you can also use Fargate
+
+49
+00:02:02.730 --> 00:02:07.730
+as a target of Abridge to just run a container very quickly.
+
+50
+00:02:07.950 --> 00:02:08.850
+Or strategy six.
+
+51
+00:02:08.850 --> 00:02:10.920
+If you wanna run very long jobs
+
+52
+00:02:10.920 --> 00:02:12.668
+on mostly like big data jobs
+
+53
+00:02:12.668 --> 00:02:16.950
+then using emr Elastic Map produce is going to be good
+
+54
+00:02:16.950 --> 00:02:19.560
+if you have like step execution or you need to cluster
+
+55
+00:02:19.560 --> 00:02:22.440
+and run this kind of big data workloads.
+
+56
+00:02:22.440 --> 00:02:23.970
+So let's say, hopefully that makes sense.
+
+57
+00:02:23.970 --> 00:02:26.920
+I hope you liked it and I will see you in the next lecture.
+

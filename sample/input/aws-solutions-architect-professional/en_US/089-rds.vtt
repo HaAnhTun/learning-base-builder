@@ -1,0 +1,1070 @@
+WEBVTT
+
+1
+00:00:00.150 --> 00:00:02.190
+<v Instructor>Okay, so now let's talk about RDS.</v>
+
+2
+00:00:02.190 --> 00:00:05.010
+So RDS is going to be small at the exam.
+
+3
+00:00:05.010 --> 00:00:06.900
+We just need to know how many engines there are.
+
+4
+00:00:06.900 --> 00:00:08.610
+So by now, hopefully, you should know them.
+
+5
+00:00:08.610 --> 00:00:11.640
+So there's PostgreSQL, MySQL, MariaDB,
+
+6
+00:00:11.640 --> 00:00:15.870
+IBM DB2, Oracle, and Microsoft SQL Server.
+
+7
+00:00:15.870 --> 00:00:16.890
+It's a managed database.
+
+8
+00:00:16.890 --> 00:00:18.840
+You need to provision the servers though.
+
+9
+00:00:18.840 --> 00:00:20.430
+You choose like the instance type,
+
+10
+00:00:20.430 --> 00:00:22.770
+and then you get a bunch of things out of it:
+
+11
+00:00:22.770 --> 00:00:26.250
+automated backups, patching, monitoring, and so on.
+
+12
+00:00:26.250 --> 00:00:28.860
+You usually launch your RDS database in a VPC,
+
+13
+00:00:28.860 --> 00:00:30.210
+in a private subnet,
+
+14
+00:00:30.210 --> 00:00:32.280
+and then you control access to your database
+
+15
+00:00:32.280 --> 00:00:33.840
+using security groups.
+
+16
+00:00:33.840 --> 00:00:35.880
+And remember, when we have a Lambda function
+
+17
+00:00:35.880 --> 00:00:38.160
+who wants to access our RDS database,
+
+18
+00:00:38.160 --> 00:00:41.430
+we have to launch it into a private VPC subnet
+
+19
+00:00:41.430 --> 00:00:45.150
+so that it has communication with our RDS database.
+
+20
+00:00:45.150 --> 00:00:47.280
+The storage is on EBS volumes,
+
+21
+00:00:47.280 --> 00:00:49.860
+and you can increase the volume size automatically
+
+22
+00:00:49.860 --> 00:00:51.810
+thanks to auto-scaling.
+
+23
+00:00:51.810 --> 00:00:52.643
+For backups,
+
+24
+00:00:52.643 --> 00:00:54.330
+you get automated with point-in-time recoveries,
+
+25
+00:00:54.330 --> 00:00:56.010
+and the backups will expire,
+
+26
+00:00:56.010 --> 00:00:57.510
+and the snapshots are very similar,
+
+27
+00:00:57.510 --> 00:00:58.590
+but they're manual,
+
+28
+00:00:58.590 --> 00:01:00.600
+in which case you can take a backup,
+
+29
+00:01:00.600 --> 00:01:01.740
+and have it in point-of-time
+
+30
+00:01:01.740 --> 00:01:04.350
+for how many years you want.
+
+31
+00:01:04.350 --> 00:01:06.450
+And it's possible for you to take these snapshots,
+
+32
+00:01:06.450 --> 00:01:08.220
+and copy them across regions,
+
+33
+00:01:08.220 --> 00:01:09.060
+which is very helpful
+
+34
+00:01:09.060 --> 00:01:11.820
+when you want to have disaster recovery.
+
+35
+00:01:11.820 --> 00:01:13.900
+RDS also publishes a bunch of events
+
+36
+00:01:15.330 --> 00:01:17.160
+about what's happening to your database.
+
+37
+00:01:17.160 --> 00:01:18.480
+So you can get an SNS topic
+
+38
+00:01:18.480 --> 00:01:21.090
+that will contain all the events for your RDS.
+
+39
+00:01:21.090 --> 00:01:22.950
+It's called RDS event notifications.
+
+40
+00:01:22.950 --> 00:01:25.650
+And this could be for operations, for outages,
+
+41
+00:01:25.650 --> 00:01:28.950
+for when the backups are beginning, et cetera, et cetera.
+
+42
+00:01:28.950 --> 00:01:31.020
+So here's another concept that you should know by now.
+
+43
+00:01:31.020 --> 00:01:32.310
+There's Multi-AZ,
+
+44
+00:01:32.310 --> 00:01:34.800
+in which you have a standby instance for failover
+
+45
+00:01:34.800 --> 00:01:36.330
+in case there's an outage.
+
+46
+00:01:36.330 --> 00:01:39.990
+So we have a Master RDS Database, in one availability zone,
+
+47
+00:01:39.990 --> 00:01:42.900
+and it's going to be synchronously replicated
+
+48
+00:01:42.900 --> 00:01:44.580
+to another standby instance,
+
+49
+00:01:44.580 --> 00:01:46.950
+in another AZ, so, AZ B.
+
+50
+00:01:46.950 --> 00:01:50.340
+Your application only accesses your RDS database
+
+51
+00:01:50.340 --> 00:01:52.230
+through one DNS name,
+
+52
+00:01:52.230 --> 00:01:54.870
+and that DNS name will change automatically
+
+53
+00:01:54.870 --> 00:01:56.430
+in case of a failover.
+
+54
+00:01:56.430 --> 00:01:58.470
+And so that means that your standby database is
+
+55
+00:01:58.470 --> 00:02:00.060
+never accessed by your application,
+
+56
+00:02:00.060 --> 00:02:02.340
+only your master database is,
+
+57
+00:02:02.340 --> 00:02:05.520
+and there will be reads and writes happening directly,
+
+58
+00:02:05.520 --> 00:02:08.100
+solely onto the master instance.
+
+59
+00:02:08.100 --> 00:02:11.910
+So here, multi AZ is really for recovery in case of outage.
+
+60
+00:02:11.910 --> 00:02:12.743
+It's a backup database.
+
+61
+00:02:12.743 --> 00:02:14.010
+It's a standby database,
+
+62
+00:02:14.010 --> 00:02:16.830
+but our application never uses it.
+
+63
+00:02:16.830 --> 00:02:18.720
+And if we wanted to scale the reads,
+
+64
+00:02:18.720 --> 00:02:20.790
+then we would use read replicas.
+
+65
+00:02:20.790 --> 00:02:22.380
+So these read replicas are going
+
+66
+00:02:22.380 --> 00:02:24.540
+to be asynchronous replication,
+
+67
+00:02:24.540 --> 00:02:26.700
+so we have eventual consistency,
+
+68
+00:02:26.700 --> 00:02:28.710
+and they can be created cross-region.
+
+69
+00:02:28.710 --> 00:02:30.330
+So it's possible to use replica
+
+70
+00:02:30.330 --> 00:02:34.380
+to reduce the latencies in different regions in AWS.
+
+71
+00:02:34.380 --> 00:02:38.130
+So your RDS instance will have an asynchronous replication
+
+72
+00:02:38.130 --> 00:02:39.960
+into another RDS read replica,
+
+73
+00:02:39.960 --> 00:02:43.350
+and then, again, same region or different region.
+
+74
+00:02:43.350 --> 00:02:46.260
+And then your application can do reads and writes
+
+75
+00:02:46.260 --> 00:02:48.720
+into your main RDS database,
+
+76
+00:02:48.720 --> 00:02:52.350
+but can also do reads-only onto your read replica.
+
+77
+00:02:52.350 --> 00:02:54.990
+This is why it's called a read replica.
+
+78
+00:02:54.990 --> 00:02:56.610
+So once you have read replicas,
+
+79
+00:02:56.610 --> 00:02:58.170
+you may want to actually distribute
+
+80
+00:02:58.170 --> 00:03:00.240
+the reads of your application.
+
+81
+00:03:00.240 --> 00:03:02.640
+And to remove some application logic,
+
+82
+00:03:02.640 --> 00:03:05.340
+we're going to use Route 53.
+
+83
+00:03:05.340 --> 00:03:06.720
+So using Route 53,
+
+84
+00:03:06.720 --> 00:03:07.680
+what's going to happen is
+
+85
+00:03:07.680 --> 00:03:11.700
+that you can create a weighted record set, okay?
+
+86
+00:03:11.700 --> 00:03:12.630
+And, in this example,
+
+87
+00:03:12.630 --> 00:03:16.950
+I set the weight of every read replica endpoint to 25%,
+
+88
+00:03:16.950 --> 00:03:18.570
+but we can set it to whatever we want.
+
+89
+00:03:18.570 --> 00:03:21.570
+But if all your read replicas are having
+
+90
+00:03:21.570 --> 00:03:23.130
+the same specifications,
+
+91
+00:03:23.130 --> 00:03:25.380
+then it's a good idea to set the same weight.
+
+92
+00:03:25.380 --> 00:03:29.010
+And we can also enable health checks within Amazon Route 53,
+
+93
+00:03:29.010 --> 00:03:31.890
+so that if an RDS replica is having issues,
+
+94
+00:03:31.890 --> 00:03:35.010
+we don't include it in our record.
+
+95
+00:03:35.010 --> 00:03:35.843
+And, therefore,
+
+96
+00:03:35.843 --> 00:03:38.250
+whenever an application is going to make a request
+
+97
+00:03:38.250 --> 00:03:39.450
+to Route 53,
+
+98
+00:03:39.450 --> 00:03:42.240
+and imagine we have a thousand applications doing this,
+
+99
+00:03:42.240 --> 00:03:46.713
+then each of them is going to be spread 25% on each replica.
+
+100
+00:03:48.270 --> 00:03:49.830
+In terms of security,
+
+101
+00:03:49.830 --> 00:03:51.090
+KMS encryption is available
+
+102
+00:03:51.090 --> 00:03:53.580
+for your underlying EBS volume and snapshots.
+
+103
+00:03:53.580 --> 00:03:56.160
+You get transparent data inscription, TDE,
+
+104
+00:03:56.160 --> 00:03:58.140
+for Oracle and SQL Server.
+
+105
+00:03:58.140 --> 00:04:00.420
+You get SSL encryption to RDS
+
+106
+00:04:00.420 --> 00:04:02.640
+for your database in-flight calls,
+
+107
+00:04:02.640 --> 00:04:04.500
+and it's possible to enforce it.
+
+108
+00:04:04.500 --> 00:04:08.460
+IAM authentication works for MySQL, PostgreSQL, and MariaDB.
+
+109
+00:04:08.460 --> 00:04:09.540
+And authorization,
+
+110
+00:04:09.540 --> 00:04:11.370
+even though you're authenticated with IAM,
+
+111
+00:04:11.370 --> 00:04:13.050
+still happens within RDS.
+
+112
+00:04:13.050 --> 00:04:14.070
+So you still need to define
+
+113
+00:04:14.070 --> 00:04:15.720
+what your users can and cannot do
+
+114
+00:04:15.720 --> 00:04:17.610
+inside of your RDS database.
+
+115
+00:04:17.610 --> 00:04:19.740
+IAM cannot help you with that.
+
+116
+00:04:19.740 --> 00:04:24.740
+You can create an encrypted RDS snapshot
+
+117
+00:04:25.020 --> 00:04:27.480
+from an unencrypted RDS snapshot.
+
+118
+00:04:27.480 --> 00:04:29.910
+So that means that you can encrypt an unencrypted database
+
+119
+00:04:29.910 --> 00:04:31.950
+through the process of snapshotting.
+
+120
+00:04:31.950 --> 00:04:34.200
+And CloudTrail, as a general reminder,
+
+121
+00:04:34.200 --> 00:04:37.503
+cannot be used to track queries made within RDS.
+
+122
+00:04:38.340 --> 00:04:42.060
+So if we do a deeper dive into RDS IAM authentication,
+
+123
+00:04:42.060 --> 00:04:45.330
+it's available for MariaDB, MySQL, and PostgreSQL.
+
+124
+00:04:45.330 --> 00:04:47.490
+And, in case you use IAM authentication,
+
+125
+00:04:47.490 --> 00:04:48.930
+you do not need a passport.
+
+126
+00:04:48.930 --> 00:04:50.520
+You just get an authentication token
+
+127
+00:04:50.520 --> 00:04:53.850
+that you obtain by using the RDS API calls.
+
+128
+00:04:53.850 --> 00:04:55.830
+You should know that this token has a lifetime
+
+129
+00:04:55.830 --> 00:04:57.120
+of 15 minutes,
+
+130
+00:04:57.120 --> 00:04:59.310
+but it's only used to connect through database,
+
+131
+00:04:59.310 --> 00:05:00.480
+then you're good to go.
+
+132
+00:05:00.480 --> 00:05:01.560
+If you want to reconnect,
+
+133
+00:05:01.560 --> 00:05:04.620
+you would need to get a new authentication token.
+
+134
+00:05:04.620 --> 00:05:05.453
+So does that work?
+
+135
+00:05:05.453 --> 00:05:07.530
+Well, for example, let's say we have an EC2 instance
+
+136
+00:05:07.530 --> 00:05:09.060
+with the proper IAM role,
+
+137
+00:05:09.060 --> 00:05:12.120
+that allows us to get an off token from the RDS service
+
+138
+00:05:12.120 --> 00:05:14.700
+by doing an API call to AWS.
+
+139
+00:05:14.700 --> 00:05:19.140
+Then, using this off token on an SSL encrypted connection,
+
+140
+00:05:19.140 --> 00:05:20.700
+we can connect to the database,
+
+141
+00:05:20.700 --> 00:05:24.360
+and, of course, security groups must be properly configured.
+
+142
+00:05:24.360 --> 00:05:25.200
+So the benefits of this,
+
+143
+00:05:25.200 --> 00:05:28.440
+that, A, you only get SSL encrypted traffic,
+
+144
+00:05:28.440 --> 00:05:31.230
+then you have IAM to centrally manage the users
+
+145
+00:05:31.230 --> 00:05:33.750
+instead of managing them from within the database.
+
+146
+00:05:33.750 --> 00:05:35.130
+And you can leverage IAM roles,
+
+147
+00:05:35.130 --> 00:05:36.900
+and EC2 instance profiles,
+
+148
+00:05:36.900 --> 00:05:39.810
+for a very easy integration.
+
+149
+00:05:39.810 --> 00:05:43.650
+So next we have the RDS specificity for Oracle.
+
+150
+00:05:43.650 --> 00:05:45.150
+And I wish you didn't have to learn them
+
+151
+00:05:45.150 --> 00:05:46.170
+because it's quite boring,
+
+152
+00:05:46.170 --> 00:05:47.370
+but you have to,
+
+153
+00:05:47.370 --> 00:05:48.870
+and they can come up at the exam
+
+154
+00:05:48.870 --> 00:05:50.340
+for one or two questions.
+
+155
+00:05:50.340 --> 00:05:51.990
+So let's talk about backups.
+
+156
+00:05:51.990 --> 00:05:54.480
+So you have two ways of backing up an Oracle database.
+
+157
+00:05:54.480 --> 00:05:55.800
+You have RDS Backups,
+
+158
+00:05:55.800 --> 00:05:58.710
+and then it's something else called Oracle RMAN.
+
+159
+00:05:58.710 --> 00:06:02.730
+So RDS Backups are used to back up, and restore,
+
+160
+00:06:02.730 --> 00:06:05.700
+to Amazon RDS for Oracle,
+
+161
+00:06:05.700 --> 00:06:08.130
+whereas Oracle RMAN, Recovery Manager,
+
+162
+00:06:08.130 --> 00:06:12.090
+are to backup up and restore to non-RDS.
+
+163
+00:06:12.090 --> 00:06:13.740
+Okay, RDS is not supported.
+
+164
+00:06:13.740 --> 00:06:15.180
+So a graph will help.
+
+165
+00:06:15.180 --> 00:06:17.490
+RDS backups obviously must be backups
+
+166
+00:06:17.490 --> 00:06:20.010
+of your RDS Database Instances,
+
+167
+00:06:20.010 --> 00:06:21.690
+and then they can only be restored
+
+168
+00:06:21.690 --> 00:06:24.360
+into an RDS Database Instance.
+
+169
+00:06:24.360 --> 00:06:28.680
+Whereas, again, RMAN works for RDS Database Instance,
+
+170
+00:06:28.680 --> 00:06:31.050
+in terms of, yes, you can back it up,
+
+171
+00:06:31.050 --> 00:06:33.810
+but then the restore only happens
+
+172
+00:06:33.810 --> 00:06:36.030
+for an external Oracle database.
+
+173
+00:06:36.030 --> 00:06:39.150
+It does not happen for an RDS database instance.
+
+174
+00:06:39.150 --> 00:06:41.640
+So the flow is database instance,
+
+175
+00:06:41.640 --> 00:06:43.350
+RDS Database Instance of Oracle,
+
+176
+00:06:43.350 --> 00:06:46.500
+to RDS Backup, to RDS Database Instance of Oracle,
+
+177
+00:06:46.500 --> 00:06:50.850
+or RDS Database Instance of Oracle, to RMAN Backup,
+
+178
+00:06:50.850 --> 00:06:54.810
+to Amazon S3, to an external Oracle database
+
+179
+00:06:54.810 --> 00:06:57.720
+that is living outside of RDS.
+
+180
+00:06:57.720 --> 00:06:59.850
+Now, there's nothing called Real Applications Cluster.
+
+181
+00:06:59.850 --> 00:07:00.930
+So RAC.
+
+182
+00:07:00.930 --> 00:07:03.180
+RDS for Oracle does not support RAC.
+
+183
+00:07:03.180 --> 00:07:04.740
+It could be an exam trick.
+
+184
+00:07:04.740 --> 00:07:08.940
+RAC can only be working on Oracle on EC2 instances
+
+185
+00:07:08.940 --> 00:07:11.490
+because you have full control of Oracle
+
+186
+00:07:11.490 --> 00:07:14.220
+when you set it up on an EC2 instance.
+
+187
+00:07:14.220 --> 00:07:16.020
+Oracle does support TDE,
+
+188
+00:07:16.020 --> 00:07:18.510
+to encrypt data before it's written into storage.
+
+189
+00:07:18.510 --> 00:07:20.730
+And DMS works on Oracle RDS.
+
+190
+00:07:20.730 --> 00:07:23.910
+So you can do an Oracle database on-premises
+
+191
+00:07:23.910 --> 00:07:25.590
+that you wanna replicate into the Cloud.
+
+192
+00:07:25.590 --> 00:07:27.420
+For this, you just use DMS
+
+193
+00:07:27.420 --> 00:07:29.070
+to replicate and migrate the data,
+
+194
+00:07:29.070 --> 00:07:31.743
+from the Oracle Database on-premises to the Cloud.
+
+195
+00:07:33.000 --> 00:07:35.910
+And there are some other exam tips you need to know for RDS
+
+196
+00:07:35.910 --> 00:07:37.080
+for MySQL.
+
+197
+00:07:37.080 --> 00:07:39.870
+So you can use the native MySQL dump tool
+
+198
+00:07:39.870 --> 00:07:41.970
+to migrate the MySQL RDS database
+
+199
+00:07:41.970 --> 00:07:44.910
+into a non-RDS MySQL database.
+
+200
+00:07:44.910 --> 00:07:45.743
+For this,
+
+201
+00:07:45.743 --> 00:07:49.080
+this external non-RDS database can be either on-premises,
+
+202
+00:07:49.080 --> 00:07:49.913
+in your data center,
+
+203
+00:07:49.913 --> 00:07:50.940
+or you can run it on your own,
+
+204
+00:07:50.940 --> 00:07:54.480
+for example, on an Amazon EC2 Instance.
+
+205
+00:07:54.480 --> 00:07:58.440
+So you have the RDS MySQL Database Instance in your Cloud,
+
+206
+00:07:58.440 --> 00:08:01.110
+and then the target may be, for example, on-premises.
+
+207
+00:08:01.110 --> 00:08:03.600
+And, simply, you will use, as a DB admin,
+
+208
+00:08:03.600 --> 00:08:06.060
+the MySQL dump tool to export it,
+
+209
+00:08:06.060 --> 00:08:08.520
+import the data back into where you want it to go.
+
+210
+00:08:08.520 --> 00:08:10.260
+Then you start a replication mechanism
+
+211
+00:08:10.260 --> 00:08:12.510
+between the two databases to synchronize the data.
+
+212
+00:08:12.510 --> 00:08:14.850
+And then, once the replication is done,
+
+213
+00:08:14.850 --> 00:08:17.553
+you stop it, and you stop the source database.
+
+214
+00:08:18.480 --> 00:08:21.540
+Another feature for RDS is to use the RDS Proxy,
+
+215
+00:08:21.540 --> 00:08:23.460
+for example, with Lambda functions.
+
+216
+00:08:23.460 --> 00:08:25.800
+So when you use Lambda functions with the RDS,
+
+217
+00:08:25.800 --> 00:08:28.470
+they open, and maintain, a database connection.
+
+218
+00:08:28.470 --> 00:08:31.230
+But sometimes having too many Lambdas can result
+
+219
+00:08:31.230 --> 00:08:33.750
+in a "TooManyConnections" exception.
+
+220
+00:08:33.750 --> 00:08:35.850
+So thanks to the RDS Proxy,
+
+221
+00:08:35.850 --> 00:08:37.230
+you no longer need code
+
+222
+00:08:37.230 --> 00:08:39.510
+that will handle cleaning up idle connections
+
+223
+00:08:39.510 --> 00:08:41.160
+and managing connection pool.
+
+224
+00:08:41.160 --> 00:08:43.770
+You just connect to the proxy and you're good to go.
+
+225
+00:08:43.770 --> 00:08:46.620
+So this proxy supports IAM authentication,
+
+226
+00:08:46.620 --> 00:08:47.940
+or database authentication,
+
+227
+00:08:47.940 --> 00:08:49.500
+as well as auto-scaling.
+
+228
+00:08:49.500 --> 00:08:51.750
+So the idea is that you deploy a proxy,
+
+229
+00:08:51.750 --> 00:08:54.750
+and this proxy has to be deployed in a private subnet,
+
+230
+00:08:54.750 --> 00:08:57.480
+because it cannot be publicly accessible.
+
+231
+00:08:57.480 --> 00:08:59.070
+And this proxy is linked, for example,
+
+232
+00:08:59.070 --> 00:09:02.040
+to your Aurora database cluster.
+
+233
+00:09:02.040 --> 00:09:03.870
+Now your Lambda functions are also going
+
+234
+00:09:03.870 --> 00:09:06.030
+to be deployed within your VPC
+
+235
+00:09:06.030 --> 00:09:08.850
+to get connectivity to your RDS Proxy.
+
+236
+00:09:08.850 --> 00:09:10.200
+And now as a result,
+
+237
+00:09:10.200 --> 00:09:13.920
+all the connections to your number of database are pooled
+
+238
+00:09:13.920 --> 00:09:15.810
+through the RDS Proxy.
+
+239
+00:09:15.810 --> 00:09:16.643
+And that's it,
+
+240
+00:09:16.643 --> 00:09:19.380
+that solves the problem of too many connections exception.
+
+241
+00:09:19.380 --> 00:09:22.080
+Finally, one solution architecture we've already seen,
+
+242
+00:09:22.080 --> 00:09:25.020
+which is how to do a cross-region failure with RDS,
+
+243
+00:09:25.020 --> 00:09:27.120
+would be to check the database health,
+
+244
+00:09:27.120 --> 00:09:29.760
+either using a instance, for example,
+
+245
+00:09:29.760 --> 00:09:32.280
+that has a slash health DB route to check,
+
+246
+00:09:32.280 --> 00:09:33.840
+or a CloudWatch Alarm.
+
+247
+00:09:33.840 --> 00:09:37.950
+These things would be checked by Route 53 Health Checks,
+
+248
+00:09:37.950 --> 00:09:40.050
+that would be linked to a CloudWatch Alarm,
+
+249
+00:09:40.050 --> 00:09:42.090
+and that would trigger a CloudWatch Event.
+
+250
+00:09:42.090 --> 00:09:44.910
+And this CloudWatch Event would trigger a Lambda function,
+
+251
+00:09:44.910 --> 00:09:48.060
+whose role would be to update a Route 53 DNS,
+
+252
+00:09:48.060 --> 00:09:48.893
+for the database,
+
+253
+00:09:48.893 --> 00:09:51.390
+and also promote a read replica
+
+254
+00:09:51.390 --> 00:09:52.890
+that is maybe in another region.
+
+255
+00:09:52.890 --> 00:09:54.120
+For example, us-west-2.
+
+256
+00:09:54.120 --> 00:09:56.340
+We have a cross-region replication in this instance,
+
+257
+00:09:56.340 --> 00:09:58.500
+and then we have effectively created
+
+258
+00:09:58.500 --> 00:10:00.780
+a cross-region failover architecture.
+
+259
+00:10:00.780 --> 00:10:02.160
+So this is something very common
+
+260
+00:10:02.160 --> 00:10:02.993
+that you should know for RDS,
+
+261
+00:10:02.993 --> 00:10:04.860
+but we already seen this in details.
+
+262
+00:10:04.860 --> 00:10:05.693
+And that's it.
+
+263
+00:10:05.693 --> 00:10:06.930
+RDS really is a high level launch
+
+264
+00:10:06.930 --> 00:10:08.220
+you need to know for the exam,
+
+265
+00:10:08.220 --> 00:10:10.050
+but you should know enough by now.
+
+266
+00:10:10.050 --> 00:10:10.883
+So that's it,
+
+267
+00:10:10.883 --> 00:10:12.690
+and I will see you in the next lecture.
+

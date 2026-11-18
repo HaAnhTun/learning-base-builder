@@ -1,0 +1,86 @@
+WEBVTT
+
+1
+00:00:00.240 --> 00:00:01.440
+<v Instructor>So here's a quick lecture</v>
+
+2
+00:00:01.440 --> 00:00:03.840
+around an architecture for DataSync.
+
+3
+00:00:03.840 --> 00:00:06.510
+So how do you access DataSync service
+
+4
+00:00:06.510 --> 00:00:08.010
+if you have a Direct Connect connection
+
+5
+00:00:08.010 --> 00:00:10.590
+and you wanna access it privately?
+
+6
+00:00:10.590 --> 00:00:13.770
+Well, to do it, we need to go through the VPC,
+
+7
+00:00:13.770 --> 00:00:16.500
+so the DataSync agent connects to Direct Connect
+
+8
+00:00:16.500 --> 00:00:18.030
+and here we have two options.
+
+9
+00:00:18.030 --> 00:00:20.430
+If we were to use a public VIF,
+
+10
+00:00:20.430 --> 00:00:22.530
+then we would go around the VPC
+
+11
+00:00:22.530 --> 00:00:25.080
+and use the public URL of the DataSync service,
+
+12
+00:00:25.080 --> 00:00:26.580
+so this may not be what we want.
+
+13
+00:00:26.580 --> 00:00:29.160
+Instead, what we have to do is to create
+
+14
+00:00:29.160 --> 00:00:31.320
+a VPC interface endpoint
+
+15
+00:00:31.320 --> 00:00:33.480
+and a private link, so that you can establish
+
+16
+00:00:33.480 --> 00:00:35.550
+a private VIF between Direct Connect
+
+17
+00:00:35.550 --> 00:00:38.910
+and the private link, so that the DataSync agent
+
+18
+00:00:38.910 --> 00:00:42.480
+can go through Direct Connect to your VPC,
+
+19
+00:00:42.480 --> 00:00:46.890
+to the interface VPC endpoint into the DataSync service.
+
+20
+00:00:46.890 --> 00:00:48.150
+Okay, so that's it.
+
+21
+00:00:48.150 --> 00:00:51.100
+I hope you liked it and I will see you in the next lecture.
+

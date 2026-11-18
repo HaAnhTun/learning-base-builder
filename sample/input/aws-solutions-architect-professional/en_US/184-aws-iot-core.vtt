@@ -1,0 +1,198 @@
+WEBVTT
+
+1
+00:00:00.120 --> 00:00:03.390
+<v Instructor>So let's talk about the AWS IoT Core service.</v>
+
+2
+00:00:03.390 --> 00:00:06.330
+So IoT, if you don't know, stands for Internet of Things.
+
+3
+00:00:06.330 --> 00:00:09.870
+It's the network of all these internet-connected devices
+
+4
+00:00:09.870 --> 00:00:12.120
+that are able to collect and transfer data.
+
+5
+00:00:12.120 --> 00:00:13.620
+So thanks to the IoT Core service,
+
+6
+00:00:13.620 --> 00:00:16.170
+you can easily connect devices to the cloud.
+
+7
+00:00:16.170 --> 00:00:19.920
+For example, if you have IoT devices onto smart cars,
+
+8
+00:00:19.920 --> 00:00:22.800
+then you can very easily connect them to the cloud.
+
+9
+00:00:22.800 --> 00:00:24.990
+That means that you can have a serverless secure
+
+10
+00:00:24.990 --> 00:00:26.520
+and scalable solution,
+
+11
+00:00:26.520 --> 00:00:29.280
+so you can have billions of devices
+
+12
+00:00:29.280 --> 00:00:31.200
+and trillions of messages.
+
+13
+00:00:31.200 --> 00:00:32.880
+And through the IoT Core service,
+
+14
+00:00:32.880 --> 00:00:35.010
+they're going to be published and subscribed for messages
+
+15
+00:00:35.010 --> 00:00:37.470
+so they can communicate with one another
+
+16
+00:00:37.470 --> 00:00:38.910
+or your applications.
+
+17
+00:00:38.910 --> 00:00:40.830
+On top of it, IoT Core has integrations
+
+18
+00:00:40.830 --> 00:00:43.800
+with many AWS services such as Lambda,
+
+19
+00:00:43.800 --> 00:00:45.810
+S3, SageMaker, and so on.
+
+20
+00:00:45.810 --> 00:00:46.830
+And thanks to this,
+
+21
+00:00:46.830 --> 00:00:49.440
+you can build your IoT applications to gather,
+
+22
+00:00:49.440 --> 00:00:52.053
+process, analyze, and act on this data rapidly.
+
+23
+00:00:52.950 --> 00:00:54.870
+So while you don't need to be an expert
+
+24
+00:00:54.870 --> 00:00:56.100
+in the IoT Core service,
+
+25
+00:00:56.100 --> 00:00:58.320
+it's important to know the integrations.
+
+26
+00:00:58.320 --> 00:01:01.500
+So IoT Topics are topics just like SNS Topics,
+
+27
+00:01:01.500 --> 00:01:03.030
+they take data in.
+
+28
+00:01:03.030 --> 00:01:04.890
+And so the kind of data it takes in, for example,
+
+29
+00:01:04.890 --> 00:01:07.410
+could be using the MQTT protocol.
+
+30
+00:01:07.410 --> 00:01:09.300
+So it receives an MQTT message,
+
+31
+00:01:09.300 --> 00:01:12.690
+then you set up IoT rules for these messages
+
+32
+00:01:12.690 --> 00:01:14.220
+and the rules have actions
+
+33
+00:01:14.220 --> 00:01:17.580
+and these actions can be related to AWS services.
+
+34
+00:01:17.580 --> 00:01:20.700
+For example, these messages from your IoT Topic
+
+35
+00:01:20.700 --> 00:01:23.674
+can be sent to Kinesis, DynamoDB, SQS,
+
+36
+00:01:23.674 --> 00:01:26.683
+MSK, SNS, S3, Lambda, and so on.
+
+37
+00:01:27.690 --> 00:01:29.730
+So one of these integrations you need to know more
+
+38
+00:01:29.730 --> 00:01:31.770
+is the Kinesis Data Firehose integration,
+
+39
+00:01:31.770 --> 00:01:33.480
+but it's very easy to understand.
+
+40
+00:01:33.480 --> 00:01:36.960
+Again, your IoT Core receives MQTT messages
+
+41
+00:01:36.960 --> 00:01:38.880
+and they can be sent near real time
+
+42
+00:01:38.880 --> 00:01:41.490
+into an Amazon Kinesis Data Firehose
+
+43
+00:01:41.490 --> 00:01:44.400
+where you can operate some transformations on these messages
+
+44
+00:01:44.400 --> 00:01:45.810
+using a Lambda function
+
+45
+00:01:45.810 --> 00:01:49.200
+and then persist these messages into Amazon S3,
+
+46
+00:01:49.200 --> 00:01:52.710
+Redshift, and Amazon OpenSearch, for example.
+
+47
+00:01:52.710 --> 00:01:54.870
+Okay, so that's it for this lecture, very short,
+
+48
+00:01:54.870 --> 00:01:57.390
+but hopefully you get the idea behind IoT Core.
+
+49
+00:01:57.390 --> 00:02:00.390
+I hope you liked it, and I will see you in the next lecture.
+

@@ -1,0 +1,314 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.199
+If you're building high-stakes agentic pipelines, programmatic validation layers are what make
+
+2
+00:00:05.199 --> 00:00:11.119
+probabilistic LLM outputs reliable. In this lesson, we'll walk through pre-execution,
+
+3
+00:00:11.119 --> 00:00:17.520
+post-execution, and runtime check patterns. We'll look hard at block versus soft warning response
+
+4
+00:00:17.520 --> 00:00:23.520
+modes and examine how to balance enforcement strictness with the flexibility that real
+
+5
+00:00:23.520 --> 00:00:30.159
+workflows require. Let's get into it. Every mechanism in this lesson exists because code
+
+6
+00:00:30.159 --> 00:00:35.200
+can hold a line. The model can't. You already know the validation gate, the checkpoint that
+
+7
+00:00:35.200 --> 00:00:41.279
+inspects a step's output before execution continues. What this lesson adds is where you
+
+8
+00:00:41.279 --> 00:00:47.759
+put one and what it does when the check fails. An escalation trigger is the specific condition
+
+9
+00:00:47.759 --> 00:00:53.599
+that routes an agent run to human review, and it has to be calibrated because too sensitive
+
+10
+00:00:53.599 --> 00:00:59.680
+produces constant friction and too permissive misses the cases that actually need a person.
+
+11
+00:00:59.680 --> 00:01:04.559
+Programmatic enforcement is the code layer substrate underneath both schema checks,
+
+12
+00:01:04.559 --> 00:01:09.680
+policy engines, middleware interceptors, mechanisms that hold regardless of what
+
+13
+00:01:09.680 --> 00:01:14.400
+the model outputs. The model's compliance probability stops mattering once code is
+
+14
+00:01:14.400 --> 00:01:21.599
+doing the check. Pre-execution validation is the first code layer gate. It runs before
+
+15
+00:01:21.599 --> 00:01:27.440
+the agent takes any action and checks whether the inputs are valid. Schema validation confirms
+
+16
+00:01:27.440 --> 00:01:33.680
+that the incoming request matches the expected data structure and field types. Range checks
+
+17
+00:01:33.680 --> 00:01:39.360
+verify that numeric parameters are within allowed bounds. Permission verification confirms that the
+
+18
+00:01:39.360 --> 00:01:45.839
+requesting caller is actually authorized to trigger this action. These checks are inexpensive
+
+19
+00:01:45.839 --> 00:01:52.720
+and run fast because they evaluate structured data rather than model outputs. Stopping an incorrect
+
+20
+00:01:52.720 --> 00:01:58.480
+input at the pre-execution gate costs almost nothing. Catching the error after an incorrect
+
+21
+00:01:58.480 --> 00:02:04.639
+action has already executed is far more expensive and in some cases impossible to reverse.
+
+22
+00:02:05.599 --> 00:02:11.839
+Post-execution validation runs after the agent produces output but before that output is committed
+
+23
+00:02:11.839 --> 00:02:18.160
+to storage or forwarded to a downstream system. Output schema compliance checks that the response
+
+24
+00:02:18.160 --> 00:02:23.839
+matches the required structure, not just that it contains words. Business rule checks verify that
+
+25
+00:02:23.839 --> 00:02:29.600
+the output satisfies domain-specific constraints that couldn't be evaluated on inputs alone.
+
+26
+00:02:30.559 --> 00:02:35.919
+Anomaly detection flags outputs that are structurally valid but semantically unusual,
+
+27
+00:02:35.919 --> 00:02:40.960
+for example a transaction amount that's within the allowed range but far outside the historical
+
+28
+00:02:40.960 --> 00:02:47.839
+distribution. Post-execution gates catch model errors that pre-execution checks can't see because
+
+29
+00:02:47.839 --> 00:02:53.759
+those errors only manifest in the generated output. Those gate types are complements not substitutes.
+
+30
+00:02:53.759 --> 00:02:59.360
+You need both. The pre-execution and post-execution gates serve different functions
+
+31
+00:02:59.360 --> 00:03:05.360
+and catch different failure modes. A pre-execution gate runs before the agent acts. It's the cheapest
+
+32
+00:03:05.360 --> 00:03:11.440
+enforcement layer because it stops invalid inputs before any computation is done. It catches
+
+33
+00:03:11.440 --> 00:03:17.600
+malformed requests, out-of-range parameters, unauthorized callers. A post-execution gate
+
+34
+00:03:17.600 --> 00:03:23.279
+runs after the agent generates output but before that output causes any downstream effect.
+
+35
+00:03:23.279 --> 00:03:30.000
+It's the safety net for errors that only become visible in the output. Schema violations the input
+
+36
+00:03:30.000 --> 00:03:36.240
+check couldn't anticipate. Business rule failures that depend on what the model chose to produce.
+
+37
+00:03:36.800 --> 00:03:42.639
+Semantic anomalies that require looking at the full response. Running both in sequence is the
+
+38
+00:03:42.639 --> 00:03:49.839
+standard pattern for any pipeline where output errors have real-world consequences. Validation
+
+39
+00:03:49.839 --> 00:03:55.279
+gates need distinct response modes depending on the constraint they're enforcing. A hard block
+
+40
+00:03:55.279 --> 00:04:01.199
+rejects the output and halts or retries the step. Hard blocks are appropriate for
+
+41
+00:04:01.199 --> 00:04:06.000
+non-negotiable constraints like financial authorization limits, permission violations,
+
+42
+00:04:06.000 --> 00:04:11.759
+and safety boundaries. When the constraint is a hard block there is no path forward that includes
+
+43
+00:04:11.759 --> 00:04:18.320
+the incorrect output. A soft warning flags the output and logs the issue but allows execution
+
+44
+00:04:18.320 --> 00:04:24.640
+to continue which fits advisory constraints where the concern is real but a human reviewer can make
+
+45
+00:04:24.640 --> 00:04:30.799
+the final call. An escalation trigger sits between them pausing the run and routing to a person when
+
+46
+00:04:30.799 --> 00:04:36.480
+the case is genuinely ambiguous. The design decision is matching the response to the actual risk.
+
+47
+00:04:37.760 --> 00:04:42.480
+Runtime checks are the enforcement layer that monitors the agent while it's running
+
+48
+00:04:42.480 --> 00:04:48.720
+rather than at defined input or output boundaries. Cost limits enforce token budgets
+
+49
+00:04:48.720 --> 00:04:56.239
+and API spend caps mid-run halting or throttling the agent before a runaway process causes a large
+
+50
+00:04:56.239 --> 00:05:02.640
+unexpected bill. Iteration caps set a maximum number of loop cycles to prevent an agent from
+
+51
+00:05:02.640 --> 00:05:07.519
+getting stuck in a reasoning loop that never terminates. Scope enforcement checks that the
+
+52
+00:05:07.519 --> 00:05:14.000
+agent is only accessing the resources and data it's authorized to use. Flagging or blocking
+
+53
+00:05:14.000 --> 00:05:20.320
+out-of-bounds access mid-execution rather than catching it in a post-execution review.
+
+54
+00:05:21.040 --> 00:05:26.000
+Runtime checks are the safety net for failure modes that don't have a clean
+
+55
+00:05:26.000 --> 00:05:32.880
+pre- or post-execution boundary. Resource overruns, emergent behaviors, and gradual scope creep.
+
+56
+00:05:33.679 --> 00:05:38.720
+Layered enforcement works because each layer catches failures the layer before it missed.
+
+57
+00:05:39.279 --> 00:05:43.760
+The prompt layer provides behavioral guidance at the lowest implementation cost.
+
+58
+00:05:43.760 --> 00:05:49.440
+It's effective for reducing the frequency of non-compliant outputs, but it's probabilistic.
+
+59
+00:05:49.440 --> 00:05:56.000
+The pre-execution layer adds schema, range, and permission checks before any action is taken.
+
+60
+00:05:56.000 --> 00:06:02.160
+It catches invalid inputs before they reach the model. The post-execution layer validates outputs
+
+61
+00:06:02.640 --> 00:06:08.880
+against schema requirements, business rules, and anomaly thresholds before results propagate
+
+62
+00:06:08.880 --> 00:06:15.679
+downstream. The runtime layer monitors the agent continuously for cost, scope, and anomaly signals
+
+63
+00:06:15.679 --> 00:06:21.519
+throughout execution. Together, these layers create a defense-in-depth architecture where
+
+64
+00:06:21.519 --> 00:06:27.040
+no single point of failure produces a system failure. That's the design principle behind
+
+65
+00:06:27.040 --> 00:06:32.799
+layered enforcement. Calibrating enforcement strictness is as important as implementing the
+
+66
+00:06:32.799 --> 00:06:38.399
+layers themselves. Over-strict enforcement creates friction that breaks legitimate workflows
+
+67
+00:06:38.399 --> 00:06:43.200
+and erodes trust in the system. Hard blocks should be reserved for constraints that are
+
+68
+00:06:43.200 --> 00:06:48.559
+genuinely non-negotiable. Safety limits, compliance requirements, authorization boundaries.
+
+69
+00:06:49.119 --> 00:06:54.640
+Soft warnings are appropriate for constraints that are advisory. Flagging unusual patterns,
+
+70
+00:06:54.640 --> 00:07:00.880
+surfacing edge cases, logging outputs for review. Escalation triggers belong on the cases that are
+
+71
+00:07:00.880 --> 00:07:07.200
+genuinely ambiguous. Situations where the right decision requires human judgment and context the
+
+72
+00:07:07.200 --> 00:07:13.119
+agent doesn't have. The goal of calibration is matching the enforcement response to the actual
+
+73
+00:07:13.119 --> 00:07:20.000
+risk level. A hard block that fires on a legitimate transaction is a system failure of a different kind
+
+74
+00:07:20.000 --> 00:07:25.760
+than the one the block is meant to prevent. The failure you see in production is an agent that
+
+75
+00:07:25.760 --> 00:07:31.760
+ran the whole chain and only surfaced the problem after the damage was built. A check before
+
+76
+00:07:31.760 --> 00:07:38.720
+execution stops the bad input. A check after execution catches what only shows up in the result.
+
+77
+00:07:39.440 --> 00:07:45.600
+Runtime limits catch the slow drift that has no clean boundary. Placement is the difference between
+
+78
+00:07:45.600 --> 00:07:51.760
+catching a fault and reporting one later. That closes out this lesson. I'll see you in the next one.
+

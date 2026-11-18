@@ -1,0 +1,270 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.679
+Here's the question this lesson answers. How do you reliably choose between a workflow and an
+
+2
+00:00:05.679 --> 00:00:11.840
+agentic system? The goal isn't to declare one architecture the winner. It's to give you a
+
+3
+00:00:11.840 --> 00:00:17.680
+repeatable process for making the right call on any task you meet in professional practice,
+
+4
+00:00:17.680 --> 00:00:23.280
+and for defending that call to your team and your leadership. The most expensive architecture
+
+5
+00:00:23.280 --> 00:00:28.799
+mistake is reaching for an agent when a prompt chain would have done the job. Incremental
+
+6
+00:00:28.799 --> 00:00:34.000
+complexity is the discipline that prevents it. You start with the simplest architecture that
+
+7
+00:00:34.000 --> 00:00:39.200
+solves the problem and add agent behavior only where the workflow demonstrably falls short.
+
+8
+00:00:39.840 --> 00:00:46.720
+When you do need coordination, an orchestrator is the controlling component that decomposes a goal,
+
+9
+00:00:46.720 --> 00:00:53.759
+delegates subtasks to sub-agents or tools, and synthesizes the final result. And over-engineering
+
+10
+00:00:53.759 --> 00:01:00.240
+is the trap on the other side. Adding autonomy that costs more tokens adds operational risk
+
+11
+00:01:00.240 --> 00:01:05.360
+and creates harder-to-audit execution paths without delivering proportional capability.
+
+12
+00:01:06.160 --> 00:01:10.800
+Knowing when you're over-engineering matters just as much as knowing how to build sophisticated
+
+13
+00:01:10.800 --> 00:01:17.360
+systems. The first rule of architectural choice is to start with the least complex solution that
+
+14
+00:01:17.360 --> 00:01:23.760
+solves the problem. A simple prompt chain beats a complex agent for any scoped, well-defined task.
+
+15
+00:01:24.400 --> 00:01:30.080
+Simplicity reduces cost, reduces latency, and reduces the number of ways things can go wrong
+
+16
+00:01:30.080 --> 00:01:36.400
+in production. Here's the practical reality. You can always add agent behavior later if the workflow
+
+17
+00:01:36.400 --> 00:01:42.319
+turns out to be insufficient for edge cases or expanding requirements. But starting with a complex
+
+18
+00:01:42.319 --> 00:01:48.559
+agentic system and then trying to simplify it is significantly harder. Complexity is much easier
+
+19
+00:01:48.559 --> 00:01:54.639
+to add than to remove from a running production system. How do you know when agentic complexity
+
+20
+00:01:54.639 --> 00:02:00.639
+is actually warranted? Watch for three clear signals. First, the goal is open-ended and can't
+
+21
+00:02:00.639 --> 00:02:06.800
+be fully pre-specified at design time. You can describe what success looks like, but you can't
+
+22
+00:02:06.800 --> 00:02:13.839
+enumerate every step required to get there. Second, the tool sequence is unpredictable. You don't know
+
+23
+00:02:13.839 --> 00:02:20.479
+at design time which tools the system will need to call or in what order. Third, the task requires
+
+24
+00:02:20.479 --> 00:02:26.960
+dynamic replanning mid-execution because earlier steps produced unexpected results that change the
+
+25
+00:02:26.960 --> 00:02:33.279
+path forward. If none of these three conditions apply to your task, a workflow is almost certainly
+
+26
+00:02:33.279 --> 00:02:40.000
+the better choice. Let's put reliability and adaptability side by side because this is the
+
+27
+00:02:40.000 --> 00:02:46.720
+central trade-off in the framework. Workflows give you deterministic steps, testable outputs, localized
+
+28
+00:02:46.720 --> 00:02:53.360
+failure, predictable token cost, and systems that are straightforward to monitor and maintain over
+
+29
+00:02:53.360 --> 00:02:59.440
+time. Agents give you dynamic behavior that handles open-ended goals and a higher capability ceiling
+
+30
+00:02:59.440 --> 00:03:06.960
+for genuinely complex tasks. But agents also mean variable cost, harder to audit execution traces,
+
+31
+00:03:06.960 --> 00:03:13.039
+and a broader failure surface that's harder to anticipate at design time. The question is never
+
+32
+00:03:13.039 --> 00:03:19.360
+which is better in the abstract. It's always which set of properties matches what your specific task
+
+33
+00:03:19.360 --> 00:03:25.440
+actually requires. There are three specific trade-off axes worth evaluating for any
+
+34
+00:03:25.440 --> 00:03:32.080
+architectural decision you make. Cost versus capability. Agents spend more tokens per task run
+
+35
+00:03:32.080 --> 00:03:38.960
+so you need to justify that spend with capability you genuinely require right now, not capability
+
+36
+00:03:38.960 --> 00:03:45.759
+you might eventually want someday. Auditability versus flexibility. Workflows are fully auditable
+
+37
+00:03:45.759 --> 00:03:52.880
+step by step while agents trade some auditability for runtime flexibility that's sometimes necessary.
+
+38
+00:03:52.880 --> 00:03:59.759
+Reliability versus adaptability. Workflows fail predictably at specific identifiable steps while
+
+39
+00:03:59.759 --> 00:04:05.520
+agents can adapt dynamically but introduce variable failure modes that are harder to anticipate and
+
+40
+00:04:05.520 --> 00:04:11.520
+reproduce in testing. Work through all three axes explicitly before committing to any architecture
+
+41
+00:04:11.520 --> 00:04:18.000
+for a production system. The right way to introduce agent behavior is incrementally, not all at once.
+
+42
+00:04:18.559 --> 00:04:24.320
+Build and validate the workflow version of your system first then run it against real inputs and
+
+43
+00:04:24.320 --> 00:04:29.839
+identify the specific step where the workflow breaks down or fails to handle the required
+
+44
+00:04:29.839 --> 00:04:36.959
+variation. Maybe the routing logic fails on unusual edge cases. Maybe a synthesis step needs more
+
+45
+00:04:36.959 --> 00:04:43.679
+flexibility than any fixed prompt can provide. Replace only that specific step with agent
+
+46
+00:04:43.679 --> 00:04:49.359
+behavior leaving the rest of the workflow intact and auditable. This approach keeps the system as
+
+47
+00:04:49.359 --> 00:04:55.519
+simple as the task allows and it creates a clear reviewable record of why each architectural
+
+48
+00:04:55.519 --> 00:05:02.320
+decision was made. Let's walk through three concrete scenarios to make the framework tangible.
+
+49
+00:05:02.880 --> 00:05:09.119
+In a workflow scenario you're extracting structured data from a fixed format document. Input is
+
+50
+00:05:09.119 --> 00:05:15.600
+predictable and output schema is known. A prompt chain with validation handles this cleanly and
+
+51
+00:05:15.600 --> 00:05:21.679
+efficiently. In an agent scenario you're researching and synthesizing a topic from open-ended web
+
+52
+00:05:21.679 --> 00:05:28.480
+sources. The goal is unbounded and tool sequences are unpredictable at design time. An agent with
+
+53
+00:05:28.480 --> 00:05:33.440
+planning is the right architectural choice here. In a hybrid scenario you're routing customer
+
+54
+00:05:33.440 --> 00:05:40.239
+inquiries to specialists and then synthesizing their responses. Fixed routing feeds into a dynamic
+
+55
+00:05:40.239 --> 00:05:47.279
+synthesis step combining a routing workflow with a focused agent. When you're evaluating a new task
+
+56
+00:05:47.279 --> 00:05:52.880
+run through four diagnostic questions. Can every step be authored at design time without runtime
+
+57
+00:05:52.880 --> 00:05:58.559
+judgment? Is the output format known and testable against a clear specification? Does the task
+
+58
+00:05:58.559 --> 00:06:03.839
+require the system to select tools dynamically based on results it hasn't seen yet? And does a
+
+59
+00:06:03.839 --> 00:06:10.399
+failure at one step require dynamic recovery rather than a simple fixed fallback? If you answer no to
+
+60
+00:06:10.399 --> 00:06:16.160
+two or more of those questions, agentic complexity is likely warranted for that task. If you answer
+
+61
+00:06:16.160 --> 00:06:21.839
+yes to all four you have a workflow. The framework isn't about finding the most powerful architecture
+
+62
+00:06:21.839 --> 00:06:27.440
+available. It's about finding the right one for the specific problem you're actually solving.
+
+63
+00:06:27.440 --> 00:06:33.679
+Architecture stops being guesswork the moment complexity has to be earned. The rule is blunt
+
+64
+00:06:33.679 --> 00:06:40.160
+and straightforward. A workflow has to actually fail before you're allowed to add anything. So
+
+65
+00:06:40.160 --> 00:06:45.920
+every piece of complexity in the system can point at the failure that it avoided and earned its
+
+66
+00:06:45.920 --> 00:06:53.040
+place for. Simple first isn't a limitation. It's how you keep the thing debuggable a year from now.
+
+67
+00:06:53.040 --> 00:06:56.959
+That wraps up this lesson. I'll see you in the next one.
+

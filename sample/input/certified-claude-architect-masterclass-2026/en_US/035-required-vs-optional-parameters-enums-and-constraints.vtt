@@ -1,0 +1,246 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.440
+Not every parameter carries the same weight. Some fields are essential for the tool to function at
+
+2
+00:00:05.440 --> 00:00:11.760
+all. Others add useful context when it's available. In this video, we'll cover required and optional
+
+3
+00:00:11.760 --> 00:00:18.639
+parameters, how enum fields constrain Claude to a fixed set of values, where input examples help,
+
+4
+00:00:18.639 --> 00:00:25.840
+and how bounds finish a reliable schema. Every field you put in the required array is a promise
+
+5
+00:00:25.840 --> 00:00:31.920
+that Claude can always supply it. So let's lock down three definitions. A required parameter is
+
+6
+00:00:31.920 --> 00:00:39.040
+any field listed in that top level required array. Claude has to include it in every call,
+
+7
+00:00:39.040 --> 00:00:45.680
+and if its generated arguments are missing one, the call fails schema validation before your tool
+
+8
+00:00:45.680 --> 00:00:53.919
+code ever runs. An optional parameter is any field not in that array. Claude may omit it when the
+
+9
+00:00:53.919 --> 00:00:59.840
+information isn't available, and your tool code has to be ready for that. A default value is the
+
+10
+00:00:59.840 --> 00:01:06.160
+fallback that applies when an optional parameter is omitted. Defaults can be declared in the schema
+
+11
+00:01:06.160 --> 00:01:12.720
+itself or handled inside the tool implementation. Using defaults well is what makes optional
+
+12
+00:01:12.720 --> 00:01:19.360
+parameters safe rather than fragile. Here's a design tension worth understanding. Every field
+
+13
+00:01:19.360 --> 00:01:25.680
+you put in your required array increases the chance that a tool call will fail when Claude is
+
+14
+00:01:25.680 --> 00:01:31.360
+working in a context where that information isn't available. When Claude can't find a value for a
+
+15
+00:01:31.360 --> 00:01:37.599
+required field, it sometimes hallucinates one to satisfy the schema. That's worse than a failed
+
+16
+00:01:37.599 --> 00:01:43.680
+call because the hallucinated value looks valid but isn't. The discipline here is to only mark a
+
+17
+00:01:43.680 --> 00:01:49.279
+field required if the tool genuinely can't function without it. If the tool can produce a
+
+18
+00:01:49.279 --> 00:01:56.400
+sensible result with a default or skip the field entirely, make it optional. A simple decision
+
+19
+00:01:56.400 --> 00:02:01.680
+framework helps when you're not sure whether a field should be required or optional. If the tool
+
+20
+00:02:01.680 --> 00:02:06.800
+can't function without it, mark it required and accept that the call should fail fast when the
+
+21
+00:02:06.800 --> 00:02:12.559
+value is missing. If the field is useful but not critical, make it optional and declare a sensible
+
+22
+00:02:12.559 --> 00:02:18.559
+default in your implementation so the tool still produces a good result. If the value is rarely
+
+23
+00:02:18.559 --> 00:02:25.199
+provided, make it optional and handle its absence explicitly in your tool code. This framework keeps
+
+24
+00:02:25.199 --> 00:02:30.880
+your required set lean, which means Claude can call your tool successfully across a wider range
+
+25
+00:02:30.880 --> 00:02:38.000
+of contexts without resorting to hallucination. When a parameter accepts only a fixed set of values,
+
+26
+00:02:38.000 --> 00:02:44.399
+an enum constraint is exactly the right tool. You declare enum as an array of the acceptable values
+
+27
+00:02:44.399 --> 00:02:50.639
+for that field, and Claude picks from that list instead of generating a free-form string. Under
+
+28
+00:02:50.639 --> 00:02:56.080
+strict tool use, the model is guaranteed to stay inside the set. That's especially powerful for
+
+29
+00:02:56.080 --> 00:03:02.000
+routing parameters like a priority field that sends requests to different handlers. A couple
+
+30
+00:03:02.000 --> 00:03:07.919
+of related constraints round this out. Minimum and maximum apply numeric bounds to integer and
+
+31
+00:03:07.919 --> 00:03:14.960
+number fields, which matters for page sizes, scores, and item counts, where an out-of-range value
+
+32
+00:03:14.960 --> 00:03:20.720
+breaks something downstream. And additional properties set to false declares that no
+
+33
+00:03:20.720 --> 00:03:26.240
+undeclared fields are allowed, which strict tool use enforces so Claude can't invent extras.
+
+34
+00:03:27.520 --> 00:03:33.600
+The contrast between a free-form string and an enum field makes the value concrete. Without an
+
+35
+00:03:33.600 --> 00:03:40.399
+enum, a priority field declared as type string gives Claude unlimited options. It might generate
+
+36
+00:03:40.399 --> 00:03:46.720
+urgent, high priority, urgent, critical, or any other variation depending on whatever context
+
+37
+00:03:46.720 --> 00:03:52.240
+happens to be in the conversation at that moment. All of those variations may break the logic that
+
+38
+00:03:52.240 --> 00:03:58.240
+branches on the value because your code is almost certainly checking for exact string matches.
+
+39
+00:03:58.240 --> 00:04:04.800
+Add enum, low, medium, high, and Claude has to pick one of those three exact values every
+
+40
+00:04:04.800 --> 00:04:10.479
+single time, regardless of context. The field becomes deterministic and predictable.
+
+41
+00:04:10.479 --> 00:04:16.239
+Your back-end code gets simpler and more reliable as a direct result of that single schema change.
+
+42
+00:04:17.519 --> 00:04:23.279
+Enum fields show up in two main patterns in real-world tool schemas. The first is routing
+
+43
+00:04:23.279 --> 00:04:30.160
+inputs, where the enum value directs the tool call to a specific handler, workflow, or service.
+
+44
+00:04:30.720 --> 00:04:36.720
+The second is extraction fields, where Claude is classifying an entity or event into a predefined
+
+45
+00:04:36.720 --> 00:04:42.640
+category, like a sentiment label or a document type. In both cases, the valid set has to be
+
+46
+00:04:42.640 --> 00:04:48.880
+stable and reasonably small. Enums work well for two to ten values that don't change often.
+
+47
+00:04:48.880 --> 00:04:54.399
+If your valid set has hundreds of members or changes frequently, enum isn't the right
+
+48
+00:04:54.399 --> 00:05:00.079
+constraint and you'll want a different validation approach. Constraints tighten what Claude can
+
+49
+00:05:00.079 --> 00:05:06.799
+generate, but sometimes a valid shape still isn't an obvious usage pattern. That's what the input
+
+50
+00:05:06.799 --> 00:05:13.440
+examples field is for. You add an optional input examples array to the tool definition, holding a
+
+51
+00:05:13.440 --> 00:05:19.839
+few sample inputs, and each one has to be valid against your input schema or the whole request is
+
+52
+00:05:19.839 --> 00:05:26.079
+rejected. Descriptions are still the most important lever, so reach for examples when a tool has
+
+53
+00:05:26.079 --> 00:05:32.959
+nested objects, a lot of optional fields, or format-sensitive parameters where valid JSON
+
+54
+00:05:32.959 --> 00:05:39.359
+doesn't guarantee correct usage. Examples measurably improve accuracy on complex parameter
+
+55
+00:05:39.359 --> 00:05:44.959
+handling. They cost a few extra prompt tokens and they aren't supported on server tools,
+
+56
+00:05:44.959 --> 00:05:49.440
+but on genuinely complex tools, they earn their place in the definition.
+
+57
+00:05:50.959 --> 00:05:56.480
+Let's pull this together. Only mark fields required when the tool genuinely can't function
+
+58
+00:05:56.480 --> 00:06:02.559
+without them. Give optional fields sensible defaults and use enum constraints to eliminate
+
+59
+00:06:02.559 --> 00:06:09.279
+freeform string variation for any fixed value input. Numeric bounds and additional properties
+
+60
+00:06:09.279 --> 00:06:14.480
+tighten the rest. Those decisions are what separate a schema that Claude can satisfy every
+
+61
+00:06:14.480 --> 00:06:20.799
+time from one that quietly produces bad calls. That's it for this lesson. I'll see you in the next one.
+

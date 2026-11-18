@@ -1,0 +1,326 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.619
+When you're building systems that have to run at scale and stay financially sustainable,
+
+2
+00:00:05.059 --> 00:00:09.520
+context window economics is what you need to understand. For this video,
+
+3
+00:00:09.819 --> 00:00:12.119
+we'll cover how token pricing works,
+
+4
+00:00:12.359 --> 00:00:18.899
+why larger contexts create real cost and latency trade-offs, and why filling the context window with
+
+5
+00:00:18.959 --> 00:00:22.319
+marginal content can hurt quality. Let's get into it.
+
+6
+00:00:23.180 --> 00:00:28.719
+Every token you put in the context window has a price, and that price shows up in three different places.
+
+7
+00:00:29.079 --> 00:00:30.559
+The first is money.
+
+8
+00:00:30.559 --> 00:00:38.099
+You pay a per token rate for input and a separate, usually higher, rate for output. The second is time.
+
+9
+00:00:38.759 --> 00:00:42.299
+Latency here means time to first token, the gap between
+
+10
+00:00:42.639 --> 00:00:48.270
+sending the request and watching the model start to generate, and it grows with the amount of input
+
+11
+00:00:48.270 --> 00:00:49.863
+the model has to read first.
+
+12
+00:00:50.200 --> 00:00:53.159
+The third is quality, and that's the one people miss.
+
+13
+00:00:53.840 --> 00:01:00.759
+Context window economics is the cost-benefit call you make about how much content to include, and more isn't
+
+14
+00:01:00.880 --> 00:01:05.779
+automatically better. Those three pressures pull against each other on every request you design.
+
+15
+00:01:07.000 --> 00:01:12.464
+Token pricing applies to everything in your request, not just the message you type. Your system
+
+16
+00:01:12.464 --> 00:01:14.362
+prompt, the conversation history,
+
+17
+00:01:15.080 --> 00:01:17.360
+injected documents, tool schemas,
+
+18
+00:01:17.760 --> 00:01:22.919
+metadata, and then the model's response. All of it is billed at per token rates.
+
+19
+00:01:23.519 --> 00:01:28.902
+Output tokens are priced higher than input tokens on most Claude tiers, which matters when you're
+
+20
+00:01:28.902 --> 00:01:31.344
+designing for chain-of-thought reasoning, or
+
+21
+00:01:32.199 --> 00:01:38.040
+extended agentic loops that generate a lot of text. The practical implication is that costs
+
+22
+00:01:38.360 --> 00:01:40.360
+compound across components. A
+
+23
+00:01:40.800 --> 00:01:48.279
+10,000 token system prompt, repeated across 1,000 daily requests, is 10 million input tokens per day
+
+24
+00:01:48.639 --> 00:01:50.959
+before a single user message is processed.
+
+25
+00:01:51.480 --> 00:01:57.720
+Large stable prompts are often the biggest optimization target in production, API cost reduction.
+
+26
+00:01:58.599 --> 00:02:04.239
+The large versus small context trade-off isn't just about whether your content fits.
+
+27
+00:02:04.519 --> 00:02:11.880
+It's about the cost and latency implications of every token you include. A large context enables long document
+
+28
+00:02:12.199 --> 00:02:19.000
+analysis and rich retrieval, but it costs more per request and increases the time before the model starts responding. A
+
+29
+00:02:19.119 --> 00:02:25.089
+small context is cheaper and faster, but it forces you to be disciplined about what you include. You
+
+30
+00:02:25.089 --> 00:02:26.820
+may need chunking strategies,
+
+31
+00:02:27.360 --> 00:02:32.405
+conversation summarization, or aggressive retrieval filtering to stay within limits. Neither
+
+32
+00:02:32.405 --> 00:02:34.105
+approach is universally better.
+
+33
+00:02:34.360 --> 00:02:40.240
+The right choice depends on what the task actually requires, not on what the maximum limit allows.
+
+34
+00:02:40.600 --> 00:02:45.617
+The discipline of working within a smaller context often produces better results than filling a
+
+35
+00:02:45.617 --> 00:02:47.307
+large one with marginal content.
+
+36
+00:02:48.360 --> 00:02:53.520
+Time-to-first token is the latency metric that matters most for user-facing applications.
+
+37
+00:02:53.520 --> 00:02:57.360
+It measures how long the user waits before seeing any output.
+
+38
+00:02:57.559 --> 00:03:03.559
+That waiting time scales with the amount of input the model needs to process before it starts generating.
+
+39
+00:03:04.000 --> 00:03:09.000
+More tokens in means more attention computation before output starts.
+
+40
+00:03:09.520 --> 00:03:15.639
+Streaming responses help with perceived latency because the user sees tokens arrive incrementally,
+
+41
+00:03:15.800 --> 00:03:20.039
+but total generation time still scales with context size.
+
+42
+00:03:20.559 --> 00:03:27.199
+One important optimization is KV cache. When a request shares a stable prefix with a previous request,
+
+43
+00:03:27.240 --> 00:03:33.880
+the model can reuse the cached key value computation for that prefix and skip reprocessing it.
+
+44
+00:03:34.360 --> 00:03:38.399
+This is the mechanism behind prompt caching, which we'll come back to in a moment.
+
+45
+00:03:39.399 --> 00:03:43.639
+There are three main levers for controlling context cost in production systems.
+
+46
+00:03:44.039 --> 00:03:49.578
+First is system prompt size. Many production system prompts accumulate instructions over time
+
+47
+00:03:49.578 --> 00:03:51.900
+without anyone auditing for redundancy.
+
+48
+00:03:52.479 --> 00:03:58.495
+A quarterly review that cuts the system prompt from 2,000 tokens to 800 tokens reduces baseline cost
+
+49
+00:03:58.495 --> 00:03:59.939
+on every single request.
+
+50
+00:04:00.600 --> 00:04:06.839
+Second is history policy. Carrying full verbatim conversation, history grows linearly with session length.
+
+51
+00:04:07.559 --> 00:04:13.800
+Summarizing older turns into a compact representation caps the history budget while preserving continuity.
+
+52
+00:04:14.440 --> 00:04:16.440
+Third is retrieval precision.
+
+53
+00:04:16.920 --> 00:04:22.600
+If your RAG pipeline retrieves five loosely relevant chunks when one precisely relevant chunk would do,
+
+54
+00:04:23.079 --> 00:04:28.322
+you're paying for four times the tokens without a quality benefit. High precision retrieval is a
+
+55
+00:04:28.322 --> 00:04:30.725
+quality and cost improvement simultaneously.
+
+56
+00:04:32.200 --> 00:04:35.399
+Here's the insight the certification exam keeps coming back to.
+
+57
+00:04:35.959 --> 00:04:37.959
+More context isn't always better.
+
+58
+00:04:38.579 --> 00:04:44.519
+Irrelevant tokens aren't neutral filler. They compete with relevant content for the model's attention.
+
+59
+00:04:45.079 --> 00:04:48.140
+That competition has a name, attention dilution,
+
+60
+00:04:48.600 --> 00:04:53.579
+and it's what happens when a high proportion of the tokens in the window are noise or repetition.
+
+61
+00:04:54.200 --> 00:04:58.119
+If you retrieve 10 document chunks when only two are actually relevant,
+
+62
+00:04:58.440 --> 00:05:03.720
+the model still has to attend to all 10, and the eight bad ones drag on the two good ones.
+
+63
+00:05:04.339 --> 00:05:09.799
+Contradictory passages produce inconsistent answers. Very long contexts reduce the precision with
+
+64
+00:05:09.799 --> 00:05:12.163
+which the model follows your instructions.
+
+65
+00:05:12.839 --> 00:05:19.320
+The lever that fixes all of this is retrieval precision. The share of retrieved chunks that are genuinely relevant.
+
+66
+00:05:19.799 --> 00:05:21.880
+Tightly curated beats maximally large.
+
+67
+00:05:23.160 --> 00:05:28.592
+Prompt caching deserves a closer look because it's one of the highest return optimizations in the
+
+68
+00:05:28.592 --> 00:05:29.824
+API economics toolkit.
+
+69
+00:05:30.440 --> 00:05:36.679
+The basic mechanism, you mark a prefix as cacheable, usually a long system prompt or a large reference document.
+
+70
+00:05:37.160 --> 00:05:41.720
+The first request that uses that prefix computes the KV cache and stores it.
+
+71
+00:05:42.279 --> 00:05:48.679
+Every subsequent request that shares the same prefix reuses the cached computation instead of reprocessing the tokens.
+
+72
+00:05:49.079 --> 00:05:54.440
+The benefits are twofold. Cached input tokens are billed at a significantly lower rate,
+
+73
+00:05:54.920 --> 00:06:00.563
+often a fraction of the standard input price, and time to first token decreases because the model
+
+74
+00:06:00.563 --> 00:06:02.541
+skips the prefix computation step.
+
+75
+00:06:03.320 --> 00:06:09.362
+For applications with thousands of daily requests, sharing a stable system prompt. Caching can
+
+76
+00:06:09.362 --> 00:06:11.355
+reduce API costs substantially.
+
+77
+00:06:13.380 --> 00:06:20.920
+Context economics comes down to the fact that every token you send carries a price and a delay attached to it.
+
+78
+00:06:21.399 --> 00:06:27.959
+It matters because the padding nobody ever reviews gets paid for again on every single call forever.
+
+79
+00:06:28.519 --> 00:06:33.957
+Just remember that the cost isn't only money. Tokens that don't earn their place also pull attention
+
+80
+00:06:33.957 --> 00:06:35.425
+away from the ones that do.
+
+81
+00:06:36.279 --> 00:06:39.019
+That wraps up this lesson. I'll see you in the next one.
+

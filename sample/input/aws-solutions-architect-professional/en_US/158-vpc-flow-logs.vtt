@@ -1,0 +1,594 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.307
+<v Instructor>So now let's talk about VPC Flow Logs.</v>
+
+2
+00:00:02.307 --> 00:00:04.590
+VPC Flow Logs allow you to capture information
+
+3
+00:00:04.590 --> 00:00:07.050
+from IP traffic going into your interfaces.
+
+4
+00:00:07.050 --> 00:00:10.110
+So that could be at the VPC level, the subnet level,
+
+5
+00:00:10.110 --> 00:00:13.050
+or the elastic network interface, ENI level.
+
+6
+00:00:13.050 --> 00:00:15.390
+So you have three kinds of flow logs.
+
+7
+00:00:15.390 --> 00:00:16.860
+They're very helpful to monitor
+
+8
+00:00:16.860 --> 00:00:18.840
+and troubleshoot connectivity issues
+
+9
+00:00:18.840 --> 00:00:20.460
+happening within your VPC.
+
+10
+00:00:20.460 --> 00:00:22.680
+So these flow logs can be sent to Amazon S3,
+
+11
+00:00:22.680 --> 00:00:25.470
+CloudWatch Logs, and Kinesis Data Firehose.
+
+12
+00:00:25.470 --> 00:00:26.850
+And they will capture information
+
+13
+00:00:26.850 --> 00:00:31.500
+for also AWS managed interfaces such as ELB, RDS,
+
+14
+00:00:31.500 --> 00:00:34.500
+ElastiCache, Redshift, WorkSpaces, your NAT gateway,
+
+15
+00:00:34.500 --> 00:00:36.450
+your transit gateway, and so on.
+
+16
+00:00:36.450 --> 00:00:38.280
+So in this graph, well, it's very simple.
+
+17
+00:00:38.280 --> 00:00:40.290
+Your flow logs are at the VPC level, for example,
+
+18
+00:00:40.290 --> 00:00:41.820
+or subnet or ENI level
+
+19
+00:00:41.820 --> 00:00:44.640
+and they're sent to CloudWatch and Amazon S3.
+
+20
+00:00:44.640 --> 00:00:47.730
+So this is what a VPC Flow Log looks like.
+
+21
+00:00:47.730 --> 00:00:49.920
+So there is a format associated with it
+
+22
+00:00:49.920 --> 00:00:52.860
+but there is a version, account-id, interface-id,
+
+23
+00:00:52.860 --> 00:00:55.260
+source address, destination address, source port,
+
+24
+00:00:55.260 --> 00:00:57.540
+destination port, protocol, packets, bytes, start,
+
+25
+00:00:57.540 --> 00:01:00.330
+and action, and log-status.
+
+26
+00:01:00.330 --> 00:01:02.460
+So this is metadata about the network packets
+
+27
+00:01:02.460 --> 00:01:05.160
+going into your VPC.
+
+28
+00:01:05.160 --> 00:01:07.650
+And you don't need to remember this at a high level, right?
+
+29
+00:01:07.650 --> 00:01:10.080
+But let's have a look at what information
+
+30
+00:01:10.080 --> 00:01:11.760
+we can get out of these flow logs.
+
+31
+00:01:11.760 --> 00:01:13.470
+So the source address and the destination address
+
+32
+00:01:13.470 --> 00:01:15.780
+help identify problematic IP.
+
+33
+00:01:15.780 --> 00:01:18.540
+This is where you see if an IP is repeatedly being denied,
+
+34
+00:01:18.540 --> 00:01:19.830
+maybe there is something wrong with that IP
+
+35
+00:01:19.830 --> 00:01:22.380
+or maybe you're being attacked by a specific IP.
+
+36
+00:01:22.380 --> 00:01:24.870
+Srcport and dstport helps you identify
+
+37
+00:01:24.870 --> 00:01:26.130
+the problematic ports.
+
+38
+00:01:26.130 --> 00:01:29.430
+Action is going to be either accept or reject,
+
+39
+00:01:29.430 --> 00:01:31.860
+and so it's going to say whether or not it's a success
+
+40
+00:01:31.860 --> 00:01:34.530
+or failure at the SG or NACL level,
+
+41
+00:01:34.530 --> 00:01:35.970
+and we'll see this in the very next slide.
+
+42
+00:01:35.970 --> 00:01:38.100
+And so this can be used, the VPC Flow Logs
+
+43
+00:01:38.100 --> 00:01:40.260
+to do analytics on usage patterns
+
+44
+00:01:40.260 --> 00:01:43.920
+or detect malicious behavior, port scans, and so on.
+
+45
+00:01:43.920 --> 00:01:44.910
+Now, to query these flow logs,
+
+46
+00:01:44.910 --> 00:01:46.290
+you have two ways of doing it.
+
+47
+00:01:46.290 --> 00:01:48.600
+The best way is to do Athena on S3,
+
+48
+00:01:48.600 --> 00:01:50.670
+or if you wanted to do a streaming analysis
+
+49
+00:01:50.670 --> 00:01:52.680
+you could use CloudWatch Logs Insights.
+
+50
+00:01:52.680 --> 00:01:54.810
+So here are some examples that you can have a look
+
+51
+00:01:54.810 --> 00:01:56.610
+on your own time for Flow Logs.
+
+52
+00:01:56.610 --> 00:01:59.340
+So how do we use Flow Logs to troubleshoot security group
+
+53
+00:01:59.340 --> 00:02:00.840
+and NACL issues?
+
+54
+00:02:00.840 --> 00:02:02.190
+Well, we look at the ACTION field.
+
+55
+00:02:02.190 --> 00:02:05.220
+So let's have a look at the typical incoming request
+
+56
+00:02:05.220 --> 00:02:06.330
+for your NACL and your subnet.
+
+57
+00:02:06.330 --> 00:02:08.250
+So remember, your NACLs are stateless
+
+58
+00:02:08.250 --> 00:02:10.800
+and your security groups are stateful.
+
+59
+00:02:10.800 --> 00:02:11.910
+So what happens?
+
+60
+00:02:11.910 --> 00:02:13.740
+Well, if we get an inbound reject,
+
+61
+00:02:13.740 --> 00:02:16.110
+so we see that the inbound request
+
+62
+00:02:16.110 --> 00:02:19.350
+coming from the outside to our EC2 instance is rejected.
+
+63
+00:02:19.350 --> 00:02:21.390
+That can mean that either from this graph
+
+64
+00:02:21.390 --> 00:02:23.670
+the NACL is refusing the request,
+
+65
+00:02:23.670 --> 00:02:26.550
+or the security group is refusing the request.
+
+66
+00:02:26.550 --> 00:02:28.110
+And this makes sense, right?
+
+67
+00:02:28.110 --> 00:02:32.040
+But if we have a inbound accept and an outbound reject,
+
+68
+00:02:32.040 --> 00:02:34.170
+it can only mean a NACL issue.
+
+69
+00:02:34.170 --> 00:02:35.003
+Why?
+
+70
+00:02:35.003 --> 00:02:36.690
+Well, because your security group is stateful,
+
+71
+00:02:36.690 --> 00:02:39.510
+and if the inbound is allowed because of the accept,
+
+72
+00:02:39.510 --> 00:02:41.880
+automatically, the outbound will be allowed
+
+73
+00:02:41.880 --> 00:02:44.730
+thanks to the statefulness of your security group.
+
+74
+00:02:44.730 --> 00:02:46.920
+So after outgoing requests, similar analysis, right?
+
+75
+00:02:46.920 --> 00:02:48.570
+This is the diagram we know already.
+
+76
+00:02:48.570 --> 00:02:50.700
+And so if you get an outbound reject,
+
+77
+00:02:50.700 --> 00:02:53.280
+then you have a NACL or a security group issue.
+
+78
+00:02:53.280 --> 00:02:55.890
+But if you get an outbound accept and an inbound reject,
+
+79
+00:02:55.890 --> 00:02:58.530
+then it must mean a NACL issue.
+
+80
+00:02:58.530 --> 00:03:00.600
+So let's have a look at a few architectures
+
+81
+00:03:00.600 --> 00:03:02.160
+for your VPC Flow Logs.
+
+82
+00:03:02.160 --> 00:03:04.860
+So they can flow into CloudWatch Logs, as we know.
+
+83
+00:03:04.860 --> 00:03:06.090
+And then we can use something called
+
+84
+00:03:06.090 --> 00:03:07.830
+CloudWatch Contributor Insights,
+
+85
+00:03:07.830 --> 00:03:10.620
+for example, to find the top 10 IP addresses
+
+86
+00:03:10.620 --> 00:03:12.900
+that contribute to the most amount of network
+
+87
+00:03:12.900 --> 00:03:14.790
+on your VPC.
+
+88
+00:03:14.790 --> 00:03:17.160
+Or an ENI, or whatever you want.
+
+89
+00:03:17.160 --> 00:03:18.990
+You can also use VPC Flow Logs to send them
+
+90
+00:03:18.990 --> 00:03:20.550
+again into CloudWatch Logs.
+
+91
+00:03:20.550 --> 00:03:23.460
+Here we can set up a metric filter to look, for example
+
+92
+00:03:23.460 --> 00:03:26.460
+for the SSH or the RDP protocols.
+
+93
+00:03:26.460 --> 00:03:28.916
+And if we realize that there is a lot more SSH
+
+94
+00:03:28.916 --> 00:03:31.740
+or RDP than usual, then trigger a CloudWatch alarm
+
+95
+00:03:31.740 --> 00:03:34.710
+and send an alert into an Amazon SNS topic,
+
+96
+00:03:34.710 --> 00:03:37.950
+because something fishy may be happening on your network.
+
+97
+00:03:37.950 --> 00:03:40.230
+Or we can use a VPC Flow Log,
+
+98
+00:03:40.230 --> 00:03:43.890
+and then we send everything into an S3 bucket for storage,
+
+99
+00:03:43.890 --> 00:03:45.360
+and we use Amazon Athena
+
+100
+00:03:45.360 --> 00:03:48.420
+to analyze the VPC Flow Logs with SQL.
+
+101
+00:03:48.420 --> 00:03:51.840
+And we can even visualize that with Amazon QuickSight.
+
+102
+00:03:51.840 --> 00:03:54.480
+So there is one case where you have VPC Flow Logs
+
+103
+00:03:54.480 --> 00:03:55.710
+with a NAT gateway,
+
+104
+00:03:55.710 --> 00:03:58.230
+and it turns out that you have this use case
+
+105
+00:03:58.230 --> 00:03:59.280
+and it seems weird to you.
+
+106
+00:03:59.280 --> 00:04:03.270
+So the VPC Flow Logs show Action = ACCEPT
+
+107
+00:04:03.270 --> 00:04:06.450
+for incoming traffic from public IP addresses
+
+108
+00:04:06.450 --> 00:04:08.040
+onto your VPC.
+
+109
+00:04:08.040 --> 00:04:11.490
+But you know that NAT gateways don't accept traffic
+
+110
+00:04:11.490 --> 00:04:12.600
+from the internet.
+
+111
+00:04:12.600 --> 00:04:14.670
+So you're wondering if your NAT gateway
+
+112
+00:04:14.670 --> 00:04:17.490
+is actually accepting inbound traffic from the internet
+
+113
+00:04:17.490 --> 00:04:20.280
+because you still see it in your VPC Flow Log.
+
+114
+00:04:20.280 --> 00:04:24.150
+So this is the architecture where the internet goes through
+
+115
+00:04:24.150 --> 00:04:25.380
+and talks to your NAT gateway
+
+116
+00:04:25.380 --> 00:04:27.330
+and maybe to your private subnets,
+
+117
+00:04:27.330 --> 00:04:29.190
+so you wanna verify this.
+
+118
+00:04:29.190 --> 00:04:33.240
+So in that case, that is possible if the inbound traffic
+
+119
+00:04:33.240 --> 00:04:35.610
+is permitted by the security group
+
+120
+00:04:35.610 --> 00:04:38.790
+or the NACLs of your NAT gateway itself.
+
+121
+00:04:38.790 --> 00:04:41.730
+But when it arrives to your NAT gateway,
+
+122
+00:04:41.730 --> 00:04:42.810
+it's going to be dropped
+
+123
+00:04:42.810 --> 00:04:46.500
+because the NAT gateway itself doesn't allow traffic.
+
+124
+00:04:46.500 --> 00:04:48.570
+So to confirm this behavior,
+
+125
+00:04:48.570 --> 00:04:50.310
+you run the following query
+
+126
+00:04:50.310 --> 00:04:52.890
+in your CloudWatch Log Group's insights.
+
+127
+00:04:52.890 --> 00:04:56.310
+You do a filter, and in the filter you look
+
+128
+00:04:56.310 --> 00:05:00.990
+for the destination address to be xxx.xxx
+
+129
+00:05:00.990 --> 00:05:04.860
+where this is the first two octets of your VPC CIDR.
+
+130
+00:05:04.860 --> 00:05:08.700
+So you look at destination being within your VPC,
+
+131
+00:05:08.700 --> 00:05:12.857
+and your source address to be like the public IP
+
+132
+00:05:12.857 --> 00:05:14.700
+that's trying to reach you.
+
+133
+00:05:14.700 --> 00:05:16.740
+So you're going to analyze whether or not
+
+134
+00:05:16.740 --> 00:05:19.080
+you see any traffic from public IP
+
+135
+00:05:19.080 --> 00:05:22.260
+that's trying to reach you onto your VPC.
+
+136
+00:05:22.260 --> 00:05:25.830
+And then you sum the bytes as the byte transferred
+
+137
+00:05:25.830 --> 00:05:28.470
+by source address and destination address.
+
+138
+00:05:28.470 --> 00:05:31.440
+And this is going to view a list of all the traffic
+
+139
+00:05:31.440 --> 00:05:35.040
+between the public IP and your VPC.
+
+140
+00:05:35.040 --> 00:05:38.880
+And it turns out that you will see the traffic
+
+141
+00:05:38.880 --> 00:05:41.520
+on the private IP of the NAT gateway
+
+142
+00:05:41.520 --> 00:05:43.350
+because it is accepting traffic
+
+143
+00:05:43.350 --> 00:05:47.700
+because of the security group or the network ACL.
+
+144
+00:05:47.700 --> 00:05:51.330
+But then you will not see any other line than this one,
+
+145
+00:05:51.330 --> 00:05:53.580
+because the unsolicited traffic
+
+146
+00:05:53.580 --> 00:05:56.850
+onto your NAT gateway has then been dropped.
+
+147
+00:05:56.850 --> 00:05:59.610
+So that's it for this lecture, I hope you liked it,
+
+148
+00:05:59.610 --> 00:06:01.560
+and I will see you in the next lecture.
+

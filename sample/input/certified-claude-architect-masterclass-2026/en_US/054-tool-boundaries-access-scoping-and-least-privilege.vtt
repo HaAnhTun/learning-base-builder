@@ -1,0 +1,578 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.719
+Every tool you define on an MCP server creates a trust boundary,
+
+2
+00:00:04.719 --> 00:00:09.840
+meaning a set of permissions the model can exercise on behalf of the user.
+
+3
+00:00:09.840 --> 00:00:12.800
+That framing changes how you approach tool design.
+
+4
+00:00:12.800 --> 00:00:15.520
+Let me walk you through the least privilege principle,
+
+5
+00:00:15.520 --> 00:00:17.120
+access scoping mechanisms,
+
+6
+00:00:17.120 --> 00:00:20.639
+and input sanitization at the server boundary.
+
+7
+00:00:20.639 --> 00:00:25.579
+Picture an MCP server that can reach every file on the host machine.
+
+8
+00:00:25.579 --> 00:00:29.200
+That is the failure mode the rest of this lesson works to prevent.
+
+9
+00:00:29.440 --> 00:00:32.240
+Access scoping is the discipline that prevents it,
+
+10
+00:00:32.240 --> 00:00:36.560
+defining explicit boundaries on what data, systems, and operations
+
+11
+00:00:36.560 --> 00:00:40.639
+each server and its tools may reach, enforced through schema constraints,
+
+12
+00:00:40.639 --> 00:00:44.560
+server-side authorization, and operating system permissions.
+
+13
+00:00:44.560 --> 00:00:49.599
+Least privilege narrows each tool to the permissions its specific function requires,
+
+14
+00:00:49.599 --> 00:00:54.319
+and nothing more, which keeps the blast radius small when a tool is misused.
+
+15
+00:00:54.319 --> 00:01:00.080
+Input sanitization validates and cleans every argument arriving at the server boundary
+
+16
+00:01:00.080 --> 00:01:06.000
+before it reaches any downstream system, which is where injection attacks get stopped.
+
+17
+00:01:06.000 --> 00:01:09.760
+Why should you think of a tool definition as a trust boundary?
+
+18
+00:01:09.760 --> 00:01:13.599
+Because the schema and handler together define the full scope
+
+19
+00:01:13.599 --> 00:01:17.279
+of what the model can do when it invokes that tool.
+
+20
+00:01:17.279 --> 00:01:20.239
+The schema sets the expected argument types.
+
+21
+00:01:20.239 --> 00:01:23.279
+The handler determines which systems the tool connects to
+
+22
+00:01:23.279 --> 00:01:25.519
+and what operations it can perform.
+
+23
+00:01:25.519 --> 00:01:30.879
+If you define a tool loosely, accepting freeform inputs and connecting to everything,
+
+24
+00:01:30.879 --> 00:01:34.720
+you create a large and poorly controlled attack surface.
+
+25
+00:01:34.720 --> 00:01:38.639
+You've effectively handed the model and anyone who can influence its outputs
+
+26
+00:01:38.639 --> 00:01:40.480
+a very broad set of permissions.
+
+27
+00:01:41.120 --> 00:01:44.959
+Treating every tool as a boundary forces you to ask, during design,
+
+28
+00:01:45.599 --> 00:01:50.160
+exactly what should this tool be allowed to do and what should it explicitly not do?
+
+29
+00:01:50.800 --> 00:01:53.919
+That question, answered honestly for every tool,
+
+30
+00:01:53.919 --> 00:01:57.360
+is how you build an MCP server you can actually defend.
+
+31
+00:01:58.639 --> 00:02:03.199
+Applying least privilege to MCP tools starts with a simple rule,
+
+32
+00:02:03.199 --> 00:02:05.519
+one tool per logical operation.
+
+33
+00:02:05.519 --> 00:02:09.600
+A read-only search tool should have no write permissions at all.
+
+34
+00:02:09.600 --> 00:02:15.119
+A tool scoped to one database should have credentials that only reach that database.
+
+35
+00:02:15.119 --> 00:02:18.720
+A file tool should be bound to specific directory paths,
+
+36
+00:02:18.720 --> 00:02:21.679
+rather than having access to the full file system.
+
+37
+00:02:21.679 --> 00:02:25.279
+When you give each tool the minimum access it needs for its purpose,
+
+38
+00:02:25.279 --> 00:02:28.399
+you shrink the blast radius of any misuse.
+
+39
+00:02:28.399 --> 00:02:32.639
+If the model is manipulated into calling a tool in an unexpected way,
+
+40
+00:02:32.639 --> 00:02:35.839
+or if the MCP server itself is compromised,
+
+41
+00:02:35.839 --> 00:02:38.559
+narrow scope limits how much damage can result.
+
+42
+00:02:39.119 --> 00:02:41.839
+Least privilege isn't just a security checkbox.
+
+43
+00:02:41.839 --> 00:02:46.320
+It's a design discipline that makes the system easier to audit and reason about over time.
+
+44
+00:02:46.720 --> 00:02:51.039
+MCP gives you three concrete mechanisms to enforce access scoping.
+
+45
+00:02:51.039 --> 00:02:53.759
+Schema constraints are the first layer.
+
+46
+00:02:53.759 --> 00:02:56.240
+Declare a strict enum for an argument,
+
+47
+00:02:56.240 --> 00:03:01.119
+and the server rejects inputs outside that set before your handler logic ever runs.
+
+48
+00:03:01.759 --> 00:03:04.320
+Server-side authorization is the second.
+
+49
+00:03:04.320 --> 00:03:06.880
+Even after the schema validates the input,
+
+50
+00:03:06.880 --> 00:03:10.320
+your handler checks the caller's identity and permissions
+
+51
+00:03:10.320 --> 00:03:12.559
+before touching any downstream resource.
+
+52
+00:03:12.960 --> 00:03:15.360
+Operating system permissions are the third.
+
+53
+00:03:15.520 --> 00:03:18.000
+File system and process limits,
+
+54
+00:03:18.000 --> 00:03:21.039
+on the host cap, what the server can actually reach.
+
+55
+00:03:21.600 --> 00:03:23.440
+It's worth clearing up roots here,
+
+56
+00:03:23.440 --> 00:03:25.839
+because people mistake them for enforcement.
+
+57
+00:03:25.839 --> 00:03:28.000
+Roots are an advisory signal.
+
+58
+00:03:28.000 --> 00:03:32.399
+A client advertises the directories it wants a server to focus on,
+
+59
+00:03:32.399 --> 00:03:34.720
+and a well-behaved server should honor them,
+
+60
+00:03:34.720 --> 00:03:36.160
+but nothing forces it to.
+
+61
+00:03:36.800 --> 00:03:39.440
+Real enforcement lives in those three layers.
+
+62
+00:03:40.639 --> 00:03:44.399
+Broad scope versus narrow scope illustrates why this matters.
+
+63
+00:03:44.479 --> 00:03:48.960
+A tool that accepts any SQL string and connects to any database
+
+64
+00:03:48.960 --> 00:03:51.360
+gives the model complete data access.
+
+65
+00:03:51.759 --> 00:03:54.639
+An attacker who can influence the model's outputs,
+
+66
+00:03:54.639 --> 00:03:56.720
+through prompt injection, for example,
+
+67
+00:03:56.720 --> 00:04:00.160
+can potentially redirect tool calls to extract,
+
+68
+00:04:00.160 --> 00:04:04.479
+modify, or delete arbitrary data through that one tool.
+
+69
+00:04:05.119 --> 00:04:08.240
+A narrow design replaces that single permissive tool
+
+70
+00:04:08.240 --> 00:04:10.240
+with multiple specialized ones.
+
+71
+00:04:10.559 --> 00:04:12.479
+One for reading a specific table,
+
+72
+00:04:12.479 --> 00:04:14.800
+with schema-constrained filter arguments.
+
+73
+00:04:14.800 --> 00:04:18.480
+Another for a different table with its own constraints.
+
+74
+00:04:18.480 --> 00:04:22.079
+Each tool connects with credentials, scoped to its purpose.
+
+75
+00:04:22.079 --> 00:04:24.160
+If any single tool is abused,
+
+76
+00:04:24.160 --> 00:04:26.959
+the damage is contained to what that tool can reach,
+
+77
+00:04:26.959 --> 00:04:28.480
+which by design is very little.
+
+78
+00:04:29.920 --> 00:04:32.880
+Input sanitization happens at the server boundary,
+
+79
+00:04:32.880 --> 00:04:35.760
+and it should happen before any handler logic runs.
+
+80
+00:04:36.320 --> 00:04:38.880
+Every argument arriving at an MCP server
+
+81
+00:04:38.880 --> 00:04:41.279
+should be treated as untrusted input.
+
+82
+00:04:41.279 --> 00:04:43.839
+Regardless of where the client claims it came from.
+
+83
+00:04:44.399 --> 00:04:47.200
+The first step is type and format validation
+
+84
+00:04:47.200 --> 00:04:48.880
+against the declared schema.
+
+85
+00:04:48.880 --> 00:04:51.279
+If the schema says an argument is an integer,
+
+86
+00:04:51.279 --> 00:04:52.959
+reject anything that isn't.
+
+87
+00:04:52.959 --> 00:04:56.079
+The next step is sanitizing or escaping characters
+
+88
+00:04:56.079 --> 00:04:59.200
+that have special meaning in the downstream system.
+
+89
+00:04:59.200 --> 00:05:03.760
+SQL wildcards, shell metacharacters, path traversal sequences.
+
+90
+00:05:04.320 --> 00:05:06.000
+Length limits matter too.
+
+91
+00:05:06.000 --> 00:05:09.760
+An unbounded string argument can cause resource exhaustion,
+
+92
+00:05:09.920 --> 00:05:13.440
+or expose buffer overflow risks in downstream code.
+
+93
+00:05:14.000 --> 00:05:16.640
+Server-side sanitization is the last defense
+
+94
+00:05:16.640 --> 00:05:19.359
+before your tool handler reaches production systems.
+
+95
+00:05:20.559 --> 00:05:22.399
+Designing tools with least privilege
+
+96
+00:05:22.399 --> 00:05:24.160
+means making access decisions
+
+97
+00:05:24.160 --> 00:05:26.559
+before you write a single line of handler code.
+
+98
+00:05:27.200 --> 00:05:30.079
+Define one tool per logical operation,
+
+99
+00:05:30.079 --> 00:05:31.679
+not one tool per domain.
+
+100
+00:05:32.239 --> 00:05:34.399
+Use enum constraints wherever possible
+
+101
+00:05:34.399 --> 00:05:36.239
+so the model can only select
+
+102
+00:05:36.239 --> 00:05:38.880
+from a valid pre-approved set of values.
+
+103
+00:05:40.079 --> 00:05:42.559
+Filter the results your tool returns
+
+104
+00:05:42.559 --> 00:05:46.079
+to include only what the caller is actually authorized to see.
+
+105
+00:05:46.720 --> 00:05:48.720
+Don't return raw database rows
+
+106
+00:05:48.720 --> 00:05:50.799
+and hope the host application filters them.
+
+107
+00:05:51.359 --> 00:05:54.160
+Tools designed this way are narrow,
+
+108
+00:05:54.160 --> 00:05:55.920
+auditable, and safe by default.
+
+109
+00:05:56.480 --> 00:05:58.799
+Tools designed without this discipline
+
+110
+00:05:58.799 --> 00:06:01.119
+may work correctly in normal use,
+
+111
+00:06:01.119 --> 00:06:03.760
+but they're brittle under adversarial conditions
+
+112
+00:06:03.760 --> 00:06:05.920
+and hard to secure after the fact.
+
+113
+00:06:06.880 --> 00:06:09.119
+A few scoping mistakes come up repeatedly
+
+114
+00:06:09.119 --> 00:06:11.040
+in MCP server designs.
+
+115
+00:06:11.040 --> 00:06:13.679
+The first is overly permissive schemas.
+
+116
+00:06:13.679 --> 00:06:15.920
+Using free-form string arguments
+
+117
+00:06:15.920 --> 00:06:17.519
+where an enum would work
+
+118
+00:06:17.519 --> 00:06:21.119
+allows the model to craft arbitrary downstream queries.
+
+119
+00:06:21.119 --> 00:06:23.200
+The second is shared credentials.
+
+120
+00:06:23.200 --> 00:06:24.640
+When all tools on a server
+
+121
+00:06:24.640 --> 00:06:26.959
+share one set of backend credentials,
+
+122
+00:06:26.959 --> 00:06:30.559
+any tool's compromise exposes every system
+
+123
+00:06:30.559 --> 00:06:32.239
+those credentials can reach.
+
+124
+00:06:32.959 --> 00:06:35.200
+The third is missing output filtering.
+
+125
+00:06:35.279 --> 00:06:38.559
+Returning raw query results without filtering
+
+126
+00:06:38.559 --> 00:06:42.079
+can expose records the calling user has no right to see.
+
+127
+00:06:42.079 --> 00:06:44.239
+Each of these is a design decision
+
+128
+00:06:44.239 --> 00:06:46.959
+that feels harmless in a development environment,
+
+129
+00:06:46.959 --> 00:06:49.920
+but creates significant exposure in production.
+
+130
+00:06:50.640 --> 00:06:53.279
+Fixing them early during tool design
+
+131
+00:06:53.279 --> 00:06:56.239
+is much cheaper than auditing and remediating them later.
+
+132
+00:06:57.760 --> 00:07:00.000
+When a tool's scope is too wide,
+
+133
+00:07:00.000 --> 00:07:01.519
+you don't see it fail.
+
+134
+00:07:01.519 --> 00:07:02.880
+You see it work.
+
+135
+00:07:02.959 --> 00:07:05.200
+On data, it was never meant to reach.
+
+136
+00:07:05.760 --> 00:07:07.440
+That's the uncomfortable part.
+
+137
+00:07:07.440 --> 00:07:10.160
+A tool definition is a grant of permission,
+
+138
+00:07:10.160 --> 00:07:12.640
+and the model will use every bit of reach
+
+139
+00:07:12.640 --> 00:07:13.600
+that you give to it.
+
+140
+00:07:14.320 --> 00:07:15.600
+Narrow the grant,
+
+141
+00:07:15.600 --> 00:07:19.279
+and one compromised tool stays one compromised tool
+
+142
+00:07:19.279 --> 00:07:21.279
+instead of compromising the entire system.
+
+143
+00:07:22.079 --> 00:07:23.760
+That closes out this lesson.
+
+144
+00:07:23.760 --> 00:07:24.959
+I'll see you in the next one.
+

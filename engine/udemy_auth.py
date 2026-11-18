@@ -3,8 +3,23 @@ import time
 from pathlib import Path
 
 from engine.config import save_token
+from engine.udemy_client import AuthError, UdemyClient
 
 LOGIN_TIMEOUT_SECONDS = 600
+
+
+def token_rejected(base_url: str, token: str) -> bool:
+    """True when Udemy refuses the token, e.g. an expired cookie left in the saved browser profile.
+
+    Any other failure (network, Cloudflare) proves nothing about the token, so it is not a rejection.
+    """
+    try:
+        UdemyClient(base_url, token).check_token()
+    except AuthError:
+        return True
+    except Exception:
+        return False
+    return False
 
 
 def login(base_url: str, profile_dir: Path, root: Path) -> Path:
@@ -30,7 +45,7 @@ def login(base_url: str, profile_dir: Path, root: Path) -> Path:
         page.goto(f"{base_url}/home/my-courses/learning/")
         print("Hãy đăng nhập Udemy trong cửa sổ trình duyệt vừa mở (tối đa 10 phút)...", flush=True)
 
-        token = None
+        token, rejected = None, set()
         deadline = time.monotonic() + LOGIN_TIMEOUT_SECONDS
         try:
             while token is None and time.monotonic() < deadline:
@@ -38,7 +53,14 @@ def login(base_url: str, profile_dir: Path, root: Path) -> Path:
                     cookies = context.cookies(base_url)
                 except Exception:  # browser window was closed
                     break
-                token = next((c["value"] for c in cookies if c["name"] == "access_token" and c["value"]), None)
+                value = next((c["value"] for c in cookies if c["name"] == "access_token" and c["value"]), None)
+                # The profile keeps the previous session cookie, so only accept a value Udemy accepts.
+                if value and value not in rejected:
+                    if token_rejected(base_url, value):
+                        rejected.add(value)
+                        print("Phiên cũ trong trình duyệt đã hết hạn, hãy đăng nhập lại trong cửa sổ đó...", flush=True)
+                    else:
+                        token = value
                 if token is None:
                     time.sleep(1)
         finally:

@@ -1,0 +1,550 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.000
+Hello.
+
+2
+00:00:01.000 --> 00:00:06.000
+Cloud Code hooks let you run your own commands automatically at specific moments,
+
+3
+00:00:06.000 --> 00:00:08.000
+and there are quite a few of them.
+
+4
+00:00:08.000 --> 00:00:10.000
+The trick is knowing which event fires when,
+
+5
+00:00:10.000 --> 00:00:14.000
+and which one lets you step in versus just watch.
+
+6
+00:00:14.000 --> 00:00:16.000
+This lesson maps the events by cadence
+
+7
+00:00:16.000 --> 00:00:21.000
+and shows you which hooks block and which only observe. Let's jump in.
+
+8
+00:00:21.000 --> 00:00:23.000
+Let's anchor three ideas first.
+
+9
+00:00:23.000 --> 00:00:26.000
+A hook is just a command you register to run automatically
+
+10
+00:00:26.000 --> 00:00:29.000
+when a specific lifecycle event fires.
+
+11
+00:00:29.000 --> 00:00:31.000
+You aren't changing the model.
+
+12
+00:00:31.000 --> 00:00:33.000
+You are attaching your own script to a moment.
+
+13
+00:00:33.000 --> 00:00:36.000
+A lifecycle event is that named moment.
+
+14
+00:00:36.000 --> 00:00:40.000
+It might be a tool call about to happen, a session starting, or a turn ending.
+
+15
+00:00:40.000 --> 00:00:43.000
+Each event gives your hooks a chance to run,
+
+16
+00:00:43.000 --> 00:00:47.000
+and a blocking hook is one that can actually stop the action from going through.
+
+17
+00:00:47.000 --> 00:00:51.000
+The way it signals that is by exiting with code 2.
+
+18
+00:00:51.000 --> 00:00:52.000
+Hold on to those three.
+
+19
+00:00:52.000 --> 00:00:56.000
+Everything in this lesson is just events at different moments,
+
+20
+00:00:56.000 --> 00:00:59.000
+and whether the hook at that moment can block or only observe.
+
+21
+00:00:59.000 --> 00:01:02.000
+That single distinction is the whole game.
+
+22
+00:01:02.000 --> 00:01:05.000
+The cleanest way to hold all these events in your head
+
+23
+00:01:05.000 --> 00:01:08.000
+is to group them by cadence, by how often they fire.
+
+24
+00:01:08.000 --> 00:01:10.000
+There are three buckets.
+
+25
+00:01:10.000 --> 00:01:12.000
+The outermost is once per session.
+
+26
+00:01:12.000 --> 00:01:15.000
+Session start and session end fire one time each,
+
+27
+00:01:15.000 --> 00:01:17.000
+framing the whole session like bookends.
+
+28
+00:01:17.000 --> 00:01:19.000
+The middle bucket is once per turn.
+
+29
+00:01:19.000 --> 00:01:24.000
+Prompt submit and stop fire around each individual thing you ask the agent to do.
+
+30
+00:01:24.000 --> 00:01:27.000
+And the innermost, fastest bucket is every tool call.
+
+31
+00:01:27.000 --> 00:01:33.000
+Pre-tool use and post-tool use wrap each and every tool the agent runs inside its loop,
+
+32
+00:01:33.000 --> 00:01:36.000
+so those can fire many times in a single turn.
+
+33
+00:01:36.000 --> 00:01:38.000
+Session, turn, tool.
+
+34
+00:01:38.000 --> 00:01:40.000
+Outer to inner, slow to fast.
+
+35
+00:01:40.000 --> 00:01:45.000
+If you remember that nesting, the whole event set falls into place.
+
+36
+00:01:45.000 --> 00:01:48.000
+Let's start at the outermost layer, the session events.
+
+37
+00:01:48.000 --> 00:01:52.000
+These fire once as a session opens and once as it closes.
+
+38
+00:01:52.000 --> 00:01:55.000
+Session start runs when a session begins or resumes,
+
+39
+00:01:55.000 --> 00:01:58.000
+so it is your hook for the very beginning.
+
+40
+00:01:58.000 --> 00:02:01.000
+Session end runs when the session terminates right at shutdown.
+
+41
+00:02:01.000 --> 00:02:03.000
+Here is the key property.
+
+42
+00:02:03.000 --> 00:02:05.000
+Both of these are observe only.
+
+43
+00:02:05.000 --> 00:02:09.000
+They can't block anything because there is no single action for them to veto.
+
+44
+00:02:09.000 --> 00:02:13.000
+They simply mark the edges, so what are they good for?
+
+45
+00:02:13.000 --> 00:02:16.000
+Session start is where you set up context as you enter,
+
+46
+00:02:16.000 --> 00:02:19.000
+maybe loading project notes or environment details.
+
+47
+00:02:20.000 --> 00:02:23.000
+Session end is where you clean things up on the way out.
+
+48
+00:02:23.000 --> 00:02:26.000
+Think of them as set up and tear down, not as gates.
+
+49
+00:02:26.000 --> 00:02:28.000
+One layer in, we hit the turn events,
+
+50
+00:02:28.000 --> 00:02:31.000
+and these bracket each turn you take with the agent.
+
+51
+00:02:31.000 --> 00:02:35.000
+User prompts submit fires when you send a prompt before Claude even reads it.
+
+52
+00:02:35.000 --> 00:02:39.000
+Stop fires on the other side when Claude finishes responding.
+
+53
+00:02:39.000 --> 00:02:41.000
+Now here is what makes these interesting.
+
+54
+00:02:41.000 --> 00:02:45.000
+Both of them can block, which turns them into useful gates.
+
+55
+00:02:45.000 --> 00:02:48.000
+Because prompt submit runs before your prompt is processed,
+
+56
+00:02:48.000 --> 00:02:52.000
+a hook there can reject a prompt outright or reshape it first.
+
+57
+00:02:52.000 --> 00:02:55.000
+And because stop runs when Claude tries to finish,
+
+58
+00:02:55.000 --> 00:02:58.000
+a blocking hook there can prevent the agent from stopping
+
+59
+00:02:58.000 --> 00:03:00.000
+and push it to keep working.
+
+60
+00:03:00.000 --> 00:03:03.000
+So the turn layer is where you can inspect what goes in
+
+61
+00:03:03.000 --> 00:03:06.000
+and control when the agent is allowed to be done.
+
+62
+00:03:06.000 --> 00:03:10.000
+Now the innermost pair, and this is the contrast I most want you to remember.
+
+63
+00:03:10.000 --> 00:03:14.000
+Pre-tool use and post-tool use sound like a matched set,
+
+64
+00:03:14.000 --> 00:03:16.000
+but they behave very differently.
+
+65
+00:03:16.000 --> 00:03:20.000
+Post-tool use fires before a tool runs, and it can block the call.
+
+66
+00:03:20.000 --> 00:03:22.000
+That makes it your gate.
+
+67
+00:03:22.000 --> 00:03:26.000
+If you want to guard against a risky command or stop an unwanted tool entirely,
+
+68
+00:03:26.000 --> 00:03:30.000
+this is the hook, and it blocks by exiting with code 2.
+
+69
+00:03:30.000 --> 00:03:34.000
+Post-tool use fires after a tool succeeds, and here is the crucial part.
+
+70
+00:03:34.000 --> 00:03:37.000
+It can't block because the tool has already run.
+
+71
+00:03:37.000 --> 00:03:39.000
+There is nothing left to stop,
+
+72
+00:03:39.000 --> 00:03:42.000
+so you use post-tool use to react to what happened,
+
+73
+00:03:42.000 --> 00:03:46.000
+log the result, check the output, or trigger a follow-up.
+
+74
+00:03:46.000 --> 00:03:51.000
+Pre-tool guards. Post-tool reacts. Don't mix them up.
+
+75
+00:03:51.000 --> 00:03:53.000
+Beyond the regular cadences,
+
+76
+00:03:53.000 --> 00:03:56.000
+a few events fire at their own specific moments,
+
+77
+00:03:56.000 --> 00:03:58.000
+and they are worth knowing.
+
+78
+00:03:58.000 --> 00:04:01.000
+Pre-compact fires just before context compaction,
+
+79
+00:04:01.000 --> 00:04:05.000
+when Claude Code is about to summarize older context to save room.
+
+80
+00:04:05.000 --> 00:04:09.000
+It can block, so you can protect something from being summarized away.
+
+81
+00:04:09.000 --> 00:04:12.000
+Notification fires when Claude Code sends a notification,
+
+82
+00:04:12.000 --> 00:04:16.000
+and it only observes, so it is purely for alerting you,
+
+83
+00:04:16.000 --> 00:04:18.000
+maybe pinging your phone or terminal.
+
+84
+00:04:18.000 --> 00:04:22.000
+And there are permission events that fire around permission prompts.
+
+85
+00:04:22.000 --> 00:04:25.000
+A permission request hook can deny that permission,
+
+86
+00:04:25.000 --> 00:04:27.000
+acting as a blocking gate.
+
+87
+00:04:27.000 --> 00:04:31.000
+So even outside the tidy session, turn, and tool buckets,
+
+88
+00:04:31.000 --> 00:04:33.000
+the same question always applies.
+
+89
+00:04:33.000 --> 00:04:37.000
+Does this moment let me block, or only watch?
+
+90
+00:04:37.000 --> 00:04:39.000
+Let's make the blocking mechanism concrete,
+
+91
+00:04:39.000 --> 00:04:43.000
+because it comes down to the exit code your hook returns.
+
+92
+00:04:43.000 --> 00:04:45.000
+Exit 0 means success.
+
+93
+00:04:45.000 --> 00:04:48.000
+Claude Code reads any structured output your hook printed
+
+94
+00:04:48.000 --> 00:04:50.000
+and just continues normally.
+
+95
+00:04:50.000 --> 00:04:53.000
+Exit 2 is the special one. It is the blocking signal.
+
+96
+00:04:53.000 --> 00:04:55.000
+For any hook that is allowed to block,
+
+97
+00:04:55.000 --> 00:05:00.000
+exiting 2 stops the action and feeds your message back to Claude as the reason.
+
+98
+00:05:00.000 --> 00:05:04.000
+And any other exit code is treated as a non-blocking error for most events,
+
+99
+00:05:04.000 --> 00:05:07.000
+meaning the action still goes ahead anyway.
+
+100
+00:05:07.000 --> 00:05:09.000
+That last point trips people up.
+
+101
+00:05:09.000 --> 00:05:12.000
+A plain failure code of 1 doesn't block.
+
+102
+00:05:12.000 --> 00:05:16.000
+If you want to enforce a rule, you have to exit 2, specifically.
+
+103
+00:05:16.000 --> 00:05:21.000
+0 to allow, 2 to block, everything else just warns.
+
+104
+00:05:21.000 --> 00:05:24.000
+Let's pull the single most useful distinction to the front.
+
+105
+00:05:24.000 --> 00:05:28.000
+For any event, the real question is whether the hook can stop an action
+
+106
+00:05:28.000 --> 00:05:30.000
+or can only watch it.
+
+107
+00:05:30.000 --> 00:05:33.000
+On the blocking side, pre-tool use stops a tool before it runs,
+
+108
+00:05:33.000 --> 00:05:36.000
+stop keeps the agent working instead of finishing,
+
+109
+00:05:36.000 --> 00:05:40.000
+and pre-compact can halt compaction before context gets trimmed.
+
+110
+00:05:40.000 --> 00:05:44.000
+On the observe-only side, post-tool use can react but can't undo
+
+111
+00:05:44.000 --> 00:05:47.000
+because the tool already finished,
+
+112
+00:05:47.000 --> 00:05:51.000
+and session start and notification simply watch and report.
+
+113
+00:05:51.000 --> 00:05:53.000
+So the practical rule is short.
+
+114
+00:05:53.000 --> 00:05:57.000
+When you need a gate, something that can say no, pick a blocking event.
+
+115
+00:05:57.000 --> 00:05:59.000
+When you just need a record or an alert,
+
+116
+00:05:59.000 --> 00:06:02.000
+an observe-only event is exactly right,
+
+117
+00:06:02.000 --> 00:06:05.000
+and it keeps your hook out of the critical path.
+
+118
+00:06:05.000 --> 00:06:08.000
+Let's put it all together as a decision.
+
+119
+00:06:08.000 --> 00:06:12.000
+To choose the right hook, think about what you want to happen and when.
+
+120
+00:06:12.000 --> 00:06:15.000
+Do you need to guard a dangerous command before it runs?
+
+121
+00:06:15.000 --> 00:06:18.000
+Reach for pre-tool use, since it can block.
+
+122
+00:06:18.000 --> 00:06:21.000
+Want to auto-format or lint right after an edit?
+
+123
+00:06:21.000 --> 00:06:25.000
+Use post-tool use, which reacts after the fact.
+
+124
+00:06:25.000 --> 00:06:29.000
+Need to load project context the moment a session opens?
+
+125
+00:06:29.000 --> 00:06:32.000
+Session start is your hook. The pattern is always the same.
+
+126
+00:06:32.000 --> 00:06:35.000
+The cadence, session versus turn versus tool,
+
+127
+00:06:35.000 --> 00:06:37.000
+tells you when the hook fires,
+
+128
+00:06:37.000 --> 00:06:42.000
+and the blocking column tells you whether you can actually intervene or only observe.
+
+129
+00:06:42.000 --> 00:06:46.000
+Answer both of those, and the right hook picks itself.
+
+130
+00:06:46.000 --> 00:06:48.000
+Here's a quick summary.
+
+131
+00:06:48.000 --> 00:06:51.000
+Hooks fire at named moments across three cadences.
+
+132
+00:06:51.000 --> 00:06:55.000
+Session start and end bracket the session and only observe.
+
+133
+00:06:55.000 --> 00:07:00.000
+Prompt submit and stop bracket each turn and can block.
+
+134
+00:07:00.000 --> 00:07:05.000
+Pre-tool use blocks a tool, while post-tool use only reacts to what happened.
+
+135
+00:07:05.000 --> 00:07:09.000
+Exit code 2 lets a blocking hook stop an action.
+
+136
+00:07:09.000 --> 00:07:13.000
+Just remember to pick based on what you're looking to achieve.
+
+137
+00:07:13.000 --> 00:07:16.000
+And that wraps up this lesson. I'll see you in the next one.
+

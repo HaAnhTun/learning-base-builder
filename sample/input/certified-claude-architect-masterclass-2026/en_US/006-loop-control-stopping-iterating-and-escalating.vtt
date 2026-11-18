@@ -1,0 +1,318 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.181
+In this video, we'll work through loop control, how you tell an agent when to stop, when to try
+
+2
+00:00:06.181 --> 00:00:09.694
+again, and when to hand the problem to something else.
+
+3
+00:00:09.760 --> 00:00:16.699
+We'll cover termination conditions, turn budgets, infinite loop risk, and the distinction between
+
+4
+00:00:16.699 --> 00:00:18.488
+iteration and escalation.
+
+5
+00:00:18.559 --> 00:00:26.159
+These are reliability concerns, just as much as performance concerns, and every production agent needs them.
+
+6
+00:00:26.559 --> 00:00:32.639
+An agent that never stops isn't autonomous, it's just expensive. So let's name the loop we're
+
+7
+00:00:32.639 --> 00:00:38.479
+trying to control. You've already walked through perception, reasoning, action, and observation.
+
+8
+00:00:39.040 --> 00:00:45.279
+Anthropic's own framing compresses that same cycle into three blended phases. Gathering
+
+9
+00:00:45.279 --> 00:00:51.439
+context covers perception and reasoning together, reading files, searching, or reviewing prior
+
+10
+00:00:51.439 --> 00:00:58.400
+results before deciding the next move. Taking action is the tool call itself, querying a system
+
+11
+00:00:58.400 --> 00:01:04.319
+or changing state. Verifying work is the observation step, checking the result against the goal.
+
+12
+00:01:04.879 --> 00:01:11.760
+Same loop, described at a coarser grain, so treat them as one cycle rather than rival answers.
+
+13
+00:01:11.760 --> 00:01:17.760
+It repeats until the job is done, and loop control is the discipline of deciding when it should stop.
+
+14
+00:01:18.720 --> 00:01:25.040
+Loop control has its own vocabulary, and precision here matters. A termination condition is the
+
+15
+00:01:25.040 --> 00:01:31.760
+explicit criterion that causes the loop to stop. Without one, the loop has no reason to end.
+
+16
+00:01:31.760 --> 00:01:37.040
+A turn budget is a hard limit, set in the orchestration layer on how many iterations the
+
+17
+00:01:37.040 --> 00:01:43.760
+agent is allowed to run. It's a programmatic guard, not a hint. An escalation is the controlled handoff
+
+18
+00:01:44.000 --> 00:01:49.519
+from the agent to a human operator or fallback system when the agent can't make further progress
+
+19
+00:01:49.519 --> 00:01:55.120
+on its own. These three concepts work together. The termination condition tells the agent when
+
+20
+00:01:55.120 --> 00:02:01.040
+it's done. The turn budget tells the runtime when to force a stop, and escalation is what
+
+21
+00:02:01.040 --> 00:02:07.519
+happens when neither of those is enough to resolve the situation cleanly. There are four main reasons
+
+22
+00:02:07.519 --> 00:02:14.160
+an agentic loop should stop. First, task complete. The agent has produced a final output, and there's
+
+23
+00:02:14.160 --> 00:02:20.880
+nothing left to do. This is the happy path. Second, error threshold reached. If the agent has hit too
+
+24
+00:02:20.880 --> 00:02:26.960
+many consecutive failures, continuing rarely helps and usually makes things worse. Third, budget
+
+25
+00:02:26.960 --> 00:02:32.800
+exhausted. The turn limit or token budget set by the orchestrator has been reached. The loop halts
+
+26
+00:02:32.800 --> 00:02:39.520
+programmatically regardless of task state. Fourth, stop signal. The orchestrator or user explicitly
+
+27
+00:02:39.520 --> 00:02:45.199
+tells the agent to stop. All four of these have to be handled. An agent that only checks for task
+
+28
+00:02:45.199 --> 00:02:51.360
+completion will keep running through the other three without ever stopping. Infinite loops are
+
+29
+00:02:51.360 --> 00:02:57.039
+one of the most common failure modes in agentic systems. They happen in a few ways. The simplest
+
+30
+00:02:57.119 --> 00:03:03.119
+is a missing stop condition. The agent never decides the task is complete, so it keeps going.
+
+31
+00:03:03.119 --> 00:03:09.919
+Another is always failing tools. A broken API call that returns an error every time, retried without
+
+32
+00:03:09.919 --> 00:03:15.520
+limit. The most subtle is circular reasoning, where the model revisits the same decision point
+
+33
+00:03:15.520 --> 00:03:21.839
+iteration after iteration without new information to break the cycle. None of these are exotic edge
+
+34
+00:03:21.839 --> 00:03:27.600
+cases. They're predictable failure modes that show up during normal development. The fix in every
+
+35
+00:03:27.600 --> 00:03:34.639
+case is the same. Explicit termination conditions and hard caps on iterations, baked in before the
+
+36
+00:03:34.639 --> 00:03:41.119
+agent runs, not added after something goes wrong. Turn budgets are the primary programmatic defense
+
+37
+00:03:41.119 --> 00:03:46.559
+against runaway loops, and there's a key design point here. They belong in the runtime layer,
+
+38
+00:03:46.559 --> 00:03:52.240
+not in the model. You shouldn't rely on the model to count its own iterations and decide to stop.
+
+39
+00:03:52.240 --> 00:03:58.160
+The orchestrator tracks iteration count. It enforces the limit. When the budget is exhausted,
+
+40
+00:03:58.160 --> 00:04:03.440
+the runtime halts execution and surfaces whatever progress was made up to that point.
+
+41
+00:04:04.080 --> 00:04:09.759
+Setting a reasonable max iterations limit before the agent starts is standard practice. What's
+
+42
+00:04:09.759 --> 00:04:15.199
+reasonable depends on the task. A simple lookup might need three to five iterations. A research
+
+43
+00:04:15.199 --> 00:04:21.519
+task might need 20. The point is that the number is chosen deliberately, not left open-ended. Bounded
+
+44
+00:04:21.519 --> 00:04:28.320
+loops are auditable. Unbounded loops are liabilities. Progress versus spinning is a distinction worth
+
+45
+00:04:28.320 --> 00:04:34.559
+spending time on, because spinning looks like activity without actually being it. An agent
+
+46
+00:04:34.559 --> 00:04:40.000
+making progress produces a new observation each iteration that advances toward the goal.
+
+47
+00:04:40.000 --> 00:04:46.000
+Each tool call returns different data. The scope of the problem narrows. Something gets done. A
+
+48
+00:04:46.000 --> 00:04:52.000
+spinning agent, on the other hand, repeats similar actions without new results. Tool calls come back
+
+49
+00:04:52.000 --> 00:04:57.760
+with the same errors. The plan doesn't change. The context window grows, but the gap between the
+
+50
+00:04:57.760 --> 00:05:04.160
+current state and the goal state doesn't shrink. The agent is generating tokens and consuming API
+
+51
+00:05:04.160 --> 00:05:10.079
+calls without actually moving forward. Recognizing this pattern is the first step to stopping it.
+
+52
+00:05:11.279 --> 00:05:15.279
+Detecting spinning in practice requires deliberate instrumentation.
+
+53
+00:05:15.279 --> 00:05:20.720
+The simplest check is to compare successive observations. If two consecutive tool calls
+
+54
+00:05:20.720 --> 00:05:26.959
+return nearly identical results, that's a signal. Tracking repeated tool calls with identical
+
+55
+00:05:26.959 --> 00:05:32.239
+parameters is another approach. If the agent is calling the same search query three times in a
+
+56
+00:05:32.239 --> 00:05:38.399
+row, something is wrong. You can also monitor the gap between goal state and current state across
+
+57
+00:05:38.399 --> 00:05:45.359
+turns. If that gap isn't closing after several iterations, the agent is likely stuck. None of
+
+58
+00:05:45.359 --> 00:05:51.920
+this detection has to be complex. Even a simple counter that flags when the last n observations
+
+59
+00:05:51.920 --> 00:05:57.679
+were identical is enough to catch most spinning cases before they run up your API bill.
+
+60
+00:05:58.640 --> 00:06:04.720
+When the agent hits a problem, it can iterate with new information, or it can escalate to a human or
+
+61
+00:06:04.720 --> 00:06:11.119
+fallback system. Iteration makes sense when there's new data to work with, a different approach to try,
+
+62
+00:06:11.119 --> 00:06:17.519
+or when the error is recoverable. Maybe the first search query was too broad. A more targeted query
+
+63
+00:06:17.519 --> 00:06:22.720
+might get better results. Escalation makes sense when the agent has reached its authorization
+
+64
+00:06:22.880 --> 00:06:28.320
+boundary, when it lacks the information it needs to proceed, or when a human judgment call is
+
+65
+00:06:28.320 --> 00:06:34.239
+required. The important thing is that the boundary between iterate and escalate is explicit in the
+
+66
+00:06:34.239 --> 00:06:41.359
+agent's design. Escalation isn't failure. It's a designed safety valve. An agent that escalates
+
+67
+00:06:41.359 --> 00:06:46.480
+gracefully is more trustworthy than one that keeps cycling and hoping things improve.
+
+68
+00:06:47.440 --> 00:06:53.839
+Loop control is a reliability concern, and it helps to understand exactly why. Runaway agents
+
+69
+00:06:53.839 --> 00:07:00.480
+can exhaust API quotas and generate unexpected costs. Agents that don't escalate when they should
+
+70
+00:07:00.480 --> 00:07:06.399
+can make unrecoverable decisions, taking actions the user would have stopped if they'd known. And
+
+71
+00:07:06.399 --> 00:07:13.519
+agents without defined exit conditions are hard to reason about, audit, or debug. Proper termination
+
+72
+00:07:13.760 --> 00:07:19.760
+conditions make agent behavior predictable. When something goes wrong, you can look at the logs and
+
+73
+00:07:19.760 --> 00:07:26.160
+understand exactly why the agent stopped, what it was trying to do, and where it got stuck. That
+
+74
+00:07:26.160 --> 00:07:32.079
+auditability is what makes it possible to improve the system over time. Reliability isn't just about
+
+75
+00:07:32.079 --> 00:07:38.079
+what happens when things go right. Loop control is how you decide when an agent stops trying.
+
+76
+00:07:38.640 --> 00:07:43.839
+It matters because a model with no exit condition will happily burn your entire budget,
+
+77
+00:07:43.839 --> 00:07:50.399
+confirming the same failure over and over again. One thing to watch is the gap between an agent
+
+78
+00:07:50.399 --> 00:07:56.160
+that's iterating and an agent that's just spinning. From the outside, those can look identical,
+
+79
+00:07:56.160 --> 00:08:01.920
+and only the runtime can tell them apart. That's it for this lesson. I'll see you in the next one.
+

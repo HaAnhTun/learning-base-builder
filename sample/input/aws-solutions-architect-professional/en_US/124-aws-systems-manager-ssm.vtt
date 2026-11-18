@@ -1,0 +1,834 @@
+WEBVTT
+
+1
+00:00:00.180 --> 00:00:01.050
+<v Instructor>So now let's talk about</v>
+
+2
+00:00:01.050 --> 00:00:02.627
+the AWS Systems manager.
+
+3
+00:00:02.627 --> 00:00:05.700
+I need you to know a few things going into the exam.
+
+4
+00:00:05.700 --> 00:00:08.190
+First of all, this helps you manage your EC2 instances
+
+5
+00:00:08.190 --> 00:00:10.500
+and on-premises servers at scale
+
+6
+00:00:10.500 --> 00:00:12.840
+because it gives you operational insights about the state
+
+7
+00:00:12.840 --> 00:00:14.130
+of your infrastructure
+
+8
+00:00:14.130 --> 00:00:15.810
+and you can easily detect programs.
+
+9
+00:00:15.810 --> 00:00:17.340
+You can, for example, patch
+
+10
+00:00:17.340 --> 00:00:20.490
+and do patch automation at scale for enhanced compliance.
+
+11
+00:00:20.490 --> 00:00:22.860
+It works both with Linux and Windows
+
+12
+00:00:22.860 --> 00:00:24.899
+and has fully integrated AWS such as
+
+13
+00:00:24.899 --> 00:00:28.530
+the CloudWatch metrics or the AWS Config service,
+
+14
+00:00:28.530 --> 00:00:30.150
+and it's a free service.
+
+15
+00:00:30.150 --> 00:00:32.880
+So how does systems manager work?
+
+16
+00:00:32.880 --> 00:00:34.470
+Well, we have the service
+
+17
+00:00:34.470 --> 00:00:35.550
+and for the service to work
+
+18
+00:00:35.550 --> 00:00:37.620
+we need to install the SSM agent
+
+19
+00:00:37.620 --> 00:00:39.900
+onto the systems that we control.
+
+20
+00:00:39.900 --> 00:00:42.840
+So by default it's installed on Amazon Linux AMI
+
+21
+00:00:42.840 --> 00:00:44.400
+and some Ubuntu AMI.
+
+22
+00:00:44.400 --> 00:00:46.680
+Otherwise, you have to run some installation steps
+
+23
+00:00:46.680 --> 00:00:49.110
+to run the SSM agents.
+
+24
+00:00:49.110 --> 00:00:51.930
+So once it's running on your EC2 instances
+
+25
+00:00:51.930 --> 00:00:54.600
+or your on premises virtual machines or servers
+
+26
+00:00:54.600 --> 00:00:58.680
+then automatically they're going to talk to the SSM service.
+
+27
+00:00:58.680 --> 00:01:02.010
+And if you don't see the instance
+
+28
+00:01:02.010 --> 00:01:03.150
+in the system manager service,
+
+29
+00:01:03.150 --> 00:01:04.140
+you have two problems.
+
+30
+00:01:04.140 --> 00:01:04.973
+Maybe it's one,
+
+31
+00:01:04.973 --> 00:01:06.690
+the agent is misconfigured
+
+32
+00:01:06.690 --> 00:01:07.523
+or two
+
+33
+00:01:07.523 --> 00:01:08.356
+you need to make sure
+
+34
+00:01:08.356 --> 00:01:11.730
+that the agent has the proper permissions to register itself
+
+35
+00:01:11.730 --> 00:01:13.770
+with a systems manager service.
+
+36
+00:01:13.770 --> 00:01:15.780
+So in case of an EC2 instance
+
+37
+00:01:15.780 --> 00:01:17.760
+you need to make sure you have the proper IAM role
+
+38
+00:01:17.760 --> 00:01:19.230
+attached to your instance so
+
+39
+00:01:19.230 --> 00:01:21.780
+that the SSM agent can have full permissions on SS
+
+40
+00:01:21.780 --> 00:01:25.920
+on the systems manager service to get registered to it.
+
+41
+00:01:25.920 --> 00:01:28.860
+And if we are looking at on-premises virtual machines
+
+42
+00:01:28.860 --> 00:01:30.720
+make sure the access keys are correct again
+
+43
+00:01:30.720 --> 00:01:33.873
+for the SSM agent to connect to systems manager.
+
+44
+00:01:34.800 --> 00:01:36.930
+So then once systems manager is set up,
+
+45
+00:01:36.930 --> 00:01:38.130
+what can we do?
+
+46
+00:01:38.130 --> 00:01:39.240
+We can run command,
+
+47
+00:01:39.240 --> 00:01:41.670
+and run command is the ability to run a script
+
+48
+00:01:41.670 --> 00:01:46.080
+or document or just run a command across multiple instances.
+
+49
+00:01:46.080 --> 00:01:49.080
+And you can define these resource groups
+
+50
+00:01:49.080 --> 00:01:52.230
+to define how to group your instances.
+
+51
+00:01:52.230 --> 00:01:53.730
+Then you have rate control to define
+
+52
+00:01:53.730 --> 00:01:55.710
+how fast you wanna run this command
+
+53
+00:01:55.710 --> 00:01:57.630
+across all your instances
+
+54
+00:01:57.630 --> 00:02:00.420
+as well as error control in case of what happens
+
+55
+00:02:00.420 --> 00:02:02.100
+if a few instances fail.
+
+56
+00:02:02.100 --> 00:02:03.270
+Do you want to fail everything
+
+57
+00:02:03.270 --> 00:02:04.980
+or do you wanna keep on going?
+
+58
+00:02:04.980 --> 00:02:06.840
+It's fully integrated with IAM and CloudTrail
+
+59
+00:02:06.840 --> 00:02:08.100
+so no one can run commands
+
+60
+00:02:08.100 --> 00:02:09.720
+unless they have access to it.
+
+61
+00:02:09.720 --> 00:02:10.953
+And in case they run the command
+
+62
+00:02:10.953 --> 00:02:13.440
+then CloudTrail will know about it right away.
+
+63
+00:02:13.440 --> 00:02:15.180
+So to run the command the beautiful thing is that
+
+64
+00:02:15.180 --> 00:02:16.950
+there is no need for SSH
+
+65
+00:02:16.950 --> 00:02:18.900
+Only the agent will do an API call to a
+
+66
+00:02:18.900 --> 00:02:22.500
+systems manager and then will run the command for you.
+
+67
+00:02:22.500 --> 00:02:23.670
+The results are in the console.
+
+68
+00:02:23.670 --> 00:02:24.750
+So how does that work?
+
+69
+00:02:24.750 --> 00:02:27.510
+Well with an EC2 instance with the SSM agent,
+
+70
+00:02:27.510 --> 00:02:28.530
+and as you can see,
+
+71
+00:02:28.530 --> 00:02:29.910
+the SSM agent is going to talk
+
+72
+00:02:29.910 --> 00:02:31.290
+with a systems manager service
+
+73
+00:02:31.290 --> 00:02:34.350
+to know whether or not a run command should be issued
+
+74
+00:02:34.350 --> 00:02:36.930
+and if so while the command is run from within
+
+75
+00:02:36.930 --> 00:02:38.643
+by the SSM agents.
+
+76
+00:02:40.140 --> 00:02:42.480
+Now a architecture that looks pretty similar
+
+77
+00:02:42.480 --> 00:02:45.600
+is to use the send command API before
+
+78
+00:02:45.600 --> 00:02:48.300
+an auto scan group instance is terminated.
+
+79
+00:02:48.300 --> 00:02:50.177
+So the idea is that you have an ASG
+
+80
+00:02:50.177 --> 00:02:51.960
+and it will terminate some instances,
+
+81
+00:02:51.960 --> 00:02:54.930
+but then you can create a lifecycle hook
+
+82
+00:02:54.930 --> 00:02:56.370
+to block an instance
+
+83
+00:02:56.370 --> 00:02:58.350
+into determining wait states
+
+84
+00:02:58.350 --> 00:03:01.560
+to perform some last commands.
+
+85
+00:03:01.560 --> 00:03:02.550
+So here's an ASG
+
+86
+00:03:02.550 --> 00:03:05.670
+and it terminates one of the EC2 instances
+
+87
+00:03:05.670 --> 00:03:06.870
+and then what's going to happen is
+
+88
+00:03:06.870 --> 00:03:08.670
+that it's going to send an event
+
+89
+00:03:08.670 --> 00:03:11.490
+to EventBridge called terminating wait
+
+90
+00:03:11.490 --> 00:03:13.350
+and the instance is going to be stuck
+
+91
+00:03:13.350 --> 00:03:15.150
+in that state for a while.
+
+92
+00:03:15.150 --> 00:03:16.560
+So once this is happening
+
+93
+00:03:16.560 --> 00:03:20.280
+then this event from EventBridge needs to be intercepted.
+
+94
+00:03:20.280 --> 00:03:22.380
+So for this we can create a rule
+
+95
+00:03:22.380 --> 00:03:25.140
+so that whenever we see the terminating weight type
+
+96
+00:03:25.140 --> 00:03:27.840
+of event for that specific auto scaling group
+
+97
+00:03:27.840 --> 00:03:30.780
+then we run an SSM automation document.
+
+98
+00:03:30.780 --> 00:03:32.550
+And that automation document is going to
+
+99
+00:03:32.550 --> 00:03:35.460
+perform some actions on our EC2 instance.
+
+100
+00:03:35.460 --> 00:03:37.290
+One of them could be send command
+
+101
+00:03:37.290 --> 00:03:39.510
+and send command would be to run the command
+
+102
+00:03:39.510 --> 00:03:42.450
+within that terminating EC2 instance.
+
+103
+00:03:42.450 --> 00:03:43.680
+Now once the command is done,
+
+104
+00:03:43.680 --> 00:03:44.513
+for example,
+
+105
+00:03:44.513 --> 00:03:46.320
+to extract logs or do other things
+
+106
+00:03:46.320 --> 00:03:49.950
+then you can finally allow the auto scanning group
+
+107
+00:03:49.950 --> 00:03:51.510
+to terminate your instance
+
+108
+00:03:51.510 --> 00:03:53.700
+by moving onto the next state
+
+109
+00:03:53.700 --> 00:03:55.233
+with the lifecycle hooks.
+
+110
+00:03:56.820 --> 00:03:58.440
+We can also patch our instances
+
+111
+00:03:58.440 --> 00:04:00.030
+at scale with systems manager.
+
+112
+00:04:00.030 --> 00:04:01.830
+For this we define a patch baseline.
+
+113
+00:04:01.830 --> 00:04:04.290
+And a patch baseline is instructions
+
+114
+00:04:04.290 --> 00:04:07.230
+on what to patch and what patches to apply.
+
+115
+00:04:07.230 --> 00:04:08.280
+So then we have patch groups,
+
+116
+00:04:08.280 --> 00:04:09.113
+which is for example,
+
+117
+00:04:09.113 --> 00:04:10.830
+we can define multiple environments.
+
+118
+00:04:10.830 --> 00:04:12.210
+Dev, Test, Prod.
+
+119
+00:04:12.210 --> 00:04:13.200
+Then maintenance windows
+
+120
+00:04:13.200 --> 00:04:15.630
+like when do we want these patches to be applied?
+
+121
+00:04:15.630 --> 00:04:19.230
+When is it okay to maybe slow down our instances?
+
+122
+00:04:19.230 --> 00:04:23.370
+And then we run the AWS RunPatchBaseline command
+
+123
+00:04:23.370 --> 00:04:25.200
+during our maintenance window.
+
+124
+00:04:25.200 --> 00:04:27.240
+And then it is going to work cross platform
+
+125
+00:04:27.240 --> 00:04:28.410
+on Window and Linux
+
+126
+00:04:28.410 --> 00:04:30.900
+and apply the patch to all your instances.
+
+127
+00:04:30.900 --> 00:04:32.460
+You can define rate control
+
+128
+00:04:32.460 --> 00:04:35.700
+just like the run command feature.
+
+129
+00:04:35.700 --> 00:04:37.410
+So as you can control how many instances
+
+130
+00:04:37.410 --> 00:04:38.640
+at a time getting patched
+
+131
+00:04:38.640 --> 00:04:39.570
+and if there
+
+132
+00:04:39.570 --> 00:04:42.510
+if there is an error threshold for the task.
+
+133
+00:04:42.510 --> 00:04:44.640
+You can monitor the patch compliance using the
+
+134
+00:04:44.640 --> 00:04:45.690
+SSM inventory to make sure
+
+135
+00:04:45.690 --> 00:04:49.590
+that all your instances are patched and up to date.
+
+136
+00:04:49.590 --> 00:04:50.520
+So here's an example.
+
+137
+00:04:50.520 --> 00:04:54.060
+So again, we run the patch baseline task on our targets
+
+138
+00:04:54.060 --> 00:04:55.020
+our patch groups,
+
+139
+00:04:55.020 --> 00:04:57.963
+and this gets applied during our maintenance window.
+
+140
+00:04:59.400 --> 00:05:02.490
+Another feature is systems manager session manager.
+
+141
+00:05:02.490 --> 00:05:04.470
+So this allows you to start a secure shell
+
+142
+00:05:04.470 --> 00:05:07.170
+on your EC2 instances or on premises servers
+
+143
+00:05:07.170 --> 00:05:10.440
+through the console or the CLI or the SDK.
+
+144
+00:05:10.440 --> 00:05:13.890
+But this does not need for you to set up SSH access
+
+145
+00:05:13.890 --> 00:05:18.300
+to open Port 22 or to use Bastion Host or to use SSH keys.
+
+146
+00:05:18.300 --> 00:05:19.290
+How does it work?
+
+147
+00:05:19.290 --> 00:05:22.170
+Well, we have an EC2 instance with the SSM agent
+
+148
+00:05:22.170 --> 00:05:24.840
+and the proper IAM instance profile to be registered
+
+149
+00:05:24.840 --> 00:05:26.640
+to the session manager service.
+
+150
+00:05:26.640 --> 00:05:29.940
+And therefore we can just use the console to connect
+
+151
+00:05:29.940 --> 00:05:32.400
+to session manager and session manager will establish
+
+152
+00:05:32.400 --> 00:05:35.160
+a connection with the SSM agents
+
+153
+00:05:35.160 --> 00:05:37.050
+so that you can run your commands directly
+
+154
+00:05:37.050 --> 00:05:38.910
+as if you were doing SSH
+
+155
+00:05:38.910 --> 00:05:41.040
+but you're actually not doing SSH.
+
+156
+00:05:41.040 --> 00:05:44.250
+So this supports Linux, MacOS, and Windows.
+
+157
+00:05:44.250 --> 00:05:48.120
+And the idea is that the benefits of using Session Manager
+
+158
+00:05:48.120 --> 00:05:51.270
+over SSH is that all the commands run through
+
+159
+00:05:51.270 --> 00:05:53.730
+Session Manager are going to be logged.
+
+160
+00:05:53.730 --> 00:05:55.590
+And that means that all that logged data
+
+161
+00:05:55.590 --> 00:05:58.950
+can be sent to CloudWatch logs or to Amazon S3.
+
+162
+00:05:58.950 --> 00:06:01.410
+So we have full traceability
+
+163
+00:06:01.410 --> 00:06:04.710
+of every session made onto your EC2 instances
+
+164
+00:06:04.710 --> 00:06:06.990
+something that SSH does not give you.
+
+165
+00:06:06.990 --> 00:06:09.630
+So then if someone runs some malicious commands
+
+166
+00:06:09.630 --> 00:06:11.700
+you can note what they run and how they run it.
+
+167
+00:06:11.700 --> 00:06:12.600
+On top of it,
+
+168
+00:06:12.600 --> 00:06:14.820
+You can use CloudTrail to intercept
+
+169
+00:06:14.820 --> 00:06:18.690
+any start session events happening within Session Manager.
+
+170
+00:06:18.690 --> 00:06:21.240
+Therefore you can run some kind of automation
+
+171
+00:06:21.240 --> 00:06:23.010
+and you can know whenever someone
+
+172
+00:06:23.010 --> 00:06:26.520
+is starting to open a session onto your EC2 instances
+
+173
+00:06:26.520 --> 00:06:29.463
+which is great for auditability and security.
+
+174
+00:06:30.750 --> 00:06:33.240
+Next, we have Systems Manager OpsCenter,
+
+175
+00:06:33.240 --> 00:06:35.070
+which is a service to help you resolve
+
+176
+00:06:35.070 --> 00:06:37.800
+any operational issues that are called OpsItems
+
+177
+00:06:37.800 --> 00:06:40.410
+related to your AWS resources.
+
+178
+00:06:40.410 --> 00:06:43.230
+So OpsItems can be issues, events, and alerts.
+
+179
+00:06:43.230 --> 00:06:45.180
+And the idea is that whenever an OpsItem
+
+180
+00:06:45.180 --> 00:06:47.340
+is created within Systems Manager,
+
+181
+00:06:47.340 --> 00:06:49.950
+you're going to have within only one console
+
+182
+00:06:49.950 --> 00:06:52.860
+aggregation of information from many other services,
+
+183
+00:06:52.860 --> 00:06:55.560
+such as any conflict changes in relationship
+
+184
+00:06:55.560 --> 00:06:57.990
+such as CloudTrail logs, CloudWatch alarms,
+
+185
+00:06:57.990 --> 00:07:00.330
+confirmation stack information and more,
+
+186
+00:07:00.330 --> 00:07:02.010
+such as metrics and so on.
+
+187
+00:07:02.010 --> 00:07:04.440
+So once you have an OpsItem with an OpsCenter,
+
+188
+00:07:04.440 --> 00:07:05.880
+you have an aggregated view
+
+189
+00:07:05.880 --> 00:07:08.010
+that should hopefully give you enough information
+
+190
+00:07:08.010 --> 00:07:10.110
+to resolve your problems.
+
+191
+00:07:10.110 --> 00:07:11.460
+And then on top of it,
+
+192
+00:07:11.460 --> 00:07:13.350
+you're going to get Automation Runbooks,
+
+193
+00:07:13.350 --> 00:07:15.720
+such as once the issue is resolved,
+
+194
+00:07:15.720 --> 00:07:17.010
+or at least identified,
+
+195
+00:07:17.010 --> 00:07:20.310
+you can resolve it by running an SSM automation.
+
+196
+00:07:20.310 --> 00:07:22.470
+So how do you create these OpsItems?
+
+197
+00:07:22.470 --> 00:07:23.610
+Well many different ways,
+
+198
+00:07:23.610 --> 00:07:26.040
+but one of them is to do automation.
+
+199
+00:07:26.040 --> 00:07:28.500
+So you can say that any time a CloudWatch alarm
+
+200
+00:07:28.500 --> 00:07:31.410
+is being breached then create an OpsItem,
+
+201
+00:07:31.410 --> 00:07:35.460
+or you can say that EventBridge can create OpsItems for you.
+
+202
+00:07:35.460 --> 00:07:38.550
+So if you have any kind rules in EventBridge
+
+203
+00:07:38.550 --> 00:07:41.640
+the target of them could be to create an OpsItem
+
+204
+00:07:41.640 --> 00:07:43.950
+in Systems Manager.
+
+205
+00:07:43.950 --> 00:07:44.783
+Okay,
+
+206
+00:07:44.783 --> 00:07:46.290
+So that's it for Systems Manager.
+
+207
+00:07:46.290 --> 00:07:47.280
+I hope you liked it
+
+208
+00:07:47.280 --> 00:07:49.230
+and I will see you in the next lecture.
+

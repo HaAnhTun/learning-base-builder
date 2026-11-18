@@ -1,0 +1,282 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.400
+Cloud Code. That's the focus of this lesson. Specifically, what kind of tool it actually is,
+
+2
+00:00:06.400 --> 00:00:12.399
+how it differs from IDE plugins, how the planning loop runs, how the context window fills up,
+
+3
+00:00:12.399 --> 00:00:17.680
+and what happens when it does, and what the permission model controls. Understanding
+
+4
+00:00:17.680 --> 00:00:22.559
+the architecture is what makes the rest of this course make sense altogether.
+
+5
+00:00:23.680 --> 00:00:27.840
+Cloud Code lives in your terminal, and that placement is the whole design.
+
+6
+00:00:27.840 --> 00:00:35.119
+It's Anthropx Agentix CLI. It executes multi-step tasks autonomously using a loop of planning,
+
+7
+00:00:35.119 --> 00:00:42.000
+tool selection, execution, and observation. The planning loop is that core cycle. Cloud
+
+8
+00:00:42.000 --> 00:00:48.720
+reasons about what to do next, picks a tool, runs it, reads the result, then decides what to do next.
+
+9
+00:00:48.720 --> 00:00:54.080
+It keeps looping until the task is complete, and the permission model is the layered control system
+
+10
+00:00:54.080 --> 00:01:00.319
+that determines which tools and actions Cloud Code is actually allowed to perform. It draws
+
+11
+00:01:00.319 --> 00:01:08.800
+on user, project, local, and managed settings, with managed settings taking precedence, and deny rules,
+
+12
+00:01:08.800 --> 00:01:15.040
+overriding allow rules. Permissions are enforced before any tool executes, which is the foundation
+
+13
+00:01:15.040 --> 00:01:21.279
+everything else builds on. The most important framing to lock in early. Cloud Code isn't a
+
+14
+00:01:21.279 --> 00:01:27.919
+chat interface, and it's not an autocomplete tool. It's an autonomous agent. When you give it a task,
+
+15
+00:01:27.919 --> 00:01:34.559
+it doesn't respond with a suggestion for you to apply. It executes. It reads files, runs shell
+
+16
+00:01:34.559 --> 00:01:40.639
+commands, edits code, and searches the web. A single instruction can trigger dozens of tool calls
+
+17
+00:01:40.639 --> 00:01:47.360
+before it's done. The practical implication is that Cloud Code can do a lot of damage if pointed
+
+18
+00:01:47.360 --> 00:01:52.559
+at the wrong thing with the wrong permissions. It can also complete a lot of real work with no
+
+19
+00:01:52.559 --> 00:01:57.919
+hand-holding. The autonomous execution model is what makes it powerful, and what makes the
+
+20
+00:01:57.919 --> 00:02:04.239
+permission model worth understanding carefully. IDE plugins like Copilot work by watching your
+
+21
+00:02:04.239 --> 00:02:09.919
+keystrokes and offering inline suggestions that you can accept or reject. Cloud Code doesn't do
+
+22
+00:02:09.919 --> 00:02:15.360
+that. It receives a goal, reasons about what steps are needed to achieve it, and takes action
+
+23
+00:02:15.360 --> 00:02:22.479
+autonomously across the entire code base. Plugins have no shell access. Cloud Code can run arbitrary
+
+24
+00:02:22.479 --> 00:02:28.960
+bash commands, read any file it has permission to read, and make changes across multiple files in a
+
+25
+00:02:28.960 --> 00:02:35.759
+single task. The mental model is plugins assist one action at a time. Cloud Code plans and executes
+
+26
+00:02:35.759 --> 00:02:40.960
+multi-step work independently. That distinction matters because it changes how you think about
+
+27
+00:02:40.960 --> 00:02:47.600
+what to ask for and what guardrails to put in place. The planning loop runs in four phases.
+
+28
+00:02:47.600 --> 00:02:53.600
+First, Cloud plans. It reasons about the current state of the task and decides what the next action
+
+29
+00:02:53.600 --> 00:03:00.000
+should be. Second, it makes a tool call invoking the specific tool with the parameters it determined.
+
+30
+00:03:00.639 --> 00:03:06.479
+Third, it observes the result from that tool call and updates its understanding of the current state.
+
+31
+00:03:07.119 --> 00:03:13.440
+Fourth, it loops back to planning and decides the next step. This cycle repeats until the task
+
+32
+00:03:13.440 --> 00:03:19.119
+is complete or Cloud hits a decision point where it needs clarification. The loop is what makes
+
+33
+00:03:19.119 --> 00:03:25.679
+Cloud Code agentic. It's not waiting for instructions between steps. It's continuously planning and
+
+34
+00:03:25.679 --> 00:03:32.320
+acting until the goal is reached. It helps to contrast the agentic loop with a standard single
+
+35
+00:03:32.399 --> 00:03:39.600
+shot LLM call. A single shot call is you send input, you get a response, you're done. No follow-up
+
+36
+00:03:39.600 --> 00:03:45.759
+actions, no ability to observe results and adjust. That model works fine for generating text or
+
+37
+00:03:45.759 --> 00:03:51.679
+answering a question. It breaks down the moment a task requires intermediate steps where each step's
+
+38
+00:03:51.679 --> 00:03:58.720
+output shapes what comes next. The agentic loop handles that. Cloud plans the first step, executes
+
+39
+00:03:58.720 --> 00:04:04.800
+it, reads what happened, and adjusts. If a tool call produces an unexpected result, the loop lets
+
+40
+00:04:04.800 --> 00:04:10.720
+Cloud self-correct before proceeding. That's the core difference in capability between a chat
+
+41
+00:04:10.720 --> 00:04:17.200
+interface and an agentic execution environment. The context window is the finite amount of text
+
+42
+00:04:17.200 --> 00:04:22.880
+Cloud Code can hold in a session. Everything competes for that space. The conversation history,
+
+43
+00:04:22.880 --> 00:04:31.119
+the results from every tool call, and any Cloud.md files that were loaded. Verbose Cloud.md files
+
+44
+00:04:31.119 --> 00:04:36.959
+directly reduce how much space is left for code and tool output. When the window fills up, earlier
+
+45
+00:04:36.959 --> 00:04:43.519
+content gets compacted or dropped. The practical design implication is to keep Cloud.md files
+
+46
+00:04:43.519 --> 00:04:49.119
+focused and concise. Every word you write there is a word that can't be used for code context or
+
+47
+00:04:49.119 --> 00:04:54.399
+tool results. This is a real constraint, not a theoretical one, and it shapes how you should
+
+48
+00:04:54.399 --> 00:05:01.200
+structure project configuration. Cloud Code doesn't automatically carry your full conversation history
+
+49
+00:05:01.200 --> 00:05:07.839
+into a new session. What does carry forward is anything written down. Cloud.md files load
+
+50
+00:05:07.839 --> 00:05:13.440
+automatically and bring project context with them because Cloud Code reads them from disk
+
+51
+00:05:13.440 --> 00:05:19.040
+at the start of every session, not because they live in session memory. Where auto memory is
+
+52
+00:05:19.040 --> 00:05:25.359
+enabled, saved notes carry forward too, and any explicit summary you write out to a file before
+
+53
+00:05:25.359 --> 00:05:31.040
+ending the session is there when you come back. Without those, a new session has no automatic
+
+54
+00:05:31.040 --> 00:05:37.279
+recall of the prior chat. The design implication is simple. Don't rely on Cloud Code to remember
+
+55
+00:05:37.279 --> 00:05:43.119
+loose conversation from a prior session. Write state explicitly, commit configuration, and
+
+56
+00:05:43.119 --> 00:05:50.000
+structure your Cloud.md to carry what matters forward. The permission model controls what
+
+57
+00:05:50.000 --> 00:05:56.399
+Cloud Code is allowed to do. Permissions come from settings at several levels, user, project,
+
+58
+00:05:56.399 --> 00:06:02.559
+local, and managed enterprise settings. When those levels conflict, managed settings win,
+
+59
+00:06:02.559 --> 00:06:09.040
+and a deny rule always overrides an allow rule. By default, certain actions require explicit
+
+60
+00:06:09.040 --> 00:06:16.079
+approval before they run. Now, hooks and permissions are two separate gates, and the order matters.
+
+61
+00:06:16.079 --> 00:06:22.480
+A pre-tool use hook runs first, before the permission system is consulted. So a hook gets a
+
+62
+00:06:22.480 --> 00:06:28.000
+chance to deny an action before permissions are even checked. Both are pre-execution gates,
+
+63
+00:06:28.000 --> 00:06:34.239
+sitting in front of the tool call rather than after it. That's the mental model to carry. Pre-tool
+
+64
+00:06:34.239 --> 00:06:39.920
+use hook, then the permission request, then the tool runs. Getting both right is what makes Cloud
+
+65
+00:06:39.920 --> 00:06:45.359
+Code safe to run in automated workflows where it won't be supervised step by step.
+
+66
+00:06:47.040 --> 00:06:53.200
+People hear Cloud Code and picture autocomplete with a better vocabulary. The real difference is
+
+67
+00:06:53.200 --> 00:06:59.359
+that it acts, reads the result, then decides what to do next, over and over until the work is done.
+
+68
+00:06:59.920 --> 00:07:05.760
+Once a tool takes real actions on your machine, you start caring about things you'd never ask
+
+69
+00:07:05.760 --> 00:07:10.079
+of autocomplete. What does it remember, and what is it allowed to touch?
+
+70
+00:07:10.799 --> 00:07:13.760
+That's a wrap on this lesson. I'll see you in the next one.
+

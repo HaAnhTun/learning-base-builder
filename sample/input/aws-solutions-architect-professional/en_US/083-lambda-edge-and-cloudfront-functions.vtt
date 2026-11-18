@@ -1,0 +1,1066 @@
+WEBVTT
+
+1
+00:00:00.350 --> 00:00:02.220
+<v Instructor>So CloudFront has more capability</v>
+
+2
+00:00:02.220 --> 00:00:03.780
+than just a CDN.
+
+3
+00:00:03.780 --> 00:00:06.660
+It is allowing you to run custom code at the edge
+
+4
+00:00:06.660 --> 00:00:08.850
+to do some customization.
+
+5
+00:00:08.850 --> 00:00:11.640
+So the idea is that you want to execute edge functions
+
+6
+00:00:11.640 --> 00:00:14.190
+as close as possible to users to make sure
+
+7
+00:00:14.190 --> 00:00:17.430
+that you're verifying some early logic, some early behavior,
+
+8
+00:00:17.430 --> 00:00:19.290
+or normalizing some cache keys.
+
+9
+00:00:19.290 --> 00:00:21.630
+So an edge function is a code that you write
+
+10
+00:00:21.630 --> 00:00:23.850
+and that you attach to your CloudFront distribution,
+
+11
+00:00:23.850 --> 00:00:25.740
+and it will run very, very close to your users
+
+12
+00:00:25.740 --> 00:00:27.270
+in order to minimize the latency
+
+13
+00:00:27.270 --> 00:00:29.100
+of whatever you're trying to do.
+
+14
+00:00:29.100 --> 00:00:30.570
+It doesn't have any cache behavior.
+
+15
+00:00:30.570 --> 00:00:32.910
+It is just here to change the request
+
+16
+00:00:32.910 --> 00:00:36.750
+and the response sent by the users and back to the users.
+
+17
+00:00:36.750 --> 00:00:40.230
+Now, CloudFront has two different logic for edge functions.
+
+18
+00:00:40.230 --> 00:00:43.770
+It has the CloudFront functions and Lambda@Edge.
+
+19
+00:00:43.770 --> 00:00:45.720
+We'll see them both in this lecture.
+
+20
+00:00:45.720 --> 00:00:48.630
+So the use cases for customization at the end is to,
+
+21
+00:00:48.630 --> 00:00:52.140
+at the edge is to manipulate HTTP request and responses.
+
+22
+00:00:52.140 --> 00:00:53.430
+Is to implement request filtering
+
+23
+00:00:53.430 --> 00:00:54.990
+before reaching your application.
+
+24
+00:00:54.990 --> 00:00:58.410
+Is to verify user authentication and authorization.
+
+25
+00:00:58.410 --> 00:01:00.630
+Is to also maybe generate HTTP responses
+
+26
+00:01:00.630 --> 00:01:02.010
+directly at the edge
+
+27
+00:01:02.010 --> 00:01:05.340
+or do A/B testing by separating users into two groups,
+
+28
+00:01:05.340 --> 00:01:08.550
+or for example, doing bot mitigation at the edge.
+
+29
+00:01:08.550 --> 00:01:10.290
+The idea is that using edge functions,
+
+30
+00:01:10.290 --> 00:01:12.570
+so either CloudFront functions or Lambda@Edge,
+
+31
+00:01:12.570 --> 00:01:14.100
+you do not have to manage any servers.
+
+32
+00:01:14.100 --> 00:01:17.820
+Everything is deployed globally and it is serverless.
+
+33
+00:01:17.820 --> 00:01:21.120
+So if we look at a traditional architecture of CloudFront,
+
+34
+00:01:21.120 --> 00:01:23.250
+we have our clients talking to our edge locations,
+
+35
+00:01:23.250 --> 00:01:26.880
+talking to original edge cache, talking to our origin.
+
+36
+00:01:26.880 --> 00:01:29.280
+Now, Lambda@Edge functions are going to be deployed
+
+37
+00:01:29.280 --> 00:01:31.380
+at the regional edge cache level,
+
+38
+00:01:31.380 --> 00:01:33.510
+whereas CloudFront functions are going to be deployed
+
+39
+00:01:33.510 --> 00:01:34.890
+on the edge location.
+
+40
+00:01:34.890 --> 00:01:37.440
+So as you can see, two different level for deployment
+
+41
+00:01:37.440 --> 00:01:39.870
+of these functions, and that will impact your choice
+
+42
+00:01:39.870 --> 00:01:42.810
+between CloudFront functions and Lambda@Edge functions.
+
+43
+00:01:42.810 --> 00:01:44.670
+So if we look at CloudFront functions,
+
+44
+00:01:44.670 --> 00:01:47.040
+they will interact with the viewer request
+
+45
+00:01:47.040 --> 00:01:48.450
+and the viewer response.
+
+46
+00:01:48.450 --> 00:01:50.070
+These are the request and response
+
+47
+00:01:50.070 --> 00:01:52.380
+that happen between the client and CloudFront.
+
+48
+00:01:52.380 --> 00:01:55.560
+It does not modify origin request or origin response.
+
+49
+00:01:55.560 --> 00:01:58.140
+So these are lightweight functions returning JavaScript,
+
+50
+00:01:58.140 --> 00:02:00.930
+and they're meant to do high scale latency sensitive
+
+51
+00:02:00.930 --> 00:02:02.610
+CDN customizations.
+
+52
+00:02:02.610 --> 00:02:04.560
+So it is a sub-millisecond startup time,
+
+53
+00:02:04.560 --> 00:02:06.780
+so it's very, very quick to start and it can handle
+
+54
+00:02:06.780 --> 00:02:09.000
+millions of requests per second.
+
+55
+00:02:09.000 --> 00:02:10.890
+So we run at edge locations
+
+56
+00:02:10.890 --> 00:02:13.020
+and it's process-based isolation.
+
+57
+00:02:13.020 --> 00:02:15.510
+So you want to change the viewer request and responses
+
+58
+00:02:15.510 --> 00:02:16.343
+as I said.
+
+59
+00:02:16.343 --> 00:02:17.340
+So what is the viewer request?
+
+60
+00:02:17.340 --> 00:02:19.500
+Well, it's after CloudFront receives a request
+
+61
+00:02:19.500 --> 00:02:22.338
+from a viewer, and your response is before CloudFront
+
+62
+00:02:22.338 --> 00:02:24.889
+forwards the response to the viewer.
+
+63
+00:02:24.889 --> 00:02:26.940
+So the idea is that it's a native feature of CloudFront.
+
+64
+00:02:26.940 --> 00:02:29.670
+You manage the code directly from within CloudFront,
+
+65
+00:02:29.670 --> 00:02:31.720
+and this allows you to do some very quick
+
+66
+00:02:32.758 --> 00:02:34.996
+time sensitive transformations in CloudFront.
+
+67
+00:02:34.996 --> 00:02:35.829
+Okay?
+
+68
+00:02:35.829 --> 00:02:38.340
+The idea is that you cannot call external services
+
+69
+00:02:38.340 --> 00:02:39.450
+from the CloudFront functions.
+
+70
+00:02:39.450 --> 00:02:41.940
+You just want to perform some transformations,
+
+71
+00:02:41.940 --> 00:02:44.790
+some computations or some normalizations
+
+72
+00:02:44.790 --> 00:02:46.740
+in a very, very quick fashion.
+
+73
+00:02:46.740 --> 00:02:49.530
+Now, Lambda@Edge is a different mindset.
+
+74
+00:02:49.530 --> 00:02:52.290
+So these were first what CloudFront was offering
+
+75
+00:02:52.290 --> 00:02:53.123
+as a feature.
+
+76
+00:02:53.123 --> 00:02:53.956
+CloudFront functions are new,
+
+77
+00:02:53.956 --> 00:02:56.490
+but Lambda@Edge has been existing for a long time,
+
+78
+00:02:56.490 --> 00:02:58.560
+and the idea was this is that you have Lambda functions
+
+79
+00:02:58.560 --> 00:03:01.890
+that are in either NodeJS or Python,
+
+80
+00:03:01.890 --> 00:03:04.740
+and you can scale to thousands of requests per second.
+
+81
+00:03:04.740 --> 00:03:09.720
+So less scale than your CloudFront functions for sure.
+
+82
+00:03:09.720 --> 00:03:12.150
+And they run on the nearest regional edge cache.
+
+83
+00:03:12.150 --> 00:03:14.130
+They're VM-based isolation,
+
+84
+00:03:14.130 --> 00:03:15.720
+and they're used to change both
+
+85
+00:03:15.720 --> 00:03:18.180
+CloudFront requests and responses.
+
+86
+00:03:18.180 --> 00:03:20.910
+So we can change the viewer request, the origin request,
+
+87
+00:03:20.910 --> 00:03:24.510
+which is the request that CloudFront sends to your origin.
+
+88
+00:03:24.510 --> 00:03:26.970
+You can change the origin response, so the response
+
+89
+00:03:26.970 --> 00:03:29.400
+that CloudFront receives from the origin
+
+90
+00:03:29.400 --> 00:03:31.320
+and as well as the viewer response.
+
+91
+00:03:31.320 --> 00:03:32.160
+Okay?
+
+92
+00:03:32.160 --> 00:03:33.450
+Now, when you want to deploy them,
+
+93
+00:03:33.450 --> 00:03:35.070
+that edge functions on CloudFront,
+
+94
+00:03:35.070 --> 00:03:36.870
+you need to author your functions in one region,
+
+95
+00:03:36.870 --> 00:03:38.220
+which is US East one,
+
+96
+00:03:38.220 --> 00:03:40.710
+and then CloudFront will replicate this function
+
+97
+00:03:40.710 --> 00:03:43.410
+to all its regional edge caches.
+
+98
+00:03:43.410 --> 00:03:45.060
+Now, if we have a look at
+
+99
+00:03:45.060 --> 00:03:46.770
+how these things can be used together.
+
+100
+00:03:46.770 --> 00:03:49.710
+So we have edge locations and regional edge caches,
+
+101
+00:03:49.710 --> 00:03:52.110
+and so the view request goes all the way like this,
+
+102
+00:03:52.110 --> 00:03:53.490
+then it goes through the origin,
+
+103
+00:03:53.490 --> 00:03:55.650
+and then the origin response goes all the way like this
+
+104
+00:03:55.650 --> 00:03:57.000
+to the viewer response.
+
+105
+00:03:57.000 --> 00:03:58.710
+Now your CloudFront functions
+
+106
+00:03:58.710 --> 00:04:02.160
+are going to run on the edge locations at the viewer request
+
+107
+00:04:02.160 --> 00:04:03.690
+and viewer response level,
+
+108
+00:04:03.690 --> 00:04:06.300
+whereas your Lambda@Edge functions are going to run
+
+109
+00:04:06.300 --> 00:04:08.670
+at the origin request and origin response level.
+
+110
+00:04:08.670 --> 00:04:11.250
+This is if you want to use both CloudFront functions
+
+111
+00:04:11.250 --> 00:04:13.620
+and Lambda@Edge functions together.
+
+112
+00:04:13.620 --> 00:04:14.970
+Okay, so this is one option
+
+113
+00:04:14.970 --> 00:04:18.090
+and we can see a clear separation of duties.
+
+114
+00:04:18.090 --> 00:04:22.230
+But if you want to just have Lambda@Edge functions,
+
+115
+00:04:22.230 --> 00:04:23.700
+then in that case, what's going to happen
+
+116
+00:04:23.700 --> 00:04:26.160
+is that the Lambda@Edge functions are going to operate
+
+117
+00:04:26.160 --> 00:04:28.050
+on both the viewer requests response
+
+118
+00:04:28.050 --> 00:04:29.790
+and the origin request and response,
+
+119
+00:04:29.790 --> 00:04:32.040
+but only at the regional edge cache level.
+
+120
+00:04:32.040 --> 00:04:34.290
+In this case, we cannot use CloudFront functions
+
+121
+00:04:34.290 --> 00:04:36.960
+because we cannot use both Lambda@Edge
+
+122
+00:04:36.960 --> 00:04:37.830
+and CloudFront functions
+
+123
+00:04:37.830 --> 00:04:40.560
+on the viewer request and responses.
+
+124
+00:04:40.560 --> 00:04:43.110
+So this is when you need capabilities of Lambda@Edge
+
+125
+00:04:43.110 --> 00:04:44.910
+that are not available with CloudFront functions.
+
+126
+00:04:44.910 --> 00:04:47.460
+For example, if you need a longer execution time,
+
+127
+00:04:47.460 --> 00:04:51.660
+network access, third party API calls, these kind of things.
+
+128
+00:04:51.660 --> 00:04:54.600
+So if we want to compare, you know, on the table,
+
+129
+00:04:54.600 --> 00:04:56.790
+the CloudFront functions and Lambda@Edge,
+
+130
+00:04:56.790 --> 00:04:58.230
+while the runtime support is different,
+
+131
+00:04:58.230 --> 00:05:00.660
+so one is JavaScript, pure JavaScript code,
+
+132
+00:05:00.660 --> 00:05:02.790
+the other one is NodeJS and Python,
+
+133
+00:05:02.790 --> 00:05:05.280
+where it gets executed is on edge locations
+
+134
+00:05:05.280 --> 00:05:07.620
+for CloudFront functions, whereas it's original edge cache
+
+135
+00:05:07.620 --> 00:05:09.060
+is for Lambda@Edge.
+
+136
+00:05:09.060 --> 00:05:11.580
+The CloudFront triggers is going to be the view request
+
+137
+00:05:11.580 --> 00:05:12.840
+and response for functions
+
+138
+00:05:12.840 --> 00:05:15.180
+and all of them, for them that edge.
+
+139
+00:05:15.180 --> 00:05:17.760
+The isolation is process-based versus VM-based.
+
+140
+00:05:17.760 --> 00:05:19.170
+Now, the max execution time
+
+141
+00:05:19.170 --> 00:05:21.210
+is what I think is the most important thing.
+
+142
+00:05:21.210 --> 00:05:22.920
+You only get one millisecond
+
+143
+00:05:22.920 --> 00:05:24.450
+to execute your CloudFront functions
+
+144
+00:05:24.450 --> 00:05:26.160
+and therefore they must be very, very quick
+
+145
+00:05:26.160 --> 00:05:27.540
+and very, very simple.
+
+146
+00:05:27.540 --> 00:05:31.470
+Whereas Lambda@Edge, you get five seconds of runtime
+
+147
+00:05:31.470 --> 00:05:34.080
+for viewers triggered and 30 seconds of runtime
+
+148
+00:05:34.080 --> 00:05:35.580
+for origin triggers.
+
+149
+00:05:35.580 --> 00:05:37.110
+The memory of your CloudFront functions
+
+150
+00:05:37.110 --> 00:05:38.850
+is low, two megabytes.
+
+151
+00:05:38.850 --> 00:05:41.340
+Whereas for Lambda@Edge, you have more memory,
+
+152
+00:05:41.340 --> 00:05:43.530
+128 megabytes or 10 gigabytes.
+
+153
+00:05:43.530 --> 00:05:45.330
+The total package size is very, very small
+
+154
+00:05:45.330 --> 00:05:46.890
+for CloudFront functions, 10 kilobytes.
+
+155
+00:05:46.890 --> 00:05:49.050
+Whereas Lambda@Edge has more space.
+
+156
+00:05:49.050 --> 00:05:51.510
+There's no network access, no file system access
+
+157
+00:05:51.510 --> 00:05:52.740
+for CloudFront functions,
+
+158
+00:05:52.740 --> 00:05:54.960
+whereas you have some for Lambda@Edge.
+
+159
+00:05:54.960 --> 00:05:57.420
+You do not have access to the request body
+
+160
+00:05:57.420 --> 00:05:58.470
+in CloudFront functions,
+
+161
+00:05:58.470 --> 00:06:00.930
+you have access to it in Lambda@Edge.
+
+162
+00:06:00.930 --> 00:06:02.940
+So CloudFront functions is really about
+
+163
+00:06:02.940 --> 00:06:04.500
+reading headers and so on.
+
+164
+00:06:04.500 --> 00:06:06.660
+And the pricing is that there's a free tier
+
+165
+00:06:06.660 --> 00:06:07.590
+for CloudFront functions,
+
+166
+00:06:07.590 --> 00:06:09.930
+and it's 1/6 of the price of @Edge.
+
+167
+00:06:09.930 --> 00:06:12.712
+So if you can move your logic from Lambda@Edge
+
+168
+00:06:12.712 --> 00:06:14.340
+to CloudFront functions, you're better off.
+
+169
+00:06:14.340 --> 00:06:15.930
+And Lambda@Edge has no free tier
+
+170
+00:06:15.930 --> 00:06:18.630
+and you get charged per request and duration.
+
+171
+00:06:18.630 --> 00:06:20.640
+So when do you use a CloudFront function
+
+172
+00:06:20.640 --> 00:06:22.620
+versus a Lambda@Edge function?
+
+173
+00:06:22.620 --> 00:06:24.120
+Well, CloudFront functions are going to be used
+
+174
+00:06:24.120 --> 00:06:25.620
+for cache key normalization.
+
+175
+00:06:25.620 --> 00:06:27.660
+So you want to transform the request attributes
+
+176
+00:06:27.660 --> 00:06:30.750
+such as the headers, cookies, the query string, the URL
+
+177
+00:06:30.750 --> 00:06:32.700
+to create an optimal cache key.
+
+178
+00:06:32.700 --> 00:06:34.080
+You also want to manipulate your headers,
+
+179
+00:06:34.080 --> 00:06:34.913
+so you want to change them.
+
+180
+00:06:34.913 --> 00:06:37.530
+So you want to insert, modify, or delete HTTP headers
+
+181
+00:06:37.530 --> 00:06:39.270
+in the request or response,
+
+182
+00:06:39.270 --> 00:06:41.850
+or you want to do your rewrites or redirects
+
+183
+00:06:41.850 --> 00:06:43.410
+or to request authentication
+
+184
+00:06:43.410 --> 00:06:45.330
+and authorization directly at the edge.
+
+185
+00:06:45.330 --> 00:06:46.860
+So in which you can create
+
+186
+00:06:46.860 --> 00:06:50.220
+and validate user generated tokens, for example, JWT,
+
+187
+00:06:50.220 --> 00:06:54.090
+to allow or deny request very, very close to your users.
+
+188
+00:06:54.090 --> 00:06:56.160
+Whereas Lambda@Edge is going to be giving you
+
+189
+00:06:56.160 --> 00:06:57.990
+a much longer execution time, okay?
+
+190
+00:06:57.990 --> 00:07:00.030
+Up to five seconds or 30 seconds.
+
+191
+00:07:00.030 --> 00:07:01.860
+You get adjustable CPU or memory.
+
+192
+00:07:01.860 --> 00:07:04.080
+You get to have code that can depend on
+
+193
+00:07:04.080 --> 00:07:04.950
+third party libraries.
+
+194
+00:07:04.950 --> 00:07:06.720
+For example, you can use the SDK
+
+195
+00:07:06.720 --> 00:07:08.850
+to access other AWS services.
+
+196
+00:07:08.850 --> 00:07:11.160
+You can use the network access to use external services
+
+197
+00:07:11.160 --> 00:07:13.920
+for processing, and you have file system access
+
+198
+00:07:13.920 --> 00:07:15.810
+if you wanted to cache some stuff locally,
+
+199
+00:07:15.810 --> 00:07:18.780
+or you can even access the body of the HTTP request
+
+200
+00:07:18.780 --> 00:07:20.430
+to manipulate the body itself.
+
+201
+00:07:20.430 --> 00:07:23.850
+So hopefully the use cases are clear and well-defined.
+
+202
+00:07:23.850 --> 00:07:25.500
+Now, if you wanted to do authorization
+
+203
+00:07:25.500 --> 00:07:27.390
+and authentication with CloudFront functions,
+
+204
+00:07:27.390 --> 00:07:29.100
+the idea is that at the Edge location
+
+205
+00:07:29.100 --> 00:07:30.930
+you would intercept the content
+
+206
+00:07:30.930 --> 00:07:34.080
+and you would check the token, the digital JWT token,
+
+207
+00:07:34.080 --> 00:07:36.240
+which lives in your headers, and then you can check
+
+208
+00:07:36.240 --> 00:07:37.860
+whether or not it is correct.
+
+209
+00:07:37.860 --> 00:07:38.940
+And then if it's not correct,
+
+210
+00:07:38.940 --> 00:07:41.160
+then the client will get an error message directly
+
+211
+00:07:41.160 --> 00:07:44.610
+without having your request go all the way to your origin.
+
+212
+00:07:44.610 --> 00:07:46.350
+Whereas your Lambda@Edge function
+
+213
+00:07:46.350 --> 00:07:48.360
+will operate on the regional edge cache level.
+
+214
+00:07:48.360 --> 00:07:50.310
+It could be intercepted by a Lambda function,
+
+215
+00:07:50.310 --> 00:07:51.570
+which can do some custom logic
+
+216
+00:07:51.570 --> 00:07:54.030
+and even issue third party API calls
+
+217
+00:07:54.030 --> 00:07:56.100
+to check whether or not the authorization
+
+218
+00:07:56.100 --> 00:07:58.920
+and authentication is properly well set up.
+
+219
+00:07:58.920 --> 00:08:01.530
+Another very common use case for CloudFront functions
+
+220
+00:08:01.530 --> 00:08:04.350
+is to load content based on the user agents.
+
+221
+00:08:04.350 --> 00:08:05.430
+We have an S3 bucket
+
+222
+00:08:05.430 --> 00:08:07.680
+and Amazon CloudFront with original Edge cache
+
+223
+00:08:07.680 --> 00:08:10.080
+and we have users accessing it from desktop
+
+224
+00:08:10.080 --> 00:08:12.180
+and others just accessing it from mobile.
+
+225
+00:08:12.180 --> 00:08:14.340
+Now they both wanna access a cat picture,
+
+226
+00:08:14.340 --> 00:08:16.680
+so they do a request for cat picture,
+
+227
+00:08:16.680 --> 00:08:17.970
+and the resolution is super high.
+
+228
+00:08:17.970 --> 00:08:19.380
+So 1920-1080.
+
+229
+00:08:23.160 --> 00:08:25.440
+So it's 1080p and they request it from CloudFront.
+
+230
+00:08:25.440 --> 00:08:27.060
+So if the request goes well,
+
+231
+00:08:27.060 --> 00:08:29.030
+well the request is passed all the way through
+
+232
+00:08:29.030 --> 00:08:32.520
+to the S3 bucket to get that specific image.
+
+233
+00:08:32.520 --> 00:08:35.250
+But imagine that the same request is done
+
+234
+00:08:35.250 --> 00:08:37.950
+from our mobile device, and this time the user agent
+
+235
+00:08:37.950 --> 00:08:41.760
+is not Chrome, it is the iPhone OS Safari.
+
+236
+00:08:41.760 --> 00:08:45.420
+Now what we can do is instead of sending this big image
+
+237
+00:08:45.420 --> 00:08:48.390
+back to our mobile, which may be very inefficient,
+
+238
+00:08:48.390 --> 00:08:50.370
+we can have a CloudFront function
+
+239
+00:08:50.370 --> 00:08:53.610
+that will inspect the user agent HTTP header
+
+240
+00:08:53.610 --> 00:08:56.640
+and then redirect based on the device type.
+
+241
+00:08:56.640 --> 00:08:58.110
+And so there, therefore,
+
+242
+00:08:58.110 --> 00:09:00.690
+because our device is a mobile device,
+
+243
+00:09:00.690 --> 00:09:03.360
+then the image is going to be asked into our S3 bucket
+
+244
+00:09:03.360 --> 00:09:06.900
+is going to be cat 640-320,
+
+245
+00:09:06.900 --> 00:09:10.230
+which is a lower resolution for our cat picture.
+
+246
+00:09:10.230 --> 00:09:11.850
+And this is the picture that will be returned
+
+247
+00:09:11.850 --> 00:09:14.550
+by our S3 bucket into our mobile device.
+
+248
+00:09:14.550 --> 00:09:17.550
+So the function was able to modify the request
+
+249
+00:09:17.550 --> 00:09:20.463
+to change the target of these requests.
+
+250
+00:09:21.330 --> 00:09:23.130
+So the other way you can use Lambda@Edge
+
+251
+00:09:23.130 --> 00:09:24.960
+is for a global application, for example,
+
+252
+00:09:24.960 --> 00:09:27.810
+your client gets the website from an S3 bucket,
+
+253
+00:09:27.810 --> 00:09:29.400
+and then for dynamic API request,
+
+254
+00:09:29.400 --> 00:09:32.430
+it sends it into CloudFront to leverage the cache.
+
+255
+00:09:32.430 --> 00:09:34.740
+But your Lambda function can also be used, for example,
+
+256
+00:09:34.740 --> 00:09:36.870
+to query data into DynamoDB table,
+
+257
+00:09:36.870 --> 00:09:39.600
+which gives you a fully global
+
+258
+00:09:39.600 --> 00:09:44.040
+and serverless way to do an API in AWS.
+
+259
+00:09:44.040 --> 00:09:44.873
+So that's it.
+
+260
+00:09:44.873 --> 00:09:47.160
+At the exam level what you need to know
+
+261
+00:09:47.160 --> 00:09:49.800
+is understand when you need to use Lambda@Edge
+
+262
+00:09:49.800 --> 00:09:52.110
+or CloudFront functions, and that should be good to go.
+
+263
+00:09:52.110 --> 00:09:53.370
+But I want to give you a bit more detail
+
+264
+00:09:53.370 --> 00:09:55.710
+so you can really understand the use cases behind it.
+
+265
+00:09:55.710 --> 00:09:56.730
+So I hope you liked this lecture
+
+266
+00:09:56.730 --> 00:09:58.680
+and I will see you in the next lecture.
+

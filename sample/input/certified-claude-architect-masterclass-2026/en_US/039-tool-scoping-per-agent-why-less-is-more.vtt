@@ -1,0 +1,358 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.680
+In this lesson, we're looking at tool distribution across agents,
+
+2
+00:00:03.680 --> 00:00:08.560
+specifically why giving an agent fewer tools almost always produces better results.
+
+3
+00:00:09.279 --> 00:00:14.000
+We'll cover the cost of tool bloat, how overlapping tools break routing,
+
+4
+00:00:14.000 --> 00:00:20.079
+and the specialist sub-agent pattern that keeps each agent's context clean and focused.
+
+5
+00:00:20.079 --> 00:00:20.879
+Let's get into it.
+
+6
+00:00:22.079 --> 00:00:26.639
+Ship an agent 30 tools and it pays for all 30 on every single turn,
+
+7
+00:00:26.639 --> 00:00:28.319
+whether it calls them or not.
+
+8
+00:00:28.319 --> 00:00:29.680
+That's tool bloat.
+
+9
+00:00:29.680 --> 00:00:34.639
+The anti-pattern where an agent carries more tools than its job needs.
+
+10
+00:00:34.639 --> 00:00:39.599
+Every tool description loads into context, so extra tools cost tokens,
+
+11
+00:00:39.599 --> 00:00:43.919
+slow inference, and crowd out content the model actually needs.
+
+12
+00:00:43.919 --> 00:00:49.200
+The fix is the specialist sub-agent, an agent configured with a narrow palette
+
+13
+00:00:49.200 --> 00:00:54.720
+matched exactly to its role, which makes behavior more predictable and easier to debug.
+
+14
+00:00:55.279 --> 00:00:59.119
+Context isolation is the property that falls out of it.
+
+15
+00:00:59.119 --> 00:01:03.200
+When each sub-agent only sees the tools relevant to its job,
+
+16
+00:01:03.200 --> 00:01:05.360
+the orchestrator's window stays clean.
+
+17
+00:01:05.919 --> 00:01:09.360
+Audit your list and remove anything the agent never calls.
+
+18
+00:01:10.639 --> 00:01:14.160
+I want you to hold two mental models side by side.
+
+19
+00:01:14.160 --> 00:01:16.080
+First, the bloated agent.
+
+20
+00:01:16.080 --> 00:01:20.239
+It receives every tool in the catalog because it was easier to configure that way.
+
+21
+00:01:20.800 --> 00:01:24.559
+Its context fills up with tool descriptions for things it will never call.
+
+22
+00:01:25.120 --> 00:01:29.199
+When two tools overlap, the model picks between them inconsistently.
+
+23
+00:01:29.760 --> 00:01:33.599
+Responses slow down and the agent becomes harder to trust in production.
+
+24
+00:01:34.160 --> 00:01:36.559
+Now compare that to the specialist agent.
+
+25
+00:01:36.559 --> 00:01:39.440
+It receives only the tools it needs for its mission.
+
+26
+00:01:40.080 --> 00:01:44.000
+The model always sees one obvious candidate for each request.
+
+27
+00:01:44.639 --> 00:01:48.959
+Routing is clean, behavior is consistent, and when something goes wrong,
+
+28
+00:01:48.959 --> 00:01:50.959
+you know exactly which tool to look at.
+
+29
+00:01:51.440 --> 00:01:55.199
+Specialization is an investment that pays back in reliability.
+
+30
+00:01:56.480 --> 00:02:00.239
+Tool routing is just the model's selection of which tool to call,
+
+31
+00:02:00.239 --> 00:02:04.559
+and it makes that call almost entirely from the tool descriptions you wrote.
+
+32
+00:02:04.559 --> 00:02:07.839
+That's why overlap is such a subtle reliability risk.
+
+33
+00:02:07.839 --> 00:02:12.960
+When two tools could plausibly handle the same request, the model doesn't flip a coin.
+
+34
+00:02:12.960 --> 00:02:15.279
+It picks based on description quality,
+
+35
+00:02:15.279 --> 00:02:18.880
+and the pick may change with small variations in the user's input.
+
+36
+00:02:19.520 --> 00:02:22.960
+Users expect the same action to trigger the same tool every time,
+
+37
+00:02:22.960 --> 00:02:26.720
+so alternating between two similar tools produces divergent outcomes
+
+38
+00:02:26.720 --> 00:02:29.600
+that are hard to diagnose because the input looks identical.
+
+39
+00:02:30.160 --> 00:02:33.759
+The fix is to make sure each tool owns a clearly distinct scope.
+
+40
+00:02:34.479 --> 00:02:39.679
+Merge the overlapping pair or rewrite their descriptions until the distinction is unambiguous.
+
+41
+00:02:40.960 --> 00:02:44.160
+Four principles for scoping tools to agents.
+
+42
+00:02:44.160 --> 00:02:46.720
+First, one agent, one mission.
+
+43
+00:02:46.720 --> 00:02:49.279
+Each agent should have a defined role,
+
+44
+00:02:49.279 --> 00:02:52.479
+and the tools it receives should map directly to that role.
+
+45
+00:02:53.039 --> 00:02:54.880
+Second, tools earn their slot.
+
+46
+00:02:55.440 --> 00:02:57.759
+Don't add a tool speculatively.
+
+47
+00:02:57.759 --> 00:03:00.720
+Add it when no existing tool covers the need,
+
+48
+00:03:00.720 --> 00:03:04.720
+and consider removing it if usage data shows it's rarely called.
+
+49
+00:03:05.440 --> 00:03:07.600
+Third, audit the catalog.
+
+50
+00:03:07.600 --> 00:03:12.639
+Tools added during early prototyping often stick around long after they're useful.
+
+51
+00:03:12.639 --> 00:03:17.520
+A quarterly review of tool assignments catches this drift before it becomes a problem.
+
+52
+00:03:18.080 --> 00:03:20.720
+Fourth, name precision matters.
+
+53
+00:03:20.720 --> 00:03:24.479
+If two tools have similar names or vague descriptions,
+
+54
+00:03:24.479 --> 00:03:26.479
+the model can't distinguish them cleanly.
+
+55
+00:03:27.039 --> 00:03:28.960
+Invest time in description quality.
+
+56
+00:03:28.960 --> 00:03:32.320
+It's the highest leverage thing you can do for routing accuracy.
+
+57
+00:03:33.520 --> 00:03:38.320
+The specialist sub-agent pattern is the most practical way to apply these principles at scale.
+
+58
+00:03:38.880 --> 00:03:40.639
+The idea is straightforward.
+
+59
+00:03:40.639 --> 00:03:45.039
+You decompose a complex agent workflow into distinct roles,
+
+60
+00:03:45.039 --> 00:03:49.520
+and you configure each sub-agent with only the tools that role requires.
+
+61
+00:03:50.080 --> 00:03:53.119
+A retrieval sub-agent gets search and fetch tools.
+
+62
+00:03:53.119 --> 00:03:55.199
+It doesn't need file write access.
+
+63
+00:03:55.199 --> 00:03:58.399
+A write sub-agent gets database and file tools.
+
+64
+00:03:58.399 --> 00:04:00.800
+It doesn't need search capabilities.
+
+65
+00:04:00.800 --> 00:04:05.759
+The orchestrator coordinates between them without touching domain-specific tools directly.
+
+66
+00:04:06.320 --> 00:04:11.360
+Each sub-agent's tool palette is small enough that the model can always identify the right call.
+
+67
+00:04:11.919 --> 00:04:16.480
+Because the roles are isolated, you can test each sub-agent independently.
+
+68
+00:04:16.480 --> 00:04:21.359
+You can also swap out one sub-agent's implementation without touching the others.
+
+69
+00:04:21.359 --> 00:04:25.040
+That's a significant operational advantage as your system grows.
+
+70
+00:04:26.320 --> 00:04:30.799
+We've spent this lesson arguing for lean tool palettes, so let's address the exception.
+
+71
+00:04:31.359 --> 00:04:34.480
+Some tools should appear on multiple agents, and that's fine.
+
+72
+00:04:35.040 --> 00:04:36.959
+Logging is the obvious case.
+
+73
+00:04:36.959 --> 00:04:40.239
+If you want consistent observability across your system,
+
+74
+00:04:40.239 --> 00:04:44.320
+every agent that produces output should have a logging tool.
+
+75
+00:04:44.320 --> 00:04:46.079
+Status reporting is similar.
+
+76
+00:04:46.079 --> 00:04:51.119
+An orchestrator and its sub-agents may all need to write to a shared status store
+
+77
+00:04:51.119 --> 00:04:53.760
+so you can track workflow progress from a single view.
+
+78
+00:04:54.320 --> 00:04:56.799
+The key distinction is intent.
+
+79
+00:04:56.799 --> 00:05:02.959
+Cross-cutting tools are deliberately shared because their scope is genuinely broader than one role.
+
+80
+00:05:02.959 --> 00:05:06.880
+Tool bloat happens when tools end up on agents by accident
+
+81
+00:05:06.880 --> 00:05:09.519
+because no one cleaned up after a prototype.
+
+82
+00:05:09.519 --> 00:05:12.160
+Minimize by design, not by accident.
+
+83
+00:05:13.760 --> 00:05:18.399
+Focused tool palettes reduce context overhead, sharpen routing,
+
+84
+00:05:18.399 --> 00:05:20.959
+and make your agents easier to test and trust.
+
+85
+00:05:21.600 --> 00:05:28.000
+The specialist sub-agent pattern puts that into practice by matching each agent's tools to its role,
+
+86
+00:05:28.000 --> 00:05:33.440
+and cross-cutting tools like logging stay shared on purpose rather than by accident.
+
+87
+00:05:34.000 --> 00:05:38.880
+Start lean, add deliberately, and audit the catalog as your system grows.
+
+88
+00:05:39.519 --> 00:05:40.880
+That's it for this lesson.
+
+89
+00:05:40.880 --> 00:05:42.079
+I'll see you in the next one.
+

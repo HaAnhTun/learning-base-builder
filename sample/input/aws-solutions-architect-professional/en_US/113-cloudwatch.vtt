@@ -1,0 +1,574 @@
+WEBVTT
+
+1
+00:00:00.090 --> 00:00:02.670
+<v ->Okay, so next let's get into CloudWatch.</v>
+
+2
+00:00:02.670 --> 00:00:05.850
+So CloudWatch has been everywhere through our discussions,
+
+3
+00:00:05.850 --> 00:00:07.470
+but now it's time we take a deeper look
+
+4
+00:00:07.470 --> 00:00:09.090
+at CloudWatch in specifics.
+
+5
+00:00:09.090 --> 00:00:11.520
+So the first part is CloudWatch Metrics.
+
+6
+00:00:11.520 --> 00:00:14.070
+And we already know that all the AWS services
+
+7
+00:00:14.070 --> 00:00:17.400
+many of them provide you CloudWatch Metrics out of the box.
+
+8
+00:00:17.400 --> 00:00:20.070
+And for EC2 it's particular by default.
+
+9
+00:00:20.070 --> 00:00:21.900
+The resolution is five minutes
+
+10
+00:00:21.900 --> 00:00:24.150
+for EC2 standard monitoring.
+
+11
+00:00:24.150 --> 00:00:26.790
+But you can enable detailed monitoring for EC2
+
+12
+00:00:26.790 --> 00:00:29.970
+which gives you EC2 metrics every one minute.
+
+13
+00:00:29.970 --> 00:00:31.170
+We know the EC2 metrics
+
+14
+00:00:31.170 --> 00:00:35.160
+or CPU network disc in case you have an instant store.
+
+15
+00:00:35.160 --> 00:00:38.610
+But we know that RAM is not a built-in metric.
+
+16
+00:00:38.610 --> 00:00:40.560
+So if you want to get the memory usage
+
+17
+00:00:40.560 --> 00:00:43.230
+of your EC2 instance out of your EC2
+
+18
+00:00:43.230 --> 00:00:45.060
+you need to create a custom metric.
+
+19
+00:00:45.060 --> 00:00:47.520
+Maybe use the CloudWatch unified agent to
+
+20
+00:00:47.520 --> 00:00:49.560
+send that metric back into CloudWatch.
+
+21
+00:00:49.560 --> 00:00:51.330
+Okay, in terms of custom metrics
+
+22
+00:00:51.330 --> 00:00:52.860
+we can create them ourselves.
+
+23
+00:00:52.860 --> 00:00:56.190
+The standard resolution of a custom metric is one minute
+
+24
+00:00:56.190 --> 00:00:58.260
+but you can enable high resolution mode
+
+25
+00:00:58.260 --> 00:00:59.250
+for your custom metric
+
+26
+00:00:59.250 --> 00:01:02.640
+and get that down all the way to one second.
+
+27
+00:01:02.640 --> 00:01:05.940
+Now the CloudWatch alarms can trigger three things
+
+28
+00:01:05.940 --> 00:01:08.340
+and you need to remember it absolutely.
+
+29
+00:01:08.340 --> 00:01:11.100
+So you can trigger an EC2 action.
+
+30
+00:01:11.100 --> 00:01:14.820
+And your EC2 action can be to reboot, stop, terminate
+
+31
+00:01:14.820 --> 00:01:17.760
+or recover your EC2 instance.
+
+32
+00:01:17.760 --> 00:01:21.570
+You can have auto-scaling actions or SNS.
+
+33
+00:01:21.570 --> 00:01:24.150
+And finally, alarm events can be intercepted
+
+34
+00:01:24.150 --> 00:01:25.950
+by Amazon EventBridge, opening
+
+35
+00:01:25.950 --> 00:01:29.468
+up many possible integrations for CloudWatch alarms.
+
+36
+00:01:29.468 --> 00:01:33.030
+Finally, your CloudWatch dashboards can display metrics
+
+37
+00:01:33.030 --> 00:01:37.020
+and alarms and can show the metrics of multiple regions.
+
+38
+00:01:37.020 --> 00:01:38.820
+CloudWatch logs will get its own little discussion
+
+39
+00:01:38.820 --> 00:01:40.050
+at the end of this lecture.
+
+40
+00:01:40.050 --> 00:01:42.420
+Okay, so CloudWatch alarm, it's extremely important
+
+41
+00:01:42.420 --> 00:01:43.800
+we understand the integrations.
+
+42
+00:01:43.800 --> 00:01:47.340
+So the CloudWatch alarm can be set to do an EC2 action
+
+43
+00:01:47.340 --> 00:01:50.100
+which is to stop, terminate, reboot, or recover.
+
+44
+00:01:50.100 --> 00:01:51.315
+And so a very common use case
+
+45
+00:01:51.315 --> 00:01:54.780
+is for you to monitor a critical EC2 instance.
+
+46
+00:01:54.780 --> 00:01:56.070
+And with the CloudHSM alarm,
+
+47
+00:01:56.070 --> 00:01:58.890
+if the status check of that instance fails
+
+48
+00:01:58.890 --> 00:02:01.080
+then we will trigger a recover action
+
+49
+00:02:01.080 --> 00:02:02.910
+to recover our EC2 instance
+
+50
+00:02:02.910 --> 00:02:06.720
+which will keep its private IP, its public IP, and so on.
+
+51
+00:02:06.720 --> 00:02:08.160
+Okay, other things is Auto Scaling.
+
+52
+00:02:08.160 --> 00:02:09.720
+So we have an Auto Scaling group
+
+53
+00:02:09.720 --> 00:02:12.990
+and we want to scale based on different CloudWatch alarms.
+
+54
+00:02:12.990 --> 00:02:14.460
+This is a perfect use case.
+
+55
+00:02:14.460 --> 00:02:17.670
+And finally, in case any alarm is triggered,
+
+56
+00:02:17.670 --> 00:02:19.585
+we may want to have some emails being sent
+
+57
+00:02:19.585 --> 00:02:21.150
+some alerting being done.
+
+58
+00:02:21.150 --> 00:02:23.460
+And so SNS is a great way to do it.
+
+59
+00:02:23.460 --> 00:02:25.380
+And from SNS, we can even send this
+
+60
+00:02:25.380 --> 00:02:27.330
+to one or many SQS queues.
+
+61
+00:02:27.330 --> 00:02:31.260
+We fan out or use a Lambda function to react to it.
+
+62
+00:02:31.260 --> 00:02:34.470
+As I said, from CloudWatch alarm you can send events
+
+63
+00:02:34.470 --> 00:02:36.090
+to Amazon EventBridge.
+
+64
+00:02:36.090 --> 00:02:37.781
+So that means that you can enable any kind
+
+65
+00:02:37.781 --> 00:02:39.990
+of integration you want from there.
+
+66
+00:02:39.990 --> 00:02:42.600
+For example, you can send data into Kinesis
+
+67
+00:02:42.600 --> 00:02:45.600
+or you can trigger a step function workflow
+
+68
+00:02:45.600 --> 00:02:48.000
+or you can trigger a Lambda function as well.
+
+69
+00:02:48.000 --> 00:02:48.960
+So as you can see, there's not only
+
+70
+00:02:48.960 --> 00:02:52.050
+one way of doing things in AWS,
+
+71
+00:02:52.050 --> 00:02:54.330
+and Amazon EventBridge really opens up a way to
+
+72
+00:02:54.330 --> 00:02:57.123
+intercept any alarm in your accounts.
+
+73
+00:02:58.080 --> 00:03:00.930
+Next, we have CloudWatch Synthetics Canary
+
+74
+00:03:00.930 --> 00:03:02.790
+which is a way for you to run a script.
+
+75
+00:03:02.790 --> 00:03:04.987
+And that script is going to monitor your APIs,
+
+76
+00:03:04.987 --> 00:03:06.990
+your URLs on your websites.
+
+77
+00:03:06.990 --> 00:03:08.280
+So you want to run some sort
+
+78
+00:03:08.280 --> 00:03:11.310
+of health checks from within Synthetics Canary.
+
+79
+00:03:11.310 --> 00:03:13.410
+And the idea is that the script is going to
+
+80
+00:03:13.410 --> 00:03:15.967
+reproduce what your customers actually do
+
+81
+00:03:15.967 --> 00:03:19.230
+with some code to find issues
+
+82
+00:03:19.230 --> 00:03:21.900
+before your customers are actually impacted.
+
+83
+00:03:21.900 --> 00:03:24.450
+And then based on these health checks, run regularly
+
+84
+00:03:24.450 --> 00:03:27.390
+by CloudWatch, then you can check the availability
+
+85
+00:03:27.390 --> 00:03:29.370
+and the latency of your endpoints,
+
+86
+00:03:29.370 --> 00:03:32.220
+and you can store the load time data and the screenshots
+
+87
+00:03:32.220 --> 00:03:36.090
+of the UI directly from within CloudWatch Synthetics Canary.
+
+88
+00:03:36.090 --> 00:03:39.510
+So this is great to check your API against real workflow.
+
+89
+00:03:39.510 --> 00:03:42.030
+So let's say we developed an API
+
+90
+00:03:42.030 --> 00:03:44.670
+on an EC2 instance in US-East-1
+
+91
+00:03:44.670 --> 00:03:48.750
+and the users are accessing our instance using Route 53.
+
+92
+00:03:48.750 --> 00:03:51.884
+Then we're going to create a CloudWatch Synthetics Canary
+
+93
+00:03:51.884 --> 00:03:54.900
+which is going to monitor our EC2 instance.
+
+94
+00:03:54.900 --> 00:03:59.340
+For example, every one minute it's going to send an API call
+
+95
+00:03:59.340 --> 00:04:04.340
+or a few API calls or execute a series of actions.
+
+96
+00:04:04.840 --> 00:04:07.530
+Now if the EC2 instance does not
+
+97
+00:04:07.530 --> 00:04:09.480
+respond well then we can see
+
+98
+00:04:09.480 --> 00:04:12.750
+that one of our users may encounter the same problem,
+
+99
+00:04:12.750 --> 00:04:15.780
+and therefore something is wrong with our application.
+
+100
+00:04:15.780 --> 00:04:18.120
+So it doesn't detect, not only if our application is down
+
+101
+00:04:18.120 --> 00:04:20.760
+but also if something is wrong with our application.
+
+102
+00:04:20.760 --> 00:04:24.810
+Meaning if the answer provided by our app is erroneous
+
+103
+00:04:24.810 --> 00:04:27.540
+in that case from CloudWatch Synthetics Canary
+
+104
+00:04:27.540 --> 00:04:29.820
+you can trigger a CloudWatch alarm.
+
+105
+00:04:29.820 --> 00:04:32.490
+And of course then you can talk to a Lambda function
+
+106
+00:04:32.490 --> 00:04:35.040
+from the CloudWatch alarm, which could update
+
+107
+00:04:35.040 --> 00:04:38.640
+the DNS record in Route 53 to link all traffic
+
+108
+00:04:38.640 --> 00:04:42.600
+to a second EC2 instance, that may not be buggy.
+
+109
+00:04:42.600 --> 00:04:44.400
+So these scripts that are running
+
+110
+00:04:44.400 --> 00:04:46.440
+on CloudWatch Synthetic Canary
+
+111
+00:04:46.440 --> 00:04:49.140
+can be written in Node.JS or Python.
+
+112
+00:04:49.140 --> 00:04:50.580
+And from this you get access
+
+113
+00:04:50.580 --> 00:04:52.915
+to Google Chrome browser that's had less,
+
+114
+00:04:52.915 --> 00:04:55.680
+meaning that you don't actually get the UI
+
+115
+00:04:55.680 --> 00:04:59.310
+you just have access directly to the API or Google Chrome.
+
+116
+00:04:59.310 --> 00:05:03.030
+And this script can be run once or on the regular schedule.
+
+117
+00:05:03.030 --> 00:05:04.478
+So it's actually a full blown test
+
+118
+00:05:04.478 --> 00:05:07.980
+against your EC2 instances, or your applications,
+
+119
+00:05:07.980 --> 00:05:10.050
+or your websites and APIs and so on.
+
+120
+00:05:10.050 --> 00:05:13.050
+But with a dashboard and summary within CloudWatch,
+
+121
+00:05:13.050 --> 00:05:14.103
+which is great.
+
+122
+00:05:15.030 --> 00:05:16.290
+So of course to get you started
+
+123
+00:05:16.290 --> 00:05:18.000
+on CloudWatch Synthetics Canary
+
+124
+00:05:18.000 --> 00:05:20.700
+you have blueprints which allow you to, for example,
+
+125
+00:05:20.700 --> 00:05:24.120
+run a heartbeat monitor to load a URL, store a screenshot,
+
+126
+00:05:24.120 --> 00:05:27.060
+and then do an HTP archive file.
+
+127
+00:05:27.060 --> 00:05:29.970
+Or API Canary to do basic test read,
+
+128
+00:05:29.970 --> 00:05:31.380
+and also write functions
+
+129
+00:05:31.380 --> 00:05:34.620
+for your REST APIs, or broken link checkers to check
+
+130
+00:05:34.620 --> 00:05:37.050
+that if all the links inside of your URLs
+
+131
+00:05:37.050 --> 00:05:39.200
+that you're testing are correct.
+
+132
+00:05:39.200 --> 00:05:40.740
+Visual monitoring to compare,
+
+133
+00:05:40.740 --> 00:05:43.710
+If a screenshot taken during a Canary is similar
+
+134
+00:05:43.710 --> 00:05:45.720
+to a baseline screenshots.
+
+135
+00:05:45.720 --> 00:05:47.154
+Canary recorder, which is used to
+
+136
+00:05:47.154 --> 00:05:50.370
+actually record your own actions on the website,
+
+137
+00:05:50.370 --> 00:05:51.780
+and then it will generate a script
+
+138
+00:05:51.780 --> 00:05:55.560
+for that that you can run on CloudWatch Synthetics Recorder.
+
+139
+00:05:55.560 --> 00:05:58.620
+Or the GUI Workflow Builder to verify
+
+140
+00:05:58.620 --> 00:06:00.826
+that the actions taken on your webpage, for example,
+
+141
+00:06:00.826 --> 00:06:05.220
+you can test a webpage with a login form using this.
+
+142
+00:06:05.220 --> 00:06:06.960
+Okay, so that's it for CloudWatch,
+
+143
+00:06:06.960 --> 00:06:09.910
+I hope you liked it and I will see you in the next lecture.
+

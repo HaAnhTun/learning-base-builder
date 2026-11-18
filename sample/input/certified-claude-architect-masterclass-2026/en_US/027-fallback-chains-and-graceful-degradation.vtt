@@ -1,0 +1,326 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.799
+This lesson covers what happens when retrying won't solve the problem.
+
+2
+00:00:04.000 --> 00:00:09.439
+We'll cover how to build fallback chains that provide ordered alternatives when the primary fails,
+
+3
+00:00:09.720 --> 00:00:14.640
+how to pre-validate each step, how degradation signals travel downstream, and
+
+4
+00:00:15.039 --> 00:00:19.559
+when to escalate instead of accepting a partial answer. Let's get into it.
+
+5
+00:00:20.440 --> 00:00:24.319
+The primary path just failed and retrying isn't going to help.
+
+6
+00:00:24.680 --> 00:00:29.953
+What the agent does in that moment is the whole subject here. A fallback chain is an ordered
+
+7
+00:00:29.953 --> 00:00:31.902
+sequence of alternative strategies
+
+8
+00:00:32.479 --> 00:00:34.479
+attempted when the primary action fails.
+
+9
+00:00:34.880 --> 00:00:41.939
+Try tool A, then tool B, then a cached result, then escalate to human review. Each step is
+
+10
+00:00:42.119 --> 00:00:48.619
+pre-planned, not improvised. Graceful degradation means returning a useful but incomplete result while
+
+11
+00:00:48.860 --> 00:00:54.304
+explicitly signaling the reduced quality downstream, so the limitation is visible and the rest of
+
+12
+00:00:54.304 --> 00:00:56.043
+the pipeline can respond to it.
+
+13
+00:00:56.700 --> 00:01:03.020
+Silent degradation is the failure mode, where the agent returns a degraded result with no signal at all, and
+
+14
+00:01:03.740 --> 00:01:06.339
+downstream treats it as full quality.
+
+15
+00:01:07.459 --> 00:01:13.779
+A fallback chain is built as an ordered sequence of alternatives, where each step fires only if the previous one failed.
+
+16
+00:01:14.180 --> 00:01:21.459
+The classic structure is, try the primary tool first. If that fails, try an alternative tool. If that also fails,
+
+17
+00:01:21.699 --> 00:01:26.459
+try a cached result from a prior successful run. If that isn't available,
+
+18
+00:01:26.980 --> 00:01:32.059
+escalate to a human reviewer. Each step in the chain has to be a pre-validated alternative,
+
+19
+00:01:32.180 --> 00:01:37.980
+not something added in a moment of panic. The chain always terminates in an explicit outcome,
+
+20
+00:01:38.220 --> 00:01:42.819
+either a result at whatever quality level was achievable, or a clear escalation.
+
+21
+00:01:43.500 --> 00:01:48.940
+Fallback chains convert ad hoc failure handling into a systematic predictable process.
+
+22
+00:01:49.339 --> 00:01:54.160
+That predictability is what makes them reliable under real production conditions.
+
+23
+00:01:55.779 --> 00:02:01.379
+Pre-validation is the discipline that separates a real fallback chain from a false sense of safety. An
+
+24
+00:02:02.059 --> 00:02:09.100
+untested fallback is a liability, not a safety net. Under the exact conditions that caused the primary to fail, an
+
+25
+00:02:09.660 --> 00:02:15.940
+untested fallback may fail for identical reasons or introduce entirely new failure modes you didn't anticipate.
+
+26
+00:02:16.779 --> 00:02:21.940
+Before deploying any fallback in production, validate that it works when the primary fails.
+
+27
+00:02:22.460 --> 00:02:27.660
+Confirm that its output meets the minimum quality bar that downstream components require.
+
+28
+00:02:28.059 --> 00:02:35.779
+Test it under realistic load and edge case inputs. A fallback that was never validated looks like insurance on paper.
+
+29
+00:02:36.300 --> 00:02:40.500
+In practice, it behaves like a second point of failure, hiding behind the first one.
+
+30
+00:02:41.779 --> 00:02:47.478
+Graceful and silent degradation aren't just stylistic choices. They have concrete consequences for
+
+31
+00:02:47.478 --> 00:02:48.641
+how errors compound.
+
+32
+00:02:49.300 --> 00:02:54.300
+Graceful degradation means the agent returns a partial or lower quality result and
+
+33
+00:02:54.740 --> 00:02:59.908
+explicitly signals the degradation to every downstream component that receives it. The signal could
+
+34
+00:02:59.908 --> 00:03:00.847
+be a flag field, a
+
+35
+00:03:01.059 --> 00:03:04.139
+confidence score, or a status code in the output schema.
+
+36
+00:03:04.779 --> 00:03:11.419
+Downstream logic reads the signal and adjusts. It might lower its own confidence, route to a human reviewer, or
+
+37
+00:03:11.699 --> 00:03:14.979
+refuse to commit an irreversible action based on partial data.
+
+38
+00:03:15.899 --> 00:03:21.220
+Silent degradation skips all of that. The agent returns a degraded result with no signal.
+
+39
+00:03:21.779 --> 00:03:27.583
+Downstream treats it as authoritative and errors compound invisibly through the pipeline until they
+
+40
+00:03:27.583 --> 00:03:29.401
+surface as a wrong final result
+
+41
+00:03:29.500 --> 00:03:32.539
+that's nearly impossible to trace back to the original fallback.
+
+42
+00:03:33.539 --> 00:03:38.380
+Degradation signals don't stay useful if they die at the component that triggered the fallback.
+
+43
+00:03:38.500 --> 00:03:44.154
+They have to propagate downstream with the result, include a degradation flag, or metadata field
+
+44
+00:03:44.154 --> 00:03:45.921
+directly in the output object.
+
+45
+00:03:46.660 --> 00:03:53.580
+Every downstream component that receives the output should check that field before deciding how to treat the data.
+
+46
+00:03:54.059 --> 00:03:59.460
+A component that sees a degradation flag can lower its confidence in the result, route it differently, or
+
+47
+00:04:00.179 --> 00:04:03.259
+refuse to use it for an action that requires high reliability.
+
+48
+00:04:04.259 --> 00:04:10.245
+Without that propagation, every component after the fallback is operating on a false assumption that
+
+49
+00:04:10.245 --> 00:04:12.280
+it received a normal, full-quality
+
+50
+00:04:12.860 --> 00:04:19.540
+output. That false assumption is what turns a contained fallback event into a pipeline-wide silent failure.
+
+51
+00:04:20.619 --> 00:04:24.459
+Three anti-patterns show up repeatedly in fallback chain design.
+
+52
+00:04:24.619 --> 00:04:30.275
+The first is deploying untested fallbacks, which introduces new failure modes exactly when the
+
+53
+00:04:30.275 --> 00:04:32.079
+system most needs reliability.
+
+54
+00:04:32.820 --> 00:04:38.260
+An untested fallback may fail for the same reason the primary did, or for a different reason.
+
+55
+00:04:38.540 --> 00:04:41.940
+That's harder to diagnose because it sits inside a recovery path.
+
+56
+00:04:42.299 --> 00:04:48.140
+The second is silent masking. A chain that returns a degraded result with no signal and
+
+57
+00:04:48.459 --> 00:04:51.899
+forces every downstream component to treat it as full quality
+
+58
+00:04:52.700 --> 00:04:57.660
+isn't graceful degradation. It is a failure mode pretending to be a recovery mechanism.
+
+59
+00:04:57.739 --> 00:05:03.700
+The third is a chain with no terminal step, which can loop or stall instead of failing cleanly.
+
+60
+00:05:04.779 --> 00:05:09.500
+When the primary action fails and fallbacks have run, the pipeline has a choice.
+
+61
+00:05:09.980 --> 00:05:13.459
+Return a partial result or return nothing and escalate.
+
+62
+00:05:13.940 --> 00:05:20.059
+Partial success means delivering a useful but incomplete result with an explicit degradation signal attached.
+
+63
+00:05:20.299 --> 00:05:26.579
+It's valid when downstream components can handle incomplete data and the incompleteness doesn't cause harm.
+
+64
+00:05:26.899 --> 00:05:30.579
+Full failure means returning nothing and triggering escalation.
+
+65
+00:05:30.779 --> 00:05:35.299
+It's correct when a partial result would actually be worse than no result at all.
+
+66
+00:05:35.579 --> 00:05:40.220
+The determining factor is whether a partial result causes downstream harm.
+
+67
+00:05:40.700 --> 00:05:43.339
+A partially summarized document is usually fine.
+
+68
+00:05:43.859 --> 00:05:46.540
+A partially validated payment instruction isn't.
+
+69
+00:05:46.859 --> 00:05:52.660
+Know which situation you're designing for before choosing between partial success and full escalation.
+
+70
+00:05:53.579 --> 00:06:00.140
+The decision between escalating and accepting a degraded output comes down to risk level and reversibility.
+
+71
+00:06:00.540 --> 00:06:05.100
+For low-risk reversible actions, a degraded output is often acceptable.
+
+72
+00:06:05.700 --> 00:06:12.700
+Propagate the signal, note the quality reduction, and let the pipeline continue with that context visible. For high-risk
+
+73
+00:06:13.019 --> 00:06:17.739
+irreversible actions, a degraded output may produce harm that can't be undone.
+
+74
+00:06:18.220 --> 00:06:23.739
+Sending an email, processing a payment, deleting a record. Those actions call for a higher threshold.
+
+75
+00:06:23.739 --> 00:06:30.739
+If the best available result is degraded and the action is irreversible, escalate to a human before proceeding.
+
+76
+00:06:31.100 --> 00:06:38.339
+The higher the consequence of a wrong answer, the lower the tolerance for accepting degraded output as a substitute.
+
+77
+00:06:39.339 --> 00:06:45.779
+A fallback chain gives your system somewhere to go when the primary path is gone and retrying won't bring it back.
+
+78
+00:06:46.299 --> 00:06:49.619
+That's what keeps a workflow answering instead of collapsing.
+
+79
+00:06:50.019 --> 00:06:55.779
+One thing to watch, a fallback that fires quietly is worse than the outage it replaced because now
+
+80
+00:06:56.059 --> 00:07:00.019
+everyone downstream is trusting a degraded answer at full confidence.
+
+81
+00:07:00.420 --> 00:07:03.380
+That does it for this lesson. I'll see you in the next one.
+

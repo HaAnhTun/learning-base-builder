@@ -1,0 +1,402 @@
+WEBVTT
+
+1
+00:00:00.150 --> 00:00:02.460
+<v Instructor>Now let's look at AWS Control Tower.</v>
+
+2
+00:00:02.460 --> 00:00:04.590
+So it's an easy way for you to set up
+
+3
+00:00:04.590 --> 00:00:06.090
+and govern a secure and compliant
+
+4
+00:00:06.090 --> 00:00:09.660
+multi-account AWS environments based on best practices.
+
+5
+00:00:09.660 --> 00:00:11.550
+So out of it, you're going to get
+
+6
+00:00:11.550 --> 00:00:14.220
+your environment automated in just a few clicks.
+
+7
+00:00:14.220 --> 00:00:16.410
+You're going to have ongoing policy management
+
+8
+00:00:16.410 --> 00:00:18.600
+using guardrails and we see this in this lecture.
+
+9
+00:00:18.600 --> 00:00:20.190
+We're going to detect policy violations
+
+10
+00:00:20.190 --> 00:00:22.110
+and remediate them automatically.
+
+11
+00:00:22.110 --> 00:00:23.520
+And we can monitor compliance
+
+12
+00:00:23.520 --> 00:00:25.680
+through an interactive dashboard.
+
+13
+00:00:25.680 --> 00:00:27.870
+So Control Tower is a way for you to really automate
+
+14
+00:00:27.870 --> 00:00:29.340
+best practice multi-accounts
+
+15
+00:00:29.340 --> 00:00:31.980
+and it runs on top of AWS organizations.
+
+16
+00:00:31.980 --> 00:00:33.870
+So it's going to set up an organization for you
+
+17
+00:00:33.870 --> 00:00:35.700
+and then organize these accounts and implement
+
+18
+00:00:35.700 --> 00:00:39.510
+automatically the service control policies you need.
+
+19
+00:00:39.510 --> 00:00:41.220
+So out of it there is the account factory
+
+20
+00:00:41.220 --> 00:00:44.760
+and since you automate account provisioning and deployments
+
+21
+00:00:44.760 --> 00:00:47.910
+and it allows you to create pre-approved baseline
+
+22
+00:00:47.910 --> 00:00:50.610
+and configuration options for all the accounts
+
+23
+00:00:50.610 --> 00:00:52.710
+in your organization, such as, for example,
+
+24
+00:00:52.710 --> 00:00:55.830
+configuring the default VPC, configuring the subnets,
+
+25
+00:00:55.830 --> 00:00:57.990
+the regions and so on.
+
+26
+00:00:57.990 --> 00:01:01.200
+And to do so is going to use the underlying service
+
+27
+00:01:01.200 --> 00:01:02.640
+called the AWS Service Catalog
+
+28
+00:01:02.640 --> 00:01:04.200
+to provision these new accounts.
+
+29
+00:01:04.200 --> 00:01:06.210
+So let's have a look in where an account factor
+
+30
+00:01:06.210 --> 00:01:07.110
+will be very helpful.
+
+31
+00:01:07.110 --> 00:01:09.510
+So we have an cloud computing environments
+
+32
+00:01:09.510 --> 00:01:11.220
+and then we have a data center
+
+33
+00:01:11.220 --> 00:01:14.850
+with an ADFS and an active directory.
+
+34
+00:01:14.850 --> 00:01:16.380
+And now we are going to establish a VPN
+
+35
+00:01:16.380 --> 00:01:17.310
+or direct connect connection
+
+36
+00:01:17.310 --> 00:01:20.160
+between the cloud and the corporate data center.
+
+37
+00:01:20.160 --> 00:01:22.890
+And so therefore when we use Control Tower
+
+38
+00:01:22.890 --> 00:01:25.380
+and a lending zone and we create accounts
+
+39
+00:01:25.380 --> 00:01:26.520
+for account factory,
+
+40
+00:01:26.520 --> 00:01:30.180
+then at the center of it is going to be IAM Identity Center.
+
+41
+00:01:30.180 --> 00:01:31.650
+And we can set up in different ways.
+
+42
+00:01:31.650 --> 00:01:32.910
+But if you wanted to integrate
+
+43
+00:01:32.910 --> 00:01:35.280
+with Microsoft Active Directory
+
+44
+00:01:35.280 --> 00:01:37.080
+on your corporate data center
+
+45
+00:01:37.080 --> 00:01:40.860
+then you would create an AWS managed Microsoft AD,
+
+46
+00:01:40.860 --> 00:01:42.060
+which would be the source
+
+47
+00:01:42.060 --> 00:01:44.670
+of notification for your IAM Identity Center.
+
+48
+00:01:44.670 --> 00:01:47.070
+And then you would create a two-way trust
+
+49
+00:01:47.070 --> 00:01:48.870
+between active directory
+
+50
+00:01:48.870 --> 00:01:51.720
+on your corporate data center and AWS.
+
+51
+00:01:51.720 --> 00:01:56.040
+From there, any accounts created through your landing zone
+
+52
+00:01:56.040 --> 00:01:58.680
+and through account factory will be properly
+
+53
+00:01:58.680 --> 00:02:01.080
+configured to leverage authentication
+
+54
+00:02:01.080 --> 00:02:05.220
+through IAM ID Center and therefore use underlyingly
+
+55
+00:02:05.220 --> 00:02:07.110
+the active directory you have in the cloud
+
+56
+00:02:07.110 --> 00:02:10.023
+and the one you have also on your corporate data center.
+
+57
+00:02:11.250 --> 00:02:12.300
+Now there's another thing
+
+58
+00:02:12.300 --> 00:02:14.130
+with Control Tower called guardrails.
+
+59
+00:02:14.130 --> 00:02:16.710
+And this is used to detect and remediate policy violations.
+
+60
+00:02:16.710 --> 00:02:19.080
+So it's going to give you ongoing governance.
+
+61
+00:02:19.080 --> 00:02:21.240
+And then you have two kinds of guardrails.
+
+62
+00:02:21.240 --> 00:02:24.060
+You have preventive guardrails or use SCPs.
+
+63
+00:02:24.060 --> 00:02:26.400
+And this is, for example, to have an action
+
+64
+00:02:26.400 --> 00:02:29.250
+to disable or disallow the creation
+
+65
+00:02:29.250 --> 00:02:32.100
+of access keys from the root user.
+
+66
+00:02:32.100 --> 00:02:33.000
+That's one way.
+
+67
+00:02:33.000 --> 00:02:34.830
+Or detective where you want to give
+
+68
+00:02:34.830 --> 00:02:36.030
+all permissions to your accounts,
+
+69
+00:02:36.030 --> 00:02:38.670
+but then you use config to detect, for example,
+
+70
+00:02:38.670 --> 00:02:42.360
+whether or not MFA is enabled for the root user and so on.
+
+71
+00:02:42.360 --> 00:02:43.680
+And config will be very helpful
+
+72
+00:02:43.680 --> 00:02:45.180
+because it gives you compliance
+
+73
+00:02:45.180 --> 00:02:47.670
+or non-compliance of resources.
+
+74
+00:02:47.670 --> 00:02:48.810
+And so here's an example.
+
+75
+00:02:48.810 --> 00:02:52.080
+We, for example, want to see which resources are untagged.
+
+76
+00:02:52.080 --> 00:02:55.560
+So we have a detective guardrail in Control Tower
+
+77
+00:02:55.560 --> 00:02:57.450
+using config and it's going to monitor
+
+78
+00:02:57.450 --> 00:02:59.850
+for untagged resources in your member accounts
+
+79
+00:02:59.850 --> 00:03:02.250
+as part of your organization is going to trigger
+
+80
+00:03:02.250 --> 00:03:04.560
+if it's noncompliance and SNS topic,
+
+81
+00:03:04.560 --> 00:03:07.350
+which can notify an admin, maybe invoke Lambda function
+
+82
+00:03:07.350 --> 00:03:09.450
+and that Lambda function itself can remediate
+
+83
+00:03:09.450 --> 00:03:11.880
+to this and add tag where needed.
+
+84
+00:03:11.880 --> 00:03:14.700
+So there are a few guardrail levels for Control Tower.
+
+85
+00:03:14.700 --> 00:03:16.410
+There is the mandatory guardrail,
+
+86
+00:03:16.410 --> 00:03:17.820
+which is automatically enabled
+
+87
+00:03:17.820 --> 00:03:20.430
+and enforced by AWS Control Tower.
+
+88
+00:03:20.430 --> 00:03:22.380
+So for example, you want to disallow
+
+89
+00:03:22.380 --> 00:03:24.870
+public read access to the log archive accounts
+
+90
+00:03:24.870 --> 00:03:26.820
+and this is mandatory.
+
+91
+00:03:26.820 --> 00:03:30.180
+Strongly recommended, which is based on AWS practices.
+
+92
+00:03:30.180 --> 00:03:32.340
+And for example, you wanna say you want to enable
+
+93
+00:03:32.340 --> 00:03:35.070
+EBS volumes attached to EC2 instances.
+
+94
+00:03:35.070 --> 00:03:37.020
+And then you have elective guardrails,
+
+95
+00:03:37.020 --> 00:03:38.460
+which is commonly used by enterprises.
+
+96
+00:03:38.460 --> 00:03:40.260
+This is optional as well, for example,
+
+97
+00:03:40.260 --> 00:03:44.460
+to disallow delete actions without MFA in S3 buckets.
+
+98
+00:03:44.460 --> 00:03:46.230
+Okay, so that's it for Control Tower.
+
+99
+00:03:46.230 --> 00:03:47.310
+I hope you liked it.
+
+100
+00:03:47.310 --> 00:03:49.260
+And I will see you in the next lecture.
+

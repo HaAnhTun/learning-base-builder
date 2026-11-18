@@ -1,0 +1,58 @@
+WEBVTT
+
+1
+00:00:00.130 --> 00:00:02.150
+<v Instructor>So here is a very quick lecture</v>
+
+2
+00:00:02.150 --> 00:00:03.840
+on the AWS Tag Editor.
+
+3
+00:00:03.840 --> 00:00:05.350
+So it looks like this.
+
+4
+00:00:05.350 --> 00:00:08.180
+You can find resources to tag and then tag them.
+
+5
+00:00:08.180 --> 00:00:10.040
+So it allows you to manage tags
+
+6
+00:00:10.040 --> 00:00:11.770
+of multiple resources at once.
+
+7
+00:00:11.770 --> 00:00:14.360
+You can add updates and delete tags,
+
+8
+00:00:14.360 --> 00:00:15.890
+and finally you can search for tagged
+
+9
+00:00:15.890 --> 00:00:19.390
+or untagged resources across all AWS regions.
+
+10
+00:00:19.390 --> 00:00:20.223
+That's all you know need to know,
+
+11
+00:00:20.223 --> 00:00:21.310
+very, very quick lecture,
+
+12
+00:00:21.310 --> 00:00:23.750
+but it can appear in one question in the exam.
+
+13
+00:00:23.750 --> 00:00:24.870
+All right, I hope you liked it
+
+14
+00:00:24.870 --> 00:00:26.820
+and I will see you in the next lecture.
+

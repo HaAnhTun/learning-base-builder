@@ -1,0 +1,406 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.039
+Welcome back. Plenty of production work has no one sitting there waiting for it.
+
+2
+00:00:05.039 --> 00:00:09.359
+Overnight reports, weekly audits, backfilling a corpus of documents.
+
+3
+00:00:09.920 --> 00:00:16.319
+This lesson covers the Message Batches API, what batching trades away for its discount,
+
+4
+00:00:16.319 --> 00:00:20.559
+and how to tell which of your workloads actually qualify. Let's dive in.
+
+5
+00:00:21.680 --> 00:00:26.559
+Start with a concrete picture. You have 10,000 documents to run extraction over.
+
+6
+00:00:26.559 --> 00:00:30.239
+The prompt is the same for every one of them, the model is the same,
+
+7
+00:00:30.239 --> 00:00:35.119
+and the output you want is the same. The only real decision is how you deliver the work.
+
+8
+00:00:35.759 --> 00:00:41.119
+Send them synchronously, and you're waiting on each response before the next one goes out.
+
+9
+00:00:41.119 --> 00:00:47.119
+Or, hand the whole set over as a batch, walk away, and collect the results when they're ready.
+
+10
+00:00:47.119 --> 00:00:51.840
+Here's the part worth being clear about. You aren't accepting a weaker or cheaper model
+
+11
+00:00:51.840 --> 00:00:56.880
+in exchange for the discount. Same model, same prompt, same quality of output.
+
+12
+00:00:56.880 --> 00:01:01.360
+What you're trading is time. The Message Batches API is the
+
+13
+00:01:01.360 --> 00:01:06.879
+endpoint that takes many requests at once and processes them asynchronously,
+
+14
+00:01:06.879 --> 00:01:10.319
+and it bills token usage at half the standard rate.
+
+15
+00:01:10.319 --> 00:01:13.360
+The processing window is how long the batch is allowed to take.
+
+16
+00:01:13.919 --> 00:01:18.639
+Most finish inside an hour, but the number that matters for your design is the ceiling,
+
+17
+00:01:18.639 --> 00:01:22.639
+which is 24 hours, and there's no latency guarantee inside it.
+
+18
+00:01:22.639 --> 00:01:27.680
+The custom identifier is a label you attach to each request when you submit it.
+
+19
+00:01:27.680 --> 00:01:32.400
+It looks like bookkeeping, and it is the single most important field in the whole workflow.
+
+20
+00:01:32.400 --> 00:01:34.000
+We'll come back to why shortly.
+
+21
+00:01:35.120 --> 00:01:38.160
+So, what are you actually giving up for that 50%?
+
+22
+00:01:39.120 --> 00:01:44.480
+Three things, and they're worth naming plainly. First, there is no latency guarantee.
+
+23
+00:01:44.480 --> 00:01:49.839
+24 hours is a ceiling, not an estimate, and you can't plan around a typical case
+
+24
+00:01:49.839 --> 00:01:53.760
+you aren't promised. Second, you don't watch a batch run.
+
+25
+00:01:53.760 --> 00:01:56.720
+There's no live progress to stream. You submit it,
+
+26
+00:01:56.720 --> 00:02:01.760
+then poll until it reports that it has ended. Third, there are size limits.
+
+27
+00:02:01.760 --> 00:02:08.559
+100,000 requests, or 256 megabytes per batch, whichever you hit first.
+
+28
+00:02:09.199 --> 00:02:13.839
+One thing that works in your favor, results stay retrievable for 29 days,
+
+29
+00:02:13.839 --> 00:02:16.720
+so you don't have to be ready the moment a batch finishes.
+
+30
+00:02:18.000 --> 00:02:21.520
+Every request in a batch comes back in one of four states,
+
+31
+00:02:21.520 --> 00:02:24.559
+and your handling code needs a branch for each.
+
+32
+00:02:24.559 --> 00:02:28.720
+Succeeded is the happy path. The message content is right there on the result.
+
+33
+00:02:29.279 --> 00:02:32.880
+Errored means that request failed, and the distinction matters.
+
+34
+00:02:32.880 --> 00:02:37.199
+A validation error means the request itself was malformed,
+
+35
+00:02:37.199 --> 00:02:40.000
+so retrying it unchanged just fails again.
+
+36
+00:02:40.559 --> 00:02:44.000
+A server error is transient and safe to retry as-is.
+
+37
+00:02:44.559 --> 00:02:48.240
+Cancelled means you cancelled the batch while that request was still queued.
+
+38
+00:02:48.880 --> 00:02:53.600
+Expired means it didn't finish inside the window, and it just needs resubmitting.
+
+39
+00:02:54.240 --> 00:02:57.360
+Notice that only one of those four is a finished piece of work.
+
+40
+00:02:58.080 --> 00:03:02.399
+Treating the rest as failures to investigate is how batch pipelines get noisy.
+
+41
+00:03:03.600 --> 00:03:07.279
+Now, the correlation problem, and this is the one that bites people.
+
+42
+00:03:07.279 --> 00:03:10.800
+Batch results come back in whatever order they happen to finish,
+
+43
+00:03:10.800 --> 00:03:13.119
+which isn't the order you submitted them in,
+
+44
+00:03:13.119 --> 00:03:16.960
+so you give every request a custom identifier when you submit it,
+
+45
+00:03:17.520 --> 00:03:20.399
+something that points back at the source document.
+
+46
+00:03:20.399 --> 00:03:24.800
+When results arrive, you match each one by that identifier.
+
+47
+00:03:24.800 --> 00:03:27.839
+What you never do is read results positionally,
+
+48
+00:03:27.839 --> 00:03:30.639
+assuming the first result belongs to the first document.
+
+49
+00:03:31.199 --> 00:03:36.880
+That assumption is wrong, and here's why it's dangerous rather than just incorrect.
+
+50
+00:03:36.880 --> 00:03:38.639
+It doesn't throw an error.
+
+51
+00:03:38.639 --> 00:03:41.039
+You get a full set of plausible-looking records
+
+52
+00:03:41.039 --> 00:03:44.720
+with the data attached to the wrong ones, and nothing anywhere tells you.
+
+53
+00:03:45.919 --> 00:03:48.960
+Deciding what belongs in a batch comes down to one question.
+
+54
+00:03:49.520 --> 00:03:52.160
+Is anything blocked while this runs?
+
+55
+00:03:52.160 --> 00:03:53.440
+Overnight reporting?
+
+56
+00:03:53.440 --> 00:03:55.279
+A weekly compliance audit?
+
+57
+00:03:55.279 --> 00:03:57.839
+Generating tests across a repository?
+
+58
+00:03:57.839 --> 00:04:00.240
+Backfilling extraction over an archive?
+
+59
+00:04:00.960 --> 00:04:04.080
+Nobody's waiting, the deadline is measured in hours,
+
+60
+00:04:04.080 --> 00:04:08.000
+and a 24-hour ceiling fits inside it comfortably.
+
+61
+00:04:08.000 --> 00:04:11.360
+Now the other side, a check that gates emerge,
+
+62
+00:04:11.360 --> 00:04:15.279
+anything interactive, anything a downstream pipeline is sitting on.
+
+63
+00:04:15.919 --> 00:04:19.920
+For those, a 24-hour ceiling isn't a discount you're accepting,
+
+64
+00:04:19.920 --> 00:04:22.079
+it's an outage you're scheduling.
+
+65
+00:04:22.079 --> 00:04:24.640
+The tolerance for delay is the whole decision,
+
+66
+00:04:24.640 --> 00:04:27.760
+and it's a property of the workflow rather than of the prompt.
+
+67
+00:04:29.040 --> 00:04:31.519
+There's one constraint that surprises people,
+
+68
+00:04:31.519 --> 00:04:35.040
+and it's worth stating precisely because it's easy to get backwards.
+
+69
+00:04:35.679 --> 00:04:38.799
+Batch requests do support tools.
+
+70
+00:04:38.799 --> 00:04:42.799
+You can define them, and the model can return a tool call in the result.
+
+71
+00:04:42.799 --> 00:04:45.440
+What you can't do is execute that tool
+
+72
+00:04:45.440 --> 00:04:48.399
+and feed its result back partway through the request.
+
+73
+00:04:48.399 --> 00:04:53.359
+A batch request is a single turn submitted once and returned once,
+
+74
+00:04:53.359 --> 00:04:56.640
+so there's no round trip available to complete the loop in.
+
+75
+00:04:56.640 --> 00:05:00.000
+That means the agentic pattern, where the model calls a tool,
+
+76
+00:05:00.000 --> 00:05:02.640
+reads what came back, and decides what to do next,
+
+77
+00:05:02.640 --> 00:05:03.920
+needs the synchronous path.
+
+78
+00:05:04.640 --> 00:05:08.160
+Batches suit single-turn work, however much of it you have.
+
+79
+00:05:09.519 --> 00:05:11.679
+Three practical points to close on.
+
+80
+00:05:11.679 --> 00:05:15.279
+Batching stacks with your other cost controls rather than replacing them.
+
+81
+00:05:15.839 --> 00:05:19.279
+If every request in the batch shares a large system prompt,
+
+82
+00:05:19.279 --> 00:05:21.839
+that prompt still caches across them,
+
+83
+00:05:21.839 --> 00:05:24.640
+so the discount and the cache-saving compound.
+
+84
+00:05:24.640 --> 00:05:26.799
+And before you commit 10,000 documents,
+
+85
+00:05:26.799 --> 00:05:29.839
+run the prompt over a small sample and check the output.
+
+86
+00:05:30.480 --> 00:05:34.320
+A first pass failure at full volume means paying for the whole run,
+
+87
+00:05:34.320 --> 00:05:36.640
+and then paying again for the resubmission.
+
+88
+00:05:37.359 --> 00:05:40.399
+Size your submissions against your own deadline, too.
+
+89
+00:05:40.399 --> 00:05:42.640
+If a result is needed by 9 in the morning,
+
+90
+00:05:42.640 --> 00:05:46.640
+submitting at 8 and hoping for the typical case isn't a plan,
+
+91
+00:05:46.640 --> 00:05:48.959
+because the ceiling is what you're actually promised.
+
+92
+00:05:50.720 --> 00:05:53.760
+The expensive mistake with batching isn't the weight.
+
+93
+00:05:53.760 --> 00:05:57.279
+It's assuming results come back in the order you sent them.
+
+94
+00:05:57.279 --> 00:06:00.799
+They don't, and a positional read fails quietly,
+
+95
+00:06:00.799 --> 00:06:04.959
+so wrong answers land on right records and nobody notices for weeks.
+
+96
+00:06:05.839 --> 00:06:08.000
+Match on your own custom identifier,
+
+97
+00:06:08.000 --> 00:06:11.200
+and that whole class of bug disappears for you.
+
+98
+00:06:11.200 --> 00:06:15.519
+Then batching becomes half-priced tokens for work nobody is waiting on,
+
+99
+00:06:15.519 --> 00:06:16.640
+which is the whole point.
+
+100
+00:06:17.440 --> 00:06:18.880
+That wraps up this lesson.
+
+101
+00:06:18.880 --> 00:06:20.000
+Thanks for watching.
+

@@ -1,0 +1,334 @@
+WEBVTT
+
+00:00.150 --> 00:07.040
+Let's go with question for a retail company runs a serverless mobile app built on Amazon API Gateway,
+
+00:07.050 --> 00:09.300
+Lambda Incognito Dynamo DB.
+
+00:09.510 --> 00:15.150
+During heavy Holiday's traffic spikes, the company receives complaints of intermittent system failures.
+
+00:15.230 --> 00:21.900
+Developers find that the API gateway and point is returning 502 Bad Gateway errors to seemingly valid
+
+00:21.900 --> 00:22.650
+requests.
+
+00:22.680 --> 00:25.290
+Which method should address this issue?
+
+00:25.350 --> 00:28.470
+So here we have a classic serverless application API gateway.
+
+00:28.500 --> 00:33.120
+Lambda could need to and then be as the classic recommended architecture by AWS.
+
+00:33.150 --> 00:36.270
+We're just missing three to deliver some static content.
+
+00:36.270 --> 00:42.720
+And here in this example, we have problems during a heavy holiday traffic spikes.
+
+00:42.720 --> 00:45.090
+So this is telling us that something is working normally.
+
+00:45.090 --> 00:47.310
+But now because of this heavy load, it's not.
+
+00:47.310 --> 00:49.500
+And this gives us intermittent system failure.
+
+00:49.500 --> 00:51.480
+So this is a very important information.
+
+00:51.480 --> 00:56.910
+So when we stress that serverless architecture, where can the errors come from?
+
+00:56.910 --> 01:03.510
+And we get a hint because the API gateway is the one returning the error and it's saying 502 bad gateway.
+
+01:03.510 --> 01:09.960
+So let's have a look at the architecture and we can see the 502 errors happen between the client and
+
+01:09.960 --> 01:11.010
+the API gateway.
+
+01:11.040 --> 01:12.690
+The rest is a classic solution.
+
+01:12.690 --> 01:17.370
+Architecture for serverless, something you have already seen once before, I'm pretty sure.
+
+01:17.700 --> 01:18.240
+Okay.
+
+01:18.600 --> 01:22.230
+So now the real trick is okay, what is this?
+
+01:22.230 --> 01:24.240
+502 error for API gateway.
+
+01:24.240 --> 01:24.810
+Meaning?
+
+01:24.810 --> 01:29.490
+So in this course, I told you about the errors messages and you may have forgotten about those, but
+
+01:29.490 --> 01:33.000
+even if you did forget about those, you need to remember the basics.
+
+01:33.000 --> 01:37.350
+So the basics is what 4xx mean client errors.
+
+01:37.350 --> 01:40.890
+Okay, so that means that the client has done something wrong.
+
+01:40.890 --> 01:45.420
+So the client invoking the API gateway has done something wrong, which is not the case here because
+
+01:45.420 --> 01:46.350
+we have a5x.
+
+01:46.500 --> 01:50.730
+So 4xx type of errors is, for example, 400 bad requests.
+
+01:50.730 --> 01:54.150
+Then we have 403x is denied or WAF has filter it.
+
+01:54.150 --> 01:58.560
+So again, the client is not authorized to access our API 4 to 9.
+
+01:58.560 --> 02:04.620
+Very important quota exceeded or throttled again because the client has done too many requests.
+
+02:05.010 --> 02:11.160
+So for x x means client errors and 5xx means server errors.
+
+02:11.160 --> 02:16.260
+So just this information you'll see in this question is enough for us to understand how something can
+
+02:16.260 --> 02:18.120
+be going wrong and what could be going wrong.
+
+02:18.120 --> 02:23.970
+But if you do remember the error codes in details, you would know that 502 means that the Lambda Proxy
+
+02:23.970 --> 02:29.430
+integration, for example, has done out of order invocations or is under heavy load.
+
+02:29.430 --> 02:35.790
+So this is one indication of where you would get a502503 is service and available exception and 504
+
+02:35.820 --> 02:37.590
+is integration failure.
+
+02:37.590 --> 02:43.350
+The endpoint request timed out because the API gateway request timeout after a 29 seconds maximum.
+
+02:43.350 --> 02:50.790
+And I would remember you to I would require you to remember at least 429502 and 504 for the API gateway
+
+02:50.790 --> 02:52.080
+before going into the exam.
+
+02:52.530 --> 02:52.900
+Okay.
+
+02:53.010 --> 02:54.420
+So now let's look at option eight.
+
+02:54.720 --> 03:00.690
+Increase the concurrency limits for lambda functions and configure notifications to be sent by the cloud.
+
+03:00.690 --> 03:04.410
+Watch you using the concurrent execution metric.
+
+03:04.440 --> 03:07.500
+Okay, so let's have a look at this architecture.
+
+03:07.500 --> 03:14.670
+So we have this, but now we are going to create a cloud alarm to look at the concurrent execution metric
+
+03:14.670 --> 03:15.510
+of lambda.
+
+03:15.840 --> 03:16.950
+So does that work?
+
+03:16.950 --> 03:22.860
+502 indicates that something is going on in the back end and we know that it's going on in the back
+
+03:22.860 --> 03:25.680
+end only when we have an increased load.
+
+03:25.680 --> 03:29.890
+So we know that the problem is not at the API gateway level because it's not the backend.
+
+03:30.000 --> 03:32.520
+The back end is whatever is behind API gateway.
+
+03:32.520 --> 03:34.920
+So something's going on with Lambda or Dynamo.
+
+03:34.920 --> 03:41.610
+DB But in this example, Lambda, if it goes onto too many loads and has too many execution because
+
+03:41.610 --> 03:46.950
+of a traffic spike, then it would not be able to reply to the API gateway, something positive and
+
+03:46.950 --> 03:52.920
+we would get a502 So by increasing the concurrency limit right now today with the lambda functions,
+
+03:52.920 --> 03:55.050
+we would be fixing the problems we would have.
+
+03:55.050 --> 04:01.140
+And then by creating a cloud metric and a cloud edge alarm on top of our lambda functions, that would
+
+04:01.140 --> 04:04.110
+give us the option to monitor this limit.
+
+04:04.110 --> 04:09.420
+And if we do go over again in the future, we can again address it by increasing it manually.
+
+04:09.840 --> 04:12.510
+So this would work and this looks like a good answer.
+
+04:12.510 --> 04:15.420
+So I'll keep this in mind and I'll go on to the next question.
+
+04:15.780 --> 04:21.210
+The next option, sorry, is configure notifications alerts for the limits of transactions per second
+
+04:21.210 --> 04:27.120
+on the API gateway endpoints and create a learn the function that will increase this limits as needed.
+
+04:27.120 --> 04:34.500
+So we have this architecture and now we are looking at the API gateway metric called transaction per
+
+04:34.500 --> 04:37.890
+seconds and then we create the cloud watch alarm on top of it.
+
+04:37.890 --> 04:42.300
+And for this alarm to trigger a lambda function, it's not mentioned this question, but you do have
+
+04:42.300 --> 04:44.310
+to send it to an SMS topic.
+
+04:44.310 --> 04:48.600
+That SMS topic would send it to your lambda function and then your lambda function.
+
+04:48.600 --> 04:54.570
+We need to do an API call to the Service Quotas API, which is a new API from AWS, which allows you
+
+04:54.570 --> 04:59.640
+to programmatically change your limits with, for example, API calls done.
+
+04:59.730 --> 05:00.720
+From a lending function.
+
+05:01.020 --> 05:03.570
+Okay, so this is a great architecture.
+
+05:03.570 --> 05:04.530
+I really like it.
+
+05:04.530 --> 05:08.430
+And this is something I would totally recommend you to have if you're using API Gateway.
+
+05:08.460 --> 05:14.760
+But this will only be valid if there was a problem at the API gateway level, in which case this would
+
+05:14.760 --> 05:16.020
+be very, very valid.
+
+05:16.050 --> 05:22.140
+If our API gateway was throttling and it says you have to exceed the quota and we are throttling.
+
+05:22.140 --> 05:27.990
+So this is not the right answer for this question, but it is a very valid architecture.
+
+05:27.990 --> 05:34.200
+If your API gateway is the one giving you the 4 to 9 errors, quota exceeded throttled.
+
+05:34.710 --> 05:36.570
+So still a good architecture to see once in a while.
+
+05:36.900 --> 05:43.410
+Look up and see shard users to Amazon incognito pools to reduce user density across and then we chart
+
+05:43.410 --> 05:46.890
+it across multiple regions so we have the same architecture.
+
+05:46.890 --> 05:51.420
+But now Incognito is going to be across multiple regions and multiple pools.
+
+05:51.780 --> 05:55.320
+I'm not sure that's a very good architecture, to be honest, but why not?
+
+05:55.320 --> 06:01.710
+And this would be valid if we had issues with API calls done by user pools or user can not authenticate.
+
+06:01.770 --> 06:04.080
+And this is not the question.
+
+06:04.080 --> 06:06.090
+So this is a plan destructor.
+
+06:06.090 --> 06:08.160
+If we look at this architecture, it doesn't make any sense.
+
+06:08.160 --> 06:14.340
+So we just rule out this answer pretty easily and then finally use the DB strongly consistent reads
+
+06:14.340 --> 06:18.090
+to ensure the latest data is always returned to the client application.
+
+06:18.180 --> 06:22.020
+So we have this and now we're using consistent reads.
+
+06:22.020 --> 06:28.590
+So there is no problem about the client saying that they don't have the last the latest data in the
+
+06:28.590 --> 06:29.010
+question.
+
+06:29.010 --> 06:34.440
+So if we look closely, yes, Dynamo DB is in the back end, but we have no hint that the clients are
+
+06:34.440 --> 06:35.370
+getting outdated data.
+
+06:35.370 --> 06:39.450
+We have no hints that Dynamo DB is the source of our back end problems.
+
+06:39.450 --> 06:41.700
+So in this case it doesn't make any sense.
+
+06:41.700 --> 06:48.810
+And actually using strongly consistent reads means that we'll be using more RCU on Dynamo DB and therefore
+
+06:48.810 --> 06:55.400
+would be increasing the load on Dynamo DB, therefore maybe increasing the chances that we overload
+
+06:55.410 --> 06:57.480
+anybody with throttles.
+
+06:57.480 --> 07:01.380
+And so again, this is a very, very bad option and I'm going to roll that out.
+
+07:01.410 --> 07:07.800
+The correct answer was to monitor the lambda function for the concurrent execution limit and then create
+
+07:07.800 --> 07:09.210
+an alert based on that.
+
+07:09.240 --> 07:09.690
+All right.
+
+07:09.690 --> 07:10.320
+That's it.
+
+07:10.320 --> 07:12.030
+I will see you in the next lecture.

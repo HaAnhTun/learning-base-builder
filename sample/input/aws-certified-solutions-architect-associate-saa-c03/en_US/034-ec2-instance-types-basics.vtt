@@ -1,0 +1,490 @@
+WEBVTT
+
+1
+00:00:00.180 --> 00:00:01.200
+<v Instructor>So now, let's talk about</v>
+
+2
+00:00:01.200 --> 00:00:03.570
+the different EC2 instance types.
+
+3
+00:00:03.570 --> 00:00:06.600
+So you have a lot of them and if you click on this link,
+
+4
+00:00:06.600 --> 00:00:08.940
+you will have great details about them.
+
+5
+00:00:08.940 --> 00:00:11.790
+But they can be combined into these categories,
+
+6
+00:00:11.790 --> 00:00:14.370
+general purpose, compute optimized, memory optimized,
+
+7
+00:00:14.370 --> 00:00:18.150
+storage optimized, accelerated computing, and HPC optimized.
+
+8
+00:00:18.150 --> 00:00:21.180
+And there is a naming convention in AWS.
+
+9
+00:00:21.180 --> 00:00:24.360
+So for example, m5.2xlarge.
+
+10
+00:00:24.360 --> 00:00:27.870
+M corresponds to the instance class.
+
+11
+00:00:27.870 --> 00:00:30.444
+Five is the generation because overtime,
+
+12
+00:00:30.444 --> 00:00:33.930
+AWS is going to improve and release new instance types.
+
+13
+00:00:33.930 --> 00:00:37.770
+And 2xlarge is the size within the instance class.
+
+14
+00:00:37.770 --> 00:00:38.970
+You don't need to know them,
+
+15
+00:00:38.970 --> 00:00:40.290
+but if you're curious about them,
+
+16
+00:00:40.290 --> 00:00:43.560
+go to this link and you'll get a lot more information.
+
+17
+00:00:43.560 --> 00:00:45.390
+Well, we'll talk about a few different type
+
+18
+00:00:45.390 --> 00:00:46.223
+of instance types.
+
+19
+00:00:46.223 --> 00:00:48.600
+So you have general purpose, and these are great
+
+20
+00:00:48.600 --> 00:00:51.060
+for diversity of workloads such as web servers
+
+21
+00:00:51.060 --> 00:00:53.130
+or code repositories.
+
+22
+00:00:53.130 --> 00:00:55.320
+They will have a good balance between compute,
+
+23
+00:00:55.320 --> 00:00:57.090
+memory, networking.
+
+24
+00:00:57.090 --> 00:00:57.990
+And so in this course,
+
+25
+00:00:57.990 --> 00:00:59.970
+we'll be using general purpose instances.
+
+26
+00:00:59.970 --> 00:01:01.530
+We'll be using the T2 Micro,
+
+27
+00:01:01.530 --> 00:01:05.730
+which is the three tier general purpose type of instance.
+
+28
+00:01:05.730 --> 00:01:07.230
+On the website that I just showed you,
+
+29
+00:01:07.230 --> 00:01:09.930
+you will see all the different types of instance
+
+30
+00:01:09.930 --> 00:01:11.250
+that are general purpose.
+
+31
+00:01:11.250 --> 00:01:12.810
+And this is gonna evolve over time,
+
+32
+00:01:12.810 --> 00:01:14.100
+so I won't update this slide,
+
+33
+00:01:14.100 --> 00:01:16.380
+but you can always refer back to the AWS website
+
+34
+00:01:16.380 --> 00:01:18.480
+to check what the instances are
+
+35
+00:01:18.480 --> 00:01:21.330
+in the general purpose type of family.
+
+36
+00:01:21.330 --> 00:01:23.490
+Then we have compute optimized.
+
+37
+00:01:23.490 --> 00:01:25.710
+And these are instances that are great
+
+38
+00:01:25.710 --> 00:01:28.620
+and optimized for compute intensive tasks.
+
+39
+00:01:28.620 --> 00:01:31.920
+So what requires a high level of processor?
+
+40
+00:01:31.920 --> 00:01:32.753
+Well, for example,
+
+41
+00:01:32.753 --> 00:01:34.980
+it could be if you're batch processing some data,
+
+42
+00:01:34.980 --> 00:01:36.750
+if you're doing media transcoding,
+
+43
+00:01:36.750 --> 00:01:38.820
+if you need high performance web servers,
+
+44
+00:01:38.820 --> 00:01:41.610
+if you're doing high performance computing called HPC,
+
+45
+00:01:41.610 --> 00:01:43.020
+if you're doing machine learning,
+
+46
+00:01:43.020 --> 00:01:45.510
+or if you have a dedicated gaming server.
+
+47
+00:01:45.510 --> 00:01:49.710
+So all these things are tasks that require a very good CPU,
+
+48
+00:01:49.710 --> 00:01:51.000
+a very good compute side.
+
+49
+00:01:51.000 --> 00:01:53.730
+And so EC2 instances
+
+50
+00:01:53.730 --> 00:01:56.670
+do have this kind of particularity.
+
+51
+00:01:56.670 --> 00:02:01.140
+And for now, all the compute optimized instances in EC2
+
+52
+00:02:01.140 --> 00:02:03.840
+are of the C name.
+
+53
+00:02:03.840 --> 00:02:06.420
+So C5, C6, and so on.
+
+54
+00:02:06.420 --> 00:02:10.320
+Next, we have some EC2 instances that are memory optimized,
+
+55
+00:02:10.320 --> 00:02:13.530
+and they are going to have a really fast performance
+
+56
+00:02:13.530 --> 00:02:14.700
+for the type of workloads
+
+57
+00:02:14.700 --> 00:02:17.940
+that will process large data sets in memory.
+
+58
+00:02:17.940 --> 00:02:19.200
+So memory means RAM.
+
+59
+00:02:19.200 --> 00:02:20.400
+And so the use cases
+
+60
+00:02:20.400 --> 00:02:22.500
+are this is going to be high performance
+
+61
+00:02:22.500 --> 00:02:24.645
+for relational or non-relational databases
+
+62
+00:02:24.645 --> 00:02:27.600
+that are mostly going to be in memory databases,
+
+63
+00:02:27.600 --> 00:02:29.580
+distributed web scale cache stores.
+
+64
+00:02:29.580 --> 00:02:31.680
+So for ElastiCache, for example.
+
+65
+00:02:31.680 --> 00:02:33.570
+In memory databases that are optimized
+
+66
+00:02:33.570 --> 00:02:36.180
+for business intelligence or BI,
+
+67
+00:02:36.180 --> 00:02:38.940
+and applications performing real-time processing
+
+68
+00:02:38.940 --> 00:02:41.640
+of big unstructured data.
+
+69
+00:02:41.640 --> 00:02:44.970
+So in terms of the names for the memory optimized instances,
+
+70
+00:02:44.970 --> 00:02:48.480
+there's going to be the R series because R stands for RAM,
+
+71
+00:02:48.480 --> 00:02:51.450
+but there's also going to be X1, high memory, and Z1.
+
+72
+00:02:51.450 --> 00:02:53.940
+Again, you don't need to remember the name of the instances,
+
+73
+00:02:53.940 --> 00:02:56.250
+but good to know at a high level.
+
+74
+00:02:56.250 --> 00:02:57.083
+Okay.
+
+75
+00:02:57.083 --> 00:03:00.480
+And finally, we'll have storage optimized instances.
+
+76
+00:03:00.480 --> 00:03:02.640
+They're great when you are accessing
+
+77
+00:03:02.640 --> 00:03:06.210
+a lot of data sets on the local storage.
+
+78
+00:03:06.210 --> 00:03:08.640
+And so the use cases for storage optimized instances
+
+79
+00:03:08.640 --> 00:03:10.380
+are going to be high frequency
+
+80
+00:03:10.380 --> 00:03:13.200
+online transaction processing, so OLTP systems,
+
+81
+00:03:13.200 --> 00:03:15.420
+relational and NoSQL databases.
+
+82
+00:03:15.420 --> 00:03:16.560
+And we'll see those in details
+
+83
+00:03:16.560 --> 00:03:18.270
+when we get to the database sections.
+
+84
+00:03:18.270 --> 00:03:21.270
+Cache for in-memory databases, for example, Redis,
+
+85
+00:03:21.270 --> 00:03:24.720
+data warehousing application, distributed file systems,
+
+86
+00:03:24.720 --> 00:03:27.750
+and the storage optimized instances in AWS
+
+87
+00:03:27.750 --> 00:03:30.497
+will start with an I, a D, or H1.
+
+88
+00:03:30.497 --> 00:03:32.490
+But again, you don't have to remember this.
+
+89
+00:03:32.490 --> 00:03:34.320
+I'm just giving you examples.
+
+90
+00:03:34.320 --> 00:03:35.850
+So what does it mean?
+
+91
+00:03:35.850 --> 00:03:37.740
+Let's compare a few instance types.
+
+92
+00:03:37.740 --> 00:03:40.500
+So for example, for t2.micro, we have one vCPU
+
+93
+00:03:40.500 --> 00:03:43.800
+and one memory, one gigabytes of memory.
+
+94
+00:03:43.800 --> 00:03:47.610
+And if you look, for example, at r5.16xlarge,
+
+95
+00:03:47.610 --> 00:03:52.110
+we have 16 vCPU and 512 gigabytes of memory.
+
+96
+00:03:52.110 --> 00:03:55.110
+So we can see there's a lot of more emphasis on the memory.
+
+97
+00:03:55.110 --> 00:03:59.580
+If we compare it, for example, to a c5d.4xlarge
+
+98
+00:03:59.580 --> 00:04:03.480
+we can see we have 16 vCPU and 32 gigabytes of memory.
+
+99
+00:04:03.480 --> 00:04:06.570
+So less memory, more CPU, and so on,
+
+100
+00:04:06.570 --> 00:04:07.980
+different network performance,
+
+101
+00:04:07.980 --> 00:04:09.660
+different EBS bandwidth and so on.
+
+102
+00:04:09.660 --> 00:04:12.000
+So just to give you a point of comparison,
+
+103
+00:04:12.000 --> 00:04:13.230
+and if you wanted a website
+
+104
+00:04:13.230 --> 00:04:16.200
+to compare all the EC2 instances together,
+
+105
+00:04:16.200 --> 00:04:17.160
+there's one that I really like.
+
+106
+00:04:17.160 --> 00:04:19.380
+It's called ec2instances.info,
+
+107
+00:04:19.380 --> 00:04:21.450
+and I'll show it to you right now.
+
+108
+00:04:21.450 --> 00:04:23.970
+So I am on the ec2instances.info website.
+
+109
+00:04:23.970 --> 00:04:24.990
+And as we can see,
+
+110
+00:04:24.990 --> 00:04:28.980
+we have a list of all the instances available in AWS.
+
+111
+00:04:28.980 --> 00:04:29.813
+So really a lot.
+
+112
+00:04:29.813 --> 00:04:30.900
+We also get some information
+
+113
+00:04:30.900 --> 00:04:32.820
+around the Linux on demand cost,
+
+114
+00:04:32.820 --> 00:04:34.110
+the Linux reserves cost, and so on.
+
+115
+00:04:34.110 --> 00:04:35.640
+So some cost information.
+
+116
+00:04:35.640 --> 00:04:38.940
+We get information around the memory, the number of vCPU.
+
+117
+00:04:38.940 --> 00:04:40.980
+We can order by name, we can search it.
+
+118
+00:04:40.980 --> 00:04:43.170
+So it's quite handy and I really like this website.
+
+119
+00:04:43.170 --> 00:04:45.420
+And if you go and use AWS,
+
+120
+00:04:45.420 --> 00:04:47.790
+you probably will use this website as well.
+
+121
+00:04:47.790 --> 00:04:49.200
+So that's it for this lecture.
+
+122
+00:04:49.200 --> 00:04:52.043
+I hope you liked it and I will see you in the next lecture.
+

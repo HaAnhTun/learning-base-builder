@@ -1,0 +1,290 @@
+WEBVTT
+
+1
+00:00:00.210 --> 00:00:01.470
+<v Instructor>Next question.</v>
+
+2
+00:00:01.470 --> 00:00:04.680
+So a company has deployed a multi-tier web application
+
+3
+00:00:04.680 --> 00:00:06.630
+in the AWS Cloud.
+
+4
+00:00:06.630 --> 00:00:08.910
+The application consists of the following tiers.
+
+5
+00:00:08.910 --> 00:00:11.400
+We have a Windows-based web tier
+
+6
+00:00:11.400 --> 00:00:13.440
+that is hosted on Amazon EC2 instances
+
+7
+00:00:13.440 --> 00:00:15.300
+with Elastic IP addresses,
+
+8
+00:00:15.300 --> 00:00:17.670
+with have a Linux-based application tier
+
+9
+00:00:17.670 --> 00:00:19.830
+that is hosted on Amazon EC2 instances
+
+10
+00:00:19.830 --> 00:00:23.790
+behind the ALB that uses path-based routing
+
+11
+00:00:23.790 --> 00:00:25.440
+and then a MySQL database that runs
+
+12
+00:00:25.440 --> 00:00:27.630
+on the Linux EC2 instance.
+
+13
+00:00:27.630 --> 00:00:32.630
+So all the EC2 instances are using the Intel-based x86 CPUs
+
+14
+00:00:32.700 --> 00:00:35.010
+and we need to modernize the infrastructure
+
+15
+00:00:35.010 --> 00:00:37.200
+to achieve better performance.
+
+16
+00:00:37.200 --> 00:00:40.680
+Overall, we want to also minimize the operational overhead
+
+17
+00:00:40.680 --> 00:00:41.910
+of the application.
+
+18
+00:00:41.910 --> 00:00:44.040
+So better performance, less overhead,
+
+19
+00:00:44.040 --> 00:00:46.050
+and modernized infrastructure.
+
+20
+00:00:46.050 --> 00:00:48.750
+So which actions should we do?
+
+21
+00:00:48.750 --> 00:00:49.770
+So let's have a look at the options.
+
+22
+00:00:49.770 --> 00:00:51.330
+So first of all, the architecture.
+
+23
+00:00:51.330 --> 00:00:55.260
+We have the web tier with Windows Instances and elastic IPs.
+
+24
+00:00:55.260 --> 00:00:57.690
+As you know, this is bad just to run elastic IPs
+
+25
+00:00:57.690 --> 00:01:00.390
+on many EC2 instances for a tier.
+
+26
+00:01:00.390 --> 00:01:01.650
+The application tier looks better
+
+27
+00:01:01.650 --> 00:01:03.990
+because while we have an application load balancer
+
+28
+00:01:03.990 --> 00:01:06.750
+connected to EC2 instances, so there's only one entry point
+
+29
+00:01:06.750 --> 00:01:08.940
+into our application, which is great,
+
+30
+00:01:08.940 --> 00:01:12.390
+and the database tier is you're using MySQL on EC2
+
+31
+00:01:12.390 --> 00:01:13.950
+and we know that's horrible.
+
+32
+00:01:13.950 --> 00:01:15.990
+We need to reuse a managed service
+
+33
+00:01:15.990 --> 00:01:18.360
+to reduce our management overhead.
+
+34
+00:01:18.360 --> 00:01:21.000
+So option one is to run the MySQL database
+
+35
+00:01:21.000 --> 00:01:24.270
+on multiple EC2 instances just like that.
+
+36
+00:01:24.270 --> 00:01:26.940
+So this is going to increase maybe our availability
+
+37
+00:01:26.940 --> 00:01:28.620
+but also increase our headaches
+
+38
+00:01:28.620 --> 00:01:30.810
+which is not what we want from this question.
+
+39
+00:01:30.810 --> 00:01:32.970
+Then to migrate a MySQL database
+
+40
+00:01:32.970 --> 00:01:35.190
+into an Amazon or Aurora Serverless
+
+41
+00:01:35.190 --> 00:01:36.750
+so that's completely possible,
+
+42
+00:01:36.750 --> 00:01:40.590
+Aurora as an API for MySQL
+
+43
+00:01:40.590 --> 00:01:42.840
+and Aurora Serverless is a very fine database.
+
+44
+00:01:42.840 --> 00:01:44.220
+It's actually serverless,
+
+45
+00:01:44.220 --> 00:01:46.110
+so we have no management overhead
+
+46
+00:01:46.110 --> 00:01:47.790
+and incredible performance.
+
+47
+00:01:47.790 --> 00:01:49.440
+So this seems like a good choice.
+
+48
+00:01:49.440 --> 00:01:53.280
+And then, migrates all EC2 instances types to Graviton2.
+
+49
+00:01:53.280 --> 00:01:56.940
+While it turns out that we can do this,
+
+50
+00:01:56.940 --> 00:01:58.860
+Graviton2 will provide us better performance
+
+51
+00:01:58.860 --> 00:02:02.550
+because this is a newer kind of CPU architecture
+
+52
+00:02:02.550 --> 00:02:06.600
+but this is not available at all for Windows Instances.
+
+53
+00:02:06.600 --> 00:02:10.080
+So because we have the web tier using Windows Instances,
+
+54
+00:02:10.080 --> 00:02:12.690
+then this is not an acceptable solution.
+
+55
+00:02:12.690 --> 00:02:15.870
+But this would be if everything was using Linux.
+
+56
+00:02:15.870 --> 00:02:17.340
+So the correct answer
+
+57
+00:02:17.340 --> 00:02:20.673
+in this option group is going to be answer C.
+
+58
+00:02:21.720 --> 00:02:23.520
+If we look at the option group two,
+
+59
+00:02:23.520 --> 00:02:26.400
+we have the option to place the web tier instances
+
+60
+00:02:26.400 --> 00:02:29.040
+behind an ALB, which will look like this.
+
+61
+00:02:29.040 --> 00:02:30.840
+And the applicational balancer
+
+62
+00:02:30.840 --> 00:02:34.140
+for sure works with any kind of web application.
+
+63
+00:02:34.140 --> 00:02:37.080
+So we could definitely have Windows EC2 instances
+
+64
+00:02:37.080 --> 00:02:41.190
+behind an ALB and this looks very modern and scalable,
+
+65
+00:02:41.190 --> 00:02:43.830
+whereas, the option is to replace ALB
+
+66
+00:02:43.830 --> 00:02:47.220
+for the app tier with a company managed load balancer.
+
+67
+00:02:47.220 --> 00:02:49.560
+So I don't know what the company load balancer
+
+68
+00:02:49.560 --> 00:02:53.550
+would look like, this is anti-pattern for AWS.
+
+69
+00:02:53.550 --> 00:02:56.700
+This seems like a very actually easy answer to rule out.
+
+70
+00:02:56.700 --> 00:03:00.393
+So, of course, in this example, the correct answer is B.
+
+71
+00:03:01.500 --> 00:03:02.880
+And that's it for this question.
+
+72
+00:03:02.880 --> 00:03:05.830
+I hope you liked it and I will see you in the next lecture.
+

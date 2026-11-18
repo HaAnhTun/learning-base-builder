@@ -1,0 +1,658 @@
+WEBVTT
+
+1
+00:00:00.390 --> 00:00:01.230
+<v Instructor>So now let's talk</v>
+
+2
+00:00:01.230 --> 00:00:04.437
+about the AWS IAM Identity Center.
+
+3
+00:00:04.437 --> 00:00:06.570
+And this service is the successor
+
+4
+00:00:06.570 --> 00:00:08.790
+to something that you used to know probably,
+
+5
+00:00:08.790 --> 00:00:12.570
+which is called the AWS Single Sign-On Service.
+
+6
+00:00:12.570 --> 00:00:14.250
+So the idea is that it's the same service,
+
+7
+00:00:14.250 --> 00:00:16.710
+just been renamed and it gives you one login,
+
+8
+00:00:16.710 --> 00:00:18.360
+therefore it's called single sign-on,
+
+9
+00:00:18.360 --> 00:00:23.010
+for all your AWS accounts in the AWS Organizations,
+
+10
+00:00:23.010 --> 00:00:25.200
+but also your business cloud applications.
+
+11
+00:00:25.200 --> 00:00:29.010
+So you can connect to Salesforce to Box to Microsoft 365
+
+12
+00:00:29.010 --> 00:00:31.560
+and so on, or any application you want,
+
+13
+00:00:31.560 --> 00:00:35.760
+as long as you have a SAML2.0 integration.
+
+14
+00:00:35.760 --> 00:00:39.120
+And finally, it gives you also a single login
+
+15
+00:00:39.120 --> 00:00:42.210
+into your EC2 Windows Instances.
+
+16
+00:00:42.210 --> 00:00:44.340
+So one login, access to everything,
+
+17
+00:00:44.340 --> 00:00:45.660
+which is really, really good.
+
+18
+00:00:45.660 --> 00:00:48.420
+And the exam most likely will ask you about one login
+
+19
+00:00:48.420 --> 00:00:51.720
+into multiple AWS accounts.
+
+20
+00:00:51.720 --> 00:00:55.350
+Now, the identity provider, so where your users are stored
+
+21
+00:00:55.350 --> 00:00:57.300
+for this login, can be twofold.
+
+22
+00:00:57.300 --> 00:00:59.820
+It could be a built-in identity store
+
+23
+00:00:59.820 --> 00:01:03.210
+in the IAM Identity Center, or you can connect
+
+24
+00:01:03.210 --> 00:01:05.370
+to a third-party identity provider.
+
+25
+00:01:05.370 --> 00:01:07.980
+It could be Active Directory, AD,
+
+26
+00:01:07.980 --> 00:01:10.740
+or OneLogin or Okta and so on.
+
+27
+00:01:10.740 --> 00:01:13.410
+So just to make it very visible
+
+28
+00:01:13.410 --> 00:01:17.760
+and visual for you, we have the login flow, such as this.
+
+29
+00:01:17.760 --> 00:01:21.720
+You go onto the login page, you enter your username
+
+30
+00:01:21.720 --> 00:01:24.330
+and your password, and then you go directly
+
+31
+00:01:24.330 --> 00:01:27.030
+into the AWS IAM Identity Center.
+
+32
+00:01:27.030 --> 00:01:28.710
+And this is actually a screenshot
+
+33
+00:01:28.710 --> 00:01:31.620
+from my own Identity Center page.
+
+34
+00:01:31.620 --> 00:01:33.030
+And as you can see from there,
+
+35
+00:01:33.030 --> 00:01:35.490
+I have enabled it for my AWS accounts.
+
+36
+00:01:35.490 --> 00:01:37.920
+And so I can click on the account I want
+
+37
+00:01:37.920 --> 00:01:39.690
+and connect directly, for example,
+
+38
+00:01:39.690 --> 00:01:41.760
+in the management console.
+
+39
+00:01:41.760 --> 00:01:43.110
+And then if I do this,
+
+40
+00:01:43.110 --> 00:01:47.160
+then I'm taken directly from this into the home page
+
+41
+00:01:47.160 --> 00:01:48.600
+of your console.
+
+42
+00:01:48.600 --> 00:01:51.960
+But I'm logged in in that specific console.
+
+43
+00:01:51.960 --> 00:01:54.060
+So the idea is that I don't need to know
+
+44
+00:01:54.060 --> 00:01:55.800
+how to log in into that specific console.
+
+45
+00:01:55.800 --> 00:01:59.760
+I can just log in into my IAM Identity Center portal.
+
+46
+00:01:59.760 --> 00:02:01.500
+And from there I have SSO.
+
+47
+00:02:01.500 --> 00:02:03.300
+So no need to enter your password once,
+
+48
+00:02:03.300 --> 00:02:04.320
+it's single sign on,
+
+49
+00:02:04.320 --> 00:02:06.300
+have SSO access to accounts,
+
+50
+00:02:06.300 --> 00:02:08.820
+business applications, and so on.
+
+51
+00:02:08.820 --> 00:02:12.000
+So if in the real world you have multiple AWS accounts,
+
+52
+00:02:12.000 --> 00:02:15.540
+I would recommend 100% to use this service.
+
+53
+00:02:15.540 --> 00:02:17.730
+Okay, so now let's talk about how this works.
+
+54
+00:02:17.730 --> 00:02:20.640
+So the browser interface is going to connect
+
+55
+00:02:20.640 --> 00:02:24.960
+to the login page of your AWS IAM Identity Center.
+
+56
+00:02:24.960 --> 00:02:27.000
+And then you have to integrate it, as I said,
+
+57
+00:02:27.000 --> 00:02:28.500
+with different user stores.
+
+58
+00:02:28.500 --> 00:02:30.300
+So it could be an Active Directory,
+
+59
+00:02:30.300 --> 00:02:32.640
+it could be on the cloud or on premises.
+
+60
+00:02:32.640 --> 00:02:34.650
+And this is where you would use Active Directory
+
+61
+00:02:34.650 --> 00:02:36.780
+to manage your users and your groups.
+
+62
+00:02:36.780 --> 00:02:39.450
+Or you can use the IAM Identity Center.
+
+63
+00:02:39.450 --> 00:02:41.580
+This is the built-in identity store.
+
+64
+00:02:41.580 --> 00:02:43.410
+And this is where, for example, you would define your users
+
+65
+00:02:43.410 --> 00:02:46.470
+and your groups as you're used to in IAM.
+
+66
+00:02:46.470 --> 00:02:49.290
+Then you integrate Identity Center with SSO
+
+67
+00:02:49.290 --> 00:02:51.090
+for your organization
+
+68
+00:02:51.090 --> 00:02:53.160
+or your Windows EC2 instances,
+
+69
+00:02:53.160 --> 00:02:55.290
+your business cloud applications
+
+70
+00:02:55.290 --> 00:02:59.100
+or your custom SAML2.0-enabled applications.
+
+71
+00:02:59.100 --> 00:03:01.890
+Again, the cool thing is that you have one login for all
+
+72
+00:03:01.890 --> 00:03:04.680
+of this, and that simplifies a lot your flow.
+
+73
+00:03:04.680 --> 00:03:05.610
+Now, of course, when you log in,
+
+74
+00:03:05.610 --> 00:03:07.290
+you don't have access to everything.
+
+75
+00:03:07.290 --> 00:03:09.660
+You define something called permission sets
+
+76
+00:03:09.660 --> 00:03:12.420
+in the Identity Center to define
+
+77
+00:03:12.420 --> 00:03:15.330
+which users have access to what.
+
+78
+00:03:15.330 --> 00:03:18.780
+So how does everything relate in IAM Identity Center
+
+79
+00:03:18.780 --> 00:03:21.150
+for permissions and users and groups?
+
+80
+00:03:21.150 --> 00:03:22.380
+So we have an organization
+
+81
+00:03:22.380 --> 00:03:24.420
+and we set up IAM Identity Center
+
+82
+00:03:24.420 --> 00:03:25.950
+in the management account.
+
+83
+00:03:25.950 --> 00:03:28.950
+We have two OUs, a development and a production OU,
+
+84
+00:03:28.950 --> 00:03:30.840
+each with their own accounts.
+
+85
+00:03:30.840 --> 00:03:32.550
+Now we have two developers in our company.
+
+86
+00:03:32.550 --> 00:03:34.200
+We have Bob and Alice.
+
+87
+00:03:34.200 --> 00:03:36.510
+So first of all, we're going to do, just like we do in IAM,
+
+88
+00:03:36.510 --> 00:03:38.700
+we're going to create a group of developers
+
+89
+00:03:38.700 --> 00:03:40.140
+for Bob and Alice.
+
+90
+00:03:40.140 --> 00:03:43.065
+Now we want to make sure that Bob and Alice both have access
+
+91
+00:03:43.065 --> 00:03:47.790
+to full access of the OU for development.
+
+92
+00:03:47.790 --> 00:03:50.250
+So we're going to create what's called the permission sets,
+
+93
+00:03:50.250 --> 00:03:53.490
+and we're going to allow admin access on it.
+
+94
+00:03:53.490 --> 00:03:56.700
+And then you have to assign this permission set directly
+
+95
+00:03:56.700 --> 00:03:58.680
+into specific accounts, for example,
+
+96
+00:03:58.680 --> 00:04:00.450
+your development accounts,
+
+97
+00:04:00.450 --> 00:04:04.380
+and then you assign this permission set either to your users
+
+98
+00:04:04.380 --> 00:04:07.260
+or to a group of users, for example, your developers.
+
+99
+00:04:07.260 --> 00:04:10.860
+So this would allow Bob and Alice to assume a role
+
+100
+00:04:10.860 --> 00:04:15.420
+with full access on the development account B right now.
+
+101
+00:04:15.420 --> 00:04:17.820
+You can also have a permission set, for example,
+
+102
+00:04:17.820 --> 00:04:19.440
+for read-only access
+
+103
+00:04:19.440 --> 00:04:21.660
+and assign this permission set directly
+
+104
+00:04:21.660 --> 00:04:23.220
+into your production account,
+
+105
+00:04:23.220 --> 00:04:24.900
+so account A and account B.
+
+106
+00:04:24.900 --> 00:04:28.440
+And then you assign this permission set again to Bob
+
+107
+00:04:28.440 --> 00:04:29.880
+and Alice, which would allow them
+
+108
+00:04:29.880 --> 00:04:33.000
+to have a read-only access to these accounts.
+
+109
+00:04:33.000 --> 00:04:33.833
+So now let's talk
+
+110
+00:04:33.833 --> 00:04:37.230
+about the fine-grained permissions and assignments.
+
+111
+00:04:37.230 --> 00:04:39.870
+And the first one is multi-account permissions.
+
+112
+00:04:39.870 --> 00:04:41.670
+So, of course, using the service,
+
+113
+00:04:41.670 --> 00:04:44.160
+you can manage access across multiple accounts
+
+114
+00:04:44.160 --> 00:04:45.480
+in your organization.
+
+115
+00:04:45.480 --> 00:04:48.300
+And using permission sets, you define one
+
+116
+00:04:48.300 --> 00:04:50.880
+or more IAM policies that you assign to users
+
+117
+00:04:50.880 --> 00:04:55.380
+and to groups to define what they can access in AWS.
+
+118
+00:04:55.380 --> 00:04:57.090
+So here is the IAM Identity Center,
+
+119
+00:04:57.090 --> 00:04:59.670
+and it's integrated with your organization
+
+120
+00:04:59.670 --> 00:05:02.910
+and you define a permission set for database admins.
+
+121
+00:05:02.910 --> 00:05:05.100
+So it's a collection of IAM policies.
+
+122
+00:05:05.100 --> 00:05:08.400
+And you say, for example, that you have access to RDS
+
+123
+00:05:08.400 --> 00:05:09.720
+and Aurora in your dev account,
+
+124
+00:05:09.720 --> 00:05:13.110
+as well as RDS and Aurora in the prod account.
+
+125
+00:05:13.110 --> 00:05:16.290
+And this will automatically create a corresponding IAM role
+
+126
+00:05:16.290 --> 00:05:17.760
+for your users.
+
+127
+00:05:17.760 --> 00:05:19.860
+And therefore, when you have your database admins,
+
+128
+00:05:19.860 --> 00:05:21.180
+it can be a group, for example,
+
+129
+00:05:21.180 --> 00:05:22.680
+and your users are in this group,
+
+130
+00:05:22.680 --> 00:05:26.370
+you will assign it the permission sets of database admins.
+
+131
+00:05:26.370 --> 00:05:30.180
+And whenever users log in through the IAM Identity Center
+
+132
+00:05:30.180 --> 00:05:32.460
+and access the console of your dev accounts
+
+133
+00:05:32.460 --> 00:05:33.570
+or your prod accounts,
+
+134
+00:05:33.570 --> 00:05:35.940
+they will be automatically assuming an IAM role
+
+135
+00:05:35.940 --> 00:05:37.020
+in that specific account
+
+136
+00:05:37.020 --> 00:05:39.780
+that will give them the permissions they're supposed
+
+137
+00:05:39.780 --> 00:05:42.300
+to get, which is pretty good.
+
+138
+00:05:42.300 --> 00:05:43.500
+So it works the same way.
+
+139
+00:05:43.500 --> 00:05:44.820
+So you have application assignments
+
+140
+00:05:44.820 --> 00:05:46.800
+and you can define which users
+
+141
+00:05:46.800 --> 00:05:49.800
+or groups can access which applications.
+
+142
+00:05:49.800 --> 00:05:51.270
+And it gives them the required URLs,
+
+143
+00:05:51.270 --> 00:05:52.380
+the certificates and metadata.
+
+144
+00:05:52.380 --> 00:05:54.840
+So all of this is supported out of the box.
+
+145
+00:05:54.840 --> 00:05:56.820
+And something that enables
+
+146
+00:05:56.820 --> 00:05:59.850
+is called attribute-based access control.
+
+147
+00:05:59.850 --> 00:06:01.200
+So the idea is that you're going
+
+148
+00:06:01.200 --> 00:06:02.940
+to have fine-grained permissions
+
+149
+00:06:02.940 --> 00:06:05.220
+based on the users' attributes stored
+
+150
+00:06:05.220 --> 00:06:07.710
+in the IAM Identity Center store.
+
+151
+00:06:07.710 --> 00:06:09.840
+So that means that you can have tags and so on.
+
+152
+00:06:09.840 --> 00:06:12.300
+And using this, you can, for example, assign a user
+
+153
+00:06:12.300 --> 00:06:14.610
+to a cost center or give them a title,
+
+154
+00:06:14.610 --> 00:06:17.340
+so like junior, senior or a locale, whatever,
+
+155
+00:06:17.340 --> 00:06:20.130
+so they only have access to a specific region.
+
+156
+00:06:20.130 --> 00:06:21.210
+And the use case of this
+
+157
+00:06:21.210 --> 00:06:24.540
+is that you actually define the IAM permission sets once
+
+158
+00:06:24.540 --> 00:06:26.550
+and they leverage these attributes,
+
+159
+00:06:26.550 --> 00:06:30.720
+and you only modify the access to AWS of your users
+
+160
+00:06:30.720 --> 00:06:34.290
+or your groups by just changing these underlying attributes.
+
+161
+00:06:34.290 --> 00:06:36.270
+So this is a use case that is advanced,
+
+162
+00:06:36.270 --> 00:06:40.830
+but that is enabled by using the AWS IAM Identity Center.
+
+163
+00:06:40.830 --> 00:06:42.240
+So that's it for this lecture.
+
+164
+00:06:42.240 --> 00:06:45.240
+I hope you liked it, and I will see you in the next lecture.
+

@@ -1,0 +1,350 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.199
+In this lesson we're looking at escalation trigger design. Agents that
+
+2
+00:00:04.199 --> 00:00:08.640
+try to handle everything on their own eventually produce bad output silently
+
+3
+00:00:08.640 --> 00:00:13.600
+or get stuck in retry loops. We'll cover the trigger categories that hold up in
+
+4
+00:00:13.600 --> 00:00:17.799
+production, the difference between hard and soft triggers, and how to give an
+
+5
+00:00:17.799 --> 00:00:23.559
+agent a clean way to escalate deliberately. An instruction like
+
+6
+00:00:23.559 --> 00:00:27.360
+escalate when you're unsure sounds reasonable and is close to useless
+
+7
+00:00:27.360 --> 00:00:32.000
+because a model can't act on it consistently. What works instead is an
+
+8
+00:00:32.000 --> 00:00:36.080
+escalation trigger, an explicit condition that causes the agent to hand off
+
+9
+00:00:36.080 --> 00:00:41.959
+control rather than keep executing. The key word there is explicit. A confidence
+
+10
+00:00:41.959 --> 00:00:46.799
+gate is one such condition. Firing when the agent's own confidence score falls
+
+11
+00:00:46.799 --> 00:00:52.080
+below a threshold you define in the system prompt. Out-of-policy detection is
+
+12
+00:00:52.119 --> 00:00:57.720
+another. Firing when the requested action hits a deny list or falls outside an
+
+13
+00:00:57.720 --> 00:01:02.360
+allow list. Together they cover most of what you need to build a trigger set
+
+14
+00:01:02.360 --> 00:01:06.720
+that actually holds up in production because each one names a condition the
+
+15
+00:01:06.720 --> 00:01:12.440
+model can check rather than a feeling it has to interpret. Every escalation system
+
+16
+00:01:12.440 --> 00:01:17.720
+fails in one of two directions. The first failure mode is never escalating. The
+
+17
+00:01:17.720 --> 00:01:22.839
+agent keeps going, produces output, and the output reaches users even when it's
+
+18
+00:01:22.839 --> 00:01:27.400
+wrong. This is the silent failure. It's the harder one to catch because there's
+
+19
+00:01:27.400 --> 00:01:34.120
+no alert, no flag, just a bad result that a user may or may not notice. The second
+
+20
+00:01:34.120 --> 00:01:38.720
+failure mode is escalating too often. When every ambiguous step triggers a
+
+21
+00:01:38.720 --> 00:01:43.800
+handoff, reviewers get overwhelmed and start ignoring alerts. The alert channel
+
+22
+00:01:43.800 --> 00:01:49.160
+loses value. Good trigger design sits between these two extremes. You want the
+
+23
+00:01:49.160 --> 00:01:54.160
+agent to escalate exactly when it genuinely can't proceed safely and not
+
+24
+00:01:54.160 --> 00:01:57.720
+before. Hard triggers and soft triggers work
+
+25
+00:01:57.720 --> 00:02:02.120
+differently and the difference shapes how you write your system prompt. A hard
+
+26
+00:02:02.120 --> 00:02:07.080
+trigger is a policy condition with no model judgment involved. If the requested
+
+27
+00:02:07.080 --> 00:02:12.399
+action hits a deny list, the agent escalates. Full stop. An allow list is the
+
+28
+00:02:12.399 --> 00:02:17.199
+same idea in reverse, permitting only the actions on the list, so anything else
+
+29
+00:02:17.199 --> 00:02:22.839
+escalates. Both lists live in the system prompt, so the agent looks them up rather
+
+30
+00:02:22.839 --> 00:02:27.960
+than reasoning about them. That predictability is the whole point. A soft
+
+31
+00:02:27.960 --> 00:02:32.839
+trigger is different. It invites model judgment. If the agent's confidence is
+
+32
+00:02:32.839 --> 00:02:37.639
+below a threshold or if the user's intent is ambiguous, the agent decides
+
+33
+00:02:37.639 --> 00:02:41.800
+whether to escalate based on its read of the situation. You can tune that
+
+34
+00:02:41.800 --> 00:02:46.679
+threshold over time as you observe how the model handles edge cases in your
+
+35
+00:02:46.679 --> 00:02:52.279
+workflow. Confidence gates are one of the most useful trigger patterns. The idea is
+
+36
+00:02:52.279 --> 00:02:56.839
+straightforward. The agent attaches a confidence estimate to each step and if
+
+37
+00:02:56.839 --> 00:03:01.199
+that estimate drops below a threshold you've set in the system prompt, it
+
+38
+00:03:01.199 --> 00:03:05.800
+escalates instead of proceeding. The threshold is something like escalate if
+
+39
+00:03:05.800 --> 00:03:11.639
+confidence is below 0.7. That number lives in the policy, not in the model's
+
+40
+00:03:11.639 --> 00:03:17.399
+judgment. The tricky part is calibration. A confidence number is only useful if it
+
+41
+00:03:17.399 --> 00:03:22.320
+reflects reality. An overconfident model will report high confidence even when
+
+42
+00:03:22.320 --> 00:03:26.639
+it's guessing, so confidence gates work best when you pair them with logged
+
+43
+00:03:26.639 --> 00:03:32.119
+reasoning. The agent explains why its confidence is low and that explanation
+
+44
+00:03:32.119 --> 00:03:37.039
+becomes part of the escalation record. Repeated failure detection is one of the
+
+45
+00:03:37.039 --> 00:03:40.639
+simpler trigger patterns to implement and it catches a failure mode that's
+
+46
+00:03:40.639 --> 00:03:45.279
+easy to overlook. An agent stuck in a retry loop is burning context window,
+
+47
+00:03:45.279 --> 00:03:50.399
+wasting latency, and likely heading toward a timeout. The fix is to count.
+
+48
+00:03:50.399 --> 00:03:55.199
+Count tool errors, count validation, rejections. When that count exceeds a
+
+49
+00:03:55.199 --> 00:03:59.160
+ceiling you've defined, the agent escalates with a record of what it tried
+
+50
+00:03:59.160 --> 00:04:04.720
+and what failed each time. The ceiling is usually two or three attempts. The exact
+
+51
+00:04:04.720 --> 00:04:09.039
+number depends on your use case, but the principle is consistent. A second failure
+
+52
+00:04:09.240 --> 00:04:14.639
+is information. It tells you the problem probably isn't transient. Treating it as
+
+53
+00:04:14.639 --> 00:04:20.720
+an escalation trigger turns a stuck loop into a clean handoff. Policy checks and
+
+54
+00:04:20.720 --> 00:04:26.320
+retry ceilings fire on their own, without the model deciding anything. The ask for
+
+55
+00:04:26.320 --> 00:04:30.480
+help tool is the opposite and it's worth singling out because it's the most
+
+56
+00:04:30.480 --> 00:04:35.140
+explicit form of escalation trigger available. Instead of hoping the model
+
+57
+00:04:35.220 --> 00:04:40.059
+will recognize an edge case and handle it gracefully, you define a tool in the
+
+58
+00:04:40.059 --> 00:04:45.459
+system prompt called something like escalate or request review. The model can
+
+59
+00:04:45.459 --> 00:04:50.700
+call it just like any other tool it has access to. When it does, it logs the
+
+60
+00:04:50.700 --> 00:04:55.980
+decision, the context, and the reason all in one step. That's the advantage over
+
+61
+00:04:55.980 --> 00:05:01.660
+softer signals. A called function produces a clean structured record. Compare that
+
+62
+00:05:01.660 --> 00:05:05.920
+to an agent that writes a free text message explaining why it stopped, which
+
+63
+00:05:05.920 --> 00:05:11.899
+is harder to route, harder to parse, and easier to miss. It's worth being just as
+
+64
+00:05:11.899 --> 00:05:16.660
+precise about the triggers that should never fire because over escalation is
+
+65
+00:05:16.660 --> 00:05:21.179
+the quieter of the two failure modes. Escalating on every uncertain step
+
+66
+00:05:21.179 --> 00:05:26.220
+defeats the point of automating the work at all. If an action is low stakes and
+
+67
+00:05:26.459 --> 00:05:30.859
+easily reversed, a human gate adds friction and buys you no safety in
+
+68
+00:05:30.859 --> 00:05:35.299
+return. If a validation layer already checks something programmatically, putting
+
+69
+00:05:35.299 --> 00:05:39.779
+a person behind it as well is redundant and it teaches reviewers that approvals
+
+70
+00:05:39.779 --> 00:05:44.579
+are a formality. And a trigger based on gut feel rather than a defined condition
+
+71
+00:05:44.579 --> 00:05:49.179
+fires inconsistently, which means you can't test it or reason about when it
+
+72
+00:05:49.179 --> 00:05:54.739
+will happen. Each of these looks cautious and is actually corrosive. Here's the
+
+73
+00:05:54.739 --> 00:05:58.940
+framing that keeps the whole thing honest. Human review is a targeted risk
+
+74
+00:05:58.940 --> 00:06:04.059
+control placed deliberately where consequences are high and hard to
+
+75
+00:06:04.059 --> 00:06:08.980
+reverse. It isn't a catch-all for whenever the model seems unsure. Getting
+
+76
+00:06:08.980 --> 00:06:13.019
+the threshold right is a calibration exercise and it isn't a decision you
+
+77
+00:06:13.019 --> 00:06:18.299
+make once. Set thresholds too tight and you get constant interruption, reviewers
+
+78
+00:06:18.299 --> 00:06:23.260
+stop reading and the automation stops earning its keep. Set them too loose and
+
+79
+00:06:23.260 --> 00:06:28.179
+real risk walks straight through the gate unchecked. So watch your escalation
+
+80
+00:06:28.179 --> 00:06:32.700
+rates and production and tune them against what reviewers actually report.
+
+81
+00:06:32.700 --> 00:06:37.940
+The threshold that is right today can be wrong once the workflow around it
+
+82
+00:06:37.940 --> 00:06:43.500
+changes. A trigger is the moment an agent admits it shouldn't be the one deciding.
+
+83
+00:06:43.500 --> 00:06:48.739
+Getting that moment right is the whole game because you can miss it in both
+
+84
+00:06:48.739 --> 00:06:54.220
+directions. Silence ships bad output nobody reviewed and noise trains your
+
+85
+00:06:54.220 --> 00:06:59.459
+reviewers to approve on reflex. Just remember a trigger that fires on
+
+86
+00:06:59.459 --> 00:07:04.540
+something reversible costs attention and buys you nothing. That wraps up this one.
+
+87
+00:07:04.540 --> 00:07:08.260
+I'll see you in the next lesson.
+

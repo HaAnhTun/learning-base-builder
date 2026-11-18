@@ -1,0 +1,650 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.619
+This lesson covers clogged code in automated CI-CD pipelines.
+
+2
+00:00:04.619 --> 00:00:08.239
+We'll look at why non-interactive mode is required,
+
+3
+00:00:08.239 --> 00:00:10.659
+how the dash p flag enables it,
+
+4
+00:00:10.659 --> 00:00:13.199
+how to structure tasks for automation,
+
+5
+00:00:13.199 --> 00:00:15.500
+GitHub Actions integration patterns,
+
+6
+00:00:15.500 --> 00:00:17.739
+and the security considerations that
+
+7
+00:00:17.739 --> 00:00:20.139
+matter most in automated contexts.
+
+8
+00:00:20.139 --> 00:00:24.819
+Let's get into it. A hung CI job doesn't fail loudly.
+
+9
+00:00:24.819 --> 00:00:27.180
+It sits there consuming runner minutes
+
+10
+00:00:27.180 --> 00:00:29.260
+until a global timeout kills it.
+
+11
+00:00:29.260 --> 00:00:32.340
+Nearly every case comes down to one missing flag.
+
+12
+00:00:32.340 --> 00:00:35.220
+The dash p flag, also called print mode,
+
+13
+00:00:35.220 --> 00:00:38.939
+switches clogged code to non-interactive operation.
+
+14
+00:00:38.939 --> 00:00:42.540
+Pass it and clogged code takes the prompt you give it,
+
+15
+00:00:42.540 --> 00:00:44.860
+runs the task, prints the result to
+
+16
+00:00:44.860 --> 00:00:47.540
+standard output, and exits cleanly.
+
+17
+00:00:47.540 --> 00:00:51.299
+No interactive prompt, no waiting for more input.
+
+18
+00:00:51.299 --> 00:00:55.700
+Non-interactive mode is the execution mode that dash p
+
+19
+00:00:55.700 --> 00:00:57.939
+activates where the agent works as
+
+20
+00:00:57.939 --> 00:01:00.419
+a one-shot tool that takes a task,
+
+21
+00:01:00.419 --> 00:01:02.380
+completes it, and exits.
+
+22
+00:01:02.380 --> 00:01:07.220
+A pipeline job hang is what you get when dash p is missing.
+
+23
+00:01:07.220 --> 00:01:10.639
+Clogged code waits for interactive input the runner can
+
+24
+00:01:10.639 --> 00:01:14.300
+never provide and the job blocks until it times out.
+
+25
+00:01:14.300 --> 00:01:16.660
+Let's talk about why dash p is
+
+26
+00:01:16.660 --> 00:01:19.680
+non-negotiable in automated pipelines.
+
+27
+00:01:19.680 --> 00:01:22.739
+When a CI-CD runner launches a process,
+
+28
+00:01:22.739 --> 00:01:26.220
+there's no human present to answer interactive prompts.
+
+29
+00:01:26.220 --> 00:01:29.300
+Clogged code's default mode is interactive.
+
+30
+00:01:29.300 --> 00:01:31.900
+It opens a session and waits.
+
+31
+00:01:31.900 --> 00:01:34.239
+In a runner environment with no terminal,
+
+32
+00:01:34.239 --> 00:01:36.220
+that wait never ends.
+
+33
+00:01:36.220 --> 00:01:39.239
+The job hangs, consumes runner minutes,
+
+34
+00:01:39.239 --> 00:01:41.160
+and eventually times out.
+
+35
+00:01:41.160 --> 00:01:44.160
+The dash p flag changes this completely.
+
+36
+00:01:44.160 --> 00:01:46.220
+It tells clogged code to run
+
+37
+00:01:46.220 --> 00:01:49.379
+its full agentic loop non-interactively.
+
+38
+00:01:49.379 --> 00:01:51.779
+It reads the prompt, does the work,
+
+39
+00:01:51.779 --> 00:01:55.419
+calling tools across as many turns as the task needs,
+
+40
+00:01:55.419 --> 00:01:58.639
+then writes output to standard output and exits
+
+41
+00:01:58.639 --> 00:02:01.739
+with a status code the pipeline can act on.
+
+42
+00:02:01.739 --> 00:02:04.220
+The loop still runs to completion.
+
+43
+00:02:04.220 --> 00:02:07.040
+It just never stops to ask a human for input.
+
+44
+00:02:07.040 --> 00:02:09.860
+That's the contract automation needs.
+
+45
+00:02:09.860 --> 00:02:13.440
+In practice, you rarely pass dash p alone.
+
+46
+00:02:13.440 --> 00:02:15.100
+It comes with a small set of
+
+47
+00:02:15.100 --> 00:02:18.800
+companion flags that make a headless run predictable.
+
+48
+00:02:18.800 --> 00:02:21.139
+Output format is the big one.
+
+49
+00:02:21.139 --> 00:02:23.899
+Pass output format, JSON,
+
+50
+00:02:23.899 --> 00:02:26.860
+and clogged code returns a structured result.
+
+51
+00:02:26.860 --> 00:02:29.100
+The next pipeline step can parse
+
+52
+00:02:29.100 --> 00:02:31.419
+instead of scraping free text.
+
+53
+00:02:31.419 --> 00:02:33.100
+There's also a streaming variant,
+
+54
+00:02:33.100 --> 00:02:35.000
+stream JSON, that emits
+
+55
+00:02:35.000 --> 00:02:38.020
+events as they happen if you want live progress.
+
+56
+00:02:38.020 --> 00:02:40.100
+Allowed tools lets you scope
+
+57
+00:02:40.100 --> 00:02:43.279
+exactly which tools the run is permitted to invoke,
+
+58
+00:02:43.279 --> 00:02:46.619
+which matters a lot when no human is watching.
+
+59
+00:02:46.619 --> 00:02:49.100
+If a job should build on an earlier session,
+
+60
+00:02:49.100 --> 00:02:50.660
+rather than start clean,
+
+61
+00:02:50.820 --> 00:02:54.020
+resume picks up a specific past session
+
+62
+00:02:54.020 --> 00:02:56.740
+and continue picks up the most recent one.
+
+63
+00:02:56.740 --> 00:03:00.380
+Underneath all of them, the contract stays the same.
+
+64
+00:03:00.380 --> 00:03:02.360
+Output goes to standard output.
+
+65
+00:03:02.360 --> 00:03:04.779
+Exit code zero means success,
+
+66
+00:03:04.779 --> 00:03:07.979
+and any non-zero code means something went wrong.
+
+67
+00:03:08.979 --> 00:03:12.740
+Structuring tasks well is what makes automation reliable.
+
+68
+00:03:12.740 --> 00:03:14.779
+Four principles matter here.
+
+69
+00:03:14.779 --> 00:03:17.619
+First, keep each invocation atomic.
+
+70
+00:03:17.619 --> 00:03:19.800
+One task, one outcome.
+
+71
+00:03:19.800 --> 00:03:21.919
+Don't ask clogged code to lint a file
+
+72
+00:03:21.919 --> 00:03:25.039
+and update documentation in the same call.
+
+73
+00:03:25.039 --> 00:03:28.639
+Second, write prompts that are fully self-contained.
+
+74
+00:03:28.639 --> 00:03:31.940
+The agent has no memory of previous pipeline runs
+
+75
+00:03:31.940 --> 00:03:35.699
+unless you explicitly include that context in the prompt.
+
+76
+00:03:35.699 --> 00:03:39.240
+Third, request structured output, usually JSON,
+
+77
+00:03:39.240 --> 00:03:41.880
+so the next pipeline step can parse the result
+
+78
+00:03:41.880 --> 00:03:43.800
+without brittle text matching.
+
+79
+00:03:43.800 --> 00:03:47.399
+Fourth, design tasks to be idempotent.
+
+80
+00:03:47.399 --> 00:03:49.320
+Pipelines retry on failure,
+
+81
+00:03:49.320 --> 00:03:51.639
+so if the same task runs twice,
+
+82
+00:03:51.639 --> 00:03:53.679
+the result should be the same both times.
+
+83
+00:03:54.600 --> 00:03:56.960
+Interactive mode and non-interactive mode
+
+84
+00:03:56.960 --> 00:03:59.119
+are worth comparing directly.
+
+85
+00:03:59.119 --> 00:04:01.399
+Interactive mode is the default.
+
+86
+00:04:01.399 --> 00:04:03.479
+Clogged code opens a REPL session
+
+87
+00:04:03.479 --> 00:04:06.479
+and carries on a multi-turn conversation with you.
+
+88
+00:04:06.479 --> 00:04:08.800
+It's designed for developer workstations,
+
+89
+00:04:08.800 --> 00:04:12.660
+where a human is present and engaged throughout the session.
+
+90
+00:04:12.660 --> 00:04:15.539
+You can ask follow-up questions, refine tasks,
+
+91
+00:04:15.539 --> 00:04:17.640
+and iterate in real time.
+
+92
+00:04:17.640 --> 00:04:22.200
+Non-interactive mode, activated by dash P, is the opposite.
+
+93
+00:04:22.200 --> 00:04:26.660
+Clogged code accepts one prompt, does the work, and exits.
+
+94
+00:04:26.660 --> 00:04:29.000
+There's no session, no conversation,
+
+95
+00:04:29.000 --> 00:04:30.739
+no waiting for more input.
+
+96
+00:04:30.739 --> 00:04:33.000
+These two modes are mutually exclusive
+
+97
+00:04:33.000 --> 00:04:34.920
+for a given invocation.
+
+98
+00:04:34.920 --> 00:04:38.160
+Any scenario describing automation, scheduled jobs,
+
+99
+00:04:38.160 --> 00:04:42.480
+or CI-CD integration calls for non-interactive mode
+
+100
+00:04:42.480 --> 00:04:43.859
+and the dash P flag.
+
+101
+00:04:44.899 --> 00:04:46.820
+For GitHub Actions specifically,
+
+102
+00:04:46.820 --> 00:04:48.540
+there's an official integration,
+
+103
+00:04:48.540 --> 00:04:50.899
+and it's the path you should reach for.
+
+104
+00:04:50.899 --> 00:04:53.339
+It's the Clogged Code Action workflow,
+
+105
+00:04:53.339 --> 00:04:57.059
+and you set it up by running the install GitHub app command,
+
+106
+00:04:57.059 --> 00:05:01.059
+which wires up the action and the GitHub app for you.
+
+107
+00:05:01.059 --> 00:05:03.619
+Once it's in place, you trigger Clogged Code
+
+108
+00:05:03.619 --> 00:05:07.140
+by mentioning at Clogged in an issue or pull request,
+
+109
+00:05:07.140 --> 00:05:09.899
+or by passing a prompt directly to the action.
+
+110
+00:05:09.899 --> 00:05:12.820
+You still store your Anthropic API key
+
+111
+00:05:12.820 --> 00:05:15.100
+as a GitHub Actions secret,
+
+112
+00:05:15.100 --> 00:05:18.100
+so it never lands in your workflow file.
+
+113
+00:05:18.100 --> 00:05:21.260
+Now, you can run a raw Clogged dash P command
+
+114
+00:05:21.260 --> 00:05:22.980
+inside an action step,
+
+115
+00:05:22.980 --> 00:05:28.019
+but that's really just general agent SDK automation running in CI,
+
+116
+00:05:28.019 --> 00:05:31.820
+not the documented GitHub Actions integration.
+
+117
+00:05:31.820 --> 00:05:35.839
+When a scenario points specifically at GitHub Actions,
+
+118
+00:05:35.839 --> 00:05:37.500
+reach for the official action.
+
+119
+00:05:38.500 --> 00:05:40.140
+In automated contexts,
+
+120
+00:05:40.140 --> 00:05:42.820
+permission scoping is a security requirement,
+
+121
+00:05:42.820 --> 00:05:44.739
+not just a best practice.
+
+122
+00:05:45.380 --> 00:05:47.940
+The principle is minimum necessary permissions.
+
+123
+00:05:47.940 --> 00:05:50.279
+If your task only needs to read files,
+
+124
+00:05:50.279 --> 00:05:52.200
+don't grant write access.
+
+125
+00:05:52.200 --> 00:05:54.459
+If the task is purely file-based,
+
+126
+00:05:54.459 --> 00:05:57.040
+restrict or disable network tools.
+
+127
+00:05:57.040 --> 00:06:00.160
+If Clogged Code only needs to touch one directory,
+
+128
+00:06:00.160 --> 00:06:02.059
+scope it to that directory.
+
+129
+00:06:02.059 --> 00:06:04.100
+Why does this matter in automation?
+
+130
+00:06:04.100 --> 00:06:06.579
+Because pipelines run unattended.
+
+131
+00:06:06.579 --> 00:06:08.899
+If a task behaves unexpectedly
+
+132
+00:06:08.899 --> 00:06:11.899
+due to a bad prompt or unexpected input,
+
+133
+00:06:11.899 --> 00:06:15.220
+narrow permissions limit how much damage can happen.
+
+134
+00:06:15.220 --> 00:06:17.519
+Broad permissions in an automated context
+
+135
+00:06:17.519 --> 00:06:19.320
+are a risk you don't need to take.
+
+136
+00:06:20.299 --> 00:06:23.299
+Let's talk about output parsing and error handling,
+
+137
+00:06:23.299 --> 00:06:26.519
+because these are where automation breaks down in practice.
+
+138
+00:06:26.519 --> 00:06:28.920
+Capture Clogged Code's standard output
+
+139
+00:06:28.920 --> 00:06:32.019
+into a shell variable or a file immediately.
+
+140
+00:06:32.019 --> 00:06:34.899
+Don't assume it will always return structured data.
+
+141
+00:06:34.899 --> 00:06:36.100
+If something goes wrong,
+
+142
+00:06:36.100 --> 00:06:38.619
+the agent may return a plain error message.
+
+143
+00:06:38.619 --> 00:06:41.660
+Check the exit code after every invocation.
+
+144
+00:06:42.420 --> 00:06:44.940
+A non-zero exit should fail the pipeline step.
+
+145
+00:06:44.940 --> 00:06:46.579
+If you requested JSON,
+
+146
+00:06:46.579 --> 00:06:49.859
+validate its shape before using it downstream,
+
+147
+00:06:49.859 --> 00:06:53.579
+and always set a timeout on Clogged Code pipeline steps.
+
+148
+00:06:53.579 --> 00:06:55.859
+A task that stalls for any reason
+
+149
+00:06:55.859 --> 00:06:57.859
+will hold up your entire pipeline
+
+150
+00:06:57.859 --> 00:07:00.040
+until the runner's global timeout fires,
+
+151
+00:07:00.040 --> 00:07:02.200
+which is usually much longer than you want.
+
+152
+00:07:03.660 --> 00:07:07.420
+Automation asks you to think about Clogged Code differently.
+
+153
+00:07:07.420 --> 00:07:09.220
+It isn't something you talk to.
+
+154
+00:07:09.220 --> 00:07:13.140
+It's a step in a pipeline that either finishes or fails.
+
+155
+00:07:13.140 --> 00:07:17.040
+That one shift is what makes headless runs work,
+
+156
+00:07:17.040 --> 00:07:20.339
+because a step that can pause to ask a question
+
+157
+00:07:20.339 --> 00:07:23.100
+is a step that'll sit there burning runner minutes
+
+158
+00:07:23.100 --> 00:07:25.220
+until a timeout kills it.
+
+159
+00:07:25.220 --> 00:07:27.779
+Scoping, parsing, and timeouts
+
+160
+00:07:27.779 --> 00:07:31.040
+all follow from taking that seriously.
+
+161
+00:07:31.040 --> 00:07:32.640
+That closes out this lesson.
+
+162
+00:07:32.640 --> 00:07:34.100
+I'll see you in the next one.
+

@@ -1,0 +1,302 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.679
+Before a model can call any tool through MCP, you need a server to expose that tool.
+
+2
+00:00:05.679 --> 00:00:11.279
+The MCP Python SDK gives you everything you need to build one, from the transport layer
+
+3
+00:00:11.279 --> 00:00:16.799
+to the request routing. In this lesson, we'll walk through installation, project structure,
+
+4
+00:00:16.799 --> 00:00:21.920
+server initialization, and the lifecycle hooks that keep everything running reliably.
+
+5
+00:00:21.920 --> 00:00:25.600
+Don't worry about the complexity of this slide. We're going to dig into things.
+
+6
+00:00:25.600 --> 00:00:30.799
+I put all of this on the slide so that you can review it later if you're the slides only type.
+
+7
+00:00:30.799 --> 00:00:38.080
+Let's dig in. An MCP server is a process, not a library you import into your application.
+
+8
+00:00:38.080 --> 00:00:43.759
+It runs on its own, exposes tools, resources, and prompt templates to clients over a defined
+
+9
+00:00:43.759 --> 00:00:49.520
+transport, and handles capability registration, request dispatch, and response formatting.
+
+10
+00:00:49.520 --> 00:00:55.439
+That process boundary is exactly why the MCP inspector exists. The inspector is the official
+
+11
+00:00:55.439 --> 00:01:00.479
+debugging tool, and it attaches to your server so you can see what is registered,
+
+12
+00:01:00.479 --> 00:01:06.879
+and fire test requests without building a client first. What you register are MCP tools,
+
+13
+00:01:06.879 --> 00:01:11.760
+callable functions the model can invoke to perform an action or return a computed result.
+
+14
+00:01:12.319 --> 00:01:17.519
+Tools are model controlled, meaning the AI decides when and how to call them,
+
+15
+00:01:17.519 --> 00:01:24.639
+not your application code. Installing the MCP SDK is straightforward. A single pip install
+
+16
+00:01:24.639 --> 00:01:31.360
+MCP command pulls in the server runtime, transport adapters, and type stubs. Add it to a requirements
+
+17
+00:01:31.360 --> 00:01:38.160
+file so your server is reproducible across environments. Python 3.10 or higher is required
+
+18
+00:01:38.160 --> 00:01:44.000
+because the SDK uses async features introduced in that version. Working inside a virtual environment
+
+19
+00:01:44.000 --> 00:01:50.080
+keeps your MCP dependencies isolated from other projects on the same machine. That separation
+
+20
+00:01:50.080 --> 00:01:54.959
+matters when you're running multiple servers locally during development, each potentially
+
+21
+00:01:54.959 --> 00:02:00.800
+needing different versions of the same underlying libraries. Starting clean saves debugging time
+
+22
+00:02:00.800 --> 00:02:06.959
+later when dependency conflicts would otherwise be difficult to trace. The transport layer
+
+23
+00:02:06.959 --> 00:02:13.039
+determines how clients and servers communicate. The stdio transport is the simplest option.
+
+24
+00:02:13.039 --> 00:02:19.839
+The client spawns the server as a subprocess, writes JSON RPC messages to its stand-in,
+
+25
+00:02:19.839 --> 00:02:25.119
+and reads responses from its standout. It's perfect for local development and tools like
+
+26
+00:02:25.119 --> 00:02:31.919
+Cloud Desktop that manage server processes directly. The streamable HTTP transport runs
+
+27
+00:02:31.919 --> 00:02:39.679
+the server as a standalone process that listens on a URL clients connect over HTTP, and the server
+
+28
+00:02:39.679 --> 00:02:46.639
+can optionally use server sent events to stream messages back. Choose streamable HTTP when multiple
+
+29
+00:02:46.639 --> 00:02:53.360
+clients need to connect simultaneously or when the server runs remotely. The older standalone HTTP
+
+30
+00:02:53.360 --> 00:02:59.919
+plus SSE transport is now deprecated. The SDK supports both transports with the same tool
+
+31
+00:02:59.919 --> 00:03:06.800
+registration API. Every MCP server follows the same three-part structure. You create an instance
+
+32
+00:03:06.800 --> 00:03:13.119
+of the MCP server class and give it a name. You register tools, resources, and prompts on that
+
+33
+00:03:13.119 --> 00:03:18.800
+instance using decorators. Then you call run with your transport and the server blocks, processing
+
+34
+00:03:18.800 --> 00:03:25.119
+requests until it shuts down or crashes. Run wraps a syncio under the hood, so you never manage the
+
+35
+00:03:25.119 --> 00:03:32.399
+event loop yourself. Version 2 of the SDK renamed this class from FastMCP, and the old import path
+
+36
+00:03:32.399 --> 00:03:37.919
+is gone, so upgrading breaks any project that still reaches for the old name. There is also a
+
+37
+00:03:37.919 --> 00:03:44.320
+lower level server class, but it takes its handlers as constructor arguments instead of decorators,
+
+38
+00:03:44.320 --> 00:03:49.119
+so the two aren't interchangeable. Everything ahead builds on the MCP server class.
+
+39
+00:03:50.399 --> 00:03:56.639
+A recommended project layout separates concerns into four files. The server.py entry point
+
+40
+00:03:56.639 --> 00:04:04.240
+creates the MCP server instance and calls run. A tools.py module holds all tool definitions
+
+41
+00:04:04.240 --> 00:04:11.440
+and handler functions imported at startup. A requirements dot txt pins MCP and any tool
+
+42
+00:04:11.440 --> 00:04:17.519
+dependencies, so deployments are reproducible across machines and environments. A readme documents
+
+43
+00:04:17.519 --> 00:04:23.760
+the transport, available tools, and any environment variables the server requires to start. This
+
+44
+00:04:23.760 --> 00:04:29.040
+structure keeps the entry point readable and makes it easy to add new tools without touching
+
+45
+00:04:29.040 --> 00:04:35.760
+the startup logic. As your server grows, you can split tools.py into domain-specific modules
+
+46
+00:04:35.760 --> 00:04:42.720
+without changing how the server itself is initialized or started. The MCP server class
+
+47
+00:04:42.720 --> 00:04:49.359
+manages startup and shutdown through a single lifespan async context manager, not separate hooks.
+
+48
+00:04:49.359 --> 00:04:55.600
+You write an async function decorated with async context manager and pass it to the constructor.
+
+49
+00:04:55.600 --> 00:05:00.320
+Everything before the yield statement runs once at startup, so that's where you open database
+
+50
+00:05:00.320 --> 00:05:06.880
+connections, load configuration, and warm any caches your tools need. The yield hands control
+
+51
+00:05:06.880 --> 00:05:13.040
+to the running server. When the server shuts down, execution resumes after the yield, and a finally
+
+52
+00:05:13.040 --> 00:05:19.200
+block is where you close connections, flush buffers, and release file handles cleanly. Because it's
+
+53
+00:05:19.200 --> 00:05:24.880
+async, you can await inside it. Your handlers reach those shared resources through the lifespan
+
+54
+00:05:24.880 --> 00:05:30.239
+context, so setup and teardown live in one clear place instead of scattered callbacks.
+
+55
+00:05:31.519 --> 00:05:36.959
+When a client first connects, the server and client exchange capability lists. The server
+
+56
+00:05:36.959 --> 00:05:43.440
+declares which primitives it supports, tools, resources, or prompts. The client inspects the list
+
+57
+00:05:43.440 --> 00:05:48.880
+and decides which ones it will use. It won't appear in the capability list, and the client won't be
+
+58
+00:05:48.880 --> 00:05:53.920
+able to call it. This handshake is also where the server announces its name and version, which
+
+59
+00:05:53.920 --> 00:05:59.440
+appears in client logs and debugging tools. Understanding the negotiation sequence helps you
+
+60
+00:05:59.440 --> 00:06:04.239
+diagnose connection issues during development, because a missing tool is almost always a
+
+61
+00:06:04.239 --> 00:06:10.079
+registration ordering problem rather than a deeper protocol issue. Three initialization
+
+62
+00:06:10.079 --> 00:06:16.239
+mistakes come up repeatedly. The first is registering tools after run is called. The
+
+63
+00:06:16.239 --> 00:06:22.640
+capability handshake happens at connection time, so any tool you add afterward is invisible to the
+
+64
+00:06:22.640 --> 00:06:29.040
+client. The second is blocking the event loop inside a tool handler with synchronous I-O, like a
+
+65
+00:06:29.040 --> 00:06:36.160
+file read or a database query, using a sync library. One blocking call stalls every other request the
+
+66
+00:06:36.160 --> 00:06:44.399
+server is processing. Use async libraries or wrap sync calls with run in executor to avoid this.
+
+67
+00:06:44.959 --> 00:06:51.519
+The third is leaving tool handlers without explicit error handling. The MCP server class
+
+68
+00:06:51.519 --> 00:06:58.239
+does catch unhandled exceptions and surface them as error results, so the server keeps running,
+
+69
+00:06:58.239 --> 00:07:04.320
+but you should still handle errors yourself, raising tool error or masking details to return
+
+70
+00:07:04.320 --> 00:07:10.959
+clean, actionable messages and avoid leaking internals to the client. Standing up a server
+
+71
+00:07:10.959 --> 00:07:17.119
+and writing a tool are different jobs, and the skeleton is the one that people rush. Startup work
+
+72
+00:07:17.119 --> 00:07:23.200
+belongs in the Lifespan Context Manager, where connections open once and close cleanly.
+
+73
+00:07:23.760 --> 00:07:29.679
+Everything else is per request. Anything registered after run is already invisible,
+
+74
+00:07:29.679 --> 00:07:33.440
+because the handshake settled capabilities before your code even got there.
+
+75
+00:07:34.160 --> 00:07:36.959
+That's it for this lesson. I'll see you in the next video.
+

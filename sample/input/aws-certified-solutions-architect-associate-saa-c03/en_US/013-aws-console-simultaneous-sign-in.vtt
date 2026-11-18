@@ -1,0 +1,190 @@
+WEBVTT
+
+1
+00:00:00.450 --> 00:00:02.890
+<v Presenter>So let me show you something cool now</v>
+
+2
+00:00:02.890 --> 00:00:04.590
+called the multi-session support.
+
+3
+00:00:04.590 --> 00:00:06.420
+So you click on it to turn it on,
+
+4
+00:00:06.420 --> 00:00:09.630
+and the idea now is that now I can have in this browser
+
+5
+00:00:09.630 --> 00:00:12.810
+a specific role or account
+
+6
+00:00:12.810 --> 00:00:14.880
+and then I can add a session,
+
+7
+00:00:14.880 --> 00:00:19.830
+and sign into any of your identities using the same browser.
+
+8
+00:00:19.830 --> 00:00:21.750
+So here I'm going to click on it
+
+9
+00:00:21.750 --> 00:00:24.000
+and I'm going to add a session.
+
+10
+00:00:24.000 --> 00:00:29.000
+And now you can login again using any account ID or route.
+
+11
+00:00:29.130 --> 00:00:29.963
+And then you go to go.
+
+12
+00:00:29.963 --> 00:00:33.360
+So let's go and let me just signing into one of my accounts.
+
+13
+00:00:33.360 --> 00:00:35.550
+And after being signed in, as you can see here,
+
+14
+00:00:35.550 --> 00:00:38.250
+I have one specific account ID
+
+15
+00:00:38.250 --> 00:00:40.740
+and here I have a different account ID.
+
+16
+00:00:40.740 --> 00:00:42.844
+And the cool thing is that, for example,
+
+17
+00:00:42.844 --> 00:00:45.900
+let's say I'm going to the EC2 console here,
+
+18
+00:00:45.900 --> 00:00:47.880
+and then I'm going to go into volumes
+
+19
+00:00:47.880 --> 00:00:49.050
+and then I'm going to, for example,
+
+20
+00:00:49.050 --> 00:00:51.660
+create an EBS volume of one gigabyte
+
+21
+00:00:51.660 --> 00:00:53.520
+just to do something very quickly.
+
+22
+00:00:53.520 --> 00:00:55.650
+So let's create this volume.
+
+23
+00:00:55.650 --> 00:00:58.350
+Okay, as you can see, my volume has been created,
+
+24
+00:00:58.350 --> 00:00:59.640
+so it's just showing you
+
+25
+00:00:59.640 --> 00:01:01.110
+how to do something very quickly on this window.
+
+26
+00:01:01.110 --> 00:01:03.570
+You don't have to know about EBS and so on.
+
+27
+00:01:03.570 --> 00:01:07.680
+But now if I go into EBS on this other browser,
+
+28
+00:01:07.680 --> 00:01:09.093
+so I go under EC2,
+
+29
+00:01:09.990 --> 00:01:12.810
+and then I go under EBS.
+
+30
+00:01:12.810 --> 00:01:15.420
+As you can see here, I don't see any volumes,
+
+31
+00:01:15.420 --> 00:01:18.240
+because I'm using a different account window,
+
+32
+00:01:18.240 --> 00:01:21.540
+and this other one is using the other account window.
+
+33
+00:01:21.540 --> 00:01:22.950
+So that means I can have two accounts
+
+34
+00:01:22.950 --> 00:01:23.790
+under the same browser.
+
+35
+00:01:23.790 --> 00:01:27.360
+This was not possible before, which is very helpful,
+
+36
+00:01:27.360 --> 00:01:28.530
+and something you should know about
+
+37
+00:01:28.530 --> 00:01:30.030
+if you want to use AWS at scale.
+
+38
+00:01:30.030 --> 00:01:31.770
+So a nice welcome edition.
+
+39
+00:01:31.770 --> 00:01:33.570
+You don't need to go ahead and create an EBS volume.
+
+40
+00:01:33.570 --> 00:01:34.860
+I just want to show you the fact
+
+41
+00:01:34.860 --> 00:01:36.540
+that you could have two different accounts
+
+42
+00:01:36.540 --> 00:01:38.130
+on two different browser windows.
+
+43
+00:01:38.130 --> 00:01:41.250
+And for me, that's been using AWS for over 10 years,
+
+44
+00:01:41.250 --> 00:01:42.900
+this is a little revolution.
+
+45
+00:01:42.900 --> 00:01:45.090
+All right, so that's it, you can go back to the course.
+
+46
+00:01:45.090 --> 00:01:45.960
+I hope you liked it,
+
+47
+00:01:45.960 --> 00:01:47.910
+and I will see you in the next lecture.
+

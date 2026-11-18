@@ -1,0 +1,365 @@
+{
+  "quiz_id": 7572247,
+  "title": "2B Quiz",
+  "type": "simple-quiz",
+  "version": 1,
+  "pass_percent": 70,
+  "description": "",
+  "position": 6,
+  "chapter_index": 7,
+  "chapter_title": "D2: Tool Design & MCP - Building MCP Servers",
+  "lectures_before": 49,
+  "assessments": [
+    {
+      "_class": "assessment",
+      "id": 164087241,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A platform team builds an MCP server that exposes internal knowledge base documents. Six months later, the company adopts a different AI model from a different vendor. The team reports the MCP server required no changes to work with the new model. What MCP design property explains this?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "<p>MCP is an open, vendor-neutral standard. Servers don't know which model consumes them, and clients don't know which vendor built the server. Because both sides follow the same protocol contract, switching the AI model on the client side requires no server-side changes — the server continues to expose capabilities through the same interface regardless of who is consuming them.</p>",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>The MCP server cached the capability list so it didn't need to re-register tools for the new model.</p>",
+          "<p>MCP is vendor-neutral: any compliant model uses the same interface without requiring server changes.</p>",
+          "<p>The server translated its capabilities into a format specific to each model at connection time.</p>",
+          "<p>Anthropic and the new vendor co-maintain MCP, so both models share the same internal tool-calling API.</p>"
+        ]
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "",
+      "question_plain": "A platform team builds an MCP server that exposes internal knowledge base documents. Six months later, the company adopts a different AI model from a different vendor. The team reports the MCP server required no changes to work with the new model. What MCP design property explains this?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164087335,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A startup has three separate teams: one owns a database layer, one owns a search service, and one owns the AI application. The database team upgrades their storage system. Which MCP property ensures the AI application team's code doesn't break?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>In MCP's client-server model, the server exposes capabilities through a stable protocol contract. When the database team upgrades their underlying implementation, they update their MCP server. As long as the server's capability contract stays the same, the client sees no change — it interacts with the protocol, not the implementation. This contract-first design is how MCP reduces coupling across large organizations.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>Capability lists are versioned, so the client pins to the previous version until the team manually updates.</p>",
+          "<p>The AI application team subscribes to a database change feed and automatically rebuilds its adapter on each upgrade.</p>",
+          "<p>The MCP protocol contract stays stable when underlying implementation changes, so the client sees no difference.</p>",
+          "<p>The MCP client polls the database server on every request to detect interface changes before routing.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "A startup has three separate teams: one owns a database layer, one owns a search service, and one owns the AI application. The database team upgrades their storage system. Which MCP property ensures the AI application team's code doesn't break?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164087337,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A product manager asks an engineer to build a feature that automatically loads the current company policy document into every compliance conversation before Claude responds. Which MCP primitive fits this requirement, and who controls it?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>Resources are URI-addressable data objects the host application injects into context. Because the decision to load the policy document is made by the application based on business logic (all compliance conversations), not by Claude at reasoning time and not by the user explicitly, this is an application-controlled resource. The host pulls it via resources/read and injects it before generation.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>A prompt, controlled by the user, who selects a compliance template that pre-populates the conversation.</p>",
+          "<p>A tool, controlled by the application, which the host calls before each turn to retrieve and load the document.</p>",
+          "<p>A resource — the host application injects the document into context automatically before generation.</p>",
+          "<p>A tool, controlled by the model, which Claude calls when it determines a compliance question is being asked.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "A product manager asks an engineer to build a feature that automatically loads the current company policy document into every compliance conversation before Claude responds. Which MCP primitive fits this requirement, and who controls it?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164087339,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>During a CCA-F study session, a candidate is asked: 'Who decides when an MCP tool gets called?' They answer: 'The host application triggers tool calls based on routing rules.' Is this correct?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "",
+          "<p>Tools are model-controlled: the AI model itself decides when and whether to invoke a tool based on its in-context reasoning about what the conversation requires. The host application does not trigger tool calls. The deck explicitly distinguishes this from resources (application-controlled) and prompts (user-controlled).</p>"
+        ],
+        "answers": [
+          "<p>No — the user must explicitly select a tool from a list before Claude can call it.</p>",
+          "<p>Yes — the application calls tools on every turn and injects the results into Claude's context as resources.</p>",
+          "<p>Yes — the host routes requests to tools based on keyword rules before passing results to Claude.</p>",
+          "<p>No — the model decides when to call a tool based on its own reasoning about the conversation.</p>"
+        ]
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "",
+      "question_plain": "During a CCA-F study session, a candidate is asked: 'Who decides when an MCP tool gets called?' They answer: 'The host application triggers tool calls based on routing rules.' Is this correct?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164087341,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A developer builds an MCP server and adds a new tool in application code that runs after the `run()` call. When a connected client requests the capability list, the new tool doesn't appear. What is the cause?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "<p>MCP capability negotiation happens when the client first connects. The server sends the complete list of registered tools at that moment. Any tool added after run() is called is not part of the handshake and remains invisible to the client for that session. All tools must be registered before run() is invoked.</p>",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>The client cached the capability list from a previous session and needs to reconnect to pick up new tools.</p>",
+          "<p>The tool was registered after run() was called, missing the capability list sent at connection time.</p>",
+          "<p>The stdio transport doesn't support dynamic tool registration, so the tool must be added via HTTP/SSE instead.</p>",
+          "<p>The server inspector filters out newly added tools until the server is restarted to prevent session inconsistencies.</p>"
+        ]
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "",
+      "question_plain": "A developer builds an MCP server and adds a new tool in application code that runs after the `run()` call. When a connected client requests the capability list, the new tool doesn't appear. What is the cause?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164087435,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>An MCP server handles multiple simultaneous client connections. A developer writes a tool handler that uses a synchronous file-reading library to load large documents. Users report that all requests slow to a crawl whenever the file tool is called. What is the most direct fix?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "",
+          "<p>The MCP Python SDK uses asyncio for concurrency. A synchronous I/O call inside a handler blocks the entire event loop, stalling every other in-flight request. The correct fix is to use an async I/O library (e.g., aiofiles) or wrap the synchronous call with run_in_executor so it runs in a thread pool and doesn't block the loop.</p>"
+        ],
+        "answers": [
+          "<p>Increase the server's worker process count so each client connection gets a dedicated process.</p>",
+          "<p>Register the file tool as a resource instead of a tool so the host controls when it's loaded and avoids concurrency.</p>",
+          "<p>Switch from stdio transport to HTTP/SSE so the server can handle concurrent connections in parallel threads.</p>",
+          "<p>Use an async file library or wrap the sync call with run_in_executor to avoid blocking the event loop.</p>"
+        ]
+      },
+      "correct_response": [
+        "d"
+      ],
+      "section": "",
+      "question_plain": "An MCP server handles multiple simultaneous client connections. A developer writes a tool handler that uses a synchronous file-reading library to load large documents. Users report that all requests slow to a crawl whenever the file tool is called. What is the most direct fix?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164087439,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A developer writes the following docstring for an MCP tool: `'Handles data.'` In testing, Claude rarely calls the tool even when the task clearly matches the tool's actual capability. What is the most likely cause?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>In the MCP Python SDK, the function's docstring becomes the tool description that the model reads when deciding whether to invoke the tool. A vague description like 'handles data' gives the model nothing to match against specific user requests. The deck teaches that the docstring is one of the most important pieces of text written for a server — specificity in descriptions directly determines routing reliability.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>The server inspector is filtering the tool from the capability list due to a missing return type annotation.</p>",
+          "<p>The tool's JSON Schema is missing required field annotations, so the model can't construct a valid call.</p>",
+          "<p>The vague docstring gives no signal about when the tool fits, causing it to lose the routing competition.</p>",
+          "<p>The decorator registers the tool with the function name, which doesn't match how users phrase requests.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "A developer writes the following docstring for an MCP tool: `'Handles data.'` In testing, Claude rarely calls the tool even when the task clearly matches the tool's actual capability. What is the most likely cause?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164087441,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A tool handler performs a database query and returns 50 rows of customer records, each with six fields. A second tool in the same pipeline needs to parse those records. What return format should the handler use?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "<p>The deck distinguishes two return formats: plain text for results the model reads and summarizes, and JSON-serializable dicts for multi-field records or data that another tool will consume. Because the records have multiple fields and a downstream tool must parse them, a structured dict return is the correct choice — the SDK serializes it to JSON automatically.</p>",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>A plain string serialized from the rows, because the MCP SDK doesn't support dict returns from tool handlers.</p>",
+          "<p>A JSON-serializable dict, because the downstream tool needs to parse structured multi-field records.</p>",
+          "<p>An error dict with isError: true, because large result sets should be paginated before being returned.</p>",
+          "<p>A plain string formatted as a human-readable table, because the model can extract fields from prose.</p>"
+        ]
+      },
+      "correct_response": [
+        "b"
+      ],
+      "section": "",
+      "question_plain": "A tool handler performs a database query and returns 50 rows of customer records, each with six fields. A second tool in the same pipeline needs to parse those records. What return format should the handler use?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164087443,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A host application needs to provide Claude with an always-current copy of a live API response that changes every few minutes. The team doesn't want to poll on every conversation turn. Which MCP mechanism is designed for this scenario?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>MCP supports resource subscriptions: a client registers interest in a specific URI after the first retrieval. When the server detects the resource has changed, it sends a notification to the subscribed client, which then re-fetches the updated content. This keeps dynamic resources fresh without polling on every request.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>A prompt template that includes the API endpoint URL so users can request fresh data manually when needed.</p>",
+          "<p>Static resource caching, where the server stores the last known response and serves it until restarted.</p>",
+          "<p>Resource subscriptions: the client registers interest in a URI and gets notified when content changes.</p>",
+          "<p>A tool that the model calls on every turn to retrieve the latest API response before generating a reply.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "A host application needs to provide Claude with an always-current copy of a live API response that changes every few minutes. The team doesn't want to poll on every conversation turn. Which MCP mechanism is designed for this scenario?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164087447,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A compliance team wants all analysts to run the same structured audit workflow each time they start a regulatory review, with the ability to fill in the regulation name and scope before beginning. They don't want analysts to compose the prompt themselves. Which MCP primitive fits this requirement?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>MCP prompt templates are reusable, parameterized instructions stored on a server that users select to pre-populate an interaction. They're user-controlled: a human explicitly chooses the template and fills in arguments (regulation name, scope) before the session starts. This is precisely the pattern for compliance workflows where consistency matters and per-analyst ad-hoc prompting is undesirable.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>An MCP tool that the model calls when it detects a compliance-related question in the conversation.</p>",
+          "<p>A system prompt injected by the application that hardcodes the audit workflow for all conversations.</p>",
+          "<p>An MCP prompt template with typed arguments for regulation and scope, chosen by each analyst at start.</p>",
+          "<p>An MCP resource that injects the audit methodology document into context before every compliance conversation.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "A compliance team wants all analysts to run the same structured audit workflow each time they start a regulatory review, with the ability to fill in the regulation name and scope before beginning. They don't want analysts to compose the prompt themselves. Which MCP primitive fits this requirement?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164087449,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A team has a popular MCP prompt template called `security-review`. They need to roll out an improved version without immediately breaking existing users who rely on the current template. Which versioning strategy does the deck describe as the simplest way to do this?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>The deck covers three versioning strategies: appending a version number to the name (creating coexisting entries), passing version as a runtime argument resolved server-side, and using a deprecation flag to warn clients before removing old templates. Any of these could fit, but name-based versioning (e.g., security-review-v2) is the simplest approach that lets old and new templates coexist without breaking current users.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>Embed the new prompt body in the client application code so it bypasses the server's template management entirely.</p>",
+          "<p>Overwrite the existing `security-review` template with the new body; clients automatically receive the update on next use.</p>",
+          "<p>Register the new template as `security-review-v2`, keeping both entries available so existing users aren't disrupted.</p>",
+          "<p>Delete the old template and require users to manually reload the server to discover the replacement.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "A team has a popular MCP prompt template called `security-review`. They need to roll out an improved version without immediately breaking existing users who rely on the current template. Which versioning strategy does the deck describe as the simplest way to do this?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164087451,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>An agent framework connects to three MCP servers simultaneously — one for file operations, one for web search, and one for database queries. At runtime, the language model selects a tool named 'search', which exists on both the web-search server and the database server. What prevents the wrong server from receiving the call?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "",
+          "",
+          "<p>MCP clients register each server with a unique name. When tool names collide across servers, namespace prefixes derived from the server name disambiguate the call. The client — not the model — resolves which server owns a given tool, making routing transparent and collision-free.</p>",
+          ""
+        ],
+        "answers": [
+          "<p>The model selects the correct server by reading each server's capability list before invoking the tool.</p>",
+          "<p>The server with the higher protocol version number is given priority when two servers expose the same tool name.</p>",
+          "<p>The client uses namespace prefixes tied to each server's registered name to distinguish tools with identical names across different servers.</p>",
+          "<p>The client re-runs the discovery pass each time a collision is detected and picks the server that responded first.</p>"
+        ]
+      },
+      "correct_response": [
+        "c"
+      ],
+      "section": "",
+      "question_plain": "An agent framework connects to three MCP servers simultaneously — one for file operations, one for web search, and one for database queries. At runtime, the language model selects a tool named 'search', which exists on both the web-search server and the database server. What prevents the wrong server from receiving the call?",
+      "related_lectures": []
+    },
+    {
+      "_class": "assessment",
+      "id": 164087455,
+      "assessment_type": "multiple-choice",
+      "prompt": {
+        "question": "<p>A developer calls list_tools() right after the MCP handshake completes and finds the expected tool is missing. What is the most accurate explanation of why catching this problem at discovery time is valuable, according to the deck?</p>",
+        "relatedLectureIds": "",
+        "feedbacks": [
+          "<p>Discovery runs once per session immediately after the handshake. list_tools() returns names, schemas, and descriptions. Catching a missing tool here avoids a silent runtime error later when the model tries to call a tool the server never exposed.</p>",
+          "",
+          "",
+          ""
+        ],
+        "answers": [
+          "<p>Finding the mismatch at discovery prevents a runtime error that would otherwise surface only when the model attempts to invoke the absent tool.</p>",
+          "<p>Missing tools trigger a protocol fallback that routes the call to the next registered server without raising an error.</p>",
+          "<p>Discovery results are broadcast to the model so it can update its internal tool index before making any call.</p>",
+          "<p>The client re-runs list_tools() automatically on each tool call, so catching the gap at initialization is redundant.</p>"
+        ]
+      },
+      "correct_response": [
+        "a"
+      ],
+      "section": "",
+      "question_plain": "A developer calls list_tools() right after the MCP handshake completes and finds the expected tool is missing. What is the most accurate explanation of why catching this problem at discovery time is valuable, according to the deck?",
+      "related_lectures": []
+    }
+  ]
+}

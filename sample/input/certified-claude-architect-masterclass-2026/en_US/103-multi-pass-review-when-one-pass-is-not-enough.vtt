@@ -1,0 +1,526 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.444
+This lesson goes beyond the single retry loop and looks at what happens when you add a second model
+
+2
+00:00:05.444 --> 00:00:07.644
+call specifically to critique the first.
+
+3
+00:00:07.699 --> 00:00:13.100
+We'll cover the reviewer pattern, how to design reviewer prompts that actually work,
+
+4
+00:00:13.100 --> 00:00:18.299
+when multi-pass review is worth the cost, and how to close the loop with a revision.
+
+5
+00:00:18.299 --> 00:00:19.799
+Let's get into it.
+
+6
+00:00:19.799 --> 00:00:22.100
+Three terms to anchor this lesson.
+
+7
+00:00:22.100 --> 00:00:28.600
+The reviewer pattern is a second model call whose only job is to critique the output of the first call.
+
+8
+00:00:28.799 --> 00:00:34.500
+It's not generating new content, it's evaluating existing content against a defined standard.
+
+9
+00:00:34.500 --> 00:00:39.799
+Self-review is when you use the same model for both the generation and the review.
+
+10
+00:00:39.799 --> 00:00:44.400
+It's cheaper and faster, but the model tends to be generous with its own output.
+
+11
+00:00:44.400 --> 00:00:47.700
+You get confirmation bias built into the architecture.
+
+12
+00:00:47.700 --> 00:00:54.400
+Cross-review uses a different model for the reviewer role, often a stronger model than the one that generated the output.
+
+13
+00:00:54.400 --> 00:01:00.200
+This gives you a genuinely independent perspective, which is more valuable in high-stakes situations.
+
+14
+00:01:00.200 --> 00:01:03.400
+These three concepts define the reviewer pattern space.
+
+15
+00:01:03.400 --> 00:01:09.300
+Most teams start with self-review and upgrade to cross-review only where the stakes justify it.
+
+16
+00:01:09.300 --> 00:01:15.000
+The reviewer pattern inserts a second model call into your pipeline between generation and delivery.
+
+17
+00:01:15.000 --> 00:01:16.900
+Here's how it flows in practice.
+
+18
+00:01:16.900 --> 00:01:20.800
+The first call generates the output using your primary prompt.
+
+19
+00:01:20.800 --> 00:01:27.800
+The second call, the reviewer, receives that output along with an explicit checklist and produces a structured critique.
+
+20
+00:01:27.800 --> 00:01:33.921
+If the critique identifies issues, a third call takes the original output and the critique together
+
+21
+00:01:33.921 --> 00:01:35.838
+and produces a revised version.
+
+22
+00:01:35.900 --> 00:01:39.500
+That revised version is what your application delivers to the user.
+
+23
+00:01:39.500 --> 00:01:43.300
+The key insight is that the reviewer call isn't doing generation.
+
+24
+00:01:43.300 --> 00:01:45.099
+It's doing evaluation.
+
+25
+00:01:45.099 --> 00:01:52.199
+Its job is to be a strict, systematic reader that checks the output against the same standard every time.
+
+26
+00:01:52.199 --> 00:01:55.199
+That consistency is what makes the pattern valuable.
+
+27
+00:01:55.199 --> 00:01:57.300
+A human reviewer is inconsistent.
+
+28
+00:01:57.300 --> 00:02:00.400
+A well-prompted reviewer model isn't.
+
+29
+00:02:00.400 --> 00:02:05.599
+The choice between self-review and cross-review comes down to cost versus independence.
+
+30
+00:02:05.599 --> 00:02:07.900
+Self-review is the cheaper path.
+
+31
+00:02:07.900 --> 00:02:12.000
+You use the same model, so you're not paying for a more expensive reviewer.
+
+32
+00:02:12.000 --> 00:02:14.800
+The latency is similar to any other chained call.
+
+33
+00:02:14.800 --> 00:02:17.199
+The problem is confirmation bias.
+
+34
+00:02:17.199 --> 00:02:20.399
+Models tend to rate their own outputs favorably.
+
+35
+00:02:20.399 --> 00:02:25.000
+I've seen self-review passes approve outputs that a human would immediately flag,
+
+36
+00:02:25.000 --> 00:02:29.399
+simply because the model recognized its own phrasing as intentional.
+
+37
+00:02:29.399 --> 00:02:31.500
+Cross-review changes the dynamic.
+
+38
+00:02:31.500 --> 00:02:36.800
+A different model, especially a stronger one, doesn't share that affinity for the original output.
+
+39
+00:02:36.800 --> 00:02:39.000
+It evaluates more independently.
+
+40
+00:02:39.000 --> 00:02:41.500
+That independence is what you're paying for.
+
+41
+00:02:41.500 --> 00:02:47.800
+In regulated domains, healthcare, finance, legal, that independence is often not optional.
+
+42
+00:02:47.800 --> 00:02:51.699
+It's a requirement for the output to be trustworthy at all.
+
+43
+00:02:51.699 --> 00:02:55.699
+The reviewer prompt is where most multi-pass implementations break down.
+
+44
+00:02:55.699 --> 00:02:57.800
+The temptation is to write something like,
+
+45
+00:02:57.800 --> 00:03:00.800
+Review this output and identify any issues.
+
+46
+00:03:00.800 --> 00:03:05.699
+That produces vague, inconsistent critiques that don't drive useful revisions.
+
+47
+00:03:05.699 --> 00:03:08.399
+The better approach is an explicit checklist.
+
+48
+00:03:08.399 --> 00:03:11.199
+List exactly what the reviewer should check.
+
+49
+00:03:11.199 --> 00:03:13.800
+Does the output include a conclusion section?
+
+50
+00:03:13.800 --> 00:03:16.699
+Are all figures consistent with the context provided?
+
+51
+00:03:16.699 --> 00:03:19.600
+Does the tone match the specified audience?
+
+52
+00:03:19.600 --> 00:03:23.399
+Each check item should have a clear pass or fail condition.
+
+53
+00:03:23.399 --> 00:03:26.399
+Ask the reviewer to return a structured critique.
+
+54
+00:03:26.399 --> 00:03:27.699
+Which check failed?
+
+55
+00:03:27.699 --> 00:03:29.600
+A brief explanation of why?
+
+56
+00:03:29.600 --> 00:03:31.500
+And a suggested correction.
+
+57
+00:03:31.500 --> 00:03:35.800
+That structure makes the critique immediately actionable in the revision step.
+
+58
+00:03:35.800 --> 00:03:39.100
+Vague feedback from a reviewer produces vague revisions.
+
+59
+00:03:39.100 --> 00:03:42.899
+Specific feedback produces specific improvements.
+
+60
+00:03:42.899 --> 00:03:46.300
+Reviewer checklists typically fall into three categories.
+
+61
+00:03:46.300 --> 00:03:49.800
+And you should build all three into your reviewer prompt.
+
+62
+00:03:49.800 --> 00:03:55.399
+Completeness checks ask whether all required sections, fields, or elements are present.
+
+63
+00:03:55.399 --> 00:03:59.199
+Missing content is the most common failure in long-form generation.
+
+64
+00:03:59.199 --> 00:04:01.899
+And it's easy to check systematically.
+
+65
+00:04:01.899 --> 00:04:08.699
+Accuracy checks ask whether the facts, figures, and claims are consistent with the input context.
+
+66
+00:04:08.699 --> 00:04:10.800
+Did the model hallucinate a number?
+
+67
+00:04:10.800 --> 00:04:13.600
+Did it contradict something in the source material?
+
+68
+00:04:13.600 --> 00:04:19.000
+This category is harder to check automatically and often benefits from a stronger reviewer model.
+
+69
+00:04:19.000 --> 00:04:24.600
+Tone and format checks ask whether the output matches the required style, voice, and structure.
+
+70
+00:04:24.600 --> 00:04:26.799
+Is it too formal? Too casual?
+
+71
+00:04:26.799 --> 00:04:29.000
+Is the JSON structured correctly?
+
+72
+00:04:29.000 --> 00:04:35.700
+Covering all three categories in your checklist gives the reviewer a complete picture, not just a partial one.
+
+73
+00:04:35.700 --> 00:04:37.899
+Multipass review isn't free.
+
+74
+00:04:37.899 --> 00:04:44.195
+It adds latency from an extra model call and cost from both the reviewer call and, if issues are
+
+75
+00:04:44.195 --> 00:04:45.834
+found, the revision call.
+
+76
+00:04:45.899 --> 00:04:47.899
+So when does that cost make sense?
+
+77
+00:04:47.899 --> 00:04:50.500
+It makes sense when the output is high stakes.
+
+78
+00:04:50.500 --> 00:04:56.828
+If an error in the generated content has real downstream consequences, legal liability, clinical
+
+79
+00:04:56.828 --> 00:04:59.334
+misguidance, financial miscalculation,
+
+80
+00:04:59.399 --> 00:05:02.299
+then a review pass is cheap insurance.
+
+81
+00:05:02.299 --> 00:05:08.500
+It makes sense in regulated domains where accuracy is a compliance requirement, not just a quality preference.
+
+82
+00:05:08.500 --> 00:05:14.600
+And it makes sense for long-form content where a missing section is easy to overlook on a quick read.
+
+83
+00:05:14.600 --> 00:05:19.700
+The cost is almost never justified for low stakes, easily corrected output.
+
+84
+00:05:19.700 --> 00:05:26.600
+If a human can spot and fix an error in 30 seconds with no real harm done, skip the review pass.
+
+85
+00:05:26.600 --> 00:05:31.899
+Just as important as knowing when to use multipass review is knowing when not to.
+
+86
+00:05:31.899 --> 00:05:37.899
+Draft summaries, brainstorming outputs, and exploratory generation are low stakes by design.
+
+87
+00:05:37.899 --> 00:05:40.200
+The user expects to revise them.
+
+88
+00:05:40.200 --> 00:05:46.799
+Adding a review pass to that kind of output inflates cost and latency without a proportional quality benefit.
+
+89
+00:05:46.799 --> 00:05:51.700
+High volume, low cost generation is another case where review doesn't scale.
+
+90
+00:05:51.700 --> 00:05:58.600
+If you're generating thousands of short outputs, a review call on each one multiplies your API cost significantly.
+
+91
+00:05:58.600 --> 00:06:02.899
+You need to weigh that against the probability and cost of an error getting through.
+
+92
+00:06:02.899 --> 00:06:08.672
+And if a human already reviews the output before it reaches a decision point, you may already have a
+
+93
+00:06:08.672 --> 00:06:09.942
+quality gate in place.
+
+94
+00:06:10.000 --> 00:06:18.100
+Don't add a model reviewer on top of a human reviewer without asking whether the model pass is actually adding value.
+
+95
+00:06:18.100 --> 00:06:20.899
+Here's an architectural point that teams often miss.
+
+96
+00:06:20.899 --> 00:06:25.600
+Multipass review is quality control for inherently variable output.
+
+97
+00:06:25.600 --> 00:06:28.899
+It isn't a substitute for a clear original prompt.
+
+98
+00:06:28.899 --> 00:06:31.100
+I see this anti-pattern regularly.
+
+99
+00:06:31.100 --> 00:06:35.100
+A team has a primary prompt that produces inconsistent output.
+
+100
+00:06:35.100 --> 00:06:39.899
+Instead of fixing the prompt, they add a reviewer pass to catch the inconsistencies.
+
+101
+00:06:39.899 --> 00:06:45.500
+The reviewer adds cost and latency, but the root cause is still the weak original prompt.
+
+102
+00:06:45.500 --> 00:06:48.000
+Some inconsistencies slip through anyway.
+
+103
+00:06:48.000 --> 00:06:50.799
+The right sequence is to fix the prompt first.
+
+104
+00:06:50.799 --> 00:06:57.278
+Get the primary generation to a reliable baseline, then add a review pass as a quality control layer
+
+105
+00:06:57.278 --> 00:06:59.935
+for the genuine variability that remains.
+
+106
+00:07:00.000 --> 00:07:05.359
+Using review as a substitute for prompt engineering is like adding a proofreader to compensate for
+
+107
+00:07:05.359 --> 00:07:06.945
+unclear writing instructions.
+
+108
+00:07:07.000 --> 00:07:09.600
+Fix the instructions first.
+
+109
+00:07:09.600 --> 00:07:11.500
+The critique is only half the loop.
+
+110
+00:07:11.500 --> 00:07:14.100
+You need a revision pass to close it.
+
+111
+00:07:14.100 --> 00:07:16.100
+Here's what that looks like in practice.
+
+112
+00:07:16.100 --> 00:07:18.399
+Your revision prompt receives two things.
+
+113
+00:07:18.500 --> 00:07:23.899
+The original output from the generation call and the structured critique from the reviewer call.
+
+114
+00:07:23.899 --> 00:07:29.000
+It asks the model to produce a revised version that addresses each point in the critique.
+
+115
+00:07:29.000 --> 00:07:32.200
+This is where the structure of the reviewer prompt pays off.
+
+116
+00:07:32.200 --> 00:07:37.718
+If the critic returned a list of specific failures with suggested corrections, the revision model
+
+117
+00:07:37.718 --> 00:07:38.743
+has clear targets.
+
+118
+00:07:38.799 --> 00:07:42.299
+If the critique was vague, the revision will be vague too.
+
+119
+00:07:42.299 --> 00:07:45.299
+After the revision, run the same checklist again.
+
+120
+00:07:45.299 --> 00:07:48.700
+Validate the revision the same way you validated the original.
+
+121
+00:07:48.700 --> 00:07:51.299
+If the revision passes, deliver it.
+
+122
+00:07:51.299 --> 00:07:56.299
+If it still fails, you're back to the retry budget decision we covered in the first lesson.
+
+123
+00:07:56.299 --> 00:07:58.899
+The two lessons connect directly.
+
+124
+00:07:58.899 --> 00:08:05.000
+Multipass review adds a meaningful quality control layer that single pass generation just can't match.
+
+125
+00:08:05.000 --> 00:08:06.700
+Use explicit checklists.
+
+126
+00:08:06.700 --> 00:08:10.399
+Choose self or cross review based on the stakes involved.
+
+127
+00:08:10.399 --> 00:08:13.799
+And always close the loop with a concrete revision pass.
+
+128
+00:08:13.799 --> 00:08:15.700
+That wraps up multipass review.
+
+129
+00:08:15.700 --> 00:08:21.797
+Coming up next, we'll close out prompt engineering with how to actually evaluate prompts, test data
+
+130
+00:08:21.797 --> 00:08:24.138
+sets, grading, and regression testing.
+
+131
+00:08:24.200 --> 00:08:24.799
+I'll see you there.
+

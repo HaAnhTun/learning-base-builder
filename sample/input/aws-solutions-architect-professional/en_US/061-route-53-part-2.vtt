@@ -1,0 +1,606 @@
+WEBVTT
+
+1
+00:00:00.350 --> 00:00:03.210
+<v ->So next, the second part of this Route 53 lecture</v>
+
+2
+00:00:03.210 --> 00:00:05.370
+...so we have Hosted Zones and this
+
+3
+00:00:05.370 --> 00:00:07.130
+is a container of records to define
+
+4
+00:00:07.130 --> 00:00:08.500
+how to route traffic to a domain
+
+5
+00:00:08.500 --> 00:00:10.550
+and its subdomains and we have two kinds.
+
+6
+00:00:10.550 --> 00:00:13.100
+We have the Public Hosted Zones, to allow
+
+7
+00:00:13.100 --> 00:00:16.060
+the internet to resolve them for public domains,
+
+8
+00:00:16.060 --> 00:00:17.720
+but also we get the Private Hosted Zones
+
+9
+00:00:17.720 --> 00:00:19.940
+and these can only be resolved from
+
+10
+00:00:19.940 --> 00:00:23.780
+within your VPC and you can define private URL's.
+
+11
+00:00:23.780 --> 00:00:25.190
+So, the difference is that the
+
+12
+00:00:25.190 --> 00:00:27.420
+Public Hosted Zone is accessible publicly
+
+13
+00:00:27.420 --> 00:00:29.099
+and you can have the target being
+
+14
+00:00:29.099 --> 00:00:31.120
+the Public IP of an EC2 Instance,
+
+15
+00:00:31.120 --> 00:00:33.540
+the Public IP of an Application Load Balancer
+
+16
+00:00:33.540 --> 00:00:35.740
+or a CloudFront distribution or
+
+17
+00:00:35.740 --> 00:00:38.140
+an S3 Bucket website for example.
+
+18
+00:00:38.140 --> 00:00:39.350
+But in the Private Hosted Zone,
+
+19
+00:00:39.350 --> 00:00:41.360
+it's used from within your VPC
+
+20
+00:00:41.360 --> 00:00:43.360
+and it's very helpful to link to
+
+21
+00:00:43.360 --> 00:00:46.710
+the Private IP of your EC2 Instances
+
+22
+00:00:46.710 --> 00:00:49.590
+or the Private IP of your Database Instances
+
+23
+00:00:49.590 --> 00:00:52.030
+and so on. Other good things to know
+
+24
+00:00:52.030 --> 00:00:54.720
+for Route 53 is that in case you have a
+
+25
+00:00:54.720 --> 00:00:57.000
+Private Hosted Zone with a Private DNS
+
+26
+00:00:57.000 --> 00:00:59.440
+then in your VPC you must enable two settings
+
+27
+00:00:59.440 --> 00:01:01.537
+called the enableDnsHostnames
+
+28
+00:01:01.537 --> 00:01:02.370
+and enable DnsSupport.
+
+29
+00:01:04.830 --> 00:01:08.390
+Also, on Route 53 you get support for the
+
+30
+00:01:08.390 --> 00:01:10.990
+DNS Security Extensions (DNSSEC)
+
+31
+00:01:10.990 --> 00:01:12.450
+and it's a protocol for securing
+
+32
+00:01:12.450 --> 00:01:14.580
+DNS traffic to verify the DNS
+
+33
+00:01:14.580 --> 00:01:17.410
+data integrity and origin. It helps you
+
+34
+00:01:17.410 --> 00:01:19.730
+to be protected against Man in the Middle (MITM)
+
+35
+00:01:19.730 --> 00:01:22.810
+attacks on the DNSSEC. And Route 53
+
+36
+00:01:22.810 --> 00:01:24.941
+has support for both DNSSEC for
+
+37
+00:01:24.941 --> 00:01:28.330
+Domain Registration and also DNSSEC Signing.
+
+38
+00:01:28.330 --> 00:01:31.280
+It only works with Public Hosted Zones.
+
+39
+00:01:31.280 --> 00:01:33.660
+Finally, you can use Route 53 with a
+
+40
+00:01:33.660 --> 00:01:36.170
+3rd Registrar in which case you buy the domain
+
+41
+00:01:36.170 --> 00:01:38.230
+outside of AWS but you still use
+
+42
+00:01:38.230 --> 00:01:40.950
+Route 53 as your DNS provider.
+
+43
+00:01:40.950 --> 00:01:42.360
+For this, you just update the
+
+44
+00:01:42.360 --> 00:01:44.640
+NS records on the Registrar and
+
+45
+00:01:44.640 --> 00:01:46.737
+you appoint them to AWS.
+
+46
+00:01:47.943 --> 00:01:50.190
+Onto Health Checks, so you get Public
+
+47
+00:01:50.190 --> 00:01:52.980
+Health Checks on Route 53. That means that
+
+48
+00:01:52.980 --> 00:01:55.420
+for example, if you have two ALB's in two
+
+49
+00:01:55.420 --> 00:01:57.820
+distinct regions then you can set up two
+
+50
+00:01:57.820 --> 00:02:01.060
+Health Checks to check the health of these ALB.
+
+51
+00:02:01.060 --> 00:02:03.600
+And you use the Health Check,
+
+52
+00:02:03.600 --> 00:02:06.300
+to link them to a specific DNS record
+
+53
+00:02:06.300 --> 00:02:09.470
+and this gives you automatic DNS Failover.
+
+54
+00:02:09.470 --> 00:02:11.060
+So, you have three kind of Health Checks.
+
+55
+00:02:11.060 --> 00:02:12.790
+You get Health Checks that will monitor
+
+56
+00:02:12.790 --> 00:02:15.490
+an endpoint health so: application,
+
+57
+00:02:15.490 --> 00:02:18.310
+server or maybe another AWS resource.
+
+58
+00:02:18.310 --> 00:02:20.090
+You get Health Checks that will monitor
+
+59
+00:02:20.090 --> 00:02:21.100
+other Health Checks and they are
+
+60
+00:02:21.100 --> 00:02:23.240
+called Calculated Health Checks.
+
+61
+00:02:23.240 --> 00:02:24.970
+And you get Health Checks that monitor
+
+62
+00:02:24.970 --> 00:02:26.800
+CloudWatch Alarms, which gives
+
+63
+00:02:26.800 --> 00:02:28.130
+you full control because you do
+
+64
+00:02:28.130 --> 00:02:30.150
+whatever you want with a CloudWatch alarm.
+
+65
+00:02:30.150 --> 00:02:31.336
+So you can monitor, for example,
+
+66
+00:02:31.336 --> 00:02:33.620
+throttles of DynamoDB alarms on
+
+67
+00:02:33.620 --> 00:02:35.950
+RDS or any custom metrics which
+
+68
+00:02:35.950 --> 00:02:38.210
+is very helpful for private resources.
+
+69
+00:02:38.210 --> 00:02:39.330
+Now all of these Health Checks
+
+70
+00:02:39.330 --> 00:02:41.260
+will publish also CloudWatch metrics
+
+71
+00:02:41.260 --> 00:02:43.280
+if you ever need to. So as we said
+
+72
+00:02:43.280 --> 00:02:45.100
+we have Calculated Health Checks
+
+73
+00:02:45.100 --> 00:02:47.000
+which is to combine Health Checks
+
+74
+00:02:47.000 --> 00:02:49.620
+into a Parent Health Check and
+
+75
+00:02:49.620 --> 00:02:51.120
+for this you can use the OR, AND,
+
+76
+00:02:51.120 --> 00:02:53.050
+or NOT condition. You can monitor
+
+77
+00:02:53.050 --> 00:02:56.800
+up to 256 Children Health Checks
+
+78
+00:02:56.800 --> 00:02:58.760
+in one Parent Health Check and
+
+79
+00:02:58.760 --> 00:03:01.350
+you specify how many of the Child
+
+80
+00:03:01.350 --> 00:03:03.140
+Health Checks need to pass to make
+
+81
+00:03:03.140 --> 00:03:05.080
+the Parent Health pass as well.
+
+82
+00:03:05.080 --> 00:03:07.010
+So the use case of a Calculated
+
+83
+00:03:07.010 --> 00:03:08.870
+Health Check is to perform maintenance
+
+84
+00:03:08.870 --> 00:03:10.690
+on your website without causing, for
+
+85
+00:03:10.690 --> 00:03:13.810
+example, all the Health Checks to fail.
+
+86
+00:03:13.810 --> 00:03:15.500
+You can also monitor an Endpoint
+
+87
+00:03:15.500 --> 00:03:17.360
+using Health Checks. So, we can
+
+88
+00:03:17.360 --> 00:03:21.210
+monitor Public Endpoints and Health Checkers
+
+89
+00:03:21.210 --> 00:03:23.680
+all around the world will do HFTP request
+
+90
+00:03:23.680 --> 00:03:26.720
+to the health route that you set, okay?
+
+91
+00:03:26.720 --> 00:03:28.350
+And when you do set something up
+
+92
+00:03:28.350 --> 00:03:29.960
+you get about fifteen Health Checkers
+
+93
+00:03:29.960 --> 00:03:31.190
+that will check your Endpoint health
+
+94
+00:03:31.190 --> 00:03:33.340
+so it needs to be a Public Endpoint, of course.
+
+95
+00:03:33.340 --> 00:03:34.650
+And then the Health Checks are
+
+96
+00:03:34.650 --> 00:03:36.310
+going to pass only if the Endpoint
+
+97
+00:03:36.310 --> 00:03:38.381
+is going to respond with the 200's
+
+98
+00:03:38.381 --> 00:03:41.530
+or the 300's status codes. Now there's
+
+99
+00:03:41.530 --> 00:03:43.030
+a cool feature that you need to know about
+
+100
+00:03:43.030 --> 00:03:44.680
+that is coming up in the exam.
+
+101
+00:03:44.680 --> 00:03:45.940
+Is that the health check can be
+
+102
+00:03:45.940 --> 00:03:48.430
+set up to fail or pass based on
+
+103
+00:03:48.430 --> 00:03:51.270
+the value returned by the Endpoint
+
+104
+00:03:51.270 --> 00:03:53.260
+that you are checking. And if in the
+
+105
+00:03:53.260 --> 00:03:56.167
+first 5120 bytes of the response
+
+106
+00:03:56.167 --> 00:03:58.320
+you have some specific text that
+
+107
+00:03:58.320 --> 00:04:00.460
+you specify then you make the Health
+
+108
+00:04:00.460 --> 00:04:02.063
+Check pass or else the Health Check
+
+109
+00:04:02.063 --> 00:04:03.693
+does not pass.
+
+110
+00:04:04.710 --> 00:04:08.130
+Okay, so how do we do Health Checks of stuff in
+
+111
+00:04:08.130 --> 00:04:10.530
+Private Hosted Zones? Well, because
+
+112
+00:04:10.530 --> 00:04:11.470
+the Health Checkers are outside
+
+113
+00:04:11.470 --> 00:04:14.040
+the VPC they cannot access Private Endpoints.
+
+114
+00:04:14.040 --> 00:04:17.430
+So, Private VPC or on-premises resources.
+
+115
+00:04:17.430 --> 00:04:19.430
+And so therefore to monitor the
+
+116
+00:04:19.430 --> 00:04:21.190
+health of an EC2 Instance, what
+
+117
+00:04:21.190 --> 00:04:22.260
+you can do is that you can create
+
+118
+00:04:22.260 --> 00:04:24.290
+a CloudWatch Metric then you associate
+
+119
+00:04:24.290 --> 00:04:26.310
+a CloudWatch Alarm with it and then
+
+120
+00:04:26.310 --> 00:04:28.391
+you base the Health Check to monitor
+
+121
+00:04:28.391 --> 00:04:30.780
+the CloudWatch Alarm itself and this
+
+122
+00:04:30.780 --> 00:04:32.710
+is how you would effectively monitor
+
+123
+00:04:32.710 --> 00:04:36.160
+the health of an internal resource.
+
+124
+00:04:36.160 --> 00:04:38.200
+So let's take an example of a
+
+125
+00:04:38.200 --> 00:04:40.610
+Solution Architecture for multi-region
+
+126
+00:04:40.610 --> 00:04:41.888
+failover with RDS. So we have a
+
+127
+00:04:41.888 --> 00:04:44.470
+main database and we have an Async
+
+128
+00:04:44.470 --> 00:04:46.360
+replication into a different region,
+
+129
+00:04:46.360 --> 00:04:49.510
+so we have us-east-1 to us-west-2.
+
+130
+00:04:49.510 --> 00:04:52.090
+Then we have two ways, either we set up an
+
+131
+00:04:52.090 --> 00:04:54.027
+EC2 Instance to monitor the health of the
+
+132
+00:04:54.027 --> 00:04:56.641
+database and to expose a HFTP
+
+133
+00:04:56.641 --> 00:04:59.550
+call /health-db route and that
+
+134
+00:04:59.550 --> 00:05:01.470
+is one way of doing it. Or option two
+
+135
+00:05:01.470 --> 00:05:03.350
+which I like more, is to define a CloudWatch
+
+136
+00:05:03.350 --> 00:05:05.180
+Alarm and link the CloudWatch
+
+137
+00:05:05.180 --> 00:05:07.330
+Alarm into a Health Check. Once the
+
+138
+00:05:07.330 --> 00:05:09.360
+Health Check is off, we can link
+
+139
+00:05:09.360 --> 00:05:11.390
+it to a CloudWatch Alarm as well.
+
+140
+00:05:11.390 --> 00:05:13.160
+This is going to be linked to an
+
+141
+00:05:13.160 --> 00:05:15.130
+SNS Topic or an CloudWatch Event
+
+142
+00:05:15.130 --> 00:05:16.430
+which is going to trigger a Lambda
+
+143
+00:05:16.430 --> 00:05:17.980
+function and then the Lambda function
+
+144
+00:05:17.980 --> 00:05:20.470
+will update the DNS of your application
+
+145
+00:05:20.470 --> 00:05:22.860
+into Route 53 and then promote
+
+146
+00:05:22.860 --> 00:05:25.360
+your Read Replica in us-west-2
+
+147
+00:05:25.360 --> 00:05:27.441
+and effectively you have achieved
+
+148
+00:05:27.441 --> 00:05:29.930
+automated failover using Health
+
+149
+00:05:29.930 --> 00:05:32.200
+Checks and Route 53. So, I hope
+
+150
+00:05:32.200 --> 00:05:34.050
+that was helpful. I hope you liked this lecture.
+
+151
+00:05:34.050 --> 00:05:36.000
+And I will see you in the next lecture.
+

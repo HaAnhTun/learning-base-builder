@@ -1,0 +1,118 @@
+WEBVTT
+
+1
+00:00:00.150 --> 00:00:02.790
+<v Instructor>So just a short lecture on Default Encryption</v>
+
+2
+00:00:02.790 --> 00:00:04.740
+versus Bucket Policies.
+
+3
+00:00:04.740 --> 00:00:06.930
+So by default, now all buckets
+
+4
+00:00:06.930 --> 00:00:10.980
+are having a default encryption of SSE-S3.
+
+5
+00:00:10.980 --> 00:00:12.810
+So it's applied automatically to new objects
+
+6
+00:00:12.810 --> 00:00:15.150
+stored in your buckets, but you can change this
+
+7
+00:00:15.150 --> 00:00:19.140
+to be a different default encryption, for example, SSC KMS.
+
+8
+00:00:19.140 --> 00:00:21.270
+Nonetheless, you can also force encryption
+
+9
+00:00:21.270 --> 00:00:24.810
+by using a bucket policy to refuse any API call
+
+10
+00:00:24.810 --> 00:00:28.710
+to put an S3 object without the correct encryption headers.
+
+11
+00:00:28.710 --> 00:00:32.430
+So this is the kind of bucket policies
+
+12
+00:00:32.430 --> 00:00:34.807
+you could have in, for example, this one is saying,
+
+13
+00:00:34.807 --> 00:00:37.050
+"Hey, if you do a put object
+
+14
+00:00:37.050 --> 00:00:41.490
+but you don't have the encryption header that says AWS KMS,
+
+15
+00:00:41.490 --> 00:00:42.960
+then deny this request."
+
+16
+00:00:42.960 --> 00:00:45.450
+Or, "Hey, if you are uploading this,
+
+17
+00:00:45.450 --> 00:00:49.740
+but there is no customer side algorithm, so no SSCC,
+
+18
+00:00:49.740 --> 00:00:51.030
+then deny this object."
+
+19
+00:00:51.030 --> 00:00:52.380
+So this is just an example,
+
+20
+00:00:52.380 --> 00:00:54.720
+but at least you see that the bucket policy
+
+21
+00:00:54.720 --> 00:00:58.770
+can also force a way to have encryption in your bucket.
+
+22
+00:00:58.770 --> 00:01:01.620
+And by the way, bucket policies are always going to be
+
+23
+00:01:01.620 --> 00:01:05.280
+evaluated before your default encryption settings.
+
+24
+00:01:05.280 --> 00:01:07.800
+So that's it, just remember default encryption is on
+
+25
+00:01:07.800 --> 00:01:10.740
+by default with SSE S3, but you can change it
+
+26
+00:01:10.740 --> 00:01:13.440
+and you can apply a bucket policy preemptively
+
+27
+00:01:13.440 --> 00:01:16.140
+to force encryption to the one you want.
+
+28
+00:01:16.140 --> 00:01:17.100
+All right, that's it.
+
+29
+00:01:17.100 --> 00:01:20.133
+I hope you liked it and I will see you in the next lecture.
+

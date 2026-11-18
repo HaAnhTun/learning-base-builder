@@ -1,0 +1,322 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.440
+Welcome back. There are some new ways to control the way Claude formats responses for you.
+
+2
+00:00:05.440 --> 00:00:10.079
+On the newer flagship models, the old trick of pre-filling the assistant turn
+
+3
+00:00:10.079 --> 00:00:15.279
+no longer works, and this lesson explains what replaced it. We'll cover why the flagships
+
+4
+00:00:15.279 --> 00:00:22.399
+stopped accepting it, and how system prompt steering shapes tone, structure, and scope. Let's dive in.
+
+5
+00:00:23.600 --> 00:00:27.360
+Let's start with what changed, because older material still teaches the old way.
+
+6
+00:00:27.920 --> 00:00:31.760
+Pre-filling meant ending your messages array with a partial assistant turn,
+
+7
+00:00:31.760 --> 00:00:34.959
+so the model continued from an opening token you had already written.
+
+8
+00:00:35.759 --> 00:00:45.439
+Starting with the 4.6 generation, that path is closed. Opus 4.6, 4.7, and 4.8, plus Sonnet 4.6,
+
+9
+00:00:45.439 --> 00:00:51.200
+and every model released after them reject it and return an HTTP 400 error.
+
+10
+00:00:51.759 --> 00:00:58.080
+This isn't a blanket removal. Pre-4.6 models like Haiku 4.5 still support it,
+
+11
+00:00:58.080 --> 00:01:03.119
+but since the flagships reject it, the right move is to build around the supported features.
+
+12
+00:01:03.119 --> 00:01:09.040
+You reach for one of three. Structured outputs, strict tool use, or system prompt steering.
+
+13
+00:01:09.040 --> 00:01:13.680
+Each achieves format control through a supported mechanism, rather than injecting a partial
+
+14
+00:01:13.680 --> 00:01:20.080
+response. Let's define the vocabulary we'll use. Output steering is the general practice
+
+15
+00:01:20.080 --> 00:01:26.160
+of guiding the model toward a target tone, structure, or scope using supported instructions,
+
+16
+00:01:26.160 --> 00:01:29.519
+rather than injecting a partial response turned the way pre-filling did.
+
+17
+00:01:30.239 --> 00:01:35.519
+System prompt steering is the most durable form of this. You set the behavior you want in the
+
+18
+00:01:35.519 --> 00:01:40.160
+system prompt, and because the system prompt applies to every turn in the conversation,
+
+19
+00:01:40.160 --> 00:01:45.839
+that tone and format hold across the entire session. You set it once, and it persists.
+
+20
+00:01:46.400 --> 00:01:51.279
+Format control is the narrower idea of directing the actual shape of a response.
+
+21
+00:01:51.279 --> 00:01:56.239
+That happens through explicit instructions, through examples that demonstrate the shape you want,
+
+22
+00:01:56.239 --> 00:02:00.639
+and through schema-backed features that guarantee structure. Keeping these three
+
+23
+00:02:00.639 --> 00:02:03.839
+terms straight helps you pick the right tool for a given requirement.
+
+24
+00:02:05.040 --> 00:02:09.440
+So when pre-filling would have been your move, three supported features now cover the same
+
+25
+00:02:09.440 --> 00:02:15.199
+ground. First, structured outputs guarantee schema valid JSON in the model's text response.
+
+26
+00:02:15.839 --> 00:02:19.440
+In the normal case, the model can't emit tokens that violate your schema,
+
+27
+00:02:19.440 --> 00:02:24.399
+so you skip the parse and retry loop. Two exceptions still need handling,
+
+28
+00:02:24.399 --> 00:02:30.639
+a safety refusal and a max tokens cutoff, so check the stop reason first. Second, strict tool
+
+29
+00:02:30.639 --> 00:02:35.679
+use guarantees valid arguments on every tool call, so an agent's function calls always match the
+
+30
+00:02:35.679 --> 00:02:42.320
+input schema. Third, system prompt steering shapes tone, scope, and format across turns
+
+31
+00:02:42.320 --> 00:02:48.160
+without any schema at all. This lesson goes deep on that third one. The full structured outputs
+
+32
+00:02:48.160 --> 00:02:54.080
+mechanism gets its own lesson, so I won't repeat it here. Just know it replaces the old JSON opener
+
+33
+00:02:54.080 --> 00:03:00.880
+trick entirely. Let's focus on what system prompt steering actually controls, because this is where
+
+34
+00:03:00.880 --> 00:03:06.320
+most of your day-to-day format work lives now. The system prompt is the place to set behavior
+
+35
+00:03:06.320 --> 00:03:11.759
+that should persist through the whole conversation. You can set tone there, choosing a formal,
+
+36
+00:03:11.759 --> 00:03:17.440
+plain, or technical register once and having it hold. You can name the audience, telling the model
+
+37
+00:03:17.440 --> 00:03:23.199
+who the answer is for so it calibrates depth appropriately. You can bound the scope, stating
+
+38
+00:03:23.199 --> 00:03:28.639
+clearly what the model should and shouldn't cover. And you can set format defaults, describing a
+
+39
+00:03:28.639 --> 00:03:34.160
+preferred structure that applies to every reply. Because all of this applies to every single turn,
+
+40
+00:03:34.160 --> 00:03:40.240
+not just one request, the system prompt is the natural home for steering. Anything you'd otherwise
+
+41
+00:03:40.240 --> 00:03:46.000
+have to repeat on each message belongs there instead. A common question is whether to put a
+
+42
+00:03:46.000 --> 00:03:52.399
+steering instruction in the system prompt or in the user turn. The distinction is about persistence.
+
+43
+00:03:52.399 --> 00:03:58.000
+System prompt instructions are persistent. They shape behavior across every turn, so they're the
+
+44
+00:03:58.000 --> 00:04:04.399
+right home for tone, role, and format defaults that should never drift as the conversation goes on.
+
+45
+00:04:05.199 --> 00:04:10.960
+If you want the model to always answer in a plain, executive register, that belongs in the system
+
+46
+00:04:10.960 --> 00:04:17.119
+prompt. User turn instructions are per request. They apply to a single response, and then they're
+
+47
+00:04:17.119 --> 00:04:23.200
+done. If you need a specific structure just this once, a one-off table, or a particular ordering
+
+48
+00:04:23.200 --> 00:04:29.519
+for a single answer, put it in the user turn. The rule of thumb is simple. Persistent behavior goes
+
+49
+00:04:29.519 --> 00:04:34.079
+in the system prompt. One-time requirements go in the user turn where they won't linger.
+
+50
+00:04:35.279 --> 00:04:40.399
+Now, how do you actually control format without prefilling? The good news is you no longer need
+
+51
+00:04:40.399 --> 00:04:46.239
+a partial assistant turn to anchor the first token. You have simpler options. First, just state the
+
+52
+00:04:46.239 --> 00:04:50.880
+target format plainly in your instructions. Describe the structure you want in words.
+
+53
+00:04:51.440 --> 00:04:57.440
+Second, show one or two examples of the exact shape you're after. A concrete example is often
+
+54
+00:04:57.440 --> 00:05:03.040
+clearer than any description, and the model follows it closely. Third, name the required
+
+55
+00:05:03.040 --> 00:05:09.040
+fields and their value types explicitly so nothing is left to guess. And when you need a hard guarantee
+
+56
+00:05:09.040 --> 00:05:14.720
+that the output is valid JSON, don't rely on instructions at all. Use structured outputs,
+
+57
+00:05:14.720 --> 00:05:19.839
+which we cover in its own lesson. For most everyday needs, clear instructions plus a good
+
+58
+00:05:19.839 --> 00:05:25.600
+example handle the job. Reserve the schema-backed features for the cases where structure absolutely
+
+59
+00:05:25.600 --> 00:05:31.040
+can't break. Let's put the three supported features side by side so you know which to reach
+
+60
+00:05:31.040 --> 00:05:37.200
+for. When you need guaranteed JSON, use structured outputs. In the normal case, it conforms to your
+
+61
+00:05:37.200 --> 00:05:42.959
+schema, so there's no routine parsing guard or retry to write, though a refusal or a max tokens
+
+62
+00:05:42.959 --> 00:05:48.320
+cutoff still needs a stop reason check. When you need valid tool arguments in an agent,
+
+63
+00:05:48.320 --> 00:05:54.399
+use strict tool use. It guarantees each tool calls arguments match the input schema exactly
+
+64
+00:05:54.399 --> 00:06:00.399
+with no missing fields and no type mismatches. And when you need tone, scope, or style rather
+
+65
+00:06:00.399 --> 00:06:05.600
+than a rigid data shape, use system prompt steering. It shapes the character and format
+
+66
+00:06:05.600 --> 00:06:11.440
+of the response across every turn without imposing a schema. The trap to avoid is reaching
+
+67
+00:06:11.440 --> 00:06:17.920
+for a schema feature when you really just wanted a consistent tone. Finally, a word on anti-patterns,
+
+68
+00:06:17.920 --> 00:06:23.119
+because it's easy to oversteer. The first one is habit. If you reach for pre-filling out of
+
+69
+00:06:23.119 --> 00:06:28.640
+muscle memory, you'll now hit a hard error, so retrain that reflex toward the supported features.
+
+70
+00:06:28.640 --> 00:06:33.600
+The second is redundancy. Repeating the same rule in the system prompt and then again in
+
+71
+00:06:33.600 --> 00:06:39.200
+every user turn just adds noise without making the constraint any stronger. State it once in
+
+72
+00:06:39.200 --> 00:06:45.119
+the right place. The third is conflicting signals. Asking for a response that is brief but also
+
+73
+00:06:45.119 --> 00:06:50.959
+exhaustive forces the model to satisfy two incompatible goals, and quality suffers on both.
+
+74
+00:06:51.600 --> 00:06:56.959
+The fourth is over-constraining structure when the content genuinely needs room, which produces
+
+75
+00:06:56.959 --> 00:07:03.119
+truncated or rushed answers. The guiding principle across all of these is restraint. Steer with the
+
+76
+00:07:03.119 --> 00:07:09.119
+lightest control that reliably gets you the shape you need and no heavier. Let's recap. Starting
+
+77
+00:07:09.119 --> 00:07:17.519
+with the 4.6 generation, pre-filling returns an HTTP 400 error, and so does every model after it.
+
+78
+00:07:17.519 --> 00:07:25.519
+Pre-4.6 models, like Haiku 4.5, still accept it. In its place, structured outputs guarantee
+
+79
+00:07:25.519 --> 00:07:31.920
+schema-valid JSON, strict tool use guarantees valid arguments, and system prompt steering
+
+80
+00:07:31.920 --> 00:07:37.519
+shapes tone and format across turns. That wraps up this lesson. I'll see you in the next one.
+

@@ -1,0 +1,694 @@
+WEBVTT
+
+1
+00:00:00.300 --> 00:00:02.700
+<v Instructor>So now let's talk about Aurora Serverless.</v>
+
+2
+00:00:02.700 --> 00:00:05.220
+It's a serverless offering of the Aurora database.
+
+3
+00:00:05.220 --> 00:00:06.960
+That means that there is autoscaling
+
+4
+00:00:06.960 --> 00:00:09.450
+and automated database instantiation
+
+5
+00:00:09.450 --> 00:00:11.220
+based on your actual usage.
+
+6
+00:00:11.220 --> 00:00:14.160
+So it's amazing if you have infrequent, intermittent,
+
+7
+00:00:14.160 --> 00:00:15.930
+or unpredictable workloads.
+
+8
+00:00:15.930 --> 00:00:18.270
+And there is no need for capacity planning.
+
+9
+00:00:18.270 --> 00:00:21.270
+You pay per second, and that can be more cost-effective.
+
+10
+00:00:21.270 --> 00:00:24.120
+So you have the same shared storage volume,
+
+11
+00:00:24.120 --> 00:00:27.420
+and your client just access a proxy fleet managed by Aurora;
+
+12
+00:00:27.420 --> 00:00:30.030
+and automatically, based on your usage,
+
+13
+00:00:30.030 --> 00:00:32.250
+the Aurora is going to scale in the backend
+
+14
+00:00:32.250 --> 00:00:34.110
+for your serverless database.
+
+15
+00:00:34.110 --> 00:00:35.700
+So from a client perspective,
+
+16
+00:00:35.700 --> 00:00:37.350
+you just connect to one endpoint,
+
+17
+00:00:37.350 --> 00:00:40.740
+and the rest is happening sort of magically in the backend,
+
+18
+00:00:40.740 --> 00:00:41.760
+which is great, again,
+
+19
+00:00:41.760 --> 00:00:44.340
+if you don't know how you want to scale,
+
+20
+00:00:44.340 --> 00:00:45.930
+if you want to have zero usage
+
+21
+00:00:45.930 --> 00:00:48.960
+or then 1,000 requests per second the second after:
+
+22
+00:00:48.960 --> 00:00:51.930
+this can be possible with Aurora Serverless.
+
+23
+00:00:51.930 --> 00:00:52.830
+On top of it,
+
+24
+00:00:52.830 --> 00:00:55.110
+Aurora Serverless has the Data API,
+
+25
+00:00:55.110 --> 00:00:57.870
+which allows you to access the Aurora Serverless database
+
+26
+00:00:57.870 --> 00:01:01.080
+without establishing a JDBC connection.
+
+27
+00:01:01.080 --> 00:01:04.260
+The only thing you have is a secure HTTPS endpoint
+
+28
+00:01:04.260 --> 00:01:06.450
+that allows you to run SQL statements.
+
+29
+00:01:06.450 --> 00:01:09.450
+That means that your application does not have to have
+
+30
+00:01:09.450 --> 00:01:12.660
+a complicated persistent database connection managements
+
+31
+00:01:12.660 --> 00:01:13.560
+and so on.
+
+32
+00:01:13.560 --> 00:01:15.630
+So there is just one API to access,
+
+33
+00:01:15.630 --> 00:01:17.610
+and then the API is going to be authorized
+
+34
+00:01:17.610 --> 00:01:20.130
+if the underlying application has the right
+
+35
+00:01:20.130 --> 00:01:22.230
+to access Secrets Manager
+
+36
+00:01:22.230 --> 00:01:24.570
+where the credentials are actually checked.
+
+37
+00:01:24.570 --> 00:01:25.530
+So how does that work?
+
+38
+00:01:25.530 --> 00:01:27.450
+Well, your Aurora Serverless database
+
+39
+00:01:27.450 --> 00:01:29.160
+has a Data API enabled,
+
+40
+00:01:29.160 --> 00:01:31.740
+and then your application does HTTP API calls,
+
+41
+00:01:31.740 --> 00:01:34.380
+passing in SQL statements through this Data API
+
+42
+00:01:34.380 --> 00:01:37.290
+but without providing database credentials.
+
+43
+00:01:37.290 --> 00:01:39.510
+And then the API itself is going to check
+
+44
+00:01:39.510 --> 00:01:42.990
+whether or not the application has enough permissions
+
+45
+00:01:42.990 --> 00:01:45.450
+to access the underlying credentials
+
+46
+00:01:45.450 --> 00:01:48.030
+of the database in Secrets Manager.
+
+47
+00:01:48.030 --> 00:01:50.220
+So there's a transparent allow or deny.
+
+48
+00:01:50.220 --> 00:01:51.990
+And your application, of course,
+
+49
+00:01:51.990 --> 00:01:53.370
+in its IAM policy,
+
+50
+00:01:53.370 --> 00:01:56.160
+must have access to Aurora Serverless, the Data API,
+
+51
+00:01:56.160 --> 00:01:59.190
+but also have access to the underlying secrets
+
+52
+00:01:59.190 --> 00:02:00.753
+in Secrets Manager.
+
+53
+00:02:01.920 --> 00:02:04.620
+Alternatively, if you do want to manage connections,
+
+54
+00:02:04.620 --> 00:02:06.720
+you have RDS Proxy for Aurora.
+
+55
+00:02:06.720 --> 00:02:09.600
+So an Aurora primary instance, as you know,
+
+56
+00:02:09.600 --> 00:02:11.220
+can do read and writes.
+
+57
+00:02:11.220 --> 00:02:13.950
+And so it's possible for you to create an RDS proxy
+
+58
+00:02:13.950 --> 00:02:16.050
+in front of that primary instance,
+
+59
+00:02:16.050 --> 00:02:18.840
+and then have a traditional application architecture;
+
+60
+00:02:18.840 --> 00:02:20.670
+for example, the users talk
+
+61
+00:02:20.670 --> 00:02:22.350
+to the application load balancer,
+
+62
+00:02:22.350 --> 00:02:23.820
+which talks to the Lambda function,
+
+63
+00:02:23.820 --> 00:02:25.920
+and then the RDS proxy.
+
+64
+00:02:25.920 --> 00:02:28.530
+But on top of it, RDS proxy for Aurora
+
+65
+00:02:28.530 --> 00:02:32.460
+has the ability to create a RDS proxy
+
+66
+00:02:32.460 --> 00:02:35.250
+only for the read-only endpoints of Aurora.
+
+67
+00:02:35.250 --> 00:02:37.350
+So only for the Read Replicas.
+
+68
+00:02:37.350 --> 00:02:39.330
+So that means that you have your primary instance
+
+69
+00:02:39.330 --> 00:02:40.950
+that does read and writes, of course,
+
+70
+00:02:40.950 --> 00:02:43.830
+but also Read Replicas 1 and 2 and so on.
+
+71
+00:02:43.830 --> 00:02:45.720
+And you can create an RDS proxy,
+
+72
+00:02:45.720 --> 00:02:49.440
+which is a read-only endpoint for your read-only replicas.
+
+73
+00:02:49.440 --> 00:02:50.880
+And therefore your Lambda functions
+
+74
+00:02:50.880 --> 00:02:52.260
+will have a read-only endpoint
+
+75
+00:02:52.260 --> 00:02:55.230
+that is having the same feature of RDS Proxy
+
+76
+00:02:55.230 --> 00:02:57.363
+but for your Read Replicas.
+
+77
+00:02:58.590 --> 00:02:59.430
+You also have the option
+
+78
+00:02:59.430 --> 00:03:01.470
+to create a global database in Aurora.
+
+79
+00:03:01.470 --> 00:03:04.410
+So if you create cross-region replications,
+
+80
+00:03:04.410 --> 00:03:06.540
+then it's useful for disaster recovery,
+
+81
+00:03:06.540 --> 00:03:07.650
+and it's simple to put in place.
+
+82
+00:03:07.650 --> 00:03:09.150
+But then you can actually use
+
+83
+00:03:09.150 --> 00:03:11.220
+the Aurora Global Database feature,
+
+84
+00:03:11.220 --> 00:03:12.660
+which is the recommended way,
+
+85
+00:03:12.660 --> 00:03:14.850
+in which you define a primary region,
+
+86
+00:03:14.850 --> 00:03:16.650
+which takes reads and writes,
+
+87
+00:03:16.650 --> 00:03:20.610
+and then up to 10 read-only secondary regions.
+
+88
+00:03:20.610 --> 00:03:22.920
+And these are going to be replicated
+
+89
+00:03:22.920 --> 00:03:24.810
+from the primary region.
+
+90
+00:03:24.810 --> 00:03:27.210
+And the guarantee is that the replication lag
+
+91
+00:03:27.210 --> 00:03:28.740
+is less than one second,
+
+92
+00:03:28.740 --> 00:03:30.630
+which is really good performance.
+
+93
+00:03:30.630 --> 00:03:33.870
+So you can get up to then 16 Read Replicas
+
+94
+00:03:33.870 --> 00:03:35.460
+per secondary region.
+
+95
+00:03:35.460 --> 00:03:37.320
+So it really allows you to scale.
+
+96
+00:03:37.320 --> 00:03:39.510
+And the reason you would use a global database
+
+97
+00:03:39.510 --> 00:03:42.900
+would be to be decreasing the latency.
+
+98
+00:03:42.900 --> 00:03:46.200
+On top of it if the primary region goes down,
+
+99
+00:03:46.200 --> 00:03:49.020
+then promoting another region as an RTO
+
+100
+00:03:49.020 --> 00:03:50.550
+of less than one minute.
+
+101
+00:03:50.550 --> 00:03:52.770
+So it's really, really, really helpful.
+
+102
+00:03:52.770 --> 00:03:54.990
+And on top of it, there's one more setting
+
+103
+00:03:54.990 --> 00:03:56.640
+for disaster recovery,
+
+104
+00:03:56.640 --> 00:03:59.640
+is the ability to manage the RPO in Aurora
+
+105
+00:03:59.640 --> 00:04:01.740
+for PostgreSQL through a setting,
+
+106
+00:04:01.740 --> 00:04:06.360
+therefore guaranteeing that you have less lag and so on.
+
+107
+00:04:06.360 --> 00:04:07.530
+So let's have a look.
+
+108
+00:04:07.530 --> 00:04:09.570
+We have applications that read and write
+
+109
+00:04:09.570 --> 00:04:11.940
+to your Aurora database in its primary region,
+
+110
+00:04:11.940 --> 00:04:13.560
+and then you have a secondary region.
+
+111
+00:04:13.560 --> 00:04:14.550
+You have some replication.
+
+112
+00:04:14.550 --> 00:04:17.430
+You can set up again an RPO setting
+
+113
+00:04:17.430 --> 00:04:20.850
+for PostgreSQL version of Aurora,
+
+114
+00:04:20.850 --> 00:04:24.450
+and then other regions can have read-only applications.
+
+115
+00:04:24.450 --> 00:04:25.440
+But for Global Aurora,
+
+116
+00:04:25.440 --> 00:04:27.150
+there's also another feature you need to know about
+
+117
+00:04:27.150 --> 00:04:29.040
+called write forwarding.
+
+118
+00:04:29.040 --> 00:04:32.970
+So this enables actually your secondary database clusters
+
+119
+00:04:32.970 --> 00:04:34.200
+to forward SQL statements
+
+120
+00:04:34.200 --> 00:04:36.150
+that try to perform a write operation
+
+121
+00:04:36.150 --> 00:04:38.190
+on the primary database cluster.
+
+122
+00:04:38.190 --> 00:04:41.340
+So even though only the primary database cluster
+
+123
+00:04:41.340 --> 00:04:42.780
+is accepting writes,
+
+124
+00:04:42.780 --> 00:04:45.120
+your users can try submitting writes
+
+125
+00:04:45.120 --> 00:04:49.080
+to a secondary region for your Aurora Global Database.
+
+126
+00:04:49.080 --> 00:04:51.180
+And then this is going to be forwarded
+
+127
+00:04:51.180 --> 00:04:53.520
+to the primary database cluster.
+
+128
+00:04:53.520 --> 00:04:55.380
+So of course, database,
+
+129
+00:04:55.380 --> 00:04:57.660
+the data is always going to be changed first
+
+130
+00:04:57.660 --> 00:04:59.610
+on the primary database cluster.
+
+131
+00:04:59.610 --> 00:05:03.090
+And then through the replication mechanism already in place,
+
+132
+00:05:03.090 --> 00:05:04.710
+it is going to be replicated
+
+133
+00:05:04.710 --> 00:05:06.420
+to the secondary database cluster.
+
+134
+00:05:06.420 --> 00:05:08.370
+So the writes actually never happen
+
+135
+00:05:08.370 --> 00:05:11.430
+directly on the secondary database cluster.
+
+136
+00:05:11.430 --> 00:05:13.920
+Therefore, the primary database cluster
+
+137
+00:05:13.920 --> 00:05:17.970
+is the one with the always up-to-date copy of all data.
+
+138
+00:05:17.970 --> 00:05:19.500
+So why would you do a write forwarding
+
+139
+00:05:19.500 --> 00:05:22.830
+and not just write straight to the primary database cluster?
+
+140
+00:05:22.830 --> 00:05:24.270
+Well, this has to do with reducing
+
+141
+00:05:24.270 --> 00:05:25.890
+the number of endpoints to manage,
+
+142
+00:05:25.890 --> 00:05:28.800
+because you can tell your applications in other regions
+
+143
+00:05:28.800 --> 00:05:31.530
+to just connect to that secondary region,
+
+144
+00:05:31.530 --> 00:05:34.110
+and they can do read and writes just as they want;
+
+145
+00:05:34.110 --> 00:05:35.220
+and at some point,
+
+146
+00:05:35.220 --> 00:05:38.223
+the write will be forwarded and replicated back, okay?
+
+147
+00:05:39.090 --> 00:05:40.380
+You also need to know
+
+148
+00:05:40.380 --> 00:05:43.440
+how to convert an RDS database into an Aurora database.
+
+149
+00:05:43.440 --> 00:05:46.020
+So the RDS database instance, there are two ways:
+
+150
+00:05:46.020 --> 00:05:48.570
+you can first make a database snapshot,
+
+151
+00:05:48.570 --> 00:05:49.560
+and then from that snapshot,
+
+152
+00:05:49.560 --> 00:05:50.700
+you can straight restore it
+
+153
+00:05:50.700 --> 00:05:52.890
+into an Aurora database instance.
+
+154
+00:05:52.890 --> 00:05:54.870
+So this is good, but in case your applications
+
+155
+00:05:54.870 --> 00:05:57.600
+are still using the main RDS database instance,
+
+156
+00:05:57.600 --> 00:05:59.670
+you're going to have some problem
+
+157
+00:05:59.670 --> 00:06:02.250
+with the replication of the remaining data,
+
+158
+00:06:02.250 --> 00:06:04.530
+or you would have to take the first database down,
+
+159
+00:06:04.530 --> 00:06:06.720
+then take a snapshot, then restore it.
+
+160
+00:06:06.720 --> 00:06:08.940
+But this has the benefits of being quite quick,
+
+161
+00:06:08.940 --> 00:06:11.280
+the snapshot and restore feature.
+
+162
+00:06:11.280 --> 00:06:12.450
+Now, the other option
+
+163
+00:06:12.450 --> 00:06:15.030
+is to create an actual Aurora Read Replica
+
+164
+00:06:15.030 --> 00:06:16.740
+on your RDS database instance.
+
+165
+00:06:16.740 --> 00:06:18.150
+So it is completely possible
+
+166
+00:06:18.150 --> 00:06:19.980
+to create an Aurora Read Replica
+
+167
+00:06:19.980 --> 00:06:22.230
+on an RDS database instance.
+
+168
+00:06:22.230 --> 00:06:25.320
+And this Read Replica is going to be replicated.
+
+169
+00:06:25.320 --> 00:06:28.110
+And when the replication lag is close to zero,
+
+170
+00:06:28.110 --> 00:06:31.350
+you can promote it to its own Aurora database instance
+
+171
+00:06:31.350 --> 00:06:35.310
+and migrate your application from RDS to Aurora.
+
+172
+00:06:35.310 --> 00:06:36.570
+So that's it for this lecture.
+
+173
+00:06:36.570 --> 00:06:39.570
+I hope you liked it, and I will see you in the next lecture.
+

@@ -1,0 +1,238 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.960
+Let's spend the next few minutes going over how Claude actually picks a tool from the available
+
+2
+00:00:04.960 --> 00:00:11.039
+palette, and what happens when that pick goes wrong. We'll look at the two main failure modes,
+
+3
+00:00:11.039 --> 00:00:16.479
+the description writing technique that prevents them, and how to use production logging to catch
+
+4
+00:00:16.479 --> 00:00:23.200
+routing degradation before it becomes a problem. When routing goes wrong, it fails in recognizable
+
+5
+00:00:23.200 --> 00:00:29.200
+patterns, and naming them is what makes them fixable. A no good match failure happens when
+
+6
+00:00:29.200 --> 00:00:34.959
+none of the available tool descriptions closely match the user's request. The model might fabricate
+
+7
+00:00:34.959 --> 00:00:41.040
+a tool name, refuse to act, or call the least wrong option, and silently produce bad output.
+
+8
+00:00:41.759 --> 00:00:47.680
+Those silent errors are the hardest ones to catch. A two good matches failure happens when two tools
+
+9
+00:00:47.680 --> 00:00:53.360
+both look like valid candidates. The model alternates between them across turns on requests
+
+10
+00:00:53.360 --> 00:00:57.840
+that look identical, which makes behavior non-deterministic and hard to diagnose.
+
+11
+00:00:58.400 --> 00:01:03.599
+Disambiguation patterns are the description writing techniques that make each tool the
+
+12
+00:01:03.599 --> 00:01:10.000
+unambiguous winner for its intended request type. That vocabulary is your diagnostic kit for any
+
+13
+00:01:10.000 --> 00:01:16.720
+routing problem you hit. It helps to think of tool selection as a matching problem. On every turn,
+
+14
+00:01:16.720 --> 00:01:22.480
+the model reads the incoming request and scores each available tool's description for relevance.
+
+15
+00:01:23.040 --> 00:01:29.839
+The highest scoring match wins, and the model calls that tool. Notice what's not in this process.
+
+16
+00:01:29.839 --> 00:01:35.680
+The model doesn't run the tool and check whether the output looks right. It commits to a selection
+
+17
+00:01:35.680 --> 00:01:41.199
+based purely on descriptions. That's why description quality is the primary lever
+
+18
+00:01:41.199 --> 00:01:47.839
+for improving selection accuracy. A tool that can do exactly what the user needs will still
+
+19
+00:01:47.839 --> 00:01:54.720
+lose out at selection time if its description is vague, generic, or uses vocabulary that doesn't
+
+20
+00:01:54.720 --> 00:02:00.559
+align with how users phrase their requests. Writing descriptions is a form of precision
+
+21
+00:02:00.559 --> 00:02:07.440
+engineering, not documentation. The most reliable fix for both failure modes is writing descriptions
+
+22
+00:02:07.440 --> 00:02:14.160
+that make each tool the unambiguous winner for its intended request type. The two core techniques
+
+23
+00:02:14.160 --> 00:02:20.399
+are distinct verbs and narrow scopes. Distinct verbs means each tool description starts with a
+
+24
+00:02:20.399 --> 00:02:27.199
+verb that doesn't apply to any other tool in the palette. Retrieves, writes, deletes, summarizes,
+
+25
+00:02:27.199 --> 00:02:34.399
+translates. These verbs signal intent clearly and rarely overlap. Narrow scope means you tell the
+
+26
+00:02:34.399 --> 00:02:40.639
+model not just what the tool does, but what it doesn't do. Retrieves records from the user
+
+27
+00:02:40.639 --> 00:02:47.360
+database, doesn't write or update records. That negative boundary is often more useful than the
+
+28
+00:02:47.360 --> 00:02:52.800
+positive description because it's exactly what the model needs to break a tie between two similar
+
+29
+00:02:52.800 --> 00:03:00.080
+tools. Tool descriptions carry most of the routing weight, but the system prompt can reinforce them
+
+30
+00:03:00.080 --> 00:03:06.080
+when descriptions alone aren't enough. One effective pattern is adding an explicit routing
+
+31
+00:03:06.080 --> 00:03:12.399
+section to the system prompt. This section names each tool and states when to use it versus the
+
+32
+00:03:12.399 --> 00:03:18.479
+alternatives. It's particularly useful when you have tools that are similar by nature and can't
+
+33
+00:03:18.479 --> 00:03:24.960
+be distinguished by description alone. Tie-breaking instructions are another technique. When two tools
+
+34
+00:03:24.960 --> 00:03:31.360
+are genuinely close in scope, you can instruct the model to prefer one based on a specific criterion.
+
+35
+00:03:31.360 --> 00:03:36.720
+For example, prefer the cached retrieval tool when the data is less than five minutes old.
+
+36
+00:03:37.279 --> 00:03:43.279
+Negative examples round out the toolkit. Listing which tool not to call for common edge cases
+
+37
+00:03:43.279 --> 00:03:48.559
+gives the model a concrete guide for the ambiguous situations your descriptions don't
+
+38
+00:03:48.559 --> 00:03:55.199
+fully resolve. Routing quality doesn't stay constant. As you add tools, rename them or
+
+39
+00:03:55.199 --> 00:04:00.639
+adjust descriptions. Selection behavior changes, and users change how they phrase requests over
+
+40
+00:04:00.639 --> 00:04:07.759
+time too. That gradual decay is selection drift, and it's invisible until something breaks. Logging
+
+41
+00:04:07.759 --> 00:04:14.320
+is how you catch it early. The basic implementation is straightforward. Log every tool call with the
+
+42
+00:04:14.320 --> 00:04:19.920
+tool name and the request that triggered it. Over time, you can track selection frequency for each
+
+43
+00:04:19.920 --> 00:04:25.839
+tool. A tool that drops from 10 calls an hour to two without a matching change in user behavior
+
+44
+00:04:25.839 --> 00:04:31.920
+is a signal that routing has shifted. Maybe a newer tool is stealing its requests. Maybe a
+
+45
+00:04:31.920 --> 00:04:37.519
+description change introduced ambiguity. Either way, the log gives you the data to investigate
+
+46
+00:04:37.519 --> 00:04:43.040
+instead of hearing about it from user complaints. One of the most common mistakes teams make when a
+
+47
+00:04:43.040 --> 00:04:48.640
+tool isn't being selected correctly is adding a new tool to cover the gap. That's almost always
+
+48
+00:04:48.640 --> 00:04:54.880
+the wrong move. Adding a tool grows the catalog, which increases context overhead and introduces
+
+49
+00:04:54.880 --> 00:05:00.880
+new opportunities for overlap. Before you add, ask whether the existing tool could cover the need
+
+50
+00:05:00.880 --> 00:05:06.480
+if its description were refined. In most cases, the answer is yes. A better description fixes the
+
+51
+00:05:06.480 --> 00:05:11.839
+selection problem without any of the downsides. The rule I'd suggest is to default to refinement
+
+52
+00:05:11.839 --> 00:05:17.200
+and add a tool only when the use case is genuinely outside the scope of anything you already have.
+
+53
+00:05:17.760 --> 00:05:22.720
+When you do add, write the new tool's description and the neighboring tool's descriptions at the
+
+54
+00:05:22.720 --> 00:05:29.519
+same time to make sure the boundaries are clean from the start. Selection comes down to scoring
+
+55
+00:05:29.519 --> 00:05:36.000
+text. The model reads the request, ranks each description for fit, and calls the winner. Routing
+
+56
+00:05:36.000 --> 00:05:41.359
+accuracy is therefore something you engineer in the wording, mostly with distinct verbs and an
+
+57
+00:05:41.359 --> 00:05:47.440
+honest boundary on what a tool won't touch. One thing to watch, the accuracy decays quietly as
+
+58
+00:05:47.440 --> 00:05:54.079
+the catalog grows. So log every selection and read pattern. That brings this one to a close.
+
+59
+00:05:54.079 --> 00:05:55.359
+I'll see you in the next one.
+

@@ -1,0 +1,294 @@
+WEBVTT
+
+1
+00:00:00.240 --> 00:00:03.990
+<v Instructor>Now let's talk about AWS Global Accelerator.</v>
+
+2
+00:00:03.990 --> 00:00:07.260
+This is a way for you to leverage the internal network
+
+3
+00:00:07.260 --> 00:00:10.080
+of AWS to route to your application.
+
+4
+00:00:10.080 --> 00:00:12.900
+And for this, it will use what's called an Anycast IP,
+
+5
+00:00:12.900 --> 00:00:15.630
+and two of them will be created for your application.
+
+6
+00:00:15.630 --> 00:00:17.760
+Now the Anycast IP is going to be used
+
+7
+00:00:17.760 --> 00:00:20.430
+to send traffic directly to the Edge locations
+
+8
+00:00:20.430 --> 00:00:21.450
+all around the world.
+
+9
+00:00:21.450 --> 00:00:24.570
+And then from the Edge location, the traffic will be sent
+
+10
+00:00:24.570 --> 00:00:29.370
+to your application, but using the internal traffic of AWS.
+
+11
+00:00:29.370 --> 00:00:30.203
+How does that work?
+
+12
+00:00:30.203 --> 00:00:32.490
+Well say that all your applications wants to access
+
+13
+00:00:32.490 --> 00:00:33.660
+a public ALB in India,
+
+14
+00:00:33.660 --> 00:00:37.050
+but your clients are in Australia, America, and Europe,
+
+15
+00:00:37.050 --> 00:00:38.580
+well, the way it's going to work is that they're going
+
+16
+00:00:38.580 --> 00:00:41.700
+to use the Anycast IP, which is going to redirect them
+
+17
+00:00:41.700 --> 00:00:43.170
+to an Edge location.
+
+18
+00:00:43.170 --> 00:00:45.030
+And from the Edge location,
+
+19
+00:00:45.030 --> 00:00:48.210
+the traffic will go privately on the Edge OS network
+
+20
+00:00:48.210 --> 00:00:51.570
+from the Edge location into your desired endpoints.
+
+21
+00:00:51.570 --> 00:00:53.370
+This global accelerator really gives you
+
+22
+00:00:53.370 --> 00:00:55.680
+some of course, accelerations.
+
+23
+00:00:55.680 --> 00:00:58.350
+The targets can be Elastic IPs, EC2 instances,
+
+24
+00:00:58.350 --> 00:01:01.410
+ALB, NLB, could be public or private.
+
+25
+00:01:01.410 --> 00:01:04.740
+It supports IP preservation of your clients,
+
+26
+00:01:04.740 --> 00:01:07.770
+except for the Elastic IP endpoints.
+
+27
+00:01:07.770 --> 00:01:09.210
+You're going to get consistent performance
+
+28
+00:01:09.210 --> 00:01:11.490
+because, well, you're going to get intelligent routing
+
+29
+00:01:11.490 --> 00:01:12.810
+from the lowest latency,
+
+30
+00:01:12.810 --> 00:01:15.450
+and you're also going to get fast regional failover.
+
+31
+00:01:15.450 --> 00:01:17.100
+You're going to get no issue with client cache,
+
+32
+00:01:17.100 --> 00:01:18.480
+because the IP does not change.
+
+33
+00:01:18.480 --> 00:01:22.050
+So your two Anycast IP are going to be there
+
+34
+00:01:22.050 --> 00:01:25.350
+for the rest of your lifecycle of Global Accelerator,
+
+35
+00:01:25.350 --> 00:01:28.110
+and it will leverage the internal AWS network
+
+36
+00:01:28.110 --> 00:01:30.150
+as fast as possible.
+
+37
+00:01:30.150 --> 00:01:31.320
+In terms of health checks,
+
+38
+00:01:31.320 --> 00:01:33.210
+while the Global Accelerator performs health checks
+
+39
+00:01:33.210 --> 00:01:36.540
+of your application, which makes your application global.
+
+40
+00:01:36.540 --> 00:01:38.610
+And in case something is unhealthy,
+
+41
+00:01:38.610 --> 00:01:42.090
+then the failover happens usually in less than one minutes.
+
+42
+00:01:42.090 --> 00:01:43.770
+It's great for disaster recovery then,
+
+43
+00:01:43.770 --> 00:01:47.220
+because of the health checks with a fast recovery time.
+
+44
+00:01:47.220 --> 00:01:51.330
+For security, only two external Anycast IP
+
+45
+00:01:51.330 --> 00:01:53.190
+need to be whitelisted, which is great.
+
+46
+00:01:53.190 --> 00:01:55.320
+And you're going to get DDoS protection
+
+47
+00:01:55.320 --> 00:01:57.660
+thanks to AWS Shield.
+
+48
+00:01:57.660 --> 00:01:59.460
+So what's the difference between CloudFront
+
+49
+00:01:59.460 --> 00:02:00.930
+and Global Accelerator?
+
+50
+00:02:00.930 --> 00:02:03.270
+Well, they both use the global network of AWS,
+
+51
+00:02:03.270 --> 00:02:06.540
+and they both leverage the Edge locations around the world.
+
+52
+00:02:06.540 --> 00:02:10.380
+They all have integration with SHIELD for DDoS protection,
+
+53
+00:02:10.380 --> 00:02:13.800
+but CloudFront is here by giving you cached content
+
+54
+00:02:13.800 --> 00:02:16.380
+at the Edge, such as images or videos,
+
+55
+00:02:16.380 --> 00:02:19.260
+or dynamic content such as API acceleration
+
+56
+00:02:19.260 --> 00:02:21.090
+and dynamic site delivery.
+
+57
+00:02:21.090 --> 00:02:23.220
+But for CloudFront, all the content is going
+
+58
+00:02:23.220 --> 00:02:25.890
+to be delivered at the Edge, whereas Global Accelerator
+
+59
+00:02:25.890 --> 00:02:28.620
+is here to improve performance overall.
+
+60
+00:02:28.620 --> 00:02:33.030
+And it could be not only for HTP but also for TCP or UDP.
+
+61
+00:02:33.030 --> 00:02:35.280
+And it's going to proxy packets directly
+
+62
+00:02:35.280 --> 00:02:38.250
+from an Edge location into your application running,
+
+63
+00:02:38.250 --> 00:02:40.950
+wherever it's running in the AWS network.
+
+64
+00:02:40.950 --> 00:02:43.080
+And therefore it's going to be a good fit
+
+65
+00:02:43.080 --> 00:02:45.930
+for non-HTTP use cases such as gaming
+
+66
+00:02:45.930 --> 00:02:49.710
+for UDP, IOT using MQTT, or Voice over IP.
+
+67
+00:02:49.710 --> 00:02:52.530
+And it's also going to be great if you have an HTTP use case
+
+68
+00:02:52.530 --> 00:02:55.410
+that requires to use a static IP address,
+
+69
+00:02:55.410 --> 00:02:58.530
+or if you have a use case that requires deterministic
+
+70
+00:02:58.530 --> 00:03:00.430
+fast regional failover.
+
+71
+00:03:00.430 --> 00:03:01.560
+Okay, that's it.
+
+72
+00:03:01.560 --> 00:03:02.430
+I hope you liked it,
+
+73
+00:03:02.430 --> 00:03:04.380
+and I will see you in the next lecture.
+

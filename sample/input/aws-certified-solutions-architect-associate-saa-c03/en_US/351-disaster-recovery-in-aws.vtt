@@ -1,0 +1,1202 @@
+WEBVTT
+
+1
+00:00:00.180 --> 00:00:01.770
+<v Instructor>So disaster recovery</v>
+
+2
+00:00:01.770 --> 00:00:04.740
+as a solutions architect is super important,
+
+3
+00:00:04.740 --> 00:00:08.070
+and the exam expects you to know about disaster recovery.
+
+4
+00:00:08.070 --> 00:00:10.110
+And there's a white paper on it, you should read it,
+
+5
+00:00:10.110 --> 00:00:12.690
+but I try to summarize everything clearly
+
+6
+00:00:12.690 --> 00:00:14.850
+with graphs and diagrams in this lecture,
+
+7
+00:00:14.850 --> 00:00:17.100
+so you don't have to read it if you don't want to.
+
+8
+00:00:17.100 --> 00:00:19.050
+But overall, you can expect some question
+
+9
+00:00:19.050 --> 00:00:21.480
+on disaster recovery, and as a solutions architect,
+
+10
+00:00:21.480 --> 00:00:23.940
+you need to know about disaster recovery anyway.
+
+11
+00:00:23.940 --> 00:00:25.380
+Don't worry, I try to make this
+
+12
+00:00:25.380 --> 00:00:27.360
+as simple as possible for you.
+
+13
+00:00:27.360 --> 00:00:28.860
+So what is a disaster?
+
+14
+00:00:28.860 --> 00:00:31.230
+Well, it's any event that has a negative impact
+
+15
+00:00:31.230 --> 00:00:34.260
+on the company's business continuity or finances.
+
+16
+00:00:34.260 --> 00:00:36.595
+And so disaster recovery is about preparing
+
+17
+00:00:36.595 --> 00:00:39.090
+and recovering from these disasters.
+
+18
+00:00:39.090 --> 00:00:42.206
+So what kind of disaster recovery can we do on AWS
+
+19
+00:00:42.206 --> 00:00:43.800
+or in general?
+
+20
+00:00:43.800 --> 00:00:46.290
+Well, we can do on-premise to on-premise.
+
+21
+00:00:46.290 --> 00:00:48.900
+That means we have a first data center, maybe in California,
+
+22
+00:00:48.900 --> 00:00:51.000
+another data center maybe in Seattle.
+
+23
+00:00:51.000 --> 00:00:52.737
+And so this is traditional disaster recovery,
+
+24
+00:00:52.737 --> 00:00:55.230
+and it's actually very, very expensive.
+
+25
+00:00:55.230 --> 00:00:56.730
+Or we can start using the cloud
+
+26
+00:00:56.730 --> 00:00:59.220
+and do on-premise as a main data center.
+
+27
+00:00:59.220 --> 00:01:02.255
+And then if we have any disaster, use the cloud.
+
+28
+00:01:02.255 --> 00:01:03.690
+So this is called hybrid recovery,
+
+29
+00:01:03.690 --> 00:01:05.910
+or if you're just all in the cloud,
+
+30
+00:01:05.910 --> 00:01:08.850
+then you can do AWS cloud region A to cloud region B,
+
+31
+00:01:08.850 --> 00:01:12.060
+and that would be a full cloud type of disaster recovery.
+
+32
+00:01:12.060 --> 00:01:13.530
+Now, before we do disaster recovery,
+
+33
+00:01:13.530 --> 00:01:14.880
+we need to define two key terms,
+
+34
+00:01:14.880 --> 00:01:17.520
+and you need to understand them from an exam perspective.
+
+35
+00:01:17.520 --> 00:01:20.940
+The first one is called RPO, Recovery Point Objective,
+
+36
+00:01:20.940 --> 00:01:25.200
+and the second one is called RTO, Recovery Time Objective.
+
+37
+00:01:25.200 --> 00:01:26.340
+So remember these two terms,
+
+38
+00:01:26.340 --> 00:01:28.170
+and I'm going to explain them right now.
+
+39
+00:01:28.170 --> 00:01:30.420
+So what is RPO and RTO?
+
+40
+00:01:30.420 --> 00:01:33.510
+The first one is the RPO, Recovery Point Objective.
+
+41
+00:01:33.510 --> 00:01:34.920
+And so this is basically
+
+42
+00:01:34.920 --> 00:01:37.320
+how often basically you run backups.
+
+43
+00:01:37.320 --> 00:01:39.966
+How back in time can you to recover?
+
+44
+00:01:39.966 --> 00:01:42.960
+And when a disaster strikes, basically,
+
+45
+00:01:42.960 --> 00:01:45.150
+the time between their RPO
+
+46
+00:01:45.150 --> 00:01:47.580
+and the disaster is going to be a data loss.
+
+47
+00:01:47.580 --> 00:01:51.060
+For example, if you back up data every hour
+
+48
+00:01:51.060 --> 00:01:53.850
+and a disaster strikes, then you can go back in time
+
+49
+00:01:53.850 --> 00:01:57.300
+for an hour and so you'll have lost one hour of data.
+
+50
+00:01:57.300 --> 00:01:59.610
+So the RPO, sometimes it can be an hour,
+
+51
+00:01:59.610 --> 00:02:01.200
+sometimes maybe one minute.
+
+52
+00:02:01.200 --> 00:02:02.670
+It really depends on the requirements.
+
+53
+00:02:02.670 --> 00:02:05.280
+But RPO is how much of a data loss
+
+54
+00:02:05.280 --> 00:02:08.864
+are you willing to accept in case a disaster happens.
+
+55
+00:02:08.864 --> 00:02:10.800
+RTO, on the other end,
+
+56
+00:02:10.800 --> 00:02:13.830
+is when you recover from your disaster, okay?
+
+57
+00:02:13.830 --> 00:02:16.770
+And so between the disaster and the RTO
+
+58
+00:02:16.770 --> 00:02:19.560
+is the amount of downtime your application has.
+
+59
+00:02:19.560 --> 00:02:22.020
+So sometimes it's okay to have 24 hours of downtime,
+
+60
+00:02:22.020 --> 00:02:23.010
+I don't think it is.
+
+61
+00:02:23.010 --> 00:02:24.420
+Sometimes it's not okay,
+
+62
+00:02:24.420 --> 00:02:27.660
+and maybe you need just one minute of downtime, okay?
+
+63
+00:02:27.660 --> 00:02:30.660
+So basically optimizing for the RPO and the RTO
+
+64
+00:02:30.660 --> 00:02:33.330
+does drive some solution architecture decisions,
+
+65
+00:02:33.330 --> 00:02:35.940
+and obviously, the smaller you want these things to be,
+
+66
+00:02:35.940 --> 00:02:37.950
+usually the higher the cost.
+
+67
+00:02:37.950 --> 00:02:40.680
+So let's talk about disaster recovery strategies.
+
+68
+00:02:40.680 --> 00:02:42.690
+The first one is Backup and Restore.
+
+69
+00:02:42.690 --> 00:02:45.900
+Second one is Pilot Light. Third one is Warm Standby.
+
+70
+00:02:45.900 --> 00:02:49.290
+And fourth one is Hot Site or Multi Site Approach.
+
+71
+00:02:49.290 --> 00:02:51.720
+So if we basically rank them,
+
+72
+00:02:51.720 --> 00:02:53.790
+all will have different RTO.
+
+73
+00:02:53.790 --> 00:02:56.340
+Backup and Restore will have the smaller RTO.
+
+74
+00:02:56.340 --> 00:02:58.740
+Pilot Light then Warm Standby, and Multi Site,
+
+75
+00:02:58.740 --> 00:03:02.040
+all these things cost more money, but they get a faster RTO.
+
+76
+00:03:02.040 --> 00:03:04.470
+That means you have less downtime overall.
+
+77
+00:03:04.470 --> 00:03:06.930
+So let's look at all of these one by one
+
+78
+00:03:06.930 --> 00:03:08.190
+in details to really understand
+
+79
+00:03:08.190 --> 00:03:10.890
+from an architectural standpoint what they mean.
+
+80
+00:03:10.890 --> 00:03:13.770
+Backup and Restore has a high RPO.
+
+81
+00:03:13.770 --> 00:03:15.330
+That means that you have a corporate data center,
+
+82
+00:03:15.330 --> 00:03:18.210
+for example, and here is your a AWS's Cloud,
+
+83
+00:03:18.210 --> 00:03:19.500
+and you have an S3 bucket.
+
+84
+00:03:19.500 --> 00:03:21.900
+And so if you want to back up your data over time,
+
+85
+00:03:21.900 --> 00:03:24.139
+maybe we can use AWS's Storage Gateway
+
+86
+00:03:24.139 --> 00:03:26.970
+or and have some lifecycle policy,
+
+87
+00:03:26.970 --> 00:03:30.150
+put data into Glacier for cost optimization purposes.
+
+88
+00:03:30.150 --> 00:03:33.300
+Or maybe once a week, you're sending a ton of data
+
+89
+00:03:33.300 --> 00:03:36.780
+into Glacier using AWS's Snowball.
+
+90
+00:03:36.780 --> 00:03:38.460
+So here, you know, if you use Snowball,
+
+91
+00:03:38.460 --> 00:03:40.560
+your RPO is gonna be about one week,
+
+92
+00:03:40.560 --> 00:03:42.750
+because if your data center burns or whatever
+
+93
+00:03:42.750 --> 00:03:44.400
+and you lose all your data, then you've lost one week
+
+94
+00:03:44.400 --> 00:03:47.496
+of data because you send that Snowball device once a week.
+
+95
+00:03:47.496 --> 00:03:49.950
+If you're using the AWS's cloud instead,
+
+96
+00:03:49.950 --> 00:03:52.350
+maybe EBS volumes, Redshift, and RDS.
+
+97
+00:03:52.350 --> 00:03:56.100
+If you schedule regular snapshots and you back them up,
+
+98
+00:03:56.100 --> 00:03:59.220
+then your RPO is going to be maybe 24 hours
+
+99
+00:03:59.220 --> 00:04:01.260
+or one hour based on how frequently
+
+100
+00:04:01.260 --> 00:04:04.290
+you do create these snapshots.
+
+101
+00:04:04.290 --> 00:04:07.170
+And then when you have a disaster strike you
+
+102
+00:04:07.170 --> 00:04:09.960
+and you need to basically restore all your data,
+
+103
+00:04:09.960 --> 00:04:13.380
+then you can use AMIs to recreate EC2 instances
+
+104
+00:04:13.380 --> 00:04:14.790
+and speed up your applications.
+
+105
+00:04:14.790 --> 00:04:16.620
+Or you can restore straight from a snapshot
+
+106
+00:04:16.620 --> 00:04:19.830
+and recreate your Amazon RDS database or your EBS volume,
+
+107
+00:04:19.830 --> 00:04:21.919
+or your Redshift, whatever you want.
+
+108
+00:04:21.919 --> 00:04:23.679
+And so that can take a lot of time as well to restore
+
+109
+00:04:23.679 --> 00:04:27.810
+this data and so you get a high RTO as well.
+
+110
+00:04:27.810 --> 00:04:29.490
+But the reason we do this is actually
+
+111
+00:04:29.490 --> 00:04:31.650
+it's quite cheap to do Backup and Restore.
+
+112
+00:04:31.650 --> 00:04:33.360
+We don't manage infrastructure in the middle.
+
+113
+00:04:33.360 --> 00:04:35.250
+We just recreate infrastructure
+
+114
+00:04:35.250 --> 00:04:37.080
+when we need it, when we have a disaster.
+
+115
+00:04:37.080 --> 00:04:39.390
+And so the only cost we have
+
+116
+00:04:39.390 --> 00:04:41.910
+is the cost of storing these backups.
+
+117
+00:04:41.910 --> 00:04:43.920
+So it gives you an idea. Backup and Restore.
+
+118
+00:04:43.920 --> 00:04:46.740
+Very easy, not too expensive,
+
+119
+00:04:46.740 --> 00:04:49.061
+and you get high RPO, high RTO.
+
+120
+00:04:49.061 --> 00:04:52.230
+The second one is going to be Pilot Light.
+
+121
+00:04:52.230 --> 00:04:53.850
+So here with Pilot Light,
+
+122
+00:04:53.850 --> 00:04:57.570
+a small version of the app is always running in the cloud.
+
+123
+00:04:57.570 --> 00:05:00.090
+And so usually that's going to be your critical core.
+
+124
+00:05:00.090 --> 00:05:01.980
+And this is what it's called Pilot Lights.
+
+125
+00:05:01.980 --> 00:05:03.900
+So it's very similar to Backup and Restore,
+
+126
+00:05:03.900 --> 00:05:06.660
+but this time, it's faster because your critical systems,
+
+127
+00:05:06.660 --> 00:05:07.950
+they're already up and running.
+
+128
+00:05:07.950 --> 00:05:11.040
+And so when you do recover, you just need to add on
+
+129
+00:05:11.040 --> 00:05:13.890
+all the other systems that are not as critical.
+
+130
+00:05:13.890 --> 00:05:15.060
+So let's have an example.
+
+131
+00:05:15.060 --> 00:05:17.910
+This is your data center has a server and a database
+
+132
+00:05:17.910 --> 00:05:19.350
+and this is the AWS cloud.
+
+133
+00:05:19.350 --> 00:05:22.380
+Maybe you're going to do continuous data replication
+
+134
+00:05:22.380 --> 00:05:24.780
+from your critical database into RDS,
+
+135
+00:05:24.780 --> 00:05:26.310
+which is going to be running at any time.
+
+136
+00:05:26.310 --> 00:05:29.760
+So you get an RDS database ready to go running,
+
+137
+00:05:29.760 --> 00:05:33.540
+but your EC2 instances, they're not critical just yet.
+
+138
+00:05:33.540 --> 00:05:34.980
+What's really important is your data.
+
+139
+00:05:34.980 --> 00:05:36.330
+And so they're not running,
+
+140
+00:05:36.330 --> 00:05:38.670
+but in case you have a disaster happening,
+
+141
+00:05:38.670 --> 00:05:41.460
+Route 53 will allow you to fail over from your server
+
+142
+00:05:41.460 --> 00:05:44.730
+on your data center, recreate that EC2 instance in the cloud
+
+143
+00:05:44.730 --> 00:05:45.840
+and make it up and running.
+
+144
+00:05:45.840 --> 00:05:48.780
+But your RDS database is already ready.
+
+145
+00:05:48.780 --> 00:05:50.100
+So here, what do we get?
+
+146
+00:05:50.100 --> 00:05:53.790
+Well, we get a lower RPO, we get a lower RTO,
+
+147
+00:05:53.790 --> 00:05:54.930
+and we still manage costs.
+
+148
+00:05:54.930 --> 00:05:56.730
+We still have to have an RDS running,
+
+149
+00:05:56.730 --> 00:05:59.670
+but just the RDS database is running, the rest is not.
+
+150
+00:05:59.670 --> 00:06:03.960
+And your EC2 instance only are created
+
+151
+00:06:03.960 --> 00:06:06.090
+when you need to do a disaster recovery.
+
+152
+00:06:06.090 --> 00:06:08.370
+So Pilot Light is a very popular choice.
+
+153
+00:06:08.370 --> 00:06:11.520
+Remember, it's only for critical core systems.
+
+154
+00:06:11.520 --> 00:06:15.240
+Warm Standby is when you have a full system up and running,
+
+155
+00:06:15.240 --> 00:06:16.380
+but at a minimum size.
+
+156
+00:06:16.380 --> 00:06:18.870
+So it's ready to go, but upon disaster,
+
+157
+00:06:18.870 --> 00:06:21.240
+we can scale it to production load.
+
+158
+00:06:21.240 --> 00:06:22.320
+So let's have a look.
+
+159
+00:06:22.320 --> 00:06:23.550
+We have our corporate data center.
+
+160
+00:06:23.550 --> 00:06:25.020
+Maybe it's a bit more complicated this time.
+
+161
+00:06:25.020 --> 00:06:26.765
+We have a reverse proxy, an app server,
+
+162
+00:06:26.765 --> 00:06:28.710
+and a primary database.
+
+163
+00:06:28.710 --> 00:06:31.530
+And currently, our Route 53 is pointing the DNS
+
+164
+00:06:31.530 --> 00:06:32.940
+to our corporate data center.
+
+165
+00:06:32.940 --> 00:06:35.910
+And in the cloud, we'll still have our data replication
+
+166
+00:06:35.910 --> 00:06:38.430
+to an RDS secondary database that is running.
+
+167
+00:06:38.430 --> 00:06:40.950
+And maybe we'll have an EC2 Auto Scaling group,
+
+168
+00:06:40.950 --> 00:06:42.840
+but running at minimum capacity.
+
+169
+00:06:42.840 --> 00:06:44.160
+That's currently talking
+
+170
+00:06:44.160 --> 00:06:46.740
+to our corporate data center database.
+
+171
+00:06:46.740 --> 00:06:49.740
+And maybe we have an ELB as well, ready to go.
+
+172
+00:06:49.740 --> 00:06:51.780
+And so if a disaster strikes you,
+
+173
+00:06:51.780 --> 00:06:53.490
+because we have a Warm Standby,
+
+174
+00:06:53.490 --> 00:06:56.967
+we can use Route 53 to failover to the ELB,
+
+175
+00:06:56.967 --> 00:07:00.330
+and we can use the failover to also change
+
+176
+00:07:00.330 --> 00:07:02.790
+where our application is getting our data from.
+
+177
+00:07:02.790 --> 00:07:05.520
+Maybe it's getting the data now from the other RDS,
+
+178
+00:07:05.520 --> 00:07:07.860
+and so we've effectively basically stood by
+
+179
+00:07:07.860 --> 00:07:09.150
+and then maybe using auto scaling,
+
+180
+00:07:09.150 --> 00:07:11.460
+our application will scale pretty quickly.
+
+181
+00:07:11.460 --> 00:07:14.100
+So this is a more costly thing to do now
+
+182
+00:07:14.100 --> 00:07:16.701
+because we already have an ELB
+
+183
+00:07:16.701 --> 00:07:17.940
+and EC2 Scaling running at any time.
+
+184
+00:07:17.940 --> 00:07:19.920
+But again, you can decrease your RPO
+
+185
+00:07:19.920 --> 00:07:21.540
+and your RTO doing that.
+
+186
+00:07:21.540 --> 00:07:25.800
+And then finally, we get the Multi Site/Hot Site approach.
+
+187
+00:07:25.800 --> 00:07:27.030
+It's very low RTO.
+
+188
+00:07:27.030 --> 00:07:28.530
+We're talking minutes or seconds,
+
+189
+00:07:28.530 --> 00:07:30.120
+but it's also very expensive.
+
+190
+00:07:30.120 --> 00:07:32.400
+But you get two full production scales
+
+191
+00:07:32.400 --> 00:07:33.750
+running on AWS and on-premise.
+
+192
+00:07:33.750 --> 00:07:36.150
+So that means that we have your on-premise data center,
+
+193
+00:07:36.150 --> 00:07:37.290
+full production scale.
+
+194
+00:07:37.290 --> 00:07:40.260
+You have your AWS data center, full production scale
+
+195
+00:07:40.260 --> 00:07:42.060
+with some data replication happening.
+
+196
+00:07:42.060 --> 00:07:43.470
+And so here, what happens is that
+
+197
+00:07:43.470 --> 00:07:45.630
+because you have a hot site that's already running,
+
+198
+00:07:45.630 --> 00:07:47.250
+your Route 53 can route request
+
+199
+00:07:47.250 --> 00:07:50.070
+to both your corporate data center and the AWS cloud.
+
+200
+00:07:50.070 --> 00:07:52.200
+It's called an active-active type of setup.
+
+201
+00:07:52.200 --> 00:07:55.530
+And so the idea here is that the failover can happen.
+
+202
+00:07:55.530 --> 00:07:57.030
+You know, your EC2 can failover
+
+203
+00:07:57.030 --> 00:07:59.010
+to your RDS database if need be,
+
+204
+00:07:59.010 --> 00:08:00.840
+but you get full production scale running
+
+205
+00:08:00.840 --> 00:08:02.877
+on AWS and on premise.
+
+206
+00:08:02.877 --> 00:08:04.830
+And so this costs a lot of money,
+
+207
+00:08:04.830 --> 00:08:07.380
+but at the same time, you're ready to failover already
+
+208
+00:08:07.380 --> 00:08:10.470
+and you're running into a multi-DC type of infrastructure,
+
+209
+00:08:10.470 --> 00:08:11.940
+which is quite cool.
+
+210
+00:08:11.940 --> 00:08:14.430
+Finally, if you wanted to go all cloud,
+
+211
+00:08:14.430 --> 00:08:16.410
+you know, it would be the same kind of architecture.
+
+212
+00:08:16.410 --> 00:08:17.430
+It would be a multi region.
+
+213
+00:08:17.430 --> 00:08:19.230
+So maybe we could use Aurora here
+
+214
+00:08:19.230 --> 00:08:20.940
+because we're really in the cloud.
+
+215
+00:08:20.940 --> 00:08:23.640
+So we have a primary database in a region,
+
+216
+00:08:23.640 --> 00:08:25.620
+and then we have a Aurora global database
+
+217
+00:08:25.620 --> 00:08:27.570
+that's being replicated to another region.
+
+218
+00:08:27.570 --> 00:08:29.520
+These both regions are working for me,
+
+219
+00:08:29.520 --> 00:08:31.230
+and then when I want to failover, you know,
+
+220
+00:08:31.230 --> 00:08:33.540
+I will be ready to go full production scale again
+
+221
+00:08:33.540 --> 00:08:35.310
+in another region if I need to.
+
+222
+00:08:35.310 --> 00:08:36.450
+So this gives you an idea
+
+223
+00:08:36.450 --> 00:08:39.000
+of all the strategies you can have for disaster recovery.
+
+224
+00:08:39.000 --> 00:08:41.040
+It's really up to you to select
+
+225
+00:08:41.040 --> 00:08:42.840
+the disaster recovery strategy you need.
+
+226
+00:08:42.840 --> 00:08:44.580
+But the exam will ask you basically
+
+227
+00:08:44.580 --> 00:08:47.370
+based on some scenarios, you know, what do you recommend?
+
+228
+00:08:47.370 --> 00:08:49.830
+Do you recommend Backup and Restore, Pilot Lights?
+
+229
+00:08:49.830 --> 00:08:52.590
+Do you recommend Multi Site or do you recommend Hot Site?
+
+230
+00:08:52.590 --> 00:08:54.240
+All that kind of stuff.
+
+231
+00:08:54.240 --> 00:08:55.710
+Warm Backups and all that stuff.
+
+232
+00:08:55.710 --> 00:08:58.470
+Okay, so finally, disaster recovery tips.
+
+233
+00:08:58.470 --> 00:09:00.450
+And it's more like, real life stuff.
+
+234
+00:09:00.450 --> 00:09:02.790
+So for backups, you can use EBS Snapshots,
+
+235
+00:09:02.790 --> 00:09:05.220
+RDS automated Snapshots and backups, et cetera.
+
+236
+00:09:05.220 --> 00:09:07.260
+And you can push all these Snapshots regularly
+
+237
+00:09:07.260 --> 00:09:09.540
+to S3, S3 IA Glacier.
+
+238
+00:09:09.540 --> 00:09:11.130
+You can implement a Lifecycle Policy,
+
+239
+00:09:11.130 --> 00:09:13.350
+you can use Cross Region Replication if you wanted
+
+240
+00:09:13.350 --> 00:09:15.690
+to make sure these backups would be in different regions.
+
+241
+00:09:15.690 --> 00:09:17.820
+And if you wanted to have your data from on-premise
+
+242
+00:09:17.820 --> 00:09:19.770
+to the cloud, Snowball or Storage Gateway
+
+243
+00:09:19.770 --> 00:09:21.270
+would be great technologies.
+
+244
+00:09:21.270 --> 00:09:23.880
+For high availability, using Route 53
+
+245
+00:09:23.880 --> 00:09:25.860
+to migrate DNS from a region to another region
+
+246
+00:09:25.860 --> 00:09:28.620
+is really, really helpful and easy to implement.
+
+247
+00:09:28.620 --> 00:09:30.000
+But you can also use technology
+
+248
+00:09:30.000 --> 00:09:32.697
+to have multi easy implemented, such as RDS Multi-AZ,
+
+249
+00:09:32.697 --> 00:09:36.180
+ElastiCache Multi AZ, EFS, S3,
+
+250
+00:09:36.180 --> 00:09:39.030
+all these things are highly available by default
+
+251
+00:09:39.030 --> 00:09:40.442
+if you enable them.
+
+252
+00:09:40.442 --> 00:09:43.392
+Obviously, if you are talking about the higher availability
+
+253
+00:09:44.530 --> 00:09:46.350
+of your network, maybe you've implemented Direct Connect
+
+254
+00:09:46.350 --> 00:09:48.870
+to connect from your corporate data center to AWS,
+
+255
+00:09:48.870 --> 00:09:51.390
+but what if the connection goes down for whatever reason?
+
+256
+00:09:51.390 --> 00:09:53.400
+Maybe you can use site-to-site VPN
+
+257
+00:09:53.400 --> 00:09:56.070
+as a recovery option for your network.
+
+258
+00:09:56.070 --> 00:09:57.270
+In terms of replication,
+
+259
+00:09:57.270 --> 00:09:59.730
+you can use RDS Replication (Cross Region),
+
+260
+00:09:59.730 --> 00:10:01.530
+Aurora + Global Databases.
+
+261
+00:10:01.530 --> 00:10:04.590
+Maybe you can use a database replication software
+
+262
+00:10:04.590 --> 00:10:07.350
+to do your on-premise database to RDS.
+
+263
+00:10:07.350 --> 00:10:09.540
+Or maybe you can use Storage Gateway as well.
+
+264
+00:10:09.540 --> 00:10:10.470
+In terms of automation,
+
+265
+00:10:10.470 --> 00:10:12.870
+so how do we, you know, recover from disasters?
+
+266
+00:10:12.870 --> 00:10:15.595
+I think you would know already CloudFormation,
+
+267
+00:10:15.595 --> 00:10:17.550
+Elastic Beanstalk can help recreate whole new environments
+
+268
+00:10:17.550 --> 00:10:19.320
+in the cloud very quickly.
+
+269
+00:10:19.320 --> 00:10:21.240
+Or maybe if we use CloudWatch,
+
+270
+00:10:21.240 --> 00:10:23.850
+we can recover or reboot our EC2 instances
+
+271
+00:10:23.850 --> 00:10:25.692
+when the CloudWatch alarms fail.
+
+272
+00:10:25.692 --> 00:10:27.840
+AWS Lambda can also be great
+
+273
+00:10:27.840 --> 00:10:29.580
+to customize optimum automation.
+
+274
+00:10:29.580 --> 00:10:31.770
+So they're great to do, you know, rest API,
+
+275
+00:10:31.770 --> 00:10:33.210
+but they can also be used to automate
+
+276
+00:10:33.210 --> 00:10:34.950
+your entire AWS infrastructure.
+
+277
+00:10:34.950 --> 00:10:36.992
+And so overall, if you manage
+
+278
+00:10:36.992 --> 00:10:39.062
+to automate your whole disaster recovery,
+
+279
+00:10:39.062 --> 00:10:41.580
+then you are really, really well set for success.
+
+280
+00:10:41.580 --> 00:10:43.230
+And then finally, chaos testing.
+
+281
+00:10:43.230 --> 00:10:45.690
+So how do we know how to recover from the disaster?
+
+282
+00:10:45.690 --> 00:10:47.160
+Then you create disasters.
+
+283
+00:10:47.160 --> 00:10:50.190
+And so an example that's I think widely quoted now
+
+284
+00:10:50.190 --> 00:10:52.260
+in the AWS world is that Netflix,
+
+285
+00:10:52.260 --> 00:10:53.989
+they run everything on the AWS
+
+286
+00:10:53.989 --> 00:10:57.420
+and they have created something called a simian army,
+
+287
+00:10:57.420 --> 00:11:00.210
+and they randomly terminate EC2 instances, for example.
+
+288
+00:11:00.210 --> 00:11:01.440
+They do so much more,
+
+289
+00:11:01.440 --> 00:11:03.960
+but basically, they just take an application server
+
+290
+00:11:03.960 --> 00:11:05.070
+and terminate it randomly.
+
+291
+00:11:05.070 --> 00:11:07.980
+In production, okay? Not endeavor test, in production.
+
+292
+00:11:07.980 --> 00:11:11.190
+So they wanna make sure that their infrastructure is capable
+
+293
+00:11:11.190 --> 00:11:12.300
+to survive failures,
+
+294
+00:11:12.300 --> 00:11:15.420
+and so that's why they're running a bunch of chaos monkeys
+
+295
+00:11:15.420 --> 00:11:17.310
+that just terminate stuff randomly
+
+296
+00:11:17.310 --> 00:11:20.310
+just to make sure that their infrastructure is rock solid
+
+297
+00:11:20.310 --> 00:11:22.830
+and can survive any types of failures.
+
+298
+00:11:22.830 --> 00:11:25.740
+So that's it for this section on disaster recovery.
+
+299
+00:11:25.740 --> 00:11:26.573
+I hope you enjoyed it
+
+300
+00:11:26.573 --> 00:11:28.470
+and I will see you in the next lecture.
+

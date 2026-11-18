@@ -1,0 +1,950 @@
+WEBVTT
+
+1
+00:00:00.030 --> 00:00:01.620
+<v Instructor>Okay, so next we are learning about</v>
+
+2
+00:00:01.620 --> 00:00:02.640
+step functions.
+
+3
+00:00:02.640 --> 00:00:05.250
+And step functions you don't need to know them in depth
+
+4
+00:00:05.250 --> 00:00:06.480
+going into the exam
+
+5
+00:00:06.480 --> 00:00:08.010
+but you need to know the capabilities
+
+6
+00:00:08.010 --> 00:00:11.190
+and where they fit in your solution architecture.
+
+7
+00:00:11.190 --> 00:00:12.870
+So the idea with step functions is that you're
+
+8
+00:00:12.870 --> 00:00:15.930
+going to build serverless visual workflow
+
+9
+00:00:15.930 --> 00:00:20.250
+to help you orchestrate your Lambda functions, but not only.
+
+10
+00:00:20.250 --> 00:00:23.610
+They represents the flow as adjacent state machine.
+
+11
+00:00:23.610 --> 00:00:25.992
+And if it has so many features such as sequence actions,
+
+12
+00:00:25.992 --> 00:00:28.080
+parallel actions, conditions, timeouts
+
+13
+00:00:28.080 --> 00:00:29.760
+error handling, and so on.
+
+14
+00:00:29.760 --> 00:00:32.760
+The maximum execution time of a workflow is one year.
+
+15
+00:00:32.760 --> 00:00:33.780
+So that is something you need to know
+
+16
+00:00:33.780 --> 00:00:35.070
+as a solution architect.
+
+17
+00:00:35.070 --> 00:00:38.010
+And you have the possibility to implement human
+
+18
+00:00:38.010 --> 00:00:41.010
+approval features if you wanted to go on with your flow.
+
+19
+00:00:41.010 --> 00:00:43.440
+The idea is that if you chain Lambda function
+
+20
+00:00:43.440 --> 00:00:44.520
+with step functions,
+
+21
+00:00:44.520 --> 00:00:46.980
+which is a very common pattern, you need to be mindful
+
+22
+00:00:46.980 --> 00:00:49.904
+that there is going to be latencies between all the calls
+
+23
+00:00:49.904 --> 00:00:52.440
+to the Lambda functions because you are
+
+24
+00:00:52.440 --> 00:00:53.520
+passing some information
+
+25
+00:00:53.520 --> 00:00:56.700
+from one Lambda function to another.
+
+26
+00:00:56.700 --> 00:00:59.070
+So if we look at step functions visually
+
+27
+00:00:59.070 --> 00:00:59.910
+here's what it looks like.
+
+28
+00:00:59.910 --> 00:01:00.990
+So this is the graph
+
+29
+00:01:00.990 --> 00:01:04.410
+that AWS will generate from your JSON state machine.
+
+30
+00:01:04.410 --> 00:01:07.028
+And as you go through an execution, you will see
+
+31
+00:01:07.028 --> 00:01:11.010
+in real time what the execution is and how it looks like.
+
+32
+00:01:11.010 --> 00:01:13.980
+And so you get success, failed, canceled in progress
+
+33
+00:01:13.980 --> 00:01:15.210
+and then when it's done, you can look
+
+34
+00:01:15.210 --> 00:01:18.300
+at the entire flow that your step function
+
+35
+00:01:18.300 --> 00:01:20.910
+went through to go to completion.
+
+36
+00:01:20.910 --> 00:01:23.250
+So step functions has a lot of integrations.
+
+37
+00:01:23.250 --> 00:01:25.410
+There are some optimized integrations, for example
+
+38
+00:01:25.410 --> 00:01:27.060
+with some Lambda functions.
+
+39
+00:01:27.060 --> 00:01:29.430
+So step functions can obviously invoke Lambda functions.
+
+40
+00:01:29.430 --> 00:01:31.470
+They can run AWS batch jobs.
+
+41
+00:01:31.470 --> 00:01:34.980
+They can run ECS tasks and wait for it to complete.
+
+42
+00:01:34.980 --> 00:01:38.160
+They can also insert an item into a DynamoDB table.
+
+43
+00:01:38.160 --> 00:01:41.850
+They can even publish messages to SNS and SQS.
+
+44
+00:01:41.850 --> 00:01:46.050
+They can launch EMR jobs, Glue SageMaker jobs and so on.
+
+45
+00:01:46.050 --> 00:01:48.750
+They can launch another step functions workflow.
+
+46
+00:01:48.750 --> 00:01:52.920
+And then using the AWS SDK integration, you get access to
+
+47
+00:01:52.920 --> 00:01:56.640
+over 200 AWS services directly from your state machine.
+
+48
+00:01:56.640 --> 00:02:00.270
+And it works like a standard AWS, SDK API call.
+
+49
+00:02:00.270 --> 00:02:02.730
+So step functions are very versatile.
+
+50
+00:02:02.730 --> 00:02:05.220
+On top of it, there are ways to trigger step functions,
+
+51
+00:02:05.220 --> 00:02:06.390
+and there are multiple ways.
+
+52
+00:02:06.390 --> 00:02:10.560
+So you can invoke and trigger a step function state machine
+
+53
+00:02:10.560 --> 00:02:14.790
+using the management console, using the AWS SDK.
+
+54
+00:02:14.790 --> 00:02:16.710
+You can use the CLI,
+
+55
+00:02:16.710 --> 00:02:19.110
+you can use AWS Lambda data will be leveraging
+
+56
+00:02:19.110 --> 00:02:20.460
+of course the SDK.
+
+57
+00:02:20.460 --> 00:02:22.410
+You can use API gateway so
+
+58
+00:02:22.410 --> 00:02:25.710
+that any call to API gateway does trigger a step function.
+
+59
+00:02:25.710 --> 00:02:26.730
+You can use EventBridge
+
+60
+00:02:26.730 --> 00:02:29.250
+and then the integrations are limitless.
+
+61
+00:02:29.250 --> 00:02:30.927
+Code pipelines so it's possible for you
+
+62
+00:02:30.927 --> 00:02:34.620
+and your CSD pipeline to invent, to invoke step functions.
+
+63
+00:02:34.620 --> 00:02:35.453
+And finally,
+
+64
+00:02:35.453 --> 00:02:38.193
+well step functions can also invoke step functions.
+
+65
+00:02:39.240 --> 00:02:42.060
+Now step function have so many applications
+
+66
+00:02:42.060 --> 00:02:43.590
+and you can see a bunch
+
+67
+00:02:43.590 --> 00:02:47.130
+of sample projects at this URL in your console.
+
+68
+00:02:47.130 --> 00:02:49.290
+The idea is that there's so many different applications
+
+69
+00:02:49.290 --> 00:02:50.580
+I can't even count them all
+
+70
+00:02:50.580 --> 00:02:51.960
+but I'll give you some, right.
+
+71
+00:02:51.960 --> 00:02:54.054
+Process high volume message from SQS.
+
+72
+00:02:54.054 --> 00:02:55.884
+and level function to process a lot of message from SQS or
+
+73
+00:02:55.884 --> 00:02:58.910
+and Lambda function to process a lot of message from SQS.
+
+74
+00:02:58.910 --> 00:03:01.530
+Or for example, train a machine learning model when
+
+75
+00:03:01.530 --> 00:03:04.530
+you have to synchronize between SageMaker, Lambda
+
+76
+00:03:04.530 --> 00:03:06.030
+and Amazon S3.
+
+77
+00:03:06.030 --> 00:03:07.651
+Or manage a batch job if you want to have
+
+78
+00:03:07.651 --> 00:03:10.590
+batch Amazon SNS and so on.
+
+79
+00:03:10.590 --> 00:03:12.120
+Or if you want to manage a container task,
+
+80
+00:03:12.120 --> 00:03:15.360
+so you wanna run Fargate task whenever something happens.
+
+81
+00:03:15.360 --> 00:03:17.370
+And so there's so many different of those.
+
+82
+00:03:17.370 --> 00:03:18.420
+But the idea is that as soon
+
+83
+00:03:18.420 --> 00:03:22.440
+as you need to change stuff and orchestrate stuff in AWS
+
+84
+00:03:22.440 --> 00:03:26.130
+the best way to do so is usually with step functions.
+
+85
+00:03:26.130 --> 00:03:28.020
+So what can a step function do?
+
+86
+00:03:28.020 --> 00:03:28.920
+It can do many things
+
+87
+00:03:28.920 --> 00:03:31.080
+and you have to remember them going into the exam.
+
+88
+00:03:31.080 --> 00:03:33.540
+Number one is do stuff with AWS Lambda,
+
+89
+00:03:33.540 --> 00:03:35.010
+they're called Lambda tasks
+
+90
+00:03:35.010 --> 00:03:37.680
+and they will just invoke a Lambda function.
+
+91
+00:03:37.680 --> 00:03:39.450
+You also have activity task
+
+92
+00:03:39.450 --> 00:03:41.790
+and the activity is something a bit more broad.
+
+93
+00:03:41.790 --> 00:03:44.610
+It is you have to set up an HJTTP activity worker.
+
+94
+00:03:44.610 --> 00:03:45.840
+It could be an EC2 instance,
+
+95
+00:03:45.840 --> 00:03:48.840
+a mobile device or even an on-premise data center.
+
+96
+00:03:48.840 --> 00:03:51.390
+And they will pull the step function service
+
+97
+00:03:51.390 --> 00:03:54.480
+and they will get the activities out of the step function.
+
+98
+00:03:54.480 --> 00:03:55.650
+So this is not serverless.
+
+99
+00:03:55.650 --> 00:03:57.993
+This is your activity worker who have to
+
+100
+00:03:57.993 --> 00:04:00.287
+pull the step function service and say
+
+101
+00:04:00.287 --> 00:04:02.310
+Is there something for me to do?
+
+102
+00:04:02.310 --> 00:04:05.100
+And then step function, you say, yes there is, do that.
+
+103
+00:04:05.100 --> 00:04:07.050
+You have service task which is more integrated.
+
+104
+00:04:07.050 --> 00:04:09.210
+So when step functions will connect
+
+105
+00:04:09.210 --> 00:04:12.360
+to a supported AWS service and that it can include
+
+106
+00:04:12.360 --> 00:04:13.957
+a Lambda function an ECS task,
+
+107
+00:04:13.957 --> 00:04:17.460
+a Fargate container, a DynamoDB table, a batch job
+
+108
+00:04:17.460 --> 00:04:19.320
+and SNS topic and SQS queue.
+
+109
+00:04:19.320 --> 00:04:21.420
+So there is direct integration between step function
+
+110
+00:04:21.420 --> 00:04:24.810
+and all these services as part of your workflow.
+
+111
+00:04:24.810 --> 00:04:27.420
+And finally, a wait task. If you want to wait
+
+112
+00:04:27.420 --> 00:04:30.720
+for a certain duration or until a timestamp.
+
+113
+00:04:30.720 --> 00:04:33.780
+So a very common question at the exam is going to be
+
+114
+00:04:33.780 --> 00:04:37.290
+does step functions integrate with AWS mechanical Turk?
+
+115
+00:04:37.290 --> 00:04:38.550
+The answer is no.
+
+116
+00:04:38.550 --> 00:04:40.330
+The best way to do it is to use SWF
+
+117
+00:04:41.190 --> 00:04:42.570
+as you'll see in the next lecture.
+
+118
+00:04:42.570 --> 00:04:45.720
+So that is the one little thing, if you see Mechanical Turk
+
+119
+00:04:45.720 --> 00:04:50.340
+usually they want you to use SWF instead of STEM functions.
+
+120
+00:04:50.340 --> 00:04:52.260
+So the standard workflow was the first workflow
+
+121
+00:04:52.260 --> 00:04:53.093
+for step functions.
+
+122
+00:04:53.093 --> 00:04:55.440
+The maximum duration was one year
+
+123
+00:04:55.440 --> 00:04:59.460
+and you can start about 2000 standard workflow per seconds
+
+124
+00:04:59.460 --> 00:05:02.490
+or you can have about 4,000 state transitions
+
+125
+00:05:02.490 --> 00:05:04.290
+per second, per account.
+
+126
+00:05:04.290 --> 00:05:07.230
+The pricing is going to be per state transition.
+
+127
+00:05:07.230 --> 00:05:09.090
+And so state transition means whenever
+
+128
+00:05:09.090 --> 00:05:11.820
+your execution goes one step at a time.
+
+129
+00:05:11.820 --> 00:05:14.040
+You can see the execution history
+
+130
+00:05:14.040 --> 00:05:17.010
+and you get exactly once workflow execution.
+
+131
+00:05:17.010 --> 00:05:19.770
+So this was the first one, but then some customers
+
+132
+00:05:19.770 --> 00:05:23.670
+of AWS thought they were very expensive at a high rate
+
+133
+00:05:23.670 --> 00:05:26.520
+and sometimes they didn't need all the niceness of one year.
+
+134
+00:05:26.520 --> 00:05:30.270
+They just wanted to do very, very quick activities.
+
+135
+00:05:30.270 --> 00:05:33.570
+And so AWS came up with the express workflows.
+
+136
+00:05:33.570 --> 00:05:35.820
+So the express workflows have a maximum duration
+
+137
+00:05:35.820 --> 00:05:36.653
+of five minutes.
+
+138
+00:05:36.653 --> 00:05:39.750
+So they're expected to complete very quickly
+
+139
+00:05:39.750 --> 00:05:42.360
+but you have a much higher rate of starting them.
+
+140
+00:05:42.360 --> 00:05:46.500
+You have over 100,000 per second express workflow
+
+141
+00:05:46.500 --> 00:05:47.700
+you can start.
+
+142
+00:05:47.700 --> 00:05:50.400
+The state transitions is nearly unlimited
+
+143
+00:05:50.400 --> 00:05:51.660
+and you're going to be to be priced
+
+144
+00:05:51.660 --> 00:05:54.210
+by the number of executions you run
+
+145
+00:05:54.210 --> 00:05:57.750
+as well as the duration and how much memory you consume
+
+146
+00:05:57.750 --> 00:06:00.150
+which looks a lot like Lambda functions.
+
+147
+00:06:00.150 --> 00:06:03.000
+And the executions themself don't have a history
+
+148
+00:06:03.000 --> 00:06:06.120
+but they can be inspected using CloudWatch logs
+
+149
+00:06:06.120 --> 00:06:08.010
+by logging your whatever happens
+
+150
+00:06:08.010 --> 00:06:10.320
+in your state machine directly into CloudWatch logs.
+
+151
+00:06:10.320 --> 00:06:13.050
+And you get at least once workflow execution.
+
+152
+00:06:13.050 --> 00:06:14.760
+So just knowing at a high level
+
+153
+00:06:14.760 --> 00:06:16.500
+the difference I think is pretty obvious when it's
+
+154
+00:06:16.500 --> 00:06:20.190
+for very express, fast high throughput workflows.
+
+155
+00:06:20.190 --> 00:06:22.860
+The other one is for longer, slower throughputs.
+
+156
+00:06:22.860 --> 00:06:24.900
+It's going to be enough for you going to the exam.
+
+157
+00:06:24.900 --> 00:06:27.960
+So in the case of express workflows, we have two cases
+
+158
+00:06:27.960 --> 00:06:30.030
+the synchronous and the asynchronous case.
+
+159
+00:06:30.030 --> 00:06:33.120
+So if you have a synchronous express workflow
+
+160
+00:06:33.120 --> 00:06:33.953
+you're going to wait
+
+161
+00:06:33.953 --> 00:06:36.630
+until the workflow completes and then return the results.
+
+162
+00:06:36.630 --> 00:06:37.560
+This could be very helpful
+
+163
+00:06:37.560 --> 00:06:40.159
+if you want to orchestrate microservices, handle errors
+
+164
+00:06:40.159 --> 00:06:42.750
+retries, have parallel tasks and so on.
+
+165
+00:06:42.750 --> 00:06:44.850
+So here's an example with the API gateway.
+
+166
+00:06:44.850 --> 00:06:47.070
+We do a request to the API gateway
+
+167
+00:06:47.070 --> 00:06:48.690
+which is going to start a workflow
+
+168
+00:06:48.690 --> 00:06:51.561
+but synchronously, therefore, we're going to wait
+
+169
+00:06:51.561 --> 00:06:55.500
+for it to be over to complete its execution.
+
+170
+00:06:55.500 --> 00:06:58.500
+The result is going to be returned to the API gateway
+
+171
+00:06:58.500 --> 00:07:01.980
+which is going to return the results to our users.
+
+172
+00:07:01.980 --> 00:07:04.560
+For the asynchronous express workflow is going to
+
+173
+00:07:04.560 --> 00:07:05.393
+be slightly different.
+
+174
+00:07:05.393 --> 00:07:07.710
+So we don't wait for the workflow to complete.
+
+175
+00:07:07.710 --> 00:07:08.543
+And so this is
+
+176
+00:07:08.543 --> 00:07:11.670
+for workflows that just don't require immediate responses
+
+177
+00:07:11.670 --> 00:07:13.200
+or messaging and so on.
+
+178
+00:07:13.200 --> 00:07:14.070
+So here's an example.
+
+179
+00:07:14.070 --> 00:07:15.300
+We have, again, the API gateway
+
+180
+00:07:15.300 --> 00:07:17.070
+but this time it's integrated
+
+181
+00:07:17.070 --> 00:07:18.780
+with an asynchronous express workflow.
+
+182
+00:07:18.780 --> 00:07:22.350
+So when the API gateway invokes our workflow
+
+183
+00:07:22.350 --> 00:07:24.000
+it's just going to start it.
+
+184
+00:07:24.000 --> 00:07:25.440
+And then the response is going to be
+
+185
+00:07:25.440 --> 00:07:27.270
+that the start has been confirmed
+
+186
+00:07:27.270 --> 00:07:29.850
+and then the user knows that the workflow has started
+
+187
+00:07:29.850 --> 00:07:32.130
+but cannot know the execution result
+
+188
+00:07:32.130 --> 00:07:34.590
+at least from this request.
+
+189
+00:07:34.590 --> 00:07:37.710
+So how do you do error handling in step functions?
+
+190
+00:07:37.710 --> 00:07:41.100
+Well, we can add retries and end all the errors
+
+191
+00:07:41.100 --> 00:07:44.100
+from within the state machine and then outside of it
+
+192
+00:07:44.100 --> 00:07:46.800
+we can set up Event Bridge to get alerts in case
+
+193
+00:07:46.800 --> 00:07:48.510
+our state machines fail.
+
+194
+00:07:48.510 --> 00:07:49.370
+So here's an example.
+
+195
+00:07:49.370 --> 00:07:51.870
+The user is going to invoke a state machine
+
+196
+00:07:51.870 --> 00:07:53.940
+which is going to invoke Lambda function.
+
+197
+00:07:53.940 --> 00:07:55.860
+And let's say that we know that this Lambda function
+
+198
+00:07:55.860 --> 00:07:58.650
+can fail from time to time, but we can retry it.
+
+199
+00:07:58.650 --> 00:08:01.277
+Therefore, we're going to add a retry block saying, Okay
+
+200
+00:08:01.277 --> 00:08:05.190
+for two more times you're going to retry calling
+
+201
+00:08:05.190 --> 00:08:06.450
+this Lambda function.
+
+202
+00:08:06.450 --> 00:08:08.490
+But what if it fails all the time?
+
+203
+00:08:08.490 --> 00:08:10.098
+Then we can set up Event Bridge
+
+204
+00:08:10.098 --> 00:08:12.309
+and we can have a rule to look
+
+205
+00:08:12.309 --> 00:08:15.630
+for the execution failure events.
+
+206
+00:08:15.630 --> 00:08:19.410
+If so, we can trigger an SNS topic.
+
+207
+00:08:19.410 --> 00:08:21.900
+So we send this message, this event
+
+208
+00:08:21.900 --> 00:08:25.620
+into an SNS topic that is configured to send us an email.
+
+209
+00:08:25.620 --> 00:08:27.420
+That is sort of the best practices
+
+210
+00:08:27.420 --> 00:08:30.420
+for error handling in step functions.
+
+211
+00:08:30.420 --> 00:08:33.330
+So let's see a solution architecture with step functions.
+
+212
+00:08:33.330 --> 00:08:34.290
+So we have step functions
+
+213
+00:08:34.290 --> 00:08:36.300
+and we can invoke them in three different ways.
+
+214
+00:08:36.300 --> 00:08:39.270
+We can use, for example, the SDK and the CLI.
+
+215
+00:08:39.270 --> 00:08:42.000
+We can use Event Bridge integration to have pretty
+
+216
+00:08:42.000 --> 00:08:45.360
+much any service trigger a step function workflow.
+
+217
+00:08:45.360 --> 00:08:46.890
+Or we can also integrate it
+
+218
+00:08:46.890 --> 00:08:50.100
+with the API gateway through a service proxy integration.
+
+219
+00:08:50.100 --> 00:08:53.610
+So that's any user doing an HTTP rest API call
+
+220
+00:08:53.610 --> 00:08:56.460
+can start a function function, for examples
+
+221
+00:08:56.460 --> 00:08:59.880
+as we saw asynchronously or synchronously.
+
+222
+00:08:59.880 --> 00:09:00.990
+Now within step function
+
+223
+00:09:00.990 --> 00:09:03.630
+you describe it with adjacent document
+
+224
+00:09:03.630 --> 00:09:06.090
+and it gives you a visual representation if you wanted to.
+
+225
+00:09:06.090 --> 00:09:07.650
+And you could integrate it, for example
+
+226
+00:09:07.650 --> 00:09:10.230
+with different services, such as Lambda
+
+227
+00:09:10.230 --> 00:09:13.050
+such as DynamoDB or SQS.
+
+228
+00:09:13.050 --> 00:09:15.630
+What I want to show you through this diagram is
+
+229
+00:09:15.630 --> 00:09:18.180
+that step functions are not just made
+
+230
+00:09:18.180 --> 00:09:19.530
+of Lambda functions, okay?
+
+231
+00:09:19.530 --> 00:09:22.140
+They have deep integration with other services.
+
+232
+00:09:22.140 --> 00:09:24.570
+For example, to read messages from DynamoDB
+
+233
+00:09:24.570 --> 00:09:26.460
+or to send messages from SQS.
+
+234
+00:09:26.460 --> 00:09:28.350
+We can just do it straight from the step functions.
+
+235
+00:09:28.350 --> 00:09:30.490
+We don't need a Lambda function for that.
+
+236
+00:09:30.490 --> 00:09:32.850
+Okay? So that's it for step functions.
+
+237
+00:09:32.850 --> 00:09:35.913
+I hope you liked it, and I will see you in the next lecture.
+

@@ -1,0 +1,554 @@
+WEBVTT
+
+1
+00:00:00.090 --> 00:00:01.470
+<v Instructor>Okay, so there are more tools</v>
+
+2
+00:00:01.470 --> 00:00:03.210
+to manage your costs in AWS.
+
+3
+00:00:03.210 --> 00:00:05.460
+The first one is AWS Budgets,
+
+4
+00:00:05.460 --> 00:00:06.690
+which allows you create a budget,
+
+5
+00:00:06.690 --> 00:00:08.010
+and then send alarms,
+
+6
+00:00:08.010 --> 00:00:10.560
+when the costs are exceeding your budgets.
+
+7
+00:00:10.560 --> 00:00:11.730
+So you have four kinds of budget
+
+8
+00:00:11.730 --> 00:00:13.890
+you can define in the Budget service.
+
+9
+00:00:13.890 --> 00:00:17.700
+You have usage, cost, reservation, and savings plan.
+
+10
+00:00:17.700 --> 00:00:21.030
+And so you define what you want for which type of budget,
+
+11
+00:00:21.030 --> 00:00:22.800
+and then you will receive an alarm.
+
+12
+00:00:22.800 --> 00:00:25.500
+So in the case of reserved instances,
+
+13
+00:00:25.500 --> 00:00:27.510
+this budget, you can track the utilization
+
+14
+00:00:27.510 --> 00:00:28.920
+of these ROIs.
+
+15
+00:00:28.920 --> 00:00:33.120
+It supports EC2, ElastiCache, RDS, and Redshift
+
+16
+00:00:33.120 --> 00:00:37.410
+And you can define up to five SNS notifications per budget.
+
+17
+00:00:37.410 --> 00:00:39.386
+Now these budgets are very granular.
+
+18
+00:00:39.386 --> 00:00:42.390
+You can filter by service, linked account, tag,
+
+19
+00:00:42.390 --> 00:00:44.791
+purchase option, instance type, region,
+
+20
+00:00:44.791 --> 00:00:45.624
+region availability zone,
+
+21
+00:00:45.624 --> 00:00:47.190
+API operation, et cetera, et cetera,
+
+22
+00:00:47.190 --> 00:00:50.970
+which are the same options as Cost Explorer.
+
+23
+00:00:50.970 --> 00:00:52.110
+The first two budgets are free,
+
+24
+00:00:52.110 --> 00:00:54.870
+but then you're going to pay two cents per day per budget.
+
+25
+00:00:54.870 --> 00:00:57.300
+We also have Budget Actions.
+
+26
+00:00:57.300 --> 00:00:59.940
+So the idea is that you want the budget service
+
+27
+00:00:59.940 --> 00:01:01.920
+to run an action on your behalf,
+
+28
+00:01:01.920 --> 00:01:04.380
+whenever a budget exceeds a certain cost,
+
+29
+00:01:04.380 --> 00:01:06.180
+or usage threshold.
+
+30
+00:01:06.180 --> 00:01:07.950
+We have three action types:
+
+31
+00:01:07.950 --> 00:01:11.130
+We can, for example, apply a specific IAM policy
+
+32
+00:01:11.130 --> 00:01:13.890
+to a user, a group, or an IAM role.
+
+33
+00:01:13.890 --> 00:01:17.160
+Thus, for example, restricting users, groups, or roles,
+
+34
+00:01:17.160 --> 00:01:18.720
+from doing anything.
+
+35
+00:01:18.720 --> 00:01:21.840
+We can also apply service control policies directly
+
+36
+00:01:21.840 --> 00:01:22.980
+into an OU,
+
+37
+00:01:22.980 --> 00:01:25.920
+again, to restrict what an account can do
+
+38
+00:01:25.920 --> 00:01:30.210
+or you can automatically stop EC2, or RDS instances.
+
+39
+00:01:30.210 --> 00:01:32.370
+These actions can be executed automatically,
+
+40
+00:01:32.370 --> 00:01:35.760
+or they can require a workflow approval process,
+
+41
+00:01:35.760 --> 00:01:38.310
+to make sure that some human says "yes,"
+
+42
+00:01:38.310 --> 00:01:40.890
+before these actions are implemented.
+
+43
+00:01:40.890 --> 00:01:42.690
+The goal of budget actions
+
+44
+00:01:42.690 --> 00:01:45.150
+is to reduce the unintentional overspending
+
+45
+00:01:45.150 --> 00:01:46.560
+in your accounts.
+
+46
+00:01:46.560 --> 00:01:49.440
+So if we like an example of an OU,
+
+47
+00:01:49.440 --> 00:01:53.730
+with management account, and a dev OU of member accounts,
+
+48
+00:01:53.730 --> 00:01:55.650
+then we can create a budget,
+
+49
+00:01:55.650 --> 00:01:59.250
+and then in case the budget reaches a specific threshold,
+
+50
+00:01:59.250 --> 00:02:02.070
+then we can automatically apply an SCP
+
+51
+00:02:02.070 --> 00:02:03.990
+onto the development OU,
+
+52
+00:02:03.990 --> 00:02:06.330
+to make sure to restrict the member accounts.
+
+53
+00:02:06.330 --> 00:02:09.270
+So in this example, we would make the budget tailored
+
+54
+00:02:09.270 --> 00:02:11.283
+for the dev OU itself.
+
+55
+00:02:12.540 --> 00:02:14.970
+So we have two types of architecture
+
+56
+00:02:14.970 --> 00:02:17.700
+when managing budgets in AWS:
+
+57
+00:02:17.700 --> 00:02:19.590
+You have the centralized budget management,
+
+58
+00:02:19.590 --> 00:02:22.080
+and decentralized budget managements.
+
+59
+00:02:22.080 --> 00:02:25.080
+So in the centralized management of your budget,
+
+60
+00:02:25.080 --> 00:02:28.320
+here's an example, where we have the management accounts,
+
+61
+00:02:28.320 --> 00:02:31.950
+and then an OU with a member account, and a restrictive OU.
+
+62
+00:02:31.950 --> 00:02:34.813
+So we create a budget in the management accounts,
+
+63
+00:02:34.813 --> 00:02:38.790
+for every member accounts that we want to monitor.
+
+64
+00:02:38.790 --> 00:02:40.470
+So if we have 10 member accounts,
+
+65
+00:02:40.470 --> 00:02:43.285
+we create 10 budgets in the management accounts,
+
+66
+00:02:43.285 --> 00:02:46.800
+but we apply a filter on each budget,
+
+67
+00:02:46.800 --> 00:02:48.774
+and the filter can be an account filter,
+
+68
+00:02:48.774 --> 00:02:53.580
+so that the budget is tailored to one specific account.
+
+69
+00:02:53.580 --> 00:02:55.170
+Therefore, effectively,
+
+70
+00:02:55.170 --> 00:02:58.170
+by creating a budget into the management account,
+
+71
+00:02:58.170 --> 00:03:01.020
+we are effectively, but not actually,
+
+72
+00:03:01.020 --> 00:03:03.563
+creating a budget for the member account.
+
+73
+00:03:03.563 --> 00:03:07.500
+Now, when the budget exceeds a threshold,
+
+74
+00:03:07.500 --> 00:03:09.990
+then we can send a notification into SNS,
+
+75
+00:03:09.990 --> 00:03:11.940
+which can trigger a Lambda function,
+
+76
+00:03:11.940 --> 00:03:13.320
+and that Lambda function
+
+77
+00:03:13.320 --> 00:03:17.610
+can have the API call embedded into its code,
+
+78
+00:03:17.610 --> 00:03:21.990
+to move the account that has breached its threshold,
+
+79
+00:03:21.990 --> 00:03:24.390
+into a more restrictive OU,
+
+80
+00:03:24.390 --> 00:03:27.990
+where an actual SCP has already been applied.
+
+81
+00:03:27.990 --> 00:03:30.450
+So effectively, we move that member account
+
+82
+00:03:30.450 --> 00:03:32.880
+from OU to a restrictive OU,
+
+83
+00:03:32.880 --> 00:03:34.710
+and there we don't allow it
+
+84
+00:03:34.710 --> 00:03:36.900
+to create new resources, and so on.
+
+85
+00:03:36.900 --> 00:03:38.910
+On top of it, to be notified of this move
+
+86
+00:03:38.910 --> 00:03:41.160
+we can also make the Lambda function
+
+87
+00:03:41.160 --> 00:03:44.220
+send an email to an Amazon SNS topic,
+
+88
+00:03:44.220 --> 00:03:45.990
+through an Amazon SNS topic,
+
+89
+00:03:45.990 --> 00:03:48.438
+to our administrators, for example.
+
+90
+00:03:48.438 --> 00:03:50.744
+So that is centralized budget management,
+
+91
+00:03:50.744 --> 00:03:51.990
+because here,
+
+92
+00:03:51.990 --> 00:03:55.530
+we manage all the budgets of our organization,
+
+93
+00:03:55.530 --> 00:03:57.843
+within the management accounts itself.
+
+94
+00:03:58.860 --> 00:04:01.230
+We also have decentralized the budget managements.
+
+95
+00:04:01.230 --> 00:04:02.190
+So in this case,
+
+96
+00:04:02.190 --> 00:04:04.320
+while the budgets are going to be managed
+
+97
+00:04:04.320 --> 00:04:06.780
+directly into the member accounts,
+
+98
+00:04:06.780 --> 00:04:09.750
+but to simplify distributing these budgets,
+
+99
+00:04:09.750 --> 00:04:11.700
+and creating them in each member account,
+
+100
+00:04:11.700 --> 00:04:14.070
+we can use a CloudFormation stack sets,
+
+101
+00:04:14.070 --> 00:04:15.690
+to deploy these budgets.
+
+102
+00:04:15.690 --> 00:04:18.480
+So we have a budget in each member account,
+
+103
+00:04:18.480 --> 00:04:19.920
+and that budget can have the same thing.
+
+104
+00:04:19.920 --> 00:04:23.370
+For example, send messages into an SNS topic,
+
+105
+00:04:23.370 --> 00:04:25.200
+and then trigger an email,
+
+106
+00:04:25.200 --> 00:04:26.610
+in case we are about to reach
+
+107
+00:04:26.610 --> 00:04:28.497
+a specific threshold for budget.
+
+108
+00:04:28.497 --> 00:04:31.290
+Or if it's a critical notification, for example,
+
+109
+00:04:31.290 --> 00:04:34.740
+budget has been exceeded, then again, send a notification,
+
+110
+00:04:34.740 --> 00:04:37.260
+and trigger a Lambda function that would, for example,
+
+111
+00:04:37.260 --> 00:04:39.060
+stop all EC2 instances.
+
+112
+00:04:39.060 --> 00:04:40.590
+And that's just one example.
+
+113
+00:04:40.590 --> 00:04:41.850
+Talking about Cost Explorer,
+
+114
+00:04:41.850 --> 00:04:43.950
+so it's a way for you to visualize, understand,
+
+115
+00:04:43.950 --> 00:04:47.010
+and manage your AWS cost and usage over time,
+
+116
+00:04:47.010 --> 00:04:48.300
+and you create custom reports
+
+117
+00:04:48.300 --> 00:04:51.060
+that will analyze your costs, and usage data.
+
+118
+00:04:51.060 --> 00:04:53.010
+You're Going to analyze your data at a high level.
+
+119
+00:04:53.010 --> 00:04:55.410
+So you're going to get overview into your total cost,
+
+120
+00:04:55.410 --> 00:04:57.150
+as well as usage across all accounts.
+
+121
+00:04:57.150 --> 00:04:58.620
+But you can go deeper,
+
+122
+00:04:58.620 --> 00:05:00.690
+and you can analyze it monthly, hourly,
+
+123
+00:05:00.690 --> 00:05:02.610
+and at the resource level.
+
+124
+00:05:02.610 --> 00:05:04.050
+Cost Explorer is a great service
+
+125
+00:05:04.050 --> 00:05:06.630
+to allow you to \choose an optimal savings plan.
+
+126
+00:05:06.630 --> 00:05:08.070
+As we saw before, savings plans are a way
+
+127
+00:05:08.070 --> 00:05:10.620
+to commit to a certain dollar amount over time,
+
+128
+00:05:10.620 --> 00:05:13.590
+and lower your prices on your bill.
+
+129
+00:05:13.590 --> 00:05:16.252
+Now with Cost Explorer, there's also a nifty feature,
+
+130
+00:05:16.252 --> 00:05:19.800
+in which you can forecast usage of your cost,
+
+131
+00:05:19.800 --> 00:05:23.550
+up to 12 months in advance, based on previous usage.
+
+132
+00:05:23.550 --> 00:05:26.490
+So if we look at Cost Explorer, this is the interface,
+
+133
+00:05:26.490 --> 00:05:28.800
+and we get access to a lot of filters, as I said,
+
+134
+00:05:28.800 --> 00:05:31.650
+the same filters for Cost Explorer and for Budgets,
+
+135
+00:05:31.650 --> 00:05:33.780
+as well as some detailed graphs
+
+136
+00:05:33.780 --> 00:05:37.010
+around how your costs are spread out over time, and so on.
+
+137
+00:05:37.010 --> 00:05:39.150
+So that's it for this lecture.
+
+138
+00:05:39.150 --> 00:05:42.150
+I hope you liked it, and I will see you in the next lecture.
+

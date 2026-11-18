@@ -1,0 +1,290 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:07.000
+This lesson walks through the Claude Code tool system, meaning the core, built-in tools you'll reach for the most.
+
+2
+00:00:07.000 --> 00:00:13.582
+What each one does, when Claude picks one tool over another, and why Bash is the most powerful and
+
+3
+00:00:13.582 --> 00:00:15.932
+the most dangerous tool in the set.
+
+4
+00:00:16.000 --> 00:00:22.000
+The tool system is how Claude Code actually does things, so these tools are foundational.
+
+5
+00:00:22.000 --> 00:00:28.225
+Every action Claude Code takes flows through a tool call, and each call is one discrete action
+
+6
+00:00:28.225 --> 00:00:31.933
+Claude selects, based on what the current step requires.
+
+7
+00:00:32.000 --> 00:00:40.000
+The tool system is the full set of built-in capabilities it can invoke. Read, write, and edit handle files.
+
+8
+00:00:40.000 --> 00:00:48.000
+Bash executes shell commands. Glob and grep find files and text. Web search and web fetch reach the web.
+
+9
+00:00:48.000 --> 00:00:54.681
+Agent delegates a subtask to a subagent, with its own separate context window. Two of these earn a
+
+10
+00:00:54.681 --> 00:00:56.931
+closer look later in this lesson.
+
+11
+00:00:57.000 --> 00:01:03.163
+Edit makes targeted find and replace changes, while write replaces a whole file, and agent is what
+
+12
+00:01:03.163 --> 00:01:06.937
+turns Claude Code from a single worker into an orchestrator.
+
+13
+00:01:07.000 --> 00:01:09.000
+We'll come back to both.
+
+14
+00:01:09.000 --> 00:01:16.000
+Read is the safest tool in the set. It views the contents of a file without making any modifications.
+
+15
+00:01:16.000 --> 00:01:22.266
+One clarification worth locking in. Read operates on files, not directories. If Claude needs a
+
+16
+00:01:22.266 --> 00:01:25.933
+directory listing, it uses bash with a command like ls.
+
+17
+00:01:26.000 --> 00:01:33.566
+If it needs to find files by name or by content, it uses glob or grep. Read itself returns a file's
+
+18
+00:01:33.566 --> 00:01:37.923
+contents, including rendered images, PDFs, and notebooks.
+
+19
+00:01:38.000 --> 00:01:44.000
+Claude typically runs read before edit to confirm the current state of a file before changing it.
+
+20
+00:01:44.000 --> 00:01:49.557
+That read before edit pattern prevents a common class of errors, where Claude acts on stale
+
+21
+00:01:49.557 --> 00:01:51.938
+assumptions about what a file contains.
+
+22
+00:01:52.000 --> 00:02:00.000
+It has no modification risk by design, so reading the relevant files before modifying them is standard practice.
+
+23
+00:02:00.000 --> 00:02:06.000
+Write and edit are both file modification tools, but they behave very differently.
+
+24
+00:02:06.000 --> 00:02:13.000
+Write overwrites the entire file. Every byte of existing content is replaced with the new content.
+
+25
+00:02:13.000 --> 00:02:20.000
+If you use write on an existing file and leave out 10 lines, those 10 lines are gone. There's no partial update.
+
+26
+00:02:20.000 --> 00:02:25.600
+Edit works differently. It takes a target string and a replacement string and performs a scoped find
+
+27
+00:02:25.600 --> 00:02:26.944
+and replace on the file.
+
+28
+00:02:27.000 --> 00:02:31.000
+Only the matched section changes. Everything else stays intact.
+
+29
+00:02:31.000 --> 00:02:37.556
+For most code changes, edit is the right tool. Use write for creating new files, or for intentional
+
+30
+00:02:37.556 --> 00:02:40.933
+full rewrites where you want to replace everything.
+
+31
+00:02:41.000 --> 00:02:44.000
+Conflating them is an exam trap worth knowing.
+
+32
+00:02:44.000 --> 00:02:50.000
+Bash is the most capable tool and the most dangerous one. It executes any shell command.
+
+33
+00:02:50.000 --> 00:02:59.000
+Running scripts, installing packages, moving or deleting files, starting processes, querying databases, calling APIs.
+
+34
+00:02:59.000 --> 00:03:02.000
+There's no built-in constraint on what it can affect.
+
+35
+00:03:02.000 --> 00:03:09.097
+A poorly scoped bash command can delete files, corrupt state, or make irreversible changes to the
+
+36
+00:03:09.097 --> 00:03:10.926
+system with no undo path.
+
+37
+00:03:11.000 --> 00:03:18.000
+The permission model and hooks are the primary controls. Without them, bash has wide reach across the system.
+
+38
+00:03:19.000 --> 00:03:24.542
+Understanding this is essential for designing Claude code workflows that run in automated or
+
+39
+00:03:24.542 --> 00:03:28.939
+production environments where a bad bash call could cause serious damage.
+
+40
+00:03:29.000 --> 00:03:35.000
+Web Search lets Claude query the web for information that goes beyond what it knows from training.
+
+41
+00:03:35.000 --> 00:03:42.000
+Current documentation, recent API changes, error messages from new library versions, release notes.
+
+42
+00:03:42.000 --> 00:03:48.000
+These are all things that Web Search can retrieve that Claude's training data might not cover.
+
+43
+00:03:48.000 --> 00:03:53.000
+Results come back as text that Claude reads and reasons about before acting.
+
+44
+00:03:53.000 --> 00:03:58.803
+Claude selects Web Search when it determines that the task requires information it can't reliably
+
+45
+00:03:58.803 --> 00:03:59.940
+know from training.
+
+46
+00:04:00.000 --> 00:04:06.000
+It's not always invoked, only when the current task has a knowledge gap that a web query can fill.
+
+47
+00:04:06.000 --> 00:04:13.000
+Web Search extends Claude code from a local codebase tool to one that can pull in current external information.
+
+48
+00:04:13.000 --> 00:04:19.000
+The agent tool spawns a sub-agent with its own separate context window.
+
+49
+00:04:19.000 --> 00:04:26.000
+The parent session delegates a sub-task to the sub-agent, which runs independently and returns a result.
+
+50
+00:04:26.000 --> 00:04:32.114
+The main use cases are tasks too large to fit in the current session's context window, and tasks
+
+51
+00:04:32.114 --> 00:04:35.936
+that are isolated enough to run in parallel with other work.
+
+52
+00:04:36.000 --> 00:04:43.000
+Agent is the tool that turns Claude code into a multi-agent orchestrator, the parent coordinates.
+
+53
+00:04:43.000 --> 00:04:45.000
+The sub-agents do the isolated work.
+
+54
+00:04:46.000 --> 00:04:52.837
+Because each sub-agent has its own context window, you can handle much larger tasks by decomposing
+
+55
+00:04:52.837 --> 00:04:57.930
+them into parallel sub-tasks and delegating each one to a separate agent.
+
+56
+00:04:58.000 --> 00:05:02.000
+Tool selection in Claude code is task-driven.
+
+57
+00:05:02.000 --> 00:05:05.000
+Claude doesn't pick tools based on capability alone.
+
+58
+00:05:05.000 --> 00:05:09.000
+It picks the tool that matches what the current step requires.
+
+59
+00:05:09.000 --> 00:05:13.000
+Inspecting existing state, before acting, read.
+
+60
+00:05:13.000 --> 00:05:16.000
+Changing specific lines in a known file, edit.
+
+61
+00:05:16.000 --> 00:05:20.000
+Creating a new file or completely rewriting one, write.
+
+62
+00:05:20.000 --> 00:05:24.000
+Running a command, script, or system operation, bash.
+
+63
+00:05:24.000 --> 00:05:29.000
+Looking up current information that training data won't have, web search.
+
+64
+00:05:29.000 --> 00:05:33.000
+Delegating an isolated sub-task to its own context, agent.
+
+65
+00:05:33.000 --> 00:05:37.000
+The planning loop runs this selection decision at every step.
+
+66
+00:05:37.000 --> 00:05:42.798
+Getting tool selection right is what makes a multi-step workflow execute coherently, rather than
+
+67
+00:05:42.798 --> 00:05:45.939
+reaching for the wrong capability at the wrong time.
+
+68
+00:05:46.000 --> 00:05:55.000
+Every tool in the set does one narrow job, and Claude repicks between them at each step of the task.
+
+69
+00:05:55.000 --> 00:06:02.000
+That's why a request phrased slightly differently can take a completely different route through your files.
+
+70
+00:06:02.000 --> 00:06:07.000
+One thing to watch. Bash is the exception to that narrowness.
+
+71
+00:06:07.000 --> 00:06:12.000
+It'll run whatever you hand it, so scope it before you loosen anything else.
+
+72
+00:06:12.000 --> 00:06:15.000
+That does it for this one. I'll see you in the next lesson.
+

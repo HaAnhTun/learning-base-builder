@@ -1,0 +1,450 @@
+WEBVTT
+
+1
+00:00:00.660 --> 00:00:01.950
+<v Instructor>Next, what can we do,</v>
+
+2
+00:00:01.950 --> 00:00:03.420
+thanks to the File Gateway?
+
+3
+00:00:03.420 --> 00:00:05.310
+So here is some interesting thing to think
+
+4
+00:00:05.310 --> 00:00:07.380
+about when you're a solution architect.
+
+5
+00:00:07.380 --> 00:00:09.030
+So our traditional server can access
+
+6
+00:00:09.030 --> 00:00:11.850
+our File Gateway appliance on-premise using the NFS
+
+7
+00:00:11.850 --> 00:00:13.320
+or the SMB protocol.
+
+8
+00:00:13.320 --> 00:00:15.930
+And as we said, the files are going to be stored
+
+9
+00:00:15.930 --> 00:00:18.480
+in the backend into Amazon S3.
+
+10
+00:00:18.480 --> 00:00:22.590
+Now it is 100% for you possible to use a VPC,
+
+11
+00:00:22.590 --> 00:00:24.900
+and create another File Gateway appliance
+
+12
+00:00:24.900 --> 00:00:29.820
+and connect your E2 instances over with NFS and SMB.
+
+13
+00:00:29.820 --> 00:00:30.870
+Why would you do this?
+
+14
+00:00:30.870 --> 00:00:34.260
+Well, maybe you want your EC 2 instances to access Amazon S3
+
+15
+00:00:34.260 --> 00:00:36.510
+as a file system and therefore you're going to use
+
+16
+00:00:36.510 --> 00:00:38.400
+a File Gateway appliance for that.
+
+17
+00:00:38.400 --> 00:00:40.980
+So this could also be a way
+
+18
+00:00:40.980 --> 00:00:43.350
+for you to migrate your applications
+
+19
+00:00:43.350 --> 00:00:46.620
+from on-premise to the cloud using the same protocol
+
+20
+00:00:46.620 --> 00:00:48.480
+the same NFS or SMB protocol,
+
+21
+00:00:48.480 --> 00:00:51.030
+and it would be a first step to move your migration,
+
+22
+00:00:51.030 --> 00:00:53.070
+your workloads into the cloud.
+
+23
+00:00:53.070 --> 00:00:55.230
+But once the data is in Amazon S3,
+
+24
+00:00:55.230 --> 00:00:58.260
+remember every single file is going to be in Amazon S3.
+
+25
+00:00:58.260 --> 00:01:00.750
+Then you can use S3 events to send
+
+26
+00:01:00.750 --> 00:01:02.280
+that information to Lambda.
+
+27
+00:01:02.280 --> 00:01:03.210
+and then Lambda functions,
+
+28
+00:01:03.210 --> 00:01:05.640
+maybe process some of these objects for you.
+
+29
+00:01:05.640 --> 00:01:09.240
+Or we can use Athena to query all of our data in Amazon S3.
+
+30
+00:01:09.240 --> 00:01:12.810
+The beautiful thing is that Athena only uses the resources
+
+31
+00:01:12.810 --> 00:01:15.600
+of Amazon S3, and so it doesn't impact the performance
+
+32
+00:01:15.600 --> 00:01:17.460
+of our File Gateway.
+
+33
+00:01:17.460 --> 00:01:18.930
+We can use Redshift Spectrum
+
+34
+00:01:18.930 --> 00:01:21.240
+or even EMR to analyze the data.
+
+35
+00:01:21.240 --> 00:01:24.900
+Finally, we are able to use cross region replication to,
+
+36
+00:01:24.900 --> 00:01:26.310
+for example, back up the data
+
+37
+00:01:26.310 --> 00:01:29.160
+into another region for disaster recovery.
+
+38
+00:01:29.160 --> 00:01:31.920
+So by using the File Gateway, it seems very simple.
+
+39
+00:01:31.920 --> 00:01:35.160
+We are exposing a network file system
+
+40
+00:01:35.160 --> 00:01:36.510
+to our corporate data center,
+
+41
+00:01:36.510 --> 00:01:39.450
+but because the data appears to be in S3 at the end,
+
+42
+00:01:39.450 --> 00:01:41.700
+it opens up so many different possibilities,
+
+43
+00:01:41.700 --> 00:01:43.500
+and I hope you see them.
+
+44
+00:01:43.500 --> 00:01:46.170
+Next we could have read only replicas.
+
+45
+00:01:46.170 --> 00:01:49.020
+So for example, you wanted to replicate a file system
+
+46
+00:01:49.020 --> 00:01:51.510
+from one on-premise data center to another.
+
+47
+00:01:51.510 --> 00:01:53.070
+In the first on-premise data center,
+
+48
+00:01:53.070 --> 00:01:55.590
+you would create your File Gateway plans number one
+
+49
+00:01:55.590 --> 00:01:58.860
+and your applications would write some files into it.
+
+50
+00:01:58.860 --> 00:02:01.170
+And then you would appear in an Amazon S3 bucket.
+
+51
+00:02:01.170 --> 00:02:03.300
+And in another on-premise data center,
+
+52
+00:02:03.300 --> 00:02:05.250
+you can create a read only replica,
+
+53
+00:02:05.250 --> 00:02:08.370
+so that your file system, your application servers
+
+54
+00:02:08.370 --> 00:02:11.580
+can read a read only copy of your File Gateway appliance
+
+55
+00:02:11.580 --> 00:02:14.520
+to get the data fast with low latency.
+
+56
+00:02:14.520 --> 00:02:17.160
+So this is yet another architecture you have to think about
+
+57
+00:02:17.160 --> 00:02:20.190
+when you're using your File Gateway appliance.
+
+58
+00:02:20.190 --> 00:02:23.820
+Next, there's way to do backup and lifecycle policies.
+
+59
+00:02:23.820 --> 00:02:25.290
+So let's take an example.
+
+60
+00:02:25.290 --> 00:02:28.500
+Our file system, our application servers,
+
+61
+00:02:28.500 --> 00:02:31.440
+are talking to our file system on the File Gateway
+
+62
+00:02:31.440 --> 00:02:34.890
+and the files are going to be backed up into Amazon S3.
+
+63
+00:02:34.890 --> 00:02:37.710
+But it is possible for these files to be used less and less.
+
+64
+00:02:37.710 --> 00:02:40.290
+And so we can define S3 lifecycle policies,
+
+65
+00:02:40.290 --> 00:02:44.820
+maybe to migrate stuff to Amazon S3 Standard-IA first
+
+66
+00:02:44.820 --> 00:02:47.670
+for infrequent access, and then after a while
+
+67
+00:02:47.670 --> 00:02:49.770
+migrate it to Amazon S3 Glacier.
+
+68
+00:02:49.770 --> 00:02:51.420
+So what we've done is that effectively,
+
+69
+00:02:51.420 --> 00:02:54.750
+we've made sure that we are getting some cost savings
+
+70
+00:02:54.750 --> 00:02:59.460
+for our file system on top of getting an NFS interface
+
+71
+00:02:59.460 --> 00:03:01.350
+for our application server on-premise.
+
+72
+00:03:01.350 --> 00:03:03.600
+So yet another thing to think about.
+
+73
+00:03:03.600 --> 00:03:05.160
+But this is Amazon S3,
+
+74
+00:03:05.160 --> 00:03:07.440
+so we have so many other possibilities.
+
+75
+00:03:07.440 --> 00:03:09.030
+The first one is that if you do enable
+
+76
+00:03:09.030 --> 00:03:11.040
+Amazon S3 ObjectVersioning,
+
+77
+00:03:11.040 --> 00:03:13.170
+then you can store multiple object versions
+
+78
+00:03:13.170 --> 00:03:15.840
+as they are modified, which is extremely helpful
+
+79
+00:03:15.840 --> 00:03:18.690
+if one of your engineers, or one of your employees,
+
+80
+00:03:18.690 --> 00:03:20.850
+is asking you to restore a specific file
+
+81
+00:03:20.850 --> 00:03:22.290
+to a previous version.
+
+82
+00:03:22.290 --> 00:03:24.900
+Because you're storing every single change in Amazon S3,
+
+83
+00:03:24.900 --> 00:03:27.780
+it is definitely possible for you to restore any file
+
+84
+00:03:27.780 --> 00:03:31.020
+to any previous version, or you can even restore
+
+85
+00:03:31.020 --> 00:03:34.140
+an entire file system to a previous version.
+
+86
+00:03:34.140 --> 00:03:35.723
+But if you do so, to restore a file
+
+87
+00:03:35.723 --> 00:03:38.100
+or a file system to a previous version,
+
+88
+00:03:38.100 --> 00:03:40.860
+you need to let your File Gateway appliance know
+
+89
+00:03:40.860 --> 00:03:42.240
+that there has been a change.
+
+90
+00:03:42.240 --> 00:03:45.300
+And so there is a cache, a RefreshCache API
+
+91
+00:03:45.300 --> 00:03:47.880
+on the gateway so that you notify the gateway
+
+92
+00:03:47.880 --> 00:03:49.470
+that there has been some restore happening,
+
+93
+00:03:49.470 --> 00:03:51.690
+some changes happening on the Amazon S3 buckets,
+
+94
+00:03:51.690 --> 00:03:53.580
+and there will be a synchronization happening
+
+95
+00:03:53.580 --> 00:03:55.170
+in the backend.
+
+96
+00:03:55.170 --> 00:03:58.230
+Another one is to use Amazon S3 Object Lock.
+
+97
+00:03:58.230 --> 00:04:00.570
+And this enables the File Gateway
+
+98
+00:04:00.570 --> 00:04:02.700
+to be a Write Once Read Many,
+
+99
+00:04:02.700 --> 00:04:05.640
+so WORM data network file system.
+
+100
+00:04:05.640 --> 00:04:07.650
+So the idea is that if there are any modifications
+
+101
+00:04:07.650 --> 00:04:09.600
+or renames in the file share clients,
+
+102
+00:04:09.600 --> 00:04:11.490
+the file gateway will create a new version
+
+103
+00:04:11.490 --> 00:04:14.100
+of the object without affecting prior versions
+
+104
+00:04:14.100 --> 00:04:17.250
+and the original locked version will remain unchanged.
+
+105
+00:04:17.250 --> 00:04:18.990
+Effectively, the giving, making sure
+
+106
+00:04:18.990 --> 00:04:20.730
+that you're not losing any data
+
+107
+00:04:20.730 --> 00:04:23.340
+and that the original data will never be deleted.
+
+108
+00:04:23.340 --> 00:04:26.100
+And so for compliance reasons, or audits,
+
+109
+00:04:26.100 --> 00:04:29.220
+or restore again versions, then reasons this could be
+
+110
+00:04:29.220 --> 00:04:30.390
+really, really helpful.
+
+111
+00:04:30.390 --> 00:04:31.500
+So that's it for this lecture.
+
+112
+00:04:31.500 --> 00:04:34.450
+I hope you liked it and I will see you in the next lecture.
+

@@ -1,0 +1,530 @@
+WEBVTT
+
+1
+00:00:00.090 --> 00:00:01.470
+<v Instructor>Okay, so welcome to a long</v>
+
+2
+00:00:01.470 --> 00:00:04.230
+and detailed lecture on VPC Endpoints.
+
+3
+00:00:04.230 --> 00:00:07.230
+So VPC Endpoints, as you know, allow you to connect
+
+4
+00:00:07.230 --> 00:00:09.690
+to AWS services using the private network
+
+5
+00:00:09.690 --> 00:00:12.390
+instead of going through the public internet.
+
+6
+00:00:12.390 --> 00:00:14.940
+This scale horizontally and are redundant.
+
+7
+00:00:14.940 --> 00:00:17.550
+So that means that as soon as you're using VPC Endpoints,
+
+8
+00:00:17.550 --> 00:00:21.180
+you don't need to have an internet gateway or a NAT instance
+
+9
+00:00:21.180 --> 00:00:24.330
+or NAT Gateway to access AWS services.
+
+10
+00:00:24.330 --> 00:00:27.630
+Everything goes through the private, internal network.
+
+11
+00:00:27.630 --> 00:00:28.740
+So how does that work?
+
+12
+00:00:28.740 --> 00:00:30.900
+We have our VPC and a private subnet.
+
+13
+00:00:30.900 --> 00:00:33.390
+In our private subnet, we have an EC2 instance.
+
+14
+00:00:33.390 --> 00:00:37.680
+And say, we're trying to access Amazon S3 or DynamoDB.
+
+15
+00:00:37.680 --> 00:00:41.760
+In which case, we can set up a VPC endpoint gateway.
+
+16
+00:00:41.760 --> 00:00:45.597
+So Gateway is only for S3 and DynamoDB.
+
+17
+00:00:45.597 --> 00:00:48.030
+And if we do so, then our EC2 instance
+
+18
+00:00:48.030 --> 00:00:49.950
+will be able to talk to S3
+
+19
+00:00:49.950 --> 00:00:52.740
+and it will be able to talk to DynamoDB.
+
+20
+00:00:52.740 --> 00:00:56.100
+And for all services, including S3 and DynamoDB,
+
+21
+00:00:56.100 --> 00:00:58.713
+you can create a VPC endpoint interface.
+
+22
+00:00:59.640 --> 00:01:02.280
+So for example, say we're trying to access CloudWatch,
+
+23
+00:01:02.280 --> 00:01:04.530
+then to access CloudWatch privately,
+
+24
+00:01:04.530 --> 00:01:07.020
+then you need to create a VPC endpoint interface,
+
+25
+00:01:07.020 --> 00:01:07.920
+which is an ENI.
+
+26
+00:01:07.920 --> 00:01:10.620
+So it has to live within one of your subnets.
+
+27
+00:01:10.620 --> 00:01:13.140
+And then your EC2 instance would connect
+
+28
+00:01:13.140 --> 00:01:17.280
+through that ENI to the CloudWatch service.
+
+29
+00:01:17.280 --> 00:01:19.380
+In case of issues with VPC endpoints,
+
+30
+00:01:19.380 --> 00:01:22.260
+you need to check the DNS setting for the resolution
+
+31
+00:01:22.260 --> 00:01:24.900
+in your VPC, or you check your route tables to make sure
+
+32
+00:01:24.900 --> 00:01:27.630
+that there is indeed a route from your EC2 instance
+
+33
+00:01:27.630 --> 00:01:29.610
+to the endpoints.
+
+34
+00:01:29.610 --> 00:01:30.810
+And it is now possible
+
+35
+00:01:30.810 --> 00:01:34.710
+to access your VPC endpoints across different regions.
+
+36
+00:01:34.710 --> 00:01:36.210
+Okay, so now, let's do a deep dive
+
+37
+00:01:36.210 --> 00:01:38.160
+onto the VPC endpoint gateway.
+
+38
+00:01:38.160 --> 00:01:41.220
+This only works for Amazon S3 and DynamoDB,
+
+39
+00:01:41.220 --> 00:01:44.820
+and you must create one gateway per VPC.
+
+40
+00:01:44.820 --> 00:01:48.000
+You must update route table entries to make it work.
+
+41
+00:01:48.000 --> 00:01:49.980
+And so that means that it will be applied
+
+42
+00:01:49.980 --> 00:01:54.120
+to all the instances that are inheriting that route table.
+
+43
+00:01:54.120 --> 00:01:56.130
+The gateway is defined at the VPC level.
+
+44
+00:01:56.130 --> 00:01:59.250
+And so for example, if we're getting a VPC endpoint gateway
+
+45
+00:01:59.250 --> 00:02:02.100
+into Amazon S3 and we have an EC2 instance
+
+46
+00:02:02.100 --> 00:02:04.410
+that want to access Amazon S3,
+
+47
+00:02:04.410 --> 00:02:06.960
+then we have to edit the route table
+
+48
+00:02:06.960 --> 00:02:08.790
+to be looking something like this.
+
+49
+00:02:08.790 --> 00:02:11.550
+And so as we can see, there's one rule in the middle,
+
+50
+00:02:11.550 --> 00:02:14.760
+this one that looks very, very important.
+
+51
+00:02:14.760 --> 00:02:17.790
+So the destination is, okay if you're trying to get
+
+52
+00:02:17.790 --> 00:02:22.380
+to the Amazon S3 service or these sets of public IP,
+
+53
+00:02:22.380 --> 00:02:26.610
+which represents, by the way, the public IP of Amazon S3,
+
+54
+00:02:26.610 --> 00:02:29.850
+then the target should be this VPCE,
+
+55
+00:02:29.850 --> 00:02:31.440
+which is a VPC endpoint,
+
+56
+00:02:31.440 --> 00:02:33.570
+and then is going to redirect things
+
+57
+00:02:33.570 --> 00:02:35.250
+privately through the network.
+
+58
+00:02:35.250 --> 00:02:38.220
+So your EC2 instance, thanks to this route table,
+
+59
+00:02:38.220 --> 00:02:39.240
+we'll be able to reach
+
+60
+00:02:39.240 --> 00:02:41.790
+whenever we are requesting the S3 service,
+
+61
+00:02:41.790 --> 00:02:44.160
+we'll be able to reach the VPC endpoint gateway
+
+62
+00:02:44.160 --> 00:02:46.410
+and talk to S3 privately.
+
+63
+00:02:46.410 --> 00:02:49.170
+For this to work, we need to make sure DNS resolution
+
+64
+00:02:49.170 --> 00:02:52.410
+is enabled in the VPC, and bonus,
+
+65
+00:02:52.410 --> 00:02:55.170
+we can use the same public host name for S3.
+
+66
+00:02:55.170 --> 00:02:56.340
+So we don't need to use IP,
+
+67
+00:02:56.340 --> 00:02:58.860
+we can use the public host name for Amazon S3.
+
+68
+00:02:58.860 --> 00:03:00.600
+It'll resolve it to an IP,
+
+69
+00:03:00.600 --> 00:03:02.790
+and that IP will be in the route table.
+
+70
+00:03:02.790 --> 00:03:03.623
+And the route table is saying,
+
+71
+00:03:03.623 --> 00:03:05.790
+"No, don't go to the public internet,
+
+72
+00:03:05.790 --> 00:03:09.150
+go through the VPC endpoint and things will work."
+
+73
+00:03:09.150 --> 00:03:12.180
+So this is really cool because now we have full,
+
+74
+00:03:12.180 --> 00:03:15.210
+private access from EC2 to Amazon S3.
+
+75
+00:03:15.210 --> 00:03:18.030
+Now, as I said, the VPC endpoint gateway
+
+76
+00:03:18.030 --> 00:03:20.550
+cannot be extended out of a VPC.
+
+77
+00:03:20.550 --> 00:03:23.310
+So that means that if you're using a VPN connection,
+
+78
+00:03:23.310 --> 00:03:26.640
+direct connect, a transit gateway or VPC peering,
+
+79
+00:03:26.640 --> 00:03:30.000
+this cannot go through your VPC endpoint gateway.
+
+80
+00:03:30.000 --> 00:03:32.940
+Your VPC endpoint gateway is really only here
+
+81
+00:03:32.940 --> 00:03:35.520
+for your own VPC, and that's it.
+
+82
+00:03:35.520 --> 00:03:36.750
+And it's something you have to remember.
+
+83
+00:03:36.750 --> 00:03:38.760
+You cannot share VPC endpoint gateways
+
+84
+00:03:38.760 --> 00:03:41.760
+besides what you have within your VPC.
+
+85
+00:03:41.760 --> 00:03:44.280
+And then we have VPC Endpoint Interface,
+
+86
+00:03:44.280 --> 00:03:46.470
+and they're a little bit different from Endpoint Gateway
+
+87
+00:03:46.470 --> 00:03:48.270
+because here we provision an ENI,
+
+88
+00:03:48.270 --> 00:03:49.950
+so an elastic network interface,
+
+89
+00:03:49.950 --> 00:03:53.820
+and this ENI will have some private host name.
+
+90
+00:03:53.820 --> 00:03:56.730
+And the idea is that to do security,
+
+91
+00:03:56.730 --> 00:04:00.090
+because we have an ENI, we can leverage security groups.
+
+92
+00:04:00.090 --> 00:04:02.850
+So how do we get access to this ENI
+
+93
+00:04:02.850 --> 00:04:04.290
+with these private host name.
+
+94
+00:04:04.290 --> 00:04:06.390
+For this, we need to use a private DNS.
+
+95
+00:04:06.390 --> 00:04:07.890
+And there is a setting that you have
+
+96
+00:04:07.890 --> 00:04:09.870
+to enable when you create the endpoint.
+
+97
+00:04:09.870 --> 00:04:11.850
+And then what they will do is that once you enable
+
+98
+00:04:11.850 --> 00:04:15.000
+that setting, the public host name of the service
+
+99
+00:04:15.000 --> 00:04:18.060
+will resolve not to the public IP of that service,
+
+100
+00:04:18.060 --> 00:04:19.230
+but will resolve instead
+
+101
+00:04:19.230 --> 00:04:21.480
+to the private endpoint interface host name
+
+102
+00:04:21.480 --> 00:04:22.800
+that we have created.
+
+103
+00:04:22.800 --> 00:04:24.330
+And for this to work, we need
+
+104
+00:04:24.330 --> 00:04:27.330
+to make sure two settings are enabled in our VPC,
+
+105
+00:04:27.330 --> 00:04:29.250
+which is called enable DNS host name
+
+106
+00:04:29.250 --> 00:04:31.920
+and enable DNS support. That must be true.
+
+107
+00:04:31.920 --> 00:04:34.470
+So here's a concrete example for Athena.
+
+108
+00:04:34.470 --> 00:04:37.110
+If you create a VPC endpoint for Athena,
+
+109
+00:04:37.110 --> 00:04:40.380
+you will have one, two, three,
+
+110
+00:04:40.380 --> 00:04:45.380
+and four kind of VPC host names that you can go through.
+
+111
+00:04:45.570 --> 00:04:48.030
+And each VPC host name is going to redirect
+
+112
+00:04:48.030 --> 00:04:51.330
+to that ENI, okay, but the last one is the important one.
+
+113
+00:04:51.330 --> 00:04:54.270
+As you can see, this is the public host name
+
+114
+00:04:54.270 --> 00:04:56.220
+for Amazon Athena.
+
+115
+00:04:56.220 --> 00:04:57.930
+But what's going to happen is that
+
+116
+00:04:57.930 --> 00:05:01.020
+because we have enabled private DNS support,
+
+117
+00:05:01.020 --> 00:05:04.230
+this private DNS name is going to be a C name
+
+118
+00:05:04.230 --> 00:05:06.180
+for one of the three things above
+
+119
+00:05:06.180 --> 00:05:10.590
+which are going to be a A record for your ENI.
+
+120
+00:05:10.590 --> 00:05:12.300
+And so that means that you don't need
+
+121
+00:05:12.300 --> 00:05:13.560
+to change your application
+
+122
+00:05:13.560 --> 00:05:17.310
+to use a private URL if you have enabled private DNS.
+
+123
+00:05:17.310 --> 00:05:19.680
+But if you haven't enabled private DNS,
+
+124
+00:05:19.680 --> 00:05:23.220
+then you will have to use one of the three VPC endpoint
+
+125
+00:05:23.220 --> 00:05:27.420
+full domain name to access Athena privately.
+
+126
+00:05:27.420 --> 00:05:30.480
+Finally, your interfaces are shareable,
+
+127
+00:05:30.480 --> 00:05:33.900
+and so they can be accessed from a direct connect connection
+
+128
+00:05:33.900 --> 00:05:36.060
+or a site-to-site VPN.
+
+129
+00:05:36.060 --> 00:05:38.340
+So that's it for this lecture on VPC endpoints.
+
+130
+00:05:38.340 --> 00:05:39.510
+And in the next lecture, we're going
+
+131
+00:05:39.510 --> 00:05:41.550
+to see VPC endpoint policies.
+
+132
+00:05:41.550 --> 00:05:43.173
+So see you in the next lecture.
+

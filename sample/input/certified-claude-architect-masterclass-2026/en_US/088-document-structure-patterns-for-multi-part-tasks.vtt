@@ -1,0 +1,270 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.900
+When you're injecting multiple documents into a single prompt, the structure you choose determines
+
+2
+00:00:04.900 --> 00:00:06.950
+whether the model can keep them straight.
+
+3
+00:00:07.000 --> 00:00:12.600
+Over the next few minutes, we'll cover how to inject multiple documents cleanly, when to use
+
+4
+00:00:12.600 --> 00:00:18.504
+sections versus separate turns, how to reference documents and instructions, and how to test that
+
+5
+00:00:18.504 --> 00:00:20.878
+the model attributes outputs correctly.
+
+6
+00:00:21.000 --> 00:00:22.000
+Let's get into it.
+
+7
+00:00:23.000 --> 00:00:29.000
+Picture a prompt carrying five separate source documents and a question that only applies to two of them.
+
+8
+00:00:29.000 --> 00:00:34.000
+Whether the model gets that right comes down almost entirely to structure.
+
+9
+00:00:34.000 --> 00:00:40.305
+A multi-document prompt is any prompt that includes two or more source documents for the model to
+
+10
+00:00:40.305 --> 00:00:46.935
+reason over, and each one needs its own labeled block so the model can reference and distinguish them.
+
+11
+00:00:47.000 --> 00:00:53.660
+Document injection is the practice of placing source material into a prompt using structured tags,
+
+12
+00:00:53.660 --> 00:01:00.932
+things like document, document content, and source, rather than pasting text inline into your instructions.
+
+13
+00:01:01.000 --> 00:01:07.369
+Output attribution is the model's ability to correctly link what it says to the document it came
+
+14
+00:01:07.369 --> 00:01:14.933
+from, and reliable attribution depends almost entirely on how well your structure separates and labels the inputs.
+
+15
+00:01:15.000 --> 00:01:21.410
+When a task references multiple sources, each document needs its own consistently structured block,
+
+16
+00:01:21.410 --> 00:01:23.935
+and three tags cover almost every case.
+
+17
+00:01:24.000 --> 00:01:28.000
+The document tag is the top-level container for a single source.
+
+18
+00:01:28.000 --> 00:01:33.000
+The document content tag holds the raw text and sits as a child inside it.
+
+19
+00:01:33.000 --> 00:01:40.000
+The source tag carries identifying metadata, a file name, a URL, or a short label, also as a child.
+
+20
+00:01:40.000 --> 00:01:45.388
+Numbering each document with an index attribute is a small addition that pays off when your
+
+21
+00:01:45.388 --> 00:01:48.940
+instructions need to point at a specific source by position.
+
+22
+00:01:49.000 --> 00:01:54.143
+Keeping every block self-contained and parallel is what makes the structure legible to the model,
+
+23
+00:01:54.143 --> 00:01:55.946
+and to you when you are debugging.
+
+24
+00:01:56.000 --> 00:02:02.000
+If one block carries a source and another doesn't, the model has to guess what that content is for.
+
+25
+00:02:03.000 --> 00:02:08.488
+Whether you put everything in one prompt or spread it across turns comes down to whether your task
+
+26
+00:02:08.488 --> 00:02:09.943
+is parallel or sequential.
+
+27
+00:02:10.000 --> 00:02:17.000
+A single prompt with sections puts everything in one call, so the model sees all documents and instructions at once.
+
+28
+00:02:17.000 --> 00:02:23.000
+That is what you want when the task is to compare, contrast, or synthesize several sources together.
+
+29
+00:02:23.000 --> 00:02:29.000
+The tradeoff is length, and long prompts are harder to debug when something goes wrong.
+
+30
+00:02:29.000 --> 00:02:36.000
+Separate conversational turns spread the task across messages, each one smaller and building on the prior response.
+
+31
+00:02:36.000 --> 00:02:41.696
+That suits sequential workflows, where you can catch an error and course-correct between steps
+
+32
+00:02:41.696 --> 00:02:43.939
+instead of discovering it at the end.
+
+33
+00:02:44.000 --> 00:02:49.000
+Neither is universally better. Let the task structure drive the choice.
+
+34
+00:02:49.000 --> 00:02:55.000
+Explicit reference patterns inside your instructions are what connect the structure to the task.
+
+35
+00:02:55.000 --> 00:03:01.000
+You can reference by source name, asking the model to summarize the main argument in the document from source A.
+
+36
+00:03:01.000 --> 00:03:09.000
+Or you can reference by index, asking it to use document 1 and document 2, and identify where they disagree.
+
+37
+00:03:09.000 --> 00:03:15.000
+Both styles work, but explicit references help the model attribute its output to the right input.
+
+38
+00:03:15.000 --> 00:03:21.387
+Avoid vague phrases like the documents or the context when only one specific document should inform
+
+39
+00:03:21.387 --> 00:03:22.935
+that part of the answer.
+
+40
+00:03:23.000 --> 00:03:30.000
+Vague references are one of the main causes of output bleed, where a claim gets attributed to the wrong source.
+
+41
+00:03:30.000 --> 00:03:35.000
+Three anti-patterns come up repeatedly in multi-document prompts.
+
+42
+00:03:35.000 --> 00:03:41.295
+The first is inline prose mixing, embedding document text directly inside instruction paragraphs
+
+43
+00:03:41.295 --> 00:03:42.934
+without any tag boundary.
+
+44
+00:03:43.000 --> 00:03:49.000
+The model can't reliably separate what it should follow from what it should analyze.
+
+45
+00:03:49.000 --> 00:03:53.000
+The second is mixing data and directives in the same untagged block.
+
+46
+00:03:53.000 --> 00:03:57.000
+This is the core structure failure that enables prompt injection.
+
+47
+00:03:57.000 --> 00:04:03.222
+The third is sending a long, unformatted prompt with multiple documents and no tags at all, hoping
+
+48
+00:04:03.222 --> 00:04:04.936
+the model finds everything.
+
+49
+00:04:05.000 --> 00:04:10.000
+As prompt length grows, misattribution becomes increasingly likely.
+
+50
+00:04:10.000 --> 00:04:14.000
+All three anti-patterns share the same root cause.
+
+51
+00:04:14.000 --> 00:04:18.000
+There is no clear boundary between instructions and source material.
+
+52
+00:04:18.000 --> 00:04:23.000
+Testing attribution is the step that confirms your structure is actually working.
+
+53
+00:04:23.000 --> 00:04:29.000
+The most reliable method is asking the model to cite which document each claim comes from in its output.
+
+54
+00:04:29.000 --> 00:04:32.000
+If it can't, the structure isn't clear enough.
+
+55
+00:04:32.000 --> 00:04:36.000
+Another strong test is deliberately using documents with conflicting information.
+
+56
+00:04:36.000 --> 00:04:41.793
+A well-structured prompt should let the model correctly attribute which document says what, even
+
+57
+00:04:41.793 --> 00:04:42.939
+when they disagree.
+
+58
+00:04:43.000 --> 00:04:49.000
+Using structured output formats like JSON makes attribution explicit and machine-checkable.
+
+59
+00:04:49.000 --> 00:04:54.349
+Attribution testing doesn't need to be elaborate, but it should happen before a multi-document
+
+60
+00:04:54.349 --> 00:04:55.943
+prompt goes into production,
+
+61
+00:04:56.000 --> 00:05:02.000
+because structure problems that pass a quick read often fail under real inputs.
+
+62
+00:05:02.000 --> 00:05:08.000
+XML document structure keeps multi-part prompts reliable and debuggable.
+
+63
+00:05:08.000 --> 00:05:16.000
+The document, document context, and source tag pattern give each source a clean, labeled home,
+
+64
+00:05:16.000 --> 00:05:21.000
+and explicit references in your instructions connect that structure back to the task.
+
+65
+00:05:21.000 --> 00:05:27.000
+Inline prose mixing and untagged blocks are the primary cause of misattribution,
+
+66
+00:05:27.000 --> 00:05:32.000
+so test with deliberately conflicting documents before anything goes into production.
+
+67
+00:05:32.000 --> 00:05:36.000
+That closes out this lesson. I'll see you in the next one.
+

@@ -1,0 +1,506 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.000
+Every time Cloud Code wants to edit a file or run a command, it can stop and ask you first.
+
+2
+00:00:06.000 --> 00:00:11.000
+How often it stops is up to you, and that is what permission modes control.
+
+3
+00:00:11.000 --> 00:00:16.000
+I can tell you this is one of the things that frustrated me the most when I first started using Cloud Code,
+
+4
+00:00:16.000 --> 00:00:21.000
+because it would stop every 30 seconds to ask if it was allowed to do something.
+
+5
+00:00:21.000 --> 00:00:23.000
+So let's talk about how to fix that.
+
+6
+00:00:23.000 --> 00:00:26.000
+We'll spend a few minutes going over the modes,
+
+7
+00:00:26.000 --> 00:00:30.000
+how you switch between them, and which one fits which situation.
+
+8
+00:00:30.000 --> 00:00:36.000
+Every action Cloud Code takes either runs on the spot or stops and asks you first.
+
+9
+00:00:36.000 --> 00:00:39.000
+What decides which one you get is the permission mode,
+
+10
+00:00:39.000 --> 00:00:45.000
+a session-wide setting that governs which actions run without asking, and which ones still prompt you.
+
+11
+00:00:45.000 --> 00:00:47.000
+Scope matters just as much.
+
+12
+00:00:47.000 --> 00:00:54.000
+Your working directory is the folder Cloud launched in, plus any extra directories you choose to add,
+
+13
+00:00:54.000 --> 00:00:57.000
+and auto-approval only reaches inside that scope.
+
+14
+00:00:57.000 --> 00:00:59.000
+Nothing outside it gets a free pass.
+
+15
+00:00:59.000 --> 00:01:06.000
+Then there are protected paths, sensitive files, like your Git folder or Cloud's own configuration folder.
+
+16
+00:01:06.000 --> 00:01:11.000
+Those never get auto-approved unless you're in the one mode built to skip every check.
+
+17
+00:01:11.000 --> 00:01:14.000
+Every mode ahead is built on those pieces.
+
+18
+00:01:14.000 --> 00:01:19.000
+Three modes make up the cycle you move through most, so let's start there.
+
+19
+00:01:19.000 --> 00:01:20.000
+The first is manual.
+
+20
+00:01:20.000 --> 00:01:27.000
+In manual mode, reads run freely, but edits and commands stop to ask you every single time.
+
+21
+00:01:27.000 --> 00:01:31.000
+You'll see it written as default in flags and settings files.
+
+22
+00:01:31.000 --> 00:01:36.000
+It's the strictest of the three, and it's what I reach for on sensitive work.
+
+23
+00:01:36.000 --> 00:01:38.000
+The second is accept edits.
+
+24
+00:01:38.000 --> 00:01:44.000
+Here, Cloud can create and change files in your working directory without stopping,
+
+25
+00:01:44.000 --> 00:01:48.000
+so you review everything afterward instead of one edit at a time.
+
+26
+00:01:48.000 --> 00:01:49.000
+The third is plan.
+
+27
+00:01:49.000 --> 00:01:56.000
+Plan mode reads and explores your project, then proposes changes without ever touching your source.
+
+28
+00:01:56.000 --> 00:02:00.000
+I love it for getting the lay of the land before I let Cloud start editing.
+
+29
+00:02:00.000 --> 00:02:04.000
+Three modes, three very different levels of oversight.
+
+30
+00:02:04.000 --> 00:02:07.000
+Before you switch anything, know where you start.
+
+31
+00:02:07.000 --> 00:02:13.000
+On Pro, Max, and Team plans, a new terminal session starts in auto mode, not manual,
+
+32
+00:02:13.000 --> 00:02:16.000
+so read the status bar before you assume.
+
+33
+00:02:16.000 --> 00:02:21.000
+You set the mode through controls, not by asking Cloud in the chat.
+
+34
+00:02:21.000 --> 00:02:24.000
+Press Shift-Tab mid-session to change it.
+
+35
+00:02:24.000 --> 00:02:32.000
+From auto, the first press drops you into manual, and from there, the cycle runs manual, accept edits, plan.
+
+36
+00:02:32.000 --> 00:02:35.000
+The status bar always names the active mode.
+
+37
+00:02:35.000 --> 00:02:40.000
+You can also pass the permission mode as a flag when you first start a session,
+
+38
+00:02:40.000 --> 00:02:42.000
+which is handy when you already know how you want to work.
+
+39
+00:02:43.000 --> 00:02:45.000
+And if you have a preference you want every time,
+
+40
+00:02:45.000 --> 00:02:51.000
+you set the default mode key inside the permissions block of your settings file.
+
+41
+00:02:51.000 --> 00:02:56.000
+Let's look a little closer at accept edits, because it's the one most people live in.
+
+42
+00:02:56.000 --> 00:03:01.000
+When it's on, Cloud can create and edit files without prompting you each time.
+
+43
+00:03:01.000 --> 00:03:04.000
+It also auto approves a handful of common file commands,
+
+44
+00:03:04.000 --> 00:03:11.000
+things like making a directory, creating a file, moving, copying, and even removing a file or a folder.
+
+45
+00:03:11.000 --> 00:03:14.000
+Here's the guardrail that keeps it sane.
+
+46
+00:03:14.000 --> 00:03:18.000
+That approval only applies to paths inside your working directory.
+
+47
+00:03:18.000 --> 00:03:23.000
+Anything reaching outside that scope still stops and asks you,
+
+48
+00:03:23.000 --> 00:03:27.000
+and a removal aimed at a critical path always stops and asks.
+
+49
+00:03:27.000 --> 00:03:32.000
+The idea is that you let the edits flow, then you review them together afterward,
+
+50
+00:03:32.000 --> 00:03:36.000
+usually with a git diff, rather than approving every little change in line.
+
+51
+00:03:36.000 --> 00:03:40.000
+It's a great fit when you're actively watching the code as it comes together.
+
+52
+00:03:42.000 --> 00:03:45.000
+Plan mode is the one I reach for when I'm exploring.
+
+53
+00:03:45.000 --> 00:03:50.000
+It tells Cloud to research and propose changes without actually making them.
+
+54
+00:03:50.000 --> 00:03:55.000
+Cloud reads your files and runs read-only commands to understand the shape of the project,
+
+55
+00:03:55.000 --> 00:03:57.000
+then it writes up a plan.
+
+56
+00:03:57.000 --> 00:03:59.000
+What it won't do is edit your source.
+
+57
+00:03:59.000 --> 00:04:04.000
+When the plan is ready, Cloud presents it and asks how you want to proceed.
+
+58
+00:04:04.000 --> 00:04:08.000
+You can approve it, you can refine it with feedback, or you can keep planning.
+
+59
+00:04:08.000 --> 00:04:10.000
+And here's a nice detail.
+
+60
+00:04:10.000 --> 00:04:13.000
+When you approve a plan, the session exits plan mode
+
+61
+00:04:13.000 --> 00:04:17.000
+and switches into whichever mode you picked to carry out the work.
+
+62
+00:04:17.000 --> 00:04:21.000
+So planning and doing flow together in one smooth handoff.
+
+63
+00:04:21.000 --> 00:04:26.000
+Now let's look at two modes that pull their hands off the wheel in opposite ways.
+
+64
+00:04:26.000 --> 00:04:28.000
+The first is don't ask.
+
+65
+00:04:28.000 --> 00:04:32.000
+In this mode, Cloud Auto denies anything you haven't already pre-approved.
+
+66
+00:04:32.000 --> 00:04:35.000
+Those pre-approvals are permission rules,
+
+67
+00:04:35.000 --> 00:04:38.000
+the allow entries you write in your settings file.
+
+68
+00:04:38.000 --> 00:04:43.000
+Only the tools on your allow list and read-only commands can run.
+
+69
+00:04:43.000 --> 00:04:45.000
+That makes it fully non-interactive,
+
+70
+00:04:45.000 --> 00:04:48.000
+which is exactly what you want for a locked-down pipeline
+
+71
+00:04:48.000 --> 00:04:51.000
+where you've spelled out ahead of time what's allowed.
+
+72
+00:04:51.000 --> 00:04:53.000
+The second is bypass permissions.
+
+73
+00:04:53.000 --> 00:04:58.000
+This one skips almost every prompt, so tool calls just run.
+
+74
+00:04:58.000 --> 00:05:04.000
+A short list still holds, including deny rules, ask rules, and deletes targeting a critical path.
+
+75
+00:05:04.000 --> 00:05:08.000
+You should only use it inside an isolated container or virtual machine
+
+76
+00:05:08.000 --> 00:05:10.000
+where nothing important can be damaged.
+
+77
+00:05:10.000 --> 00:05:13.000
+Never point it at a machine you care about.
+
+78
+00:05:13.000 --> 00:05:15.000
+Let's come back to auto mode,
+
+79
+00:05:15.000 --> 00:05:19.000
+because on a paid plan, that's most likely where your session started.
+
+80
+00:05:19.000 --> 00:05:23.000
+Auto mode lets Cloud keep working without the routine prompts,
+
+81
+00:05:23.000 --> 00:05:25.000
+but it isn't a free-for-all.
+
+82
+00:05:25.000 --> 00:05:29.000
+A separate classifier reviews each action before it runs.
+
+83
+00:05:29.000 --> 00:05:32.000
+If something tries to escalate beyond what you asked for,
+
+84
+00:05:32.000 --> 00:05:35.000
+the classifier steps in and blocks it,
+
+85
+00:05:35.000 --> 00:05:40.000
+and any explicit ask rule you've set still forces a prompt, no matter what.
+
+86
+00:05:40.000 --> 00:05:44.000
+The point of auto mode is to cut down on interruptions during long tasks,
+
+87
+00:05:44.000 --> 00:05:47.000
+so you're not clicking approve 100 times.
+
+88
+00:05:47.000 --> 00:05:49.000
+Just keep in mind, it reduces the prompts.
+
+89
+00:05:49.000 --> 00:05:52.000
+It doesn't remove the need for your judgment.
+
+90
+00:05:52.000 --> 00:05:57.000
+On truly sensitive operations, you still want to review what's happening.
+
+91
+00:05:57.000 --> 00:06:00.000
+Let's talk about a safety net that runs underneath all of this.
+
+92
+00:06:00.000 --> 00:06:03.000
+Certain files are treated as protected paths,
+
+93
+00:06:03.000 --> 00:06:06.000
+and writes to them are never auto-approved.
+
+94
+00:06:06.000 --> 00:06:11.000
+That includes things like your git folder and Cloud's own configuration folder.
+
+95
+00:06:11.000 --> 00:06:14.000
+How that plays out depends on the mode.
+
+96
+00:06:14.000 --> 00:06:17.000
+In manual, except edits, and plan,
+
+97
+00:06:17.000 --> 00:06:21.000
+an edit to one of those files stops and asks you first.
+
+98
+00:06:21.000 --> 00:06:25.000
+In auto mode, the write gets routed to the safety classifier instead.
+
+99
+00:06:25.000 --> 00:06:28.000
+In don't ask, it's simply denied,
+
+100
+00:06:28.000 --> 00:06:31.000
+and only bypass skips the check entirely.
+
+101
+00:06:31.000 --> 00:06:33.000
+Why does this matter?
+
+102
+00:06:33.000 --> 00:06:38.000
+Because these files hold your repository state and Cloud's own setup.
+
+103
+00:06:38.000 --> 00:06:42.000
+If they got changed by accident during a fast hands-off session,
+
+104
+00:06:42.000 --> 00:06:46.000
+you could quietly corrupt your project or your configuration.
+
+105
+00:06:46.000 --> 00:06:50.000
+Protecting them lets you move quickly on your actual code,
+
+106
+00:06:50.000 --> 00:06:54.000
+while the truly sensitive stuff stays behind a checkpoint.
+
+107
+00:06:54.000 --> 00:06:56.000
+So, how do you pick?
+
+108
+00:06:56.000 --> 00:06:59.000
+The honest answer is that it depends on how much oversight
+
+109
+00:06:59.000 --> 00:07:01.000
+the work in front of you needs.
+
+110
+00:07:01.000 --> 00:07:04.000
+When you're new to a project, or you just want to understand it
+
+111
+00:07:04.000 --> 00:07:08.000
+before changing anything, plan mode is a great place to start.
+
+112
+00:07:08.000 --> 00:07:11.000
+When you're actively building and watching the code land,
+
+113
+00:07:11.000 --> 00:07:15.000
+except edits keeps you moving without losing sight of what changed.
+
+114
+00:07:15.000 --> 00:07:17.000
+And when you're setting up automation,
+
+115
+00:07:17.000 --> 00:07:21.000
+where you've already decided exactly which tools are allowed,
+
+116
+00:07:21.000 --> 00:07:24.000
+don't ask locks it down cleanly.
+
+117
+00:07:24.000 --> 00:07:26.000
+The rule of thumb is simple.
+
+118
+00:07:26.000 --> 00:07:30.000
+Choose more oversight for risky work, and choose fewer interruptions
+
+119
+00:07:30.000 --> 00:07:33.000
+when you trust the direction things are heading.
+
+120
+00:07:33.000 --> 00:07:37.000
+The bad outcome here isn't a prompt you find annoying.
+
+121
+00:07:37.000 --> 00:07:40.000
+It's the afternoon you flip to a hands-off mode,
+
+122
+00:07:40.000 --> 00:07:43.000
+and to stop the interruptions, walk away,
+
+123
+00:07:43.000 --> 00:07:46.000
+and come back to changes that you never agreed to.
+
+124
+00:07:46.000 --> 00:07:50.000
+Matching the mode to the actual risk of the work in front of you
+
+125
+00:07:50.000 --> 00:07:55.000
+is the whole discipline, and protected paths are the floor underneath it.
+
+126
+00:07:55.000 --> 00:07:58.000
+That brings this one to a close. I'll see you in the next one.
+

@@ -65,6 +65,8 @@ Trong Claude Code: `/learning-base-builder fetch <url>` …
 File tải về nằm ở `data/input/<slug>/<locale>/NNN-<tên-bài>.vtt`, mỗi thư mục ngôn ngữ có `_manifest.json` riêng. Quiz và bài kiểm tra ở `data/input/<slug>/quizzes/NN-<tên>.json` (câu hỏi gốc, đáp án, giải thích; chỉ mục `_quizzes.json`); tài liệu đính kèm ở `data/input/<slug>/materials/` (link ngoài chỉ được ghi lại, không mở).
 Chỉ ngôn ngữ trong `--lang` (mặc định `en`) được tải; thư mục ngôn ngữ khác không bị đụng tới.
 
+Làm quiz: mở `quiz.html` bằng trình duyệt (bấm đúp, hoặc Live Preview của VS Code), bấm "Chọn thư mục quizzes" và trỏ vào `data/input/<slug>/quizzes`. Mỗi quiz có hai cách làm: **Luyện tập** (chọn đáp án là hiện đúng/sai và giải thích ngay, dùng được cho cả Practice Exam; có thanh chọn câu bên trái, tô xanh/đỏ theo kết quả, để nhảy tới câu khác hoặc xem lại câu cũ) và **Làm bài** (quiz thường bấm "Kiểm tra đáp án" từng câu như Udemy; Practice Exam chấm cuối bài, có đồng hồ, đánh dấu câu, bảng số câu, thống kê theo miền D1–D5). Chạy hoàn toàn trong trình duyệt, không gửi dữ liệu đi.
+
 File tự đặt: `data/input/<khóa>/<lang>/bai-01.vtt` (hoặc đặt phẳng trong `data/input/<khóa>/`).
 Chạy lại `fetch`/`import` không tạo bản ghi trùng.
 

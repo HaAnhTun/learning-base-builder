@@ -1,0 +1,102 @@
+WEBVTT
+
+1
+00:00:00.480 --> 00:00:01.320
+<v Instructor>So now let's talk</v>
+
+2
+00:00:01.320 --> 00:00:03.780
+about CloudWatch Network Synthetic Monitor.
+
+3
+00:00:03.780 --> 00:00:06.900
+So the idea is that you have connected your cloud
+
+4
+00:00:06.900 --> 00:00:10.020
+to your on-premises corporate data center
+
+5
+00:00:10.020 --> 00:00:12.870
+through Direct Connect or a VPN connection,
+
+6
+00:00:12.870 --> 00:00:14.700
+and you want to detect network issues
+
+7
+00:00:14.700 --> 00:00:18.120
+between your data center and AWS.
+
+8
+00:00:18.120 --> 00:00:21.270
+That is precisely what this Network Synthetic Monitor
+
+9
+00:00:21.270 --> 00:00:22.320
+is doing.
+
+10
+00:00:22.320 --> 00:00:23.490
+So you're going to identify
+
+11
+00:00:23.490 --> 00:00:25.920
+any type of network performance degradation,
+
+12
+00:00:25.920 --> 00:00:28.410
+such as packet loss, latency, or jitter.
+
+13
+00:00:28.410 --> 00:00:30.630
+You don't need to install any agents.
+
+14
+00:00:30.630 --> 00:00:33.510
+It will test ICMP or TCP traffic
+
+15
+00:00:33.510 --> 00:00:36.900
+on IPv4 on-premises traffic
+
+16
+00:00:36.900 --> 00:00:38.160
+through your Direct Connect
+
+17
+00:00:38.160 --> 00:00:40.380
+or your site-to-site VPN connection.
+
+18
+00:00:40.380 --> 00:00:43.260
+So all the metrics and the results are going to be published
+
+19
+00:00:43.260 --> 00:00:45.930
+to CloudWatch Metrics so you can take proper action.
+
+20
+00:00:45.930 --> 00:00:48.690
+The idea is that it's a way for you to ensure
+
+21
+00:00:48.690 --> 00:00:50.670
+that the connection you established
+
+22
+00:00:50.670 --> 00:00:54.300
+between your data center and AWS is working as expected
+
+23
+00:00:54.300 --> 00:00:56.790
+and you get that information in real time.
+
+24
+00:00:56.790 --> 00:00:58.590
+So that's it. I hope you liked it.
+
+25
+00:00:58.590 --> 00:01:00.693
+And I will see you in the next lecture.
+

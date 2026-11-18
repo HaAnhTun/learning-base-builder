@@ -1,0 +1,998 @@
+WEBVTT
+
+1
+00:00:00.180 --> 00:00:01.013
+<v Instructor>So now let's talk</v>
+
+2
+00:00:01.013 --> 00:00:03.840
+about service control policies, or SCP.
+
+3
+00:00:03.840 --> 00:00:06.180
+So here, you can define allowlist or blocklist
+
+4
+00:00:06.180 --> 00:00:09.240
+for specific IAM actions on your organization
+
+5
+00:00:09.240 --> 00:00:10.680
+for your accounts.
+
+6
+00:00:10.680 --> 00:00:13.350
+And this applies either at the OU level
+
+7
+00:00:13.350 --> 00:00:15.030
+or the Account level.
+
+8
+00:00:15.030 --> 00:00:18.300
+Any SCP you apply to your management accounts
+
+9
+00:00:18.300 --> 00:00:19.800
+actually is disregarded
+
+10
+00:00:19.800 --> 00:00:22.230
+because you want to keep your management account safe
+
+11
+00:00:22.230 --> 00:00:24.720
+from any kind of lockout.
+
+12
+00:00:24.720 --> 00:00:27.450
+The SCPs is going to be applied to all the users
+
+13
+00:00:27.450 --> 00:00:30.480
+and the roles in the account, including the root user.
+
+14
+00:00:30.480 --> 00:00:33.450
+And the SCP does not affect any service-linked roles.
+
+15
+00:00:33.450 --> 00:00:36.030
+That means that these services, those service-linked role,
+
+16
+00:00:36.030 --> 00:00:38.130
+they enable other services on AWS
+
+17
+00:00:38.130 --> 00:00:40.200
+to integrate with organization,
+
+18
+00:00:40.200 --> 00:00:43.320
+and therefore that's why they can't be restricted by SCPs.
+
+19
+00:00:43.320 --> 00:00:45.240
+So, SCPs are special.
+
+20
+00:00:45.240 --> 00:00:48.780
+And for something to be allowed within organizations,
+
+21
+00:00:48.780 --> 00:00:51.360
+you need to make sure that every SCP along the way
+
+22
+00:00:51.360 --> 00:00:53.850
+from the root to each OU down
+
+23
+00:00:53.850 --> 00:00:57.390
+to the specific target account will have an explicit allow.
+
+24
+00:00:57.390 --> 00:01:00.420
+And I will show you this in the next slide as an example.
+
+25
+00:01:00.420 --> 00:01:01.920
+So the use cases for SCP is
+
+26
+00:01:01.920 --> 00:01:03.780
+to restrict access to certain services.
+
+27
+00:01:03.780 --> 00:01:06.360
+For example, hey, you cannot use EMR,
+
+28
+00:01:06.360 --> 00:01:08.400
+or to enforce PCI compliance
+
+29
+00:01:08.400 --> 00:01:12.570
+by explicitly disabling some services in AWS.
+
+30
+00:01:12.570 --> 00:01:15.150
+This will be very clear in this example.
+
+31
+00:01:15.150 --> 00:01:17.163
+So let's take for example, a Root OU,
+
+32
+00:01:18.150 --> 00:01:21.510
+and we apply FullAWSAccess underneath.
+
+33
+00:01:21.510 --> 00:01:23.850
+So the management account is under the Root OU,
+
+34
+00:01:23.850 --> 00:01:26.460
+and then we have more OU, the Sandbox, the Workload,
+
+35
+00:01:26.460 --> 00:01:29.820
+Test, and Prod, with accounts within the OUs.
+
+36
+00:01:29.820 --> 00:01:32.130
+So if we apply an SCP,
+
+37
+00:01:32.130 --> 00:01:35.610
+which is Deny Athena on the management account,
+
+38
+00:01:35.610 --> 00:01:37.500
+what is happening to the management account?
+
+39
+00:01:37.500 --> 00:01:39.690
+Well, the management account can do anything
+
+40
+00:01:39.690 --> 00:01:43.140
+because there's a rule that says that no SCP ever apply
+
+41
+00:01:43.140 --> 00:01:44.550
+to the management account.
+
+42
+00:01:44.550 --> 00:01:47.190
+This is a safety because of course if you lock yourself out
+
+43
+00:01:47.190 --> 00:01:49.710
+of your management account, this would be terrible.
+
+44
+00:01:49.710 --> 00:01:52.530
+So remember, the management accounts can do anything
+
+45
+00:01:52.530 --> 00:01:53.880
+no matter what.
+
+46
+00:01:53.880 --> 00:01:54.840
+But let's say for example,
+
+47
+00:01:54.840 --> 00:01:57.210
+we apply on the Sandbox OU
+
+48
+00:01:57.210 --> 00:02:00.750
+a FullAWSAccess plus Deny S3.
+
+49
+00:02:00.750 --> 00:02:02.760
+So as you can see here, we still need
+
+50
+00:02:02.760 --> 00:02:05.670
+to apply FullAWSAccess to apply
+
+51
+00:02:05.670 --> 00:02:08.340
+to give allow to everything explicitly
+
+52
+00:02:08.340 --> 00:02:11.190
+because if we didn't have full AWS access,
+
+53
+00:02:11.190 --> 00:02:13.470
+then nothing would be allowed within that OU.
+
+54
+00:02:13.470 --> 00:02:16.380
+So explicit allows are needed every single way.
+
+55
+00:02:16.380 --> 00:02:19.000
+And on account A, say we also do apply
+
+56
+00:02:20.100 --> 00:02:22.057
+FullAWSAccess and Deny EC2.
+
+57
+00:02:22.950 --> 00:02:24.990
+Then account A can do anything
+
+58
+00:02:24.990 --> 00:02:28.560
+because it has full AWS access on the Root OU
+
+59
+00:02:28.560 --> 00:02:31.890
+and on the Sandbox OU and on the account itself.
+
+60
+00:02:31.890 --> 00:02:33.960
+But because we have two explicit denies,
+
+61
+00:02:33.960 --> 00:02:36.630
+we have one Deny S3 from the Sandbox
+
+62
+00:02:36.630 --> 00:02:40.350
+and one Deny EC2 from the account itself,
+
+63
+00:02:40.350 --> 00:02:43.533
+then it cannot access Amazon S3 or Amazon EC2.
+
+64
+00:02:44.370 --> 00:02:48.300
+For Account B and C, because they don't have specific SCP
+
+65
+00:02:48.300 --> 00:02:50.520
+attached to them, then they can do anything
+
+66
+00:02:50.520 --> 00:02:52.830
+except accessing Amazon S3
+
+67
+00:02:52.830 --> 00:02:55.080
+because you have an explicit deny coming
+
+68
+00:02:55.080 --> 00:02:57.003
+from the Sandbox OU.
+
+69
+00:02:57.840 --> 00:03:02.790
+Next, if we apply FullAWSAccess to the Workloads OU,
+
+70
+00:03:02.790 --> 00:03:07.350
+and we also apply an Allow EC2 SCP to the Test OU,
+
+71
+00:03:07.350 --> 00:03:10.590
+then Account D can only access EC2.
+
+72
+00:03:10.590 --> 00:03:12.540
+And if we look at the Prod OU
+
+73
+00:03:12.540 --> 00:03:16.710
+and Account E and F within it, well, we must first apply
+
+74
+00:03:16.710 --> 00:03:19.980
+the FullAWSAccess SCP to the Prod OU,
+
+75
+00:03:19.980 --> 00:03:23.310
+and then Account E and F can do anything.
+
+76
+00:03:23.310 --> 00:03:26.160
+So here are some examples for SCPs.
+
+77
+00:03:26.160 --> 00:03:29.940
+This is the first one is a blocking of a specific service.
+
+78
+00:03:29.940 --> 00:03:34.350
+So first we allow all actions, and then we DenyDynamoDB,
+
+79
+00:03:34.350 --> 00:03:39.240
+or on the allow list here, we allow EC2 and CloudWatch,
+
+80
+00:03:39.240 --> 00:03:40.920
+but we don't allow anything else.
+
+81
+00:03:40.920 --> 00:03:43.740
+So those are some examples of SCPs.
+
+82
+00:03:43.740 --> 00:03:47.220
+So let's have a look at the IAM policy evaluation logic,
+
+83
+00:03:47.220 --> 00:03:49.920
+because this diagram basically explains to you
+
+84
+00:03:49.920 --> 00:03:54.920
+how you are authorized or not to do actions within AWS.
+
+85
+00:03:54.990 --> 00:03:56.070
+And you don't need to know it by heart,
+
+86
+00:03:56.070 --> 00:03:57.930
+but it should make sense to you.
+
+87
+00:03:57.930 --> 00:03:59.790
+So we can see there's a whole flow,
+
+88
+00:03:59.790 --> 00:04:02.670
+but at every step there is an evaluation.
+
+89
+00:04:02.670 --> 00:04:05.370
+And so we're going to look at Deny evaluation.
+
+90
+00:04:05.370 --> 00:04:07.530
+We're going to look at Organizations SCP,
+
+91
+00:04:07.530 --> 00:04:09.810
+Resource-based policy, Identity-based policy,
+
+92
+00:04:09.810 --> 00:04:10.830
+IAM permission boundaries,
+
+93
+00:04:10.830 --> 00:04:12.990
+and then finally, Session policies
+
+94
+00:04:12.990 --> 00:04:16.920
+to allow or deny a specific IAM action.
+
+95
+00:04:16.920 --> 00:04:18.870
+So let's have a look in details to see how that works.
+
+96
+00:04:18.870 --> 00:04:22.470
+So, we're going to look at all the possible policies
+
+97
+00:04:22.470 --> 00:04:24.570
+in here, and if there's an explicit deny,
+
+98
+00:04:24.570 --> 00:04:27.570
+then we know that it's going to be denied automatically.
+
+99
+00:04:27.570 --> 00:04:30.240
+Then we look at the organization's SCP,
+
+100
+00:04:30.240 --> 00:04:32.070
+and is there an allow?
+
+101
+00:04:32.070 --> 00:04:33.510
+If yes, you go to next step.
+
+102
+00:04:33.510 --> 00:04:38.040
+If not, then it's a deny because it's an implicit deny.
+
+103
+00:04:38.040 --> 00:04:40.290
+Then we look at resource-based policy, for example,
+
+104
+00:04:40.290 --> 00:04:42.570
+they can be applied to S3 buckets.
+
+105
+00:04:42.570 --> 00:04:44.700
+They can be applied to SQS SQs and so on.
+
+106
+00:04:44.700 --> 00:04:45.533
+And again, we have a look.
+
+107
+00:04:45.533 --> 00:04:47.040
+Is there a resource-based policy?
+
+108
+00:04:47.040 --> 00:04:49.170
+If so, is there an allow?
+
+109
+00:04:49.170 --> 00:04:51.150
+Yes or no?
+
+110
+00:04:51.150 --> 00:04:52.920
+Then we have identity-based policy.
+
+111
+00:04:52.920 --> 00:04:54.540
+So we look again at whether
+
+112
+00:04:54.540 --> 00:04:56.040
+or not there's an identity-based policy,
+
+113
+00:04:56.040 --> 00:04:57.540
+whether or not there's an allow.
+
+114
+00:04:57.540 --> 00:05:01.620
+And then we deny implicitly or go on to the next step.
+
+115
+00:05:01.620 --> 00:05:04.380
+Then we look at IAM permission boundaries that we just saw.
+
+116
+00:05:04.380 --> 00:05:06.180
+And then finally we look at session policies.
+
+117
+00:05:06.180 --> 00:05:08.880
+I won't go over them, this is more related to STS.
+
+118
+00:05:08.880 --> 00:05:10.320
+But what I want you to remember is
+
+119
+00:05:10.320 --> 00:05:12.960
+that all these things are evaluated
+
+120
+00:05:12.960 --> 00:05:16.710
+when making a specific IAM action, okay?
+
+121
+00:05:16.710 --> 00:05:20.130
+And so only if all these things are allowing
+
+122
+00:05:20.130 --> 00:05:22.950
+and working together or not denying specifically,
+
+123
+00:05:22.950 --> 00:05:25.080
+then you will have a finalization allow,
+
+124
+00:05:25.080 --> 00:05:27.840
+and you'll be able to do your action, okay?
+
+125
+00:05:27.840 --> 00:05:29.640
+So it's just to give you a bit more overview,
+
+126
+00:05:29.640 --> 00:05:30.900
+but hopefully you understand better
+
+127
+00:05:30.900 --> 00:05:33.540
+how security works in AWS.
+
+128
+00:05:33.540 --> 00:05:36.600
+So these IAM SCP policies can be used, for example,
+
+129
+00:05:36.600 --> 00:05:38.610
+to restrict tags, okay?
+
+130
+00:05:38.610 --> 00:05:42.030
+So, if you want to restrict specific tags on AWS resources,
+
+131
+00:05:42.030 --> 00:05:45.690
+you can use the AWS TagKeys Condition Key.
+
+132
+00:05:45.690 --> 00:05:48.720
+Now, this will allow you to validate the tag keys
+
+133
+00:05:48.720 --> 00:05:51.030
+attached to your resource against the tag keys
+
+134
+00:05:51.030 --> 00:05:52.110
+in the IAM policy.
+
+135
+00:05:52.110 --> 00:05:53.730
+And this is something that comes up in the exam.
+
+136
+00:05:53.730 --> 00:05:57.450
+So if we want to only allow an IAM user
+
+137
+00:05:57.450 --> 00:06:00.420
+to create an EBS volume if it has the Env
+
+138
+00:06:00.420 --> 00:06:02.880
+and the CostCenter tags,
+
+139
+00:06:02.880 --> 00:06:05.220
+then the policy would look like this.
+
+140
+00:06:05.220 --> 00:06:07.860
+So we have a match all keys, okay?
+
+141
+00:06:07.860 --> 00:06:10.309
+So ForAllValues:StringEquals,
+
+142
+00:06:10.309 --> 00:06:12.150
+TagKeys, Env, and CostCenter,
+
+143
+00:06:12.150 --> 00:06:13.980
+and this means that we want absolutely
+
+144
+00:06:13.980 --> 00:06:18.030
+both the Env and the CostCenter tags to be present
+
+145
+00:06:18.030 --> 00:06:21.630
+in the EBS volume when we create it.
+
+146
+00:06:21.630 --> 00:06:25.709
+And you have an option to also use the value called
+
+147
+00:06:25.709 --> 00:06:28.110
+ForAnyValue, which means that at a minimum,
+
+148
+00:06:28.110 --> 00:06:30.150
+you must have either of these tags.
+
+149
+00:06:30.150 --> 00:06:33.360
+So, on the second example here in this slide,
+
+150
+00:06:33.360 --> 00:06:37.140
+here, if the EBS volume is created with the Env
+
+151
+00:06:37.140 --> 00:06:39.960
+but not the CostCenter, it's going to work, and vice versa
+
+152
+00:06:39.960 --> 00:06:43.530
+because we have the ForAnyValue condition key, okay?
+
+153
+00:06:43.530 --> 00:06:45.000
+So this can come up in exam,
+
+154
+00:06:45.000 --> 00:06:47.760
+using the AWS Tag Keys condition key.
+
+155
+00:06:47.760 --> 00:06:50.840
+Another example of SCP you can have is an SCP
+
+156
+00:06:50.840 --> 00:06:54.000
+to deny an entire region using the condition
+
+157
+00:06:54.000 --> 00:06:57.145
+named aws:RequestRegion.
+
+158
+00:06:57.145 --> 00:06:59.970
+So the idea is that you would specify a Deny effect,
+
+159
+00:06:59.970 --> 00:07:01.650
+and then you would say that the region
+
+160
+00:07:01.650 --> 00:07:04.440
+where everything is denied could be eu-central-1
+
+161
+00:07:04.440 --> 00:07:05.850
+and eu-west-1.
+
+162
+00:07:05.850 --> 00:07:08.070
+You can specify different AWS services
+
+163
+00:07:08.070 --> 00:07:12.030
+by specifying action, EC2 star, RDS star, and so on.
+
+164
+00:07:12.030 --> 00:07:13.770
+And you can also have a bypass.
+
+165
+00:07:13.770 --> 00:07:16.440
+For example, you can have ArnNotLike,
+
+166
+00:07:16.440 --> 00:07:19.170
+so that two roles, for example, are allowed
+
+167
+00:07:19.170 --> 00:07:21.495
+to bypass this SCP.
+
+168
+00:07:21.495 --> 00:07:22.328
+So it can get quite complex,
+
+169
+00:07:22.328 --> 00:07:24.570
+but the idea out of it is that SCP can be used
+
+170
+00:07:24.570 --> 00:07:27.390
+to restrict member accounts to specific regions
+
+171
+00:07:27.390 --> 00:07:29.313
+or from specific regions.
+
+172
+00:07:30.210 --> 00:07:33.210
+Okay, so there's also a way of using SCPs
+
+173
+00:07:33.210 --> 00:07:35.400
+to restrict creating resources
+
+174
+00:07:35.400 --> 00:07:37.950
+that don't have the appropriate tags, okay?
+
+175
+00:07:37.950 --> 00:07:40.440
+So, this is to prevent IAM users and roles
+
+176
+00:07:40.440 --> 00:07:42.210
+for performing stuff that they can't do.
+
+177
+00:07:42.210 --> 00:07:45.600
+For example, we can restrict launching an EC2 instance
+
+178
+00:07:45.600 --> 00:07:49.170
+if it does not have the Project and CostCenter tags.
+
+179
+00:07:49.170 --> 00:07:52.890
+So in this example, where the condition in your SCP
+
+180
+00:07:52.890 --> 00:07:57.890
+is going to be a null for aws:RequestTag/Project, true.
+
+181
+00:07:58.140 --> 00:08:00.990
+Okay, that means that you're going to, and this is a deny,
+
+182
+00:08:00.990 --> 00:08:03.750
+So that means that it's going to deny any request
+
+183
+00:08:03.750 --> 00:08:08.750
+that does not contain the Project tag in our EBS volume.
+
+184
+00:08:08.820 --> 00:08:11.880
+And then in the second one, it is CostCenter as well, okay?
+
+185
+00:08:11.880 --> 00:08:15.270
+So the first example was using IAM policies directly
+
+186
+00:08:15.270 --> 00:08:17.010
+to say, yes, please use these tags.
+
+187
+00:08:17.010 --> 00:08:18.990
+And in the second example that I showed you,
+
+188
+00:08:18.990 --> 00:08:20.763
+this is for SCPs only.
+
+189
+00:08:21.960 --> 00:08:23.220
+Next we have TAG policies.
+
+190
+00:08:23.220 --> 00:08:27.420
+So, TAG policies are defined at the organization level,
+
+191
+00:08:27.420 --> 00:08:28.740
+and they help you standardize tags
+
+192
+00:08:28.740 --> 00:08:31.290
+across all resources in an organization.
+
+193
+00:08:31.290 --> 00:08:33.450
+So this is used to ensure consistent tags,
+
+194
+00:08:33.450 --> 00:08:34.680
+audit tag resources,
+
+195
+00:08:34.680 --> 00:08:37.560
+maintain proper resource categorization, and so on.
+
+196
+00:08:37.560 --> 00:08:41.310
+So you define tag keys and their allowed values,
+
+197
+00:08:41.310 --> 00:08:44.220
+and this helps with Cost Allocation Tags,
+
+198
+00:08:44.220 --> 00:08:47.760
+or if you wanted to do Attributes Access Control.
+
+199
+00:08:47.760 --> 00:08:50.550
+And then any non-compliant tagging operations
+
+200
+00:08:50.550 --> 00:08:53.610
+will be prevented, okay, on these specified services
+
+201
+00:08:53.610 --> 00:08:54.870
+and resources.
+
+202
+00:08:54.870 --> 00:08:58.140
+And you can also have a report that lists all the tags
+
+203
+00:08:58.140 --> 00:08:59.580
+or non-compliant resources.
+
+204
+00:08:59.580 --> 00:09:01.980
+And then if you want to look for non-compliant tags,
+
+205
+00:09:01.980 --> 00:09:03.840
+then use Amazon EventBridge.
+
+206
+00:09:03.840 --> 00:09:06.000
+So in this example, on the right hand side,
+
+207
+00:09:06.000 --> 00:09:07.920
+for the Secrets Manager service,
+
+208
+00:09:07.920 --> 00:09:10.350
+we can only have the key, CostCenter,
+
+209
+00:09:10.350 --> 00:09:12.873
+to have the value 100 or 200.
+
+210
+00:09:14.310 --> 00:09:16.500
+Another type of policy on organizations
+
+211
+00:09:16.500 --> 00:09:19.350
+is called the AI Services Opt-out Policy.
+
+212
+00:09:19.350 --> 00:09:21.960
+So, the backtrack of the context of this is
+
+213
+00:09:21.960 --> 00:09:26.070
+that while the AI services in AWS may use your content
+
+214
+00:09:26.070 --> 00:09:30.330
+that you're actually giving them to improve the Amazon AI
+
+215
+00:09:30.330 --> 00:09:32.610
+or machine learning services.
+
+216
+00:09:32.610 --> 00:09:35.880
+So for example, Amazon Lex, Amazon Comprehend, Amazon Polly,
+
+217
+00:09:35.880 --> 00:09:38.310
+all of these services improve
+
+218
+00:09:38.310 --> 00:09:39.750
+based on the data you give them.
+
+219
+00:09:39.750 --> 00:09:42.870
+And so your data is used by AWS
+
+220
+00:09:42.870 --> 00:09:44.670
+for improving the services,
+
+221
+00:09:44.670 --> 00:09:48.120
+but you can opt out of having the content stored,
+
+222
+00:09:48.120 --> 00:09:50.370
+used by AI services for improvements.
+
+223
+00:09:50.370 --> 00:09:52.980
+And for this, you have to create an Opt-out policy,
+
+224
+00:09:52.980 --> 00:09:56.700
+which will apply to all member accounts and all AWS regions.
+
+225
+00:09:56.700 --> 00:09:59.670
+So you can opt out of all AI services using this,
+
+226
+00:09:59.670 --> 00:10:03.810
+or you can opt out just for specific AWS services.
+
+227
+00:10:03.810 --> 00:10:05.370
+For example, on the bottom right,
+
+228
+00:10:05.370 --> 00:10:08.850
+I'm opting out of Rekognition and Amazon Lex.
+
+229
+00:10:08.850 --> 00:10:10.620
+These policies can be attached
+
+230
+00:10:10.620 --> 00:10:13.350
+to a Organization Root, specific OUs,
+
+231
+00:10:13.350 --> 00:10:17.100
+or directly in individual member accounts.
+
+232
+00:10:17.100 --> 00:10:19.140
+And then we have backup policies.
+
+233
+00:10:19.140 --> 00:10:21.750
+So backup policies help you define backup plans
+
+234
+00:10:21.750 --> 00:10:23.580
+using AWS Backup.
+
+235
+00:10:23.580 --> 00:10:25.890
+And so we define these backup policies
+
+236
+00:10:25.890 --> 00:10:29.130
+at the organization level with JSON documents
+
+237
+00:10:29.130 --> 00:10:30.750
+and is going to give you granular control
+
+238
+00:10:30.750 --> 00:10:32.490
+over the backing up the resources,
+
+239
+00:10:32.490 --> 00:10:34.530
+such as the frequency, the time window,
+
+240
+00:10:34.530 --> 00:10:36.510
+the backup region, et cetera, et cetera.
+
+241
+00:10:36.510 --> 00:10:40.350
+These can be attached to the Organization Root OU
+
+242
+00:10:40.350 --> 00:10:43.860
+or specific OU or an individual member account.
+
+243
+00:10:43.860 --> 00:10:46.170
+It's an immutable backup plan,
+
+244
+00:10:46.170 --> 00:10:48.060
+so they will appear in the member accounts
+
+245
+00:10:48.060 --> 00:10:52.260
+within AWS Backups, but this is a view-only type of view
+
+246
+00:10:52.260 --> 00:10:55.710
+that can only be managed within the management accounts
+
+247
+00:10:55.710 --> 00:10:57.390
+of your organization.
+
+248
+00:10:57.390 --> 00:11:00.510
+So that's it for all the policies on AWS organizations.
+
+249
+00:11:00.510 --> 00:11:03.510
+I hope you liked it, and I will see you in the next lecture.
+

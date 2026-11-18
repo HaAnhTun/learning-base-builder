@@ -1,0 +1,247 @@
+WEBVTT
+
+00:00.090 --> 00:02.010
+So let's go with question three.
+
+00:02.100 --> 00:07.680
+A team is building an HTML form hosted on a public Amazon S3 bucket.
+
+00:07.710 --> 00:14.910
+The form uses JavaScript to post data to an Amazon API gateway endpoints, and the endpoint is integrated
+
+00:14.910 --> 00:16.800
+with its lambda functions.
+
+00:16.830 --> 00:21.420
+The team has tested each method in the API gateway console and received a valid responses.
+
+00:21.570 --> 00:28.020
+Which combination of steps must be completed for the form to successfully post to the API gateway and
+
+00:28.020 --> 00:30.570
+receive a valid response select to.
+
+00:31.020 --> 00:37.290
+So here we have a public Amazon S3 bucket and there is a JavaScript post that is retrieved from that
+
+00:37.290 --> 00:42.500
+bucket that will post data to Amazon API Gateway, which is another endpoint.
+
+00:42.510 --> 00:46.680
+And the trick is here we're using we are looking at an HTML form.
+
+00:46.680 --> 00:52.260
+So here we have to remember that whenever there is an HTML form, there is going to be a web browser
+
+00:52.260 --> 00:53.040
+involved.
+
+00:53.040 --> 00:54.570
+So this is already a hint.
+
+00:54.570 --> 00:55.920
+So let's look at the architecture.
+
+00:55.920 --> 00:56.760
+Very simple.
+
+00:56.790 --> 01:03.390
+Our public S3 buckets will send to our client or JavaScript file, and the client will then post some
+
+01:03.390 --> 01:05.010
+data to an API gateway.
+
+01:05.010 --> 01:07.260
+They will be executing a lambda function.
+
+01:07.410 --> 01:15.330
+So far the API gateway has a URL, but the public S3 bucket does not have a public URL because it is
+
+01:15.330 --> 01:18.450
+not enabled as a website, I would say yet.
+
+01:18.450 --> 01:19.860
+So let's look at the options.
+
+01:20.310 --> 01:27.720
+Well, we have a configure the S3 bucket to allow Cross Origin resource sharing or course number to
+
+01:27.840 --> 01:36.270
+host the form on Amazon EC2 rather than Amazon S3 C request a limit increase for API Gateway D Enable
+
+01:36.270 --> 01:42.360
+Cross Origins Resource Sharing in API Gateway and E configure the S3 buckets for web hosting.
+
+01:42.570 --> 01:49.590
+So here, when I look at these multi answer questions, I like to group answers together and to see
+
+01:49.590 --> 01:53.670
+which one are related to each other so I can choose one or the other.
+
+01:53.670 --> 01:58.710
+So for example, if we look at option B and option E, they look very similar.
+
+01:58.740 --> 02:03.960
+The number one is saying host the form on them is an easy to rather than Amazon S3 and the other one
+
+02:03.960 --> 02:07.230
+is saying configure the S3 bucket for web hosting.
+
+02:07.230 --> 02:14.040
+So both these answers address the question of how does the client retrieve that JavaScript file from
+
+02:14.040 --> 02:15.000
+a web browser?
+
+02:15.420 --> 02:22.110
+And so in this example, we have two or S3 now as three, we can configure it as a web hosting platform
+
+02:22.110 --> 02:24.780
+so we know that works and is already a public S3 bucket.
+
+02:24.780 --> 02:26.130
+So that would be perfect.
+
+02:26.220 --> 02:31.440
+But we could also host the format Amazon easy to or other than Amazon S3 and that wouldn't give us any
+
+02:31.440 --> 02:31.890
+benefits.
+
+02:31.890 --> 02:34.260
+Actually, that would probably take us back a little bit.
+
+02:34.260 --> 02:35.580
+Yes, that would work.
+
+02:35.580 --> 02:37.620
+But we would not be serverless.
+
+02:37.620 --> 02:41.010
+We would have to handle Amazon EC2 instance, probably update it once in a while.
+
+02:41.010 --> 02:45.900
+So Option B, although it would work, is a very bad architectural decision.
+
+02:45.900 --> 02:49.680
+So we have to go with option E for configuring the S3 buckets.
+
+02:49.860 --> 02:54.330
+And now we have three options A, C and D that are related to each other.
+
+02:54.330 --> 03:00.120
+So two of these options are related to course and one is for a limit increase on API gateway.
+
+03:00.390 --> 03:07.050
+So there is no information in the question that says that the API gateway was not responding once in
+
+03:07.050 --> 03:08.760
+a while because of heavy load.
+
+03:08.760 --> 03:14.790
+So the limit increase for API gateway does not make any sense because the question has remained A and
+
+03:14.790 --> 03:16.260
+said anything related to this.
+
+03:16.260 --> 03:18.390
+So we have to rule that answer out.
+
+03:18.810 --> 03:20.490
+Now we're left with two options.
+
+03:20.490 --> 03:22.170
+They're both related to course.
+
+03:22.170 --> 03:27.720
+Should we apply cause on the API gateway or should we apply cause on the S3 buckets?
+
+03:27.960 --> 03:35.160
+And to understand cause, you need to remember what is the order of things that happen in this sequence?
+
+03:35.160 --> 03:43.260
+So our clients first retrieves the file from the S3 bucket by visiting the public URL of the bucket
+
+03:43.260 --> 03:48.390
+and then invokes another URL that is not on the same domain.
+
+03:48.390 --> 03:50.670
+And that URL belongs to the API gateway.
+
+03:50.940 --> 03:58.890
+So from a security perspective, the client is going to be asked whether it can or should make an answer,
+
+03:58.890 --> 04:03.720
+a request, sorry, to the API gateway, because that is a second thing in line.
+
+04:03.720 --> 04:07.440
+That is the website we haven't visited because it has a different URL.
+
+04:07.530 --> 04:12.630
+So the course here, security has to be defined on the API gateway.
+
+04:12.960 --> 04:14.700
+So let me just be very clear.
+
+04:14.700 --> 04:22.440
+So we do a get from the public S3 bucket and we look at the URL of the bucket of state as a website,
+
+04:22.470 --> 04:24.450
+which looks like the one that put in green.
+
+04:24.450 --> 04:30.840
+So we visit this URL and we get all the static assets, including that JavaScript file that is going
+
+04:30.840 --> 04:33.090
+to be run from our web browser.
+
+04:33.510 --> 04:40.260
+Then our web browser from the JavaScript file is instructed to make API calls to completely different
+
+04:40.260 --> 04:40.980
+URL.
+
+04:40.980 --> 04:47.130
+And so web browsers have defined course as a browser based security to make sure that we could not launch
+
+04:47.130 --> 04:50.670
+attacks onto other websites if we were not authorized to do so.
+
+04:50.670 --> 04:52.740
+So this is a browser based security.
+
+04:52.740 --> 04:58.290
+So the browser will say, Hey, I'm happy to make this API call to this other URL, just give me only
+
+04:58.290 --> 04:59.670
+if this other URL.
+
+04:59.770 --> 05:01.690
+Allows me to make that API call.
+
+05:01.690 --> 05:09.090
+And so this is where you need to define course on the API gateway and say, hey, you can make request
+
+05:09.100 --> 05:14.770
+on my API Gateway if your origin website is the one from the public S3 bucket.
+
+05:14.770 --> 05:20.800
+And this is how causes so cause you need to include headers and one of this header is access control,
+
+05:20.800 --> 05:25.990
+allow origin and you define this on the API gateway level and you're saying, okay, you allow the origin
+
+05:25.990 --> 05:30.790
+of the public S3 buckets to be making API calls on to our API gateway.
+
+05:30.790 --> 05:37.390
+So here it's very clear that the cause that needs to be defined is on the API gateway and not on the
+
+05:37.390 --> 05:38.680
+public S3 buckets.
+
+05:38.680 --> 05:39.250
+Okay.
+
+05:39.370 --> 05:42.460
+So I hope that was helpful and I will see you in the next lecture.

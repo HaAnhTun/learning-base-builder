@@ -1,0 +1,1126 @@
+WEBVTT
+
+1
+00:00:00.090 --> 00:00:03.240
+<v Lecturer>Okay, so now let's go over the VPC section,</v>
+
+2
+00:00:03.240 --> 00:00:05.790
+and first I want to remind you of some basics.
+
+3
+00:00:05.790 --> 00:00:07.170
+Now if you don't remember them all,
+
+4
+00:00:07.170 --> 00:00:09.330
+I'll suggest you take back one of my courses
+
+5
+00:00:09.330 --> 00:00:11.520
+and look at the VPC section, but in here,
+
+6
+00:00:11.520 --> 00:00:14.160
+I would assume you know all the basics of VPC
+
+7
+00:00:14.160 --> 00:00:16.110
+that I'm going to go over right now.
+
+8
+00:00:16.110 --> 00:00:19.200
+If anything is unclear, please investigate on your own.
+
+9
+00:00:19.200 --> 00:00:22.350
+So a CIDR is a block of IP addresses,
+
+10
+00:00:22.350 --> 00:00:25.470
+and is defined as an IP address slash a number,
+
+11
+00:00:25.470 --> 00:00:27.690
+and the number defines the IP range.
+
+12
+00:00:27.690 --> 00:00:32.670
+So for this example, 192.168.0.0/26
+
+13
+00:00:32.670 --> 00:00:36.270
+is equivalent to the range of 64 IP
+
+14
+00:00:36.270 --> 00:00:38.670
+that start at 192 168 0 0,
+
+15
+00:00:38.670 --> 00:00:42.960
+all the way to 192 168 0 63.
+
+16
+00:00:42.960 --> 00:00:45.633
+The CIDR block are going to be used everywhere on AWS,
+
+17
+00:00:45.633 --> 00:00:48.060
+they will be used when you have security groups,
+
+18
+00:00:48.060 --> 00:00:52.410
+root tables, VPC, subnets, et cetera, et cetera.
+
+19
+00:00:52.410 --> 00:00:53.850
+So knowing what a CIDR block is,
+
+20
+00:00:53.850 --> 00:00:56.880
+is very important going into the exam obviously.
+
+21
+00:00:56.880 --> 00:00:59.400
+A private IP is going to be an IP
+
+22
+00:00:59.400 --> 00:01:00.870
+that's going to be only accessible
+
+23
+00:01:00.870 --> 00:01:04.050
+within a private network, and there is a limited range
+
+24
+00:01:04.050 --> 00:01:06.720
+of private IP that is defined by the norms,
+
+25
+00:01:06.720 --> 00:01:10.410
+so we have the range from 10 0 0 0, all the way
+
+26
+00:01:10.410 --> 00:01:14.300
+to 10 255 255 255, which represents the CIDR block
+
+27
+00:01:14.300 --> 00:01:18.810
+10 0 0 0/8, which is when you have a big network.
+
+28
+00:01:18.810 --> 00:01:23.810
+Then there is the 172.16.0.0 all the way to 172 31 255 255.
+
+29
+00:01:26.040 --> 00:01:29.550
+And finally we have the smaller 192 168 0 0
+
+30
+00:01:29.550 --> 00:01:32.400
+all the way to 192 168 255 255,
+
+31
+00:01:32.400 --> 00:01:35.070
+which represents the home network, for example,
+
+32
+00:01:35.070 --> 00:01:37.980
+the kind of things you have using your home router.
+
+33
+00:01:37.980 --> 00:01:41.550
+So these are the only possible private IP you have.
+
+34
+00:01:41.550 --> 00:01:44.430
+Anything else is going to be a public IP.
+
+35
+00:01:44.430 --> 00:01:48.150
+So this is all you need to know right now on the IP side.
+
+36
+00:01:48.150 --> 00:01:49.560
+Next we have the VPC.
+
+37
+00:01:49.560 --> 00:01:50.473
+What is a VPC?
+
+38
+00:01:50.473 --> 00:01:54.900
+A VPC must be defined as a list of CIDR blocks
+
+39
+00:01:54.900 --> 00:01:57.450
+and cannot be changed, and the VPC will represent
+
+40
+00:01:57.450 --> 00:02:02.250
+your virtual private cloud, based on these CIDR blocks.
+
+41
+00:02:02.250 --> 00:02:05.910
+So each CIDR within your VPC must have a minimum size
+
+42
+00:02:05.910 --> 00:02:09.840
+of /28 and a maximum size of /16,
+
+43
+00:02:09.840 --> 00:02:14.010
+which represents 65536 IP addresses.
+
+44
+00:02:14.010 --> 00:02:16.320
+The VPC is by definition private,
+
+45
+00:02:16.320 --> 00:02:19.200
+so only private IP CIDR range are going
+
+46
+00:02:19.200 --> 00:02:21.273
+to be allowed within your VPC.
+
+47
+00:02:22.140 --> 00:02:26.550
+Next, a VPC is made of subnets, so this is within the VPC,
+
+48
+00:02:26.550 --> 00:02:28.350
+and you define, again, a CIDR that is going
+
+49
+00:02:28.350 --> 00:02:31.140
+to be a subset of the VPC CIDR,
+
+50
+00:02:31.140 --> 00:02:33.210
+that's why it's called a subnet.
+
+51
+00:02:33.210 --> 00:02:35.100
+All the instances within the subnet
+
+52
+00:02:35.100 --> 00:02:38.610
+will get a private IP based on the CIDR you have defined
+
+53
+00:02:38.610 --> 00:02:39.930
+for that subnet.
+
+54
+00:02:39.930 --> 00:02:43.080
+And the first four IP and the last one in every subnet
+
+55
+00:02:43.080 --> 00:02:47.280
+are going to be reserved by AWS for networking purposes.
+
+56
+00:02:47.280 --> 00:02:49.020
+Okay, then we have route tables.
+
+57
+00:02:49.020 --> 00:02:51.750
+Route tables are used to control where the network traffic
+
+58
+00:02:51.750 --> 00:02:54.450
+will be directed to, and they're associated
+
+59
+00:02:54.450 --> 00:02:56.010
+with specific subnets.
+
+60
+00:02:56.010 --> 00:02:57.990
+They're an idea that to say, okay,
+
+61
+00:02:57.990 --> 00:03:00.270
+if we're going from one subnet to another,
+
+62
+00:03:00.270 --> 00:03:01.650
+you need to use this route.
+
+63
+00:03:01.650 --> 00:03:03.540
+This is what the route tables are used for.
+
+64
+00:03:03.540 --> 00:03:06.630
+The most specific routing rule is always followed,
+
+65
+00:03:06.630 --> 00:03:10.140
+so as long as the routing rule is going to be smaller,
+
+66
+00:03:10.140 --> 00:03:12.510
+so the slash number is going to be higher,
+
+67
+00:03:12.510 --> 00:03:15.270
+then this route will always be followed by default.
+
+68
+00:03:15.270 --> 00:03:16.980
+And this is something we'll have a look at
+
+69
+00:03:16.980 --> 00:03:19.189
+when we'll look at VPC peering.
+
+70
+00:03:19.189 --> 00:03:22.650
+Okay. Next, we have internet gateway or IGW,
+
+71
+00:03:22.650 --> 00:03:25.530
+to help connect our VPC to the internet.
+
+72
+00:03:25.530 --> 00:03:29.490
+It's highly available and it will scale horizontally.
+
+73
+00:03:29.490 --> 00:03:32.760
+The idea is that it will act as a net for instances
+
+74
+00:03:32.760 --> 00:03:36.810
+that have a public IPv4 or a public IPv6.
+
+75
+00:03:36.810 --> 00:03:40.350
+So any instance that you linked to your internet gateway
+
+76
+00:03:40.350 --> 00:03:42.270
+will have internet connectivity,
+
+77
+00:03:42.270 --> 00:03:44.820
+and this is how we define public subnets.
+
+78
+00:03:44.820 --> 00:03:47.580
+So public subnets are subnets that will have a route
+
+79
+00:03:47.580 --> 00:03:51.720
+that will send 0 0 0/0, so that means all internet traffic
+
+80
+00:03:51.720 --> 00:03:55.500
+to an internet gateway, and the instances must have
+
+81
+00:03:55.500 --> 00:03:58.350
+a public IPv4 to talk to the internet,
+
+82
+00:03:58.350 --> 00:04:00.210
+that's where they're called public subnets
+
+83
+00:04:00.210 --> 00:04:01.830
+and public instances.
+
+84
+00:04:01.830 --> 00:04:05.220
+Whereas private subnets are accessing the internet
+
+85
+00:04:05.220 --> 00:04:08.490
+through a NAT Instance or a NAT Gateway,
+
+86
+00:04:08.490 --> 00:04:10.740
+and that NAT Instance or that NAT Gateway
+
+87
+00:04:10.740 --> 00:04:13.530
+needs to be set up in a public subnet.
+
+88
+00:04:13.530 --> 00:04:16.110
+And then the routes on the private subnet
+
+89
+00:04:16.110 --> 00:04:20.070
+must be so that 0.0.0/0 routes all the traffic
+
+90
+00:04:20.070 --> 00:04:23.310
+to either your NAT Instance or your NAT Gateway.
+
+91
+00:04:23.310 --> 00:04:26.310
+So this is the idea, internet gateway, public subnets,
+
+92
+00:04:26.310 --> 00:04:28.350
+private subnets, NAT Instance, NAT Gateway,
+
+93
+00:04:28.350 --> 00:04:29.820
+you should know this already.
+
+94
+00:04:29.820 --> 00:04:31.710
+So next, we have NAT Instances.
+
+95
+00:04:31.710 --> 00:04:34.140
+So there are EC2 instances that you deploy
+
+96
+00:04:34.140 --> 00:04:36.150
+in a public subnet, and the way it works
+
+97
+00:04:36.150 --> 00:04:39.180
+that we edit our route table so that our private subnet
+
+98
+00:04:39.180 --> 00:04:43.830
+has to route for the internet through the NAT Instance.
+
+99
+00:04:43.830 --> 00:04:44.850
+So it's not resilient to failure
+
+100
+00:04:44.850 --> 00:04:46.470
+because we only have one instance,
+
+101
+00:04:46.470 --> 00:04:48.120
+we have limited bandwidth because it's based
+
+102
+00:04:48.120 --> 00:04:50.760
+on the instance type, but it's a cheap solution.
+
+103
+00:04:50.760 --> 00:04:52.110
+And in case of any failover,
+
+104
+00:04:52.110 --> 00:04:53.850
+it must be managed by ourselves,
+
+105
+00:04:53.850 --> 00:04:55.980
+and for NAT Instance to work,
+
+106
+00:04:55.980 --> 00:05:00.270
+we need to disable the source destination check settings
+
+107
+00:05:00.270 --> 00:05:02.880
+on EC2, and that is the case with any type
+
+108
+00:05:02.880 --> 00:05:05.820
+of instance that proxies internet traffic.
+
+109
+00:05:05.820 --> 00:05:07.110
+So the architecture is at such
+
+110
+00:05:07.110 --> 00:05:10.500
+where we have a public and a private subnet,
+
+111
+00:05:10.500 --> 00:05:13.470
+and in the private subnet we have an EC2 instance,
+
+112
+00:05:13.470 --> 00:05:15.030
+and then in the public subnet,
+
+113
+00:05:15.030 --> 00:05:17.460
+we're going to create a NAT Instance.
+
+114
+00:05:17.460 --> 00:05:19.110
+Now, thanks to the route table,
+
+115
+00:05:19.110 --> 00:05:21.660
+the private EC2 instance traffic to the internet
+
+116
+00:05:21.660 --> 00:05:24.390
+is going to go through the NAT Instance,
+
+117
+00:05:24.390 --> 00:05:26.310
+and then the NAT Instance is going to direct
+
+118
+00:05:26.310 --> 00:05:28.290
+to the public internet.
+
+119
+00:05:28.290 --> 00:05:31.020
+The NAT Instance should be assigned an elastic IP,
+
+120
+00:05:31.020 --> 00:05:34.110
+and therefore the public internet will see all the traffic
+
+121
+00:05:34.110 --> 00:05:36.900
+originating from that one elastic IP.
+
+122
+00:05:36.900 --> 00:05:40.440
+So remember, the source check must be disabled.
+
+123
+00:05:40.440 --> 00:05:41.820
+And so therefore, because we only have
+
+124
+00:05:41.820 --> 00:05:44.940
+one public IP, then if we're trying to access
+
+125
+00:05:44.940 --> 00:05:47.460
+a third party service, we can tell them to whitelist
+
+126
+00:05:47.460 --> 00:05:49.980
+a specific elastic IP to make sure
+
+127
+00:05:49.980 --> 00:05:52.773
+that there is some kind of network security in there.
+
+128
+00:05:53.640 --> 00:05:55.920
+For NAT Gateways, it's a managed solution,
+
+129
+00:05:55.920 --> 00:05:58.320
+so in this case, the NAT solution is managed
+
+130
+00:05:58.320 --> 00:06:00.510
+and the bandwidth increases over time.
+
+131
+00:06:00.510 --> 00:06:03.330
+It's resilience to failures within a single AZ,
+
+132
+00:06:03.330 --> 00:06:06.990
+and if you want to have management of failures across AZ
+
+133
+00:06:06.990 --> 00:06:08.760
+then you can deploy the NAT Gateway
+
+134
+00:06:08.760 --> 00:06:10.950
+in multiple availability zones.
+
+135
+00:06:10.950 --> 00:06:15.600
+So you can also assign an elastic IP to each NAT Gateway
+
+136
+00:06:15.600 --> 00:06:17.547
+and therefore whenever we access the internet,
+
+137
+00:06:17.547 --> 00:06:20.070
+the traffic will be seen as originating
+
+138
+00:06:20.070 --> 00:06:22.260
+from that specific elastic IP.
+
+139
+00:06:22.260 --> 00:06:25.080
+So we have an architecture here with two AZs,
+
+140
+00:06:25.080 --> 00:06:27.270
+two private subnets, two public subnets,
+
+141
+00:06:27.270 --> 00:06:30.840
+we're going to create a NAT Gateway in each public subnet
+
+142
+00:06:30.840 --> 00:06:33.060
+and each will have its own elastic IP.
+
+143
+00:06:33.060 --> 00:06:35.760
+And so therefore the EC2 instance can be routed
+
+144
+00:06:35.760 --> 00:06:39.150
+through the NAT Gateway to the internet gateway and so on,
+
+145
+00:06:39.150 --> 00:06:41.820
+for AZ-B, and we have a highly available kind
+
+146
+00:06:41.820 --> 00:06:45.100
+of setup across multiple AZs.
+
+147
+00:06:45.100 --> 00:06:47.850
+Okay, next we have network ACLs or NACL.
+
+148
+00:06:47.850 --> 00:06:51.000
+They're stateless firewalls defined at the subnet level
+
+149
+00:06:51.000 --> 00:06:54.390
+and they will apply to all the instances within that subnet,
+
+150
+00:06:54.390 --> 00:06:56.100
+and NACLs are special because they allow
+
+151
+00:06:56.100 --> 00:06:59.130
+for allow and deny rules.
+
+152
+00:06:59.130 --> 00:07:00.480
+Stateless, what does that means?
+
+153
+00:07:00.480 --> 00:07:02.610
+That means that any return traffic
+
+154
+00:07:02.610 --> 00:07:05.280
+must be explicitly allowed by the rules.
+
+155
+00:07:05.280 --> 00:07:07.470
+So this is very helpful when you want to quickly
+
+156
+00:07:07.470 --> 00:07:09.930
+and cheaply block a specific IP address,
+
+157
+00:07:09.930 --> 00:07:12.360
+but they're complicated to use because there are stateless
+
+158
+00:07:12.360 --> 00:07:15.150
+and so you need to have both rules allowing traffic in
+
+159
+00:07:15.150 --> 00:07:17.310
+and allowing traffic out.
+
+160
+00:07:17.310 --> 00:07:20.160
+Then we have security groups, and these ones are applied
+
+161
+00:07:20.160 --> 00:07:23.250
+at the instance level, not the subnet level,
+
+162
+00:07:23.250 --> 00:07:25.980
+and they only allow for allow rules, okay?
+
+163
+00:07:25.980 --> 00:07:27.900
+They don't have any deny rules.
+
+164
+00:07:27.900 --> 00:07:29.970
+Stateful means that the return traffic
+
+165
+00:07:29.970 --> 00:07:33.390
+is automatically allowed, regardless of what the rule says,
+
+166
+00:07:33.390 --> 00:07:35.640
+so that means that if your traffic is,
+
+167
+00:07:35.640 --> 00:07:37.110
+if your instance is sending traffic
+
+168
+00:07:37.110 --> 00:07:39.720
+to a third party service, you have the guarantee
+
+169
+00:07:39.720 --> 00:07:41.430
+that it will be able to come back
+
+170
+00:07:41.430 --> 00:07:44.040
+through the security group, obviously,
+
+171
+00:07:44.040 --> 00:07:46.170
+if the network ACL allows it as well,
+
+172
+00:07:46.170 --> 00:07:48.360
+and traffic going into your instance,
+
+173
+00:07:48.360 --> 00:07:50.280
+for example if you're having HTP server,
+
+174
+00:07:50.280 --> 00:07:53.880
+is allowed to go back out to the service
+
+175
+00:07:53.880 --> 00:07:55.650
+that requested stuff from you.
+
+176
+00:07:55.650 --> 00:07:57.810
+Okay. Security groups are very special
+
+177
+00:07:57.810 --> 00:07:59.820
+because they also allow you to reference
+
+178
+00:07:59.820 --> 00:08:02.430
+other security groups in the same region,
+
+179
+00:08:02.430 --> 00:08:04.530
+whether it be even with a peered VPC
+
+180
+00:08:04.530 --> 00:08:07.022
+or with cross accounts.
+
+181
+00:08:07.022 --> 00:08:08.670
+Okay. Next, how about logging?
+
+182
+00:08:08.670 --> 00:08:11.610
+So we have VPC flow logs, and they allow you
+
+183
+00:08:11.610 --> 00:08:15.300
+to log the internet traffic going through your VPC.
+
+184
+00:08:15.300 --> 00:08:17.850
+And you can have three kind of VPC flow logs,
+
+185
+00:08:17.850 --> 00:08:20.160
+the first one can be defined at the VPC level,
+
+186
+00:08:20.160 --> 00:08:21.870
+the second one is a subnet level,
+
+187
+00:08:21.870 --> 00:08:24.960
+or third as the ENI level, elastic network interface,
+
+188
+00:08:24.960 --> 00:08:26.910
+which is the virtual network card
+
+189
+00:08:26.910 --> 00:08:29.430
+attached usually to your EC2 instances.
+
+190
+00:08:29.430 --> 00:08:31.620
+They're very helpful when you want to understand
+
+191
+00:08:31.620 --> 00:08:34.020
+why your traffic is not going the way it's wanted,
+
+192
+00:08:34.020 --> 00:08:36.480
+so to capture denied internet traffic,
+
+193
+00:08:36.480 --> 00:08:39.180
+this will show you why it failed and where it failed.
+
+194
+00:08:39.180 --> 00:08:41.700
+And then these VPC flow logs can be sent
+
+195
+00:08:41.700 --> 00:08:43.470
+to CloudWatch Logs or Amazon S3,
+
+196
+00:08:43.470 --> 00:08:45.900
+which is very helpful if you want to see, for example,
+
+197
+00:08:45.900 --> 00:08:48.960
+an increase in traffic onto your infrastructure,
+
+198
+00:08:48.960 --> 00:08:50.850
+and that will probably lead to your thinking
+
+199
+00:08:50.850 --> 00:08:52.680
+that you're under attack.
+
+200
+00:08:52.680 --> 00:08:54.270
+Next, we have Bastion Hosts,
+
+201
+00:08:54.270 --> 00:08:56.580
+and so they allow you to do SSH
+
+202
+00:08:56.580 --> 00:08:59.790
+into private EC2 instances by using a bastion host
+
+203
+00:08:59.790 --> 00:09:02.730
+which is a public EC2 instance in the public subnets.
+
+204
+00:09:02.730 --> 00:09:05.100
+So it's a two hop SSH.
+
+205
+00:09:05.100 --> 00:09:07.170
+And in case you're using bastion host
+
+206
+00:09:07.170 --> 00:09:08.760
+you must manage the instances yourself,
+
+207
+00:09:08.760 --> 00:09:11.220
+there is no managed bastion host by AWS.
+
+208
+00:09:11.220 --> 00:09:12.960
+That means you need to manage the failover
+
+209
+00:09:12.960 --> 00:09:16.800
+and the recovery, and the security of these bastion hosts.
+
+210
+00:09:16.800 --> 00:09:20.130
+But the new way now to avoid using bastion host
+
+211
+00:09:20.130 --> 00:09:23.490
+is to use, as you know, SSM Session Manager
+
+212
+00:09:23.490 --> 00:09:25.740
+because we can remote control our instances
+
+213
+00:09:25.740 --> 00:09:28.102
+that have the SSM agent running on them,
+
+214
+00:09:28.102 --> 00:09:33.102
+without using SSH, which is a better security model.
+
+215
+00:09:33.420 --> 00:09:36.780
+Okay. And next we have IPv6.
+
+216
+00:09:36.780 --> 00:09:39.480
+So IPv6, I'll try to explain to you in short,
+
+217
+00:09:39.480 --> 00:09:42.870
+but all the IPv6 addresses are going to be public.
+
+218
+00:09:42.870 --> 00:09:46.830
+And the reason why IPvC addresses were included
+
+219
+00:09:46.830 --> 00:09:50.190
+and inserted and created, is that we are running out
+
+220
+00:09:50.190 --> 00:09:52.350
+of IPv4 addresses.
+
+221
+00:09:52.350 --> 00:09:56.160
+So IPv4 addresses are a total of 4.3 billion,
+
+222
+00:09:56.160 --> 00:09:57.900
+but currently we're about to run out.
+
+223
+00:09:57.900 --> 00:10:02.550
+And so we have invented IPv6 to have public addresses
+
+224
+00:10:02.550 --> 00:10:05.160
+and we have a total of 3.4 times 10
+
+225
+00:10:05.160 --> 00:10:09.780
+at the power of 38 addresses, which is a huge number, okay?
+
+226
+00:10:09.780 --> 00:10:13.380
+So here is an example of a CIDR for an IPv6,
+
+227
+00:10:13.380 --> 00:10:15.540
+it looks a lot more complicated than IPv4,
+
+228
+00:10:15.540 --> 00:10:18.600
+you are not expected to know how this works exactly,
+
+229
+00:10:18.600 --> 00:10:19.980
+but this is the same idea,
+
+230
+00:10:19.980 --> 00:10:22.140
+on the left hand side, there is an IPv6,
+
+231
+00:10:22.140 --> 00:10:25.080
+and on the right hand side there is a subnet mask.
+
+232
+00:10:25.080 --> 00:10:27.180
+The addresses are seemingly random,
+
+233
+00:10:27.180 --> 00:10:29.450
+and the idea is that because there's so many addresses
+
+234
+00:10:29.450 --> 00:10:33.960
+online that can be IPv6, then no attacker can scan them all,
+
+235
+00:10:33.960 --> 00:10:36.030
+it will take forever, and so the idea is
+
+236
+00:10:36.030 --> 00:10:37.710
+that if you're using an IPv6,
+
+237
+00:10:37.710 --> 00:10:40.140
+your instance is somewhat going to be protected
+
+238
+00:10:40.140 --> 00:10:43.920
+from attacks as long as people can't guess its IP address.
+
+239
+00:10:43.920 --> 00:10:46.080
+So this is quite a beautiful thing,
+
+240
+00:10:46.080 --> 00:10:49.230
+and the internet is slowly transitioning
+
+241
+00:10:49.230 --> 00:10:51.600
+from IPv4 to IPv6.
+
+242
+00:10:51.600 --> 00:10:54.690
+Now, your VPC does have support for IPv6.
+
+243
+00:10:54.690 --> 00:10:55.620
+How does it work?
+
+244
+00:10:55.620 --> 00:10:58.620
+We can create a IPv6 CIDR for your VPC
+
+245
+00:10:58.620 --> 00:11:00.180
+like the one I showed you above,
+
+246
+00:11:00.180 --> 00:11:03.060
+and then you use an internet gateway, which as I said,
+
+247
+00:11:03.060 --> 00:11:04.920
+supports IPv6 traffic.
+
+248
+00:11:04.920 --> 00:11:06.390
+So, how to make this work?
+
+249
+00:11:06.390 --> 00:11:08.130
+Well, in your public subnet,
+
+250
+00:11:08.130 --> 00:11:09.990
+you're going to create an instance
+
+251
+00:11:09.990 --> 00:11:13.110
+with IPv6 support, and that IPv6 will correspond
+
+252
+00:11:13.110 --> 00:11:16.230
+to the CIDR that has been assigned to your VPC.
+
+253
+00:11:16.230 --> 00:11:19.050
+And then you have to create a route table entry
+
+254
+00:11:19.050 --> 00:11:23.670
+for ::/0, which is the shorthand of IPv6 also,
+
+255
+00:11:23.670 --> 00:11:28.670
+for IPv4 was 0 0 0/0, and for IPv6 it's ::/0,
+
+256
+00:11:29.310 --> 00:11:31.726
+which represents all IPv6, and so we're saying
+
+257
+00:11:31.726 --> 00:11:35.460
+any traffic to any IPv6 is going to be sent
+
+258
+00:11:35.460 --> 00:11:38.040
+to the internet gateway, which, remember,
+
+259
+00:11:38.040 --> 00:11:39.420
+it supports IPv6.
+
+260
+00:11:39.420 --> 00:11:42.180
+And so for your instances in private subnets,
+
+261
+00:11:42.180 --> 00:11:44.460
+they're still private so they still don't have an IPv4
+
+262
+00:11:44.460 --> 00:11:46.170
+and they still don't have an IPv6,
+
+263
+00:11:46.170 --> 00:11:48.900
+but they may want to target external services
+
+264
+00:11:48.900 --> 00:11:51.300
+that are only reachable using IPv6,
+
+265
+00:11:51.300 --> 00:11:53.070
+in which case, we have to create something
+
+266
+00:11:53.070 --> 00:11:55.650
+very similar to a NAT Gateway, but for IPv6
+
+267
+00:11:55.650 --> 00:11:58.470
+which is called an Egress-Only internet gateway,
+
+268
+00:11:58.470 --> 00:12:01.410
+in your VPC, and this has support only
+
+269
+00:12:01.410 --> 00:12:04.590
+for IPv6, and then we had a route table entry
+
+270
+00:12:04.590 --> 00:12:09.390
+from the private subnet for ::/0, so all IPv6,
+
+271
+00:12:09.390 --> 00:12:12.720
+directly into the Egress-Only internet gateway,
+
+272
+00:12:12.720 --> 00:12:15.540
+and this way our instances in our private subnets
+
+273
+00:12:15.540 --> 00:12:19.290
+will have IPv6 support to reach to external services.
+
+274
+00:12:19.290 --> 00:12:20.160
+And that's it.
+
+275
+00:12:20.160 --> 00:12:22.620
+So all of this should be something you seemingly know
+
+276
+00:12:22.620 --> 00:12:25.080
+for the VPC, those are why they're called the basics,
+
+277
+00:12:25.080 --> 00:12:27.360
+and then in the next lecture we're going to view
+
+278
+00:12:27.360 --> 00:12:30.150
+a lot more details on a few aspects of VPC
+
+279
+00:12:30.150 --> 00:12:32.670
+that are going to be critical going into the exam.
+
+280
+00:12:32.670 --> 00:12:33.503
+So that's it.
+
+281
+00:12:33.503 --> 00:12:35.110
+I will see you in the next lecture.
+

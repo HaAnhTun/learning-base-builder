@@ -1,0 +1,254 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.920
+Nowadays agents get a lot of attention, but for a wide class of problems a well-designed workflow
+
+2
+00:00:05.920 --> 00:00:12.239
+is cheaper, faster, and easier to maintain. So when do deterministic workflows actually
+
+3
+00:00:12.239 --> 00:00:18.559
+outperform agentic systems and why? Over the next few minutes we'll walk through the five
+
+4
+00:00:18.559 --> 00:00:24.159
+core workflow patterns, where each one fits, and how to make that call confidently.
+
+5
+00:00:25.120 --> 00:00:30.879
+The whole workflow versus agent question comes down to one thing. Who decides the control flow?
+
+6
+00:00:30.879 --> 00:00:36.799
+In a deterministic workflow, you do. It's a fixed, developer-authored sequence of steps,
+
+7
+00:00:36.799 --> 00:00:42.240
+with branches and loops all specified at design time. Nothing surprises you at runtime,
+
+8
+00:00:42.240 --> 00:00:48.319
+because you wrote every decision in advance. In an agentic system, the model decides. It
+
+9
+00:00:48.319 --> 00:00:53.520
+picks which actions to take, and in what order, to pursue the goal you handed it.
+
+10
+00:00:53.599 --> 00:00:58.240
+You don't fully control that sequence. Prompt chaining sits at the simple end of the workflow
+
+11
+00:00:58.240 --> 00:01:04.959
+side, passing one call's output directly as the input to the next. It's linear, testable,
+
+12
+00:01:04.959 --> 00:01:10.080
+and easy to debug. Hold on to that distinction, because everything else in this lesson depends on
+
+13
+00:01:10.080 --> 00:01:17.519
+it. The core trade-off is straightforward. Every architecture decision comes down to one question.
+
+14
+00:01:17.519 --> 00:01:23.760
+Does this task require runtime judgment? Workflows trade adaptability for predictability.
+
+15
+00:01:23.760 --> 00:01:28.800
+You know exactly what will happen because you authored every step. Agents flip that,
+
+16
+00:01:28.800 --> 00:01:34.720
+giving you open-ended flexibility at the cost of predictability and debugability. Here's what
+
+17
+00:01:34.720 --> 00:01:40.239
+practitioners often miss. Most real tasks fall much closer to the workflow end of that spectrum.
+
+18
+00:01:40.800 --> 00:01:46.480
+The appeal of agents is real, but choosing them when a workflow would work adds token cost and
+
+19
+00:01:46.480 --> 00:01:51.519
+operational risk without adding meaningful capability. That's a trade-off worth being
+
+20
+00:01:51.519 --> 00:01:58.080
+deliberate about every single time you design a system. Let's put workflows and agents side by
+
+21
+00:01:58.080 --> 00:02:05.360
+side. Workflows have fixed control flow, predictable output, auditable steps, lower latency, and lower
+
+22
+00:02:05.360 --> 00:02:12.320
+token cost. Every step is individually testable, and failures localize cleanly to a specific
+
+23
+00:02:12.320 --> 00:02:18.800
+location. Agents give you dynamic control flow and adaptive behavior. The capability ceiling
+
+24
+00:02:18.800 --> 00:02:25.279
+is higher, but so is the cost, the latency, and the failure surface. Debugging an agentic reasoning
+
+25
+00:02:25.279 --> 00:02:31.039
+trace is significantly harder than reading a structured workflow execution log. For any given
+
+26
+00:02:31.039 --> 00:02:37.440
+task, ask yourself which set of properties you actually need, not which architecture sounds more
+
+27
+00:02:37.440 --> 00:02:44.639
+capable or technically impressive to your team. Before reaching for an agent, run through three
+
+28
+00:02:44.639 --> 00:02:50.639
+quick checks. First, is the input format predictable and well-defined at the time you build the system?
+
+29
+00:02:51.279 --> 00:02:57.919
+Second, is the output format known and testable against a clear specification? Third, can every
+
+30
+00:02:57.919 --> 00:03:04.000
+processing step be specified at design time without requiring runtime judgment from the model?
+
+31
+00:03:04.000 --> 00:03:09.520
+When all three are true, a workflow is the right answer. You're not leaving capability on the table
+
+32
+00:03:09.520 --> 00:03:15.039
+by choosing a workflow. You're making a deliberate engineering choice that gives you lower cost,
+
+33
+00:03:15.039 --> 00:03:21.279
+faster execution, and a system your team can actually reason about and fix confidently when
+
+34
+00:03:21.279 --> 00:03:28.160
+something inevitably goes wrong in production. Anthropx documentation defines five core workflow
+
+35
+00:03:28.160 --> 00:03:35.600
+patterns. Prompt chaining, sequential LLM calls where each output feeds the next step. Routing,
+
+36
+00:03:35.600 --> 00:03:42.320
+a classifier step directs input to the right specialized prompt or sub-agent. Parallelization,
+
+37
+00:03:42.320 --> 00:03:49.360
+multiple LLM calls run simultaneously with results collected at a fan-in step. Orchestrator workers,
+
+38
+00:03:49.360 --> 00:03:56.240
+a controlling component decomposes a goal and delegates to specialized workers. And evaluator
+
+39
+00:03:56.240 --> 00:04:02.800
+optimizer, one call generates output, another evaluates it, looping until quality criteria are
+
+40
+00:04:02.800 --> 00:04:09.360
+met. Each pattern solves a distinct structural problem and each one remains a workflow. None of
+
+41
+00:04:09.360 --> 00:04:16.880
+them require the full autonomy and unpredictability that define a true agentic system. Routing and
+
+42
+00:04:16.880 --> 00:04:22.640
+parallelization are worth a closer look because they handle real complexity without requiring
+
+43
+00:04:22.720 --> 00:04:29.279
+agentic autonomy. A routing workflow uses a classifier, sometimes an LLM, sometimes a simple
+
+44
+00:04:29.279 --> 00:04:35.279
+rule to sort inputs before processing them. The topology is fixed even when the router itself
+
+45
+00:04:35.279 --> 00:04:41.760
+calls a language model. Parallelization fans work out across multiple concurrent calls and collects
+
+46
+00:04:41.760 --> 00:04:46.959
+results at a synchronization point before proceeding. Both patterns scale to complex
+
+47
+00:04:46.959 --> 00:04:52.000
+workloads and production traffic volumes. And because the control flow is still authored at
+
+48
+00:04:52.000 --> 00:04:58.000
+design time, both remain fully auditable. You get sophisticated complexity handling without
+
+49
+00:04:58.000 --> 00:05:04.399
+giving up the predictability that makes systems reliable and maintainable. Let's be precise about
+
+50
+00:05:04.399 --> 00:05:10.640
+when not to over-index on agents. Agent overhead, which includes the extra token spend, the dynamic
+
+51
+00:05:10.640 --> 00:05:16.720
+planning loops, and the harder-to-audit execution traces, is only justified when the task genuinely
+
+52
+00:05:16.720 --> 00:05:23.119
+can't be prescripted. Agents increase token spend on every single task run, not just occasionally.
+
+53
+00:05:23.679 --> 00:05:29.440
+Every autonomous decision the LLM makes is a potential failure point you didn't explicitly
+
+54
+00:05:29.440 --> 00:05:35.920
+design for or anticipate. And debugging agentic traces takes significantly more engineering time
+
+55
+00:05:35.920 --> 00:05:42.160
+than reading a structured workflow execution log. There's a reliability angle too. A deterministic
+
+56
+00:05:42.160 --> 00:05:48.000
+step is individually testable, so a workflow failure localizes to one identifiable step.
+
+57
+00:05:48.559 --> 00:05:54.480
+In an agentic trace, the root cause can be buried anywhere in a long reasoning chain. The principle
+
+58
+00:05:54.480 --> 00:06:00.720
+is simple. Reach for agents only when workflows demonstrably fall short. That's disciplined
+
+59
+00:06:00.720 --> 00:06:08.720
+engineering, not a limitation. The whole question here is who authors the control flow? You at design
+
+60
+00:06:08.720 --> 00:06:15.600
+time or the model during runtime? That matters because agent overhead is real, and you pay it
+
+61
+00:06:15.600 --> 00:06:22.399
+every run whether the task needed that judgment or not. One thing to watch. Capability that sounds
+
+62
+00:06:22.399 --> 00:06:29.040
+impressive isn't the same as capability the task actually needs. That closes out this lesson.
+
+63
+00:06:29.040 --> 00:06:30.399
+I'll see you in the next one.
+

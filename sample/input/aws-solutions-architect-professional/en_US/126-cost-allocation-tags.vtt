@@ -1,0 +1,142 @@
+WEBVTT
+
+1
+00:00:00.120 --> 00:00:01.424
+<v Instructor>So now let's talk about</v>
+
+2
+00:00:01.424 --> 00:00:03.770
+AWS Cost Allocation Tags.
+
+3
+00:00:03.770 --> 00:00:05.510
+So we know we can tag resources
+
+4
+00:00:05.510 --> 00:00:08.350
+and the reason we do so is that so we can compare
+
+5
+00:00:08.350 --> 00:00:10.640
+which one relate to one another.
+
+6
+00:00:10.640 --> 00:00:12.210
+But we can also use these tags
+
+7
+00:00:12.210 --> 00:00:14.930
+for cost allocation, first endpoint.
+
+8
+00:00:14.930 --> 00:00:16.690
+So using cost allocation tags,
+
+9
+00:00:16.690 --> 00:00:19.310
+we can enable detailed costing reports.
+
+10
+00:00:19.310 --> 00:00:20.620
+They're just like tags,
+
+11
+00:00:20.620 --> 00:00:22.980
+but now when we look at billing reports,
+
+12
+00:00:22.980 --> 00:00:24.740
+they will show up as additional columns,
+
+13
+00:00:24.740 --> 00:00:27.800
+which will allow us to divide our data more specifically.
+
+14
+00:00:27.800 --> 00:00:30.870
+There are two types of cost allocation tags.
+
+15
+00:00:30.870 --> 00:00:34.890
+The first one is AWS Generated Cost Allocation Tags,
+
+16
+00:00:34.890 --> 00:00:38.010
+which is automatically applied to a resource you create
+
+17
+00:00:38.010 --> 00:00:40.670
+and it starts with the prefix, AWS.
+
+18
+00:00:40.670 --> 00:00:43.830
+For example, AWS created by.
+
+19
+00:00:43.830 --> 00:00:46.140
+They're not applied to resources created
+
+20
+00:00:46.140 --> 00:00:48.820
+before the activation of these tags.
+
+21
+00:00:48.820 --> 00:00:50.380
+Now you also have user tags.
+
+22
+00:00:50.380 --> 00:00:53.130
+Those are the tags that you create, you, your user,
+
+23
+00:00:53.130 --> 00:00:55.610
+and they start with the prefix, user.
+
+24
+00:00:55.610 --> 00:00:59.160
+Now cost allocation tags just appear in the billing console,
+
+25
+00:00:59.160 --> 00:01:00.280
+not anywhere else,
+
+26
+00:01:00.280 --> 00:01:02.500
+and it takes about 24 hours for the tags to show up
+
+27
+00:01:02.500 --> 00:01:03.430
+in the reports.
+
+28
+00:01:03.430 --> 00:01:05.100
+So it is important for you as a solution architect
+
+29
+00:01:05.100 --> 00:01:09.210
+to have a tagging strategy in your AWS accounts,
+
+30
+00:01:09.210 --> 00:01:10.380
+in cross accounts,
+
+31
+00:01:10.380 --> 00:01:12.290
+so that when you look at your billing reports,
+
+32
+00:01:12.290 --> 00:01:15.430
+you can group all the data by the tags that you need.
+
+33
+00:01:15.430 --> 00:01:16.740
+And that's it, very simple,
+
+34
+00:01:16.740 --> 00:01:18.230
+but it's all you need to know for the exam.
+
+35
+00:01:18.230 --> 00:01:19.980
+I will see you in the next lecture.
+

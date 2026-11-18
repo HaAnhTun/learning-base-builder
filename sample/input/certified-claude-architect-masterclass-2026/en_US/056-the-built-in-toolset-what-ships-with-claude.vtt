@@ -1,0 +1,278 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.159
+In this lesson, we're going through the built-in tools that ship with the Cloud API.
+
+2
+00:00:04.719 --> 00:00:09.359
+We'll cover what each tool does, where its boundaries are, and how the cost and latency
+
+3
+00:00:09.359 --> 00:00:14.880
+profile compares to rolling your own custom tooling. If you're designing a Cloud-powered
+
+4
+00:00:14.880 --> 00:00:21.280
+system, this is the foundation you need. Let's get into it. Some capabilities you never have to
+
+5
+00:00:21.280 --> 00:00:27.600
+define at all, because Anthropic already did. A built-in tool is one that Anthropic has natively
+
+6
+00:00:27.600 --> 00:00:33.759
+wired into the Cloud API. You enable it through a typed parameter, rather than writing a schema
+
+7
+00:00:33.759 --> 00:00:40.639
+yourself. WebSearch is the first built-in most architects reach for. It runs a constrained query,
+
+8
+00:00:40.639 --> 00:00:46.959
+surfaces ranked snippets, and attaches source citations as structured metadata you can use
+
+9
+00:00:46.959 --> 00:00:52.959
+downstream. The computer tool is the other big one, and it's an Anthropic schema client tool.
+
+10
+00:00:52.959 --> 00:00:58.639
+It gives Cloud screenshot capability, mouse control, and keyboard input, but your own
+
+11
+00:00:58.639 --> 00:01:03.840
+application controls the agent loop and runs it against a desktop environment you supply.
+
+12
+00:01:05.040 --> 00:01:11.599
+The built-in catalog splits into server tools and client tools, and that split matters more than any
+
+13
+00:01:11.599 --> 00:01:18.720
+tool count. Server tools like WebSearch and Code Execution run on Anthropic's own infrastructure.
+
+14
+00:01:18.720 --> 00:01:24.639
+You get the results back directly with no handler code to write. Client tools use an
+
+15
+00:01:24.639 --> 00:01:30.480
+Anthropic-published schema, but your application actually executes them. Text Editor views,
+
+16
+00:01:30.480 --> 00:01:37.040
+creates, and does string replacements and files. Bash runs shell commands, which is also how file
+
+17
+00:01:37.040 --> 00:01:43.680
+discovery happens, because the API ships no built-in glob or grep tool. The computer tool
+
+18
+00:01:43.680 --> 00:01:50.319
+adds screenshot, mouse, and keyboard control. What all of them share is that you skip schema
+
+19
+00:01:50.319 --> 00:01:55.440
+authoring. Anthropic has already done the prompt engineering and routing optimization,
+
+20
+00:01:55.440 --> 00:02:00.319
+but client tools still run wherever your application runs, so where a tool runs
+
+21
+00:02:00.319 --> 00:02:06.879
+decides what it can reach. The built-in versus custom distinction comes up constantly in API
+
+22
+00:02:06.879 --> 00:02:13.199
+design conversations, so let's be precise about it. A built-in tool is defined and maintained
+
+23
+00:02:13.199 --> 00:02:19.759
+by Anthropic. You get vetted prompts, optimized routing, and no schema work. A custom tool is
+
+24
+00:02:19.759 --> 00:02:26.720
+something you define yourself through the standard tool use schema, typically backed by an MCP server
+
+25
+00:02:26.720 --> 00:02:32.240
+or an in-process function. The trade-off is straightforward. Built-ins are fast to adopt
+
+26
+00:02:32.240 --> 00:02:38.240
+and reliable for common tasks, but they have fixed scope. Custom tools give you full control over
+
+27
+00:02:38.240 --> 00:02:45.039
+behavior, schema, and integration, but you carry the maintenance burden. When what a built-in can do
+
+28
+00:02:45.039 --> 00:02:50.320
+falls short of what your workflow actually needs, that gap is your signal to go custom.
+
+29
+00:02:51.600 --> 00:02:56.720
+Web Search has a few behavior details that trip people up. The model constructs the query
+
+30
+00:02:56.720 --> 00:03:02.399
+internally based on the user's request and context. You don't pass a query string directly.
+
+31
+00:03:02.399 --> 00:03:07.839
+The number of searches per request is capped by an optional max uses parameter, and each search
+
+32
+00:03:07.839 --> 00:03:14.000
+counts as one use no matter how many results return. That's your lever for bounding cost. Rate
+
+33
+00:03:14.000 --> 00:03:20.000
+limits are a separate concern. If Claude exceeds them, the response still comes back successfully,
+
+34
+00:03:20.000 --> 00:03:26.080
+but it carries a web search tool result error object with an error code of too many requests
+
+35
+00:03:26.080 --> 00:03:32.800
+rather than silently returning fewer results. Every result comes with source citation metadata,
+
+36
+00:03:32.880 --> 00:03:38.880
+so Web Search isn't a raw search wrapper. It's an opinionated tool with its own query logic.
+
+37
+00:03:38.880 --> 00:03:44.000
+If you need precise query control, build a custom tool around the search service you want.
+
+38
+00:03:45.199 --> 00:03:51.600
+The computer tool is the most powerful built-in and also the one most misunderstood. It's a client
+
+39
+00:03:51.600 --> 00:03:56.960
+tool, which means your application controls the agent loop and runs it against a desktop
+
+40
+00:03:56.960 --> 00:04:03.520
+environment you supply. Screenshots capture visible screen state in that environment. Mouse
+
+41
+00:04:03.520 --> 00:04:09.759
+control handles clicks, drags, and scrolls there. Keyboard input sends text and keystrokes to that
+
+42
+00:04:09.759 --> 00:04:15.919
+same session. Here's the key point architects get wrong. There is no anthropic enforced sandbox.
+
+43
+00:04:16.480 --> 00:04:21.279
+What the computer tool can reach is bounded by whatever environment you connect it to,
+
+44
+00:04:21.279 --> 00:04:26.720
+and nothing more. If you point it at a machine with access to your host operating system,
+
+45
+00:04:26.720 --> 00:04:33.679
+or your private network, it can reach those. So isolation is your responsibility. Anthropic
+
+46
+00:04:33.679 --> 00:04:39.359
+recommends running it inside a VM or container, and giving it only the access the task genuinely
+
+47
+00:04:39.359 --> 00:04:46.239
+needs. Code execution gives Clod a place to run code, and the key detail is that the container
+
+48
+00:04:46.239 --> 00:04:52.399
+persists. It lives for up to 30 days after creation, and you can reuse it across requests
+
+49
+00:04:52.399 --> 00:04:58.399
+by passing its container ID back in. That means files and state you create can carry forward,
+
+50
+00:04:58.399 --> 00:05:03.679
+not vanish between calls. The environment ships a fixed set of pre-installed libraries,
+
+51
+00:05:03.679 --> 00:05:09.839
+like pandas, numpy, and matplotlib. You work with what's there because the container has no
+
+52
+00:05:09.839 --> 00:05:15.679
+internet access. Outbound network requests are fully disabled for security, so you can't pull
+
+53
+00:05:15.679 --> 00:05:22.640
+down new packages at runtime. Newer tool versions add REPL state persistence on top of the file
+
+54
+00:05:22.640 --> 00:05:28.799
+persistence. For system design, the takeaway is that code execution can hold state when you reuse
+
+55
+00:05:28.799 --> 00:05:34.559
+the container, but plan around its fixed library set and its complete lack of network access.
+
+56
+00:05:35.920 --> 00:05:42.079
+Cost and latency are real factors in built-in tool selection, and architects often underestimate
+
+57
+00:05:42.079 --> 00:05:48.559
+how much they vary. Web search adds a full round trip for each query. If your workflow issues
+
+58
+00:05:48.559 --> 00:05:54.880
+multiple searches per user request, that latency compounds. The computer tool is computationally
+
+59
+00:05:54.880 --> 00:06:00.239
+expensive per screenshot cycle because every capture requires rendering, encoding, and
+
+60
+00:06:00.239 --> 00:06:06.559
+transmission. Code execution carries a cold start overhead every time the container spins up, which
+
+61
+00:06:06.559 --> 00:06:13.279
+matters in latency-sensitive applications. Custom tools backed by fast internal services can actually
+
+62
+00:06:13.279 --> 00:06:19.760
+outperform built-ins on latency when the internal service is well optimized. The right design choice
+
+63
+00:06:19.760 --> 00:06:25.760
+depends on your latency budget. For a background research task, web search latency is probably
+
+64
+00:06:25.760 --> 00:06:31.279
+acceptable. For a real-time user interaction, you should measure before committing to a built-in.
+
+65
+00:06:32.239 --> 00:06:37.920
+The built-in tools hand you working capability without writing a single schema, and that's the
+
+66
+00:06:37.920 --> 00:06:44.640
+appeal. What's easy to gloss over is where the work actually happens. Some run on Anthropx
+
+67
+00:06:44.640 --> 00:06:50.000
+infrastructure and some run inside your own, and that line decides what your data touches.
+
+68
+00:06:50.640 --> 00:06:56.959
+Keep in mind, each tool carries its own cost and latency shape, so it belongs in the design budget.
+
+69
+00:06:56.959 --> 00:07:01.519
+That does it for this lesson. I'll see you in the next video.
+

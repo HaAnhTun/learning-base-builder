@@ -1,0 +1,290 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.679
+Welcome back! When you want structured data out of a model, defining a tool is one of the cleanest
+
+2
+00:00:05.679 --> 00:00:11.039
+ways to get it. This lesson covers how to write those extraction tools, what the strict flag
+
+3
+00:00:11.039 --> 00:00:18.319
+guarantees, and how strict tool use lines up with the structured outputs feature. An extraction tool
+
+4
+00:00:18.319 --> 00:00:23.920
+is a tool you define to capture data rather than to run a side effect. Its input schema describes
+
+5
+00:00:23.920 --> 00:00:28.959
+the fields you want the model to fill in from the source text, and the model returns them by calling
+
+6
+00:00:28.959 --> 00:00:35.119
+the tool. Strict tool use is what happens when you set strict to true on that tool definition.
+
+7
+00:00:35.680 --> 00:00:41.200
+It guarantees the arguments in the resulting tool call conform to the declared input schema,
+
+8
+00:00:41.200 --> 00:00:47.439
+so you get valid, well-shaped data every time. The input schema is the typed set of field
+
+9
+00:00:47.439 --> 00:00:53.520
+definitions on the tool. It names each field, sets its type, and marks which fields are required.
+
+10
+00:00:54.080 --> 00:00:58.080
+Those three ideas carry the whole lesson, so keep them in mind as we go.
+
+11
+00:00:59.360 --> 00:01:04.639
+Tool use was built for executing side effects, like calling an external API or running a function.
+
+12
+00:01:05.360 --> 00:01:10.400
+But a tool call is also a clean place to receive structured data, even when nothing actually gets
+
+13
+00:01:10.400 --> 00:01:16.400
+executed. The idea is simple. You define a tool whose input schema is exactly the shape you want
+
+14
+00:01:16.400 --> 00:01:22.239
+back. You ask the model to call that tool over your source text. The model responds by producing
+
+15
+00:01:22.239 --> 00:01:26.879
+a structured argument object rather than a paragraph of free text you would have to parse.
+
+16
+00:01:27.519 --> 00:01:32.559
+Your code then reads those fields directly off the tool call. There is no string to parse,
+
+17
+00:01:32.559 --> 00:01:37.919
+so there is no parsing step that can quietly fail on a malformed response. The tool call
+
+18
+00:01:37.919 --> 00:01:42.800
+itself becomes the output you are after, and that reframing is the whole extraction pattern.
+
+19
+00:01:44.000 --> 00:01:49.440
+A well-written input schema is what turns a vague request into a reliable extraction target.
+
+20
+00:01:50.000 --> 00:01:54.959
+Start by naming each field for what it means, and give it a description that says what a valid value
+
+21
+00:01:54.959 --> 00:02:00.559
+looks like and what evidence in the source justifies filling it in. A field called status
+
+22
+00:02:00.559 --> 00:02:05.440
+with no description leaves the model guessing. The same field, described as the current state
+
+23
+00:02:05.440 --> 00:02:11.520
+of the entity, one of active, inactive, or pending, gives it real guidance. Use enum
+
+24
+00:02:11.520 --> 00:02:16.720
+constraints when only a fixed set of values makes sense, since that removes the model's ability to
+
+25
+00:02:16.720 --> 00:02:22.399
+invent anything outside the set. Mark a field required only when its absence is a genuine
+
+26
+00:02:22.399 --> 00:02:27.119
+extraction failure, not just because you would like the value. And keep the schema flat where
+
+27
+00:02:27.119 --> 00:02:33.199
+you can, because every layer of nesting adds a little more compliance risk. Now the strict flag
+
+28
+00:02:33.199 --> 00:02:39.360
+itself, and it helps to think about it in three parts. First, what you set. On a tool definition,
+
+29
+00:02:39.360 --> 00:02:45.759
+you already have a name, a description, and an input schema. Strict tool use adds one more field
+
+30
+00:02:45.759 --> 00:02:51.919
+beside them, and you set strict to true. Second, what you get. With strict on, the arguments in
+
+31
+00:02:51.919 --> 00:02:57.440
+the tool call are guaranteed to match the input schema. No field is missing, and no field carries
+
+32
+00:02:57.440 --> 00:03:02.720
+the wrong type. Without it, the model usually respects your schema, but nothing enforces it,
+
+33
+00:03:02.720 --> 00:03:09.360
+so a malformed object can slip through. Third, what it removes. You no longer need a validation
+
+34
+00:03:09.360 --> 00:03:14.639
+and retry loop to catch a bad argument object before you use it. The data is well shaped by
+
+35
+00:03:14.639 --> 00:03:20.559
+construction, so your code can trust it directly. Let's be precise about what strict actually
+
+36
+00:03:20.559 --> 00:03:27.039
+promises, because it is three specific guarantees. First, the tool name is valid. The model can't
+
+37
+00:03:27.039 --> 00:03:32.880
+call a tool you didn't define or misspell one that you did. Second, every argument matches its
+
+38
+00:03:32.880 --> 00:03:38.559
+declared type in the input schema. A field typed as an integer comes back as an integer, not as a
+
+39
+00:03:38.559 --> 00:03:44.399
+string that happens to look numeric. Third, no field you marked required is ever left missing.
+
+40
+00:03:44.960 --> 00:03:50.479
+Every required field is present in the argument object, and the important part is that all three
+
+41
+00:03:50.479 --> 00:03:56.559
+hold at generation time, not through some check you run afterward. This is the same kind of guarantee
+
+42
+00:03:56.559 --> 00:04:02.080
+the structured outputs feature gave you for a text response. There, the model's reply was constrained
+
+43
+00:04:02.080 --> 00:04:08.800
+to your schema. Here, the tool call arguments are constrained the same way. So you now have
+
+44
+00:04:08.800 --> 00:04:14.479
+two ways to constrain the model to a schema, and it's worth being clear on when each one applies.
+
+45
+00:04:14.479 --> 00:04:20.160
+Structured outputs constrains the model's text response to a JSON schema. You reach for it when
+
+46
+00:04:20.160 --> 00:04:25.760
+the entire reply should be structured data, like a direct extraction where the answer is the object,
+
+47
+00:04:25.760 --> 00:04:31.119
+or a classification where the answer is a label. Strict tool use constrains the arguments of a
+
+48
+00:04:31.119 --> 00:04:36.320
+tool call to that tool's input schema. You reach for it when the model is calling functions,
+
+49
+00:04:36.320 --> 00:04:40.799
+and each call has to be well formed. The distinction is really about which part of the
+
+50
+00:04:40.799 --> 00:04:45.760
+interaction you're shaping. One shapes the assistant's text reply. The other shapes the
+
+51
+00:04:45.760 --> 00:04:52.880
+arguments the model passes when it invokes a tool. Here's a reassuring detail. Strict tool use and
+
+52
+00:04:52.880 --> 00:04:58.399
+structured outputs aren't two unrelated systems. They're built on the same underlying machinery,
+
+53
+00:04:58.399 --> 00:05:03.600
+which means the rules you already learned carry straight over. Both accept the same supported
+
+54
+00:05:03.600 --> 00:05:09.200
+subset of JSON schema features, so the field types and constraints that work in one work in the other
+
+55
+00:05:09.200 --> 00:05:14.880
+and the ones that aren't supported are off limits in both. Both compile your schema and cache it for
+
+56
+00:05:14.880 --> 00:05:19.920
+the same window. So a first request against a brand new schema pays a small compile cost,
+
+57
+00:05:19.920 --> 00:05:26.640
+and later requests reuse the cached grammar. And in both, changing the schema invalidates that cache
+
+58
+00:05:26.640 --> 00:05:31.760
+and triggers a recompile on the next call. If you understood the schema constraints from the
+
+59
+00:05:31.760 --> 00:05:39.119
+structured outputs lesson, you already understand them for strict tools. One question comes up a lot.
+
+60
+00:05:39.119 --> 00:05:44.880
+Do you pick strict tool use or structured outputs? Often the answer is both, because they govern
+
+61
+00:05:44.880 --> 00:05:49.920
+different parts of the same workflow. Picture an agent that first calls a validated tool,
+
+62
+00:05:49.920 --> 00:05:54.160
+say a database lookup, and then hands you back a structured summary of what it found.
+
+63
+00:05:54.799 --> 00:06:00.320
+The tool call is where strict tool use earns its keep, guaranteeing the arguments to that lookup are
+
+64
+00:06:00.320 --> 00:06:05.839
+well formed. The final summary is a text response, so that's where structured outputs constrains the
+
+65
+00:06:05.839 --> 00:06:12.000
+reply to your JSON schema. Rather than choosing one feature for the whole interaction, you apply
+
+66
+00:06:12.000 --> 00:06:17.839
+each to the part it actually governs. Strict tool use for the calls the agent makes. Structured
+
+67
+00:06:17.839 --> 00:06:23.119
+outputs for the structured analysis it returns. Combining them is the natural choice when a
+
+68
+00:06:23.119 --> 00:06:30.480
+workflow does both. Let's recap. An extraction tool returns structured data as a tool call,
+
+69
+00:06:30.480 --> 00:06:37.279
+shaped by its input schema. Setting strict to true guarantees the arguments conform,
+
+70
+00:06:37.279 --> 00:06:42.799
+so you get a valid name, correct types, and no missing required fields. Keep in mind,
+
+71
+00:06:42.799 --> 00:06:47.679
+you constrain the text reply with structured outputs, and the tool arguments with strict
+
+72
+00:06:47.679 --> 00:06:51.760
+tool use. That wraps up this lesson. I'll see you in the next one.
+

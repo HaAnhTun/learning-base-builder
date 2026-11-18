@@ -1,0 +1,610 @@
+WEBVTT
+
+1
+00:00:00.870 --> 00:00:03.120
+<v Instructor>So let's have a look at Amazon EventBridge.</v>
+
+2
+00:00:03.120 --> 00:00:04.350
+So you have several options.
+
+3
+00:00:04.350 --> 00:00:06.120
+You can create a rule with an event pattern.
+
+4
+00:00:06.120 --> 00:00:07.590
+We're gonna do this right now.
+
+5
+00:00:07.590 --> 00:00:08.730
+Then you can have a schedule rule,
+
+6
+00:00:08.730 --> 00:00:10.110
+which is the old way of doing schedule.
+
+7
+00:00:10.110 --> 00:00:12.000
+So there is now something called EventBridge schedule.
+
+8
+00:00:12.000 --> 00:00:13.710
+We're also going to have a look at it.
+
+9
+00:00:13.710 --> 00:00:16.680
+Pipe is to send data from an event source to target
+
+10
+00:00:16.680 --> 00:00:18.690
+with optional filtering and enrichment.
+
+11
+00:00:18.690 --> 00:00:19.770
+And schema registry is to look
+
+12
+00:00:19.770 --> 00:00:22.410
+at the schemas of all these events.
+
+13
+00:00:22.410 --> 00:00:26.070
+So just to get started, we're going to do the first option,
+
+14
+00:00:26.070 --> 00:00:27.840
+EventBridge rule with event pattern.
+
+15
+00:00:27.840 --> 00:00:29.160
+So we need to create a rule,
+
+16
+00:00:29.160 --> 00:00:32.580
+and what we want to do is to react to any event
+
+17
+00:00:32.580 --> 00:00:36.480
+where an instance is going to be terminated or shut down.
+
+18
+00:00:36.480 --> 00:00:39.180
+So you click here on Service Events,
+
+19
+00:00:39.180 --> 00:00:42.030
+and here you have a list at all the events
+
+20
+00:00:42.030 --> 00:00:44.970
+that can happen within your accounts by service.
+
+21
+00:00:44.970 --> 00:00:46.320
+So it's a lot.
+
+22
+00:00:46.320 --> 00:00:48.780
+For example, if you take any of these,
+
+23
+00:00:48.780 --> 00:00:52.590
+for example, if you take Lambda,
+
+24
+00:00:52.590 --> 00:00:54.360
+you can have a look at all these things.
+
+25
+00:00:54.360 --> 00:00:55.574
+Console actions or EC2,
+
+26
+00:00:55.574 --> 00:00:57.180
+you can have a look at all these things.
+
+27
+00:00:57.180 --> 00:00:58.530
+So it's a lot more type
+
+28
+00:00:58.530 --> 00:01:00.750
+of things you can choose from for events.
+
+29
+00:01:00.750 --> 00:01:02.040
+So the one we're going to look
+
+30
+00:01:02.040 --> 00:01:03.360
+at is one of the most popular.
+
+31
+00:01:03.360 --> 00:01:07.350
+It's called EC2 instance State-change Notification.
+
+32
+00:01:07.350 --> 00:01:08.880
+So that means that anytime
+
+33
+00:01:08.880 --> 00:01:11.190
+an EC2 instance state will change,
+
+34
+00:01:11.190 --> 00:01:12.330
+we're going to get a notification.
+
+35
+00:01:12.330 --> 00:01:14.790
+So if we look at it at this event,
+
+36
+00:01:14.790 --> 00:01:17.040
+we can have a look at the schema of the event
+
+37
+00:01:17.040 --> 00:01:18.150
+and then a sample event.
+
+38
+00:01:18.150 --> 00:01:19.830
+Like what it can look like.
+
+39
+00:01:19.830 --> 00:01:24.270
+So the schema defines how the sample event will look like.
+
+40
+00:01:24.270 --> 00:01:27.330
+And now we want to be able to filter this event
+
+41
+00:01:27.330 --> 00:01:29.130
+and on the state value.
+
+42
+00:01:29.130 --> 00:01:32.730
+So the state is a string and we have to exit the value.
+
+43
+00:01:32.730 --> 00:01:36.990
+So we can say Equal, for example,
+
+44
+00:01:36.990 --> 00:01:41.040
+and we are going to have several values.
+
+45
+00:01:41.040 --> 00:01:43.090
+So the first one is shutting down
+
+46
+00:01:44.460 --> 00:01:48.783
+and the second one is going to be terminated.
+
+47
+00:01:49.851 --> 00:01:52.650
+How do I know this? Well, it's from the schema itself.
+
+48
+00:01:52.650 --> 00:01:56.130
+If you have a look at the event pattern on the bottom line,
+
+49
+00:01:56.130 --> 00:01:57.780
+on the bottom page, sorry,
+
+50
+00:01:57.780 --> 00:02:01.350
+you can have a look at Sample events 1, 2, 3.
+
+51
+00:02:01.350 --> 00:02:02.550
+And if you look at number 5,
+
+52
+00:02:02.550 --> 00:02:05.070
+it says "state": "shutting-down".
+
+53
+00:02:05.070 --> 00:02:07.170
+And number 6, it says "state": "terminated".
+
+54
+00:02:07.170 --> 00:02:09.870
+So these are the events we want to be catching.
+
+55
+00:02:09.870 --> 00:02:13.860
+So now our event pattern filter is defined right here
+
+56
+00:02:13.860 --> 00:02:15.510
+on the right-hand side.
+
+57
+00:02:15.510 --> 00:02:17.460
+So now we have all the events.
+
+58
+00:02:17.460 --> 00:02:20.550
+And now for the target, again, we have several options.
+
+59
+00:02:20.550 --> 00:02:22.901
+So we can have a look at all the options right here,
+
+60
+00:02:22.901 --> 00:02:25.980
+such as API gateway, batch jobs.
+
+61
+00:02:25.980 --> 00:02:29.760
+We can also reboot an EC2 instance, terminate one.
+
+62
+00:02:29.760 --> 00:02:33.330
+We have SNS topic, SQS queues, I mean so many.
+
+63
+00:02:33.330 --> 00:02:35.220
+But what we want to do right now is to receive an alert,
+
+64
+00:02:35.220 --> 00:02:37.800
+so we choose SNS Topic
+
+65
+00:02:37.800 --> 00:02:40.093
+and then we want it to be our demo topic.
+
+66
+00:02:40.093 --> 00:02:41.910
+So create it if you don't have a topic.
+
+67
+00:02:41.910 --> 00:02:44.610
+You can just create an SNS topic very easily.
+
+68
+00:02:44.610 --> 00:02:46.440
+Then we'll need to have an exception role to be able
+
+69
+00:02:46.440 --> 00:02:48.120
+to send a message into this topic.
+
+70
+00:02:48.120 --> 00:02:50.910
+So a role is going to be automatically created for us.
+
+71
+00:02:50.910 --> 00:02:52.950
+and then we get some more information
+
+72
+00:02:52.950 --> 00:02:55.350
+around the retry policy and the dead-letter queue.
+
+73
+00:02:55.350 --> 00:02:57.660
+So we're good to go. Let's click on Create.
+
+74
+00:02:57.660 --> 00:02:59.280
+I'll call this one
+
+75
+00:02:59.280 --> 00:03:00.713
+NotifyEC2InstanceShutdownOrTerminated,
+
+76
+00:03:06.630 --> 00:03:07.980
+and we'll click on Create.
+
+77
+00:03:07.980 --> 00:03:09.693
+And so now that this role has been created,
+
+78
+00:03:09.693 --> 00:03:11.280
+anytime we shut down
+
+79
+00:03:11.280 --> 00:03:13.020
+or terminate an EC2 instance,
+
+80
+00:03:13.020 --> 00:03:15.900
+we will receive a notification.
+
+81
+00:03:15.900 --> 00:03:17.370
+The other option is to use Schedule.
+
+82
+00:03:17.370 --> 00:03:19.650
+So on the left-hand side you have schedules,
+
+83
+00:03:19.650 --> 00:03:21.600
+and then you can create a schedule.
+
+84
+00:03:21.600 --> 00:03:24.213
+And this one is going called InvokeLambdaEveryHour.
+
+85
+00:03:26.790 --> 00:03:28.260
+And several options.
+
+86
+00:03:28.260 --> 00:03:29.460
+Either it's a one-time schedule,
+
+87
+00:03:29.460 --> 00:03:33.030
+so we do something once and then done, or recurring.
+
+88
+00:03:33.030 --> 00:03:36.300
+And we have either a Cron-based schedule or a rate schedule.
+
+89
+00:03:36.300 --> 00:03:37.900
+We'll use 1 hour
+
+90
+00:03:39.360 --> 00:03:41.703
+and no flexible time window.
+
+91
+00:03:43.530 --> 00:03:44.550
+And Next.
+
+92
+00:03:44.550 --> 00:03:46.770
+And here we have the option to invoke several things.
+
+93
+00:03:46.770 --> 00:03:49.050
+So what do we wanna do every hour?
+
+94
+00:03:49.050 --> 00:03:51.210
+Well, we have all these options such as, for example,
+
+95
+00:03:51.210 --> 00:03:53.310
+running a task on Amazon ECS
+
+96
+00:03:53.310 --> 00:03:55.620
+or putting a records in Kinesis Data Firehose
+
+97
+00:03:55.620 --> 00:03:57.720
+or invoking a Lambda function.
+
+98
+00:03:57.720 --> 00:03:59.160
+So you can say, for example,
+
+99
+00:03:59.160 --> 00:04:00.750
+in the Invoke Lambda function,
+
+100
+00:04:00.750 --> 00:04:02.070
+and if you have a Lambda function,
+
+101
+00:04:02.070 --> 00:04:03.510
+you can select it from here.
+
+102
+00:04:03.510 --> 00:04:04.410
+So you get the idea.
+
+103
+00:04:04.410 --> 00:04:05.400
+Once you've done this,
+
+104
+00:04:05.400 --> 00:04:08.010
+you have a schedule in Amazon EventBridge.
+
+105
+00:04:08.010 --> 00:04:11.250
+Other things that you need to be looking at is event buses.
+
+106
+00:04:11.250 --> 00:04:13.560
+So right now we have the default event bus.
+
+107
+00:04:13.560 --> 00:04:15.535
+And the default events bus is anything
+
+108
+00:04:15.535 --> 00:04:19.050
+that will be AWS-generated type of events.
+
+109
+00:04:19.050 --> 00:04:21.270
+But you can create your own event bus,
+
+110
+00:04:21.270 --> 00:04:23.670
+and this is going to be a custom event bus.
+
+111
+00:04:23.670 --> 00:04:26.160
+And here you have the ability yourself
+
+112
+00:04:26.160 --> 00:04:28.587
+to send your own events into this event bus
+
+113
+00:04:28.587 --> 00:04:31.440
+and so therefore you can develop custom applications
+
+114
+00:04:31.440 --> 00:04:33.750
+that are based on Amazon EventBridge,
+
+115
+00:04:33.750 --> 00:04:35.610
+which can be very helpful.
+
+116
+00:04:35.610 --> 00:04:39.090
+You have the option to archive your events.
+
+117
+00:04:39.090 --> 00:04:40.320
+When they happen on the event bus,
+
+118
+00:04:40.320 --> 00:04:42.570
+then you have an archive you can look into.
+
+119
+00:04:42.570 --> 00:04:44.640
+And you can also replay events if you wanted
+
+120
+00:04:44.640 --> 00:04:47.673
+to replay a past event from an archive.
+
+121
+00:04:48.630 --> 00:04:50.010
+Okay, other things need you look at
+
+122
+00:04:50.010 --> 00:04:51.870
+is partner event sources.
+
+123
+00:04:51.870 --> 00:04:53.190
+So it's possible for you
+
+124
+00:04:53.190 --> 00:04:56.640
+to actually get data from third-party partners directly
+
+125
+00:04:56.640 --> 00:04:58.920
+into your AWS accounts.
+
+126
+00:04:58.920 --> 00:05:01.290
+So if you use, for example, Auth0,
+
+127
+00:05:01.290 --> 00:05:03.900
+then the events of Auth0 will be put
+
+128
+00:05:03.900 --> 00:05:05.610
+and inserted into Amazon EventBridge.
+
+129
+00:05:05.610 --> 00:05:08.100
+And then you can, for example, use a Lambda function
+
+130
+00:05:08.100 --> 00:05:11.370
+or do something after someone has done the login in of zero.
+
+131
+00:05:11.370 --> 00:05:13.050
+But you can see you have so many different kinds
+
+132
+00:05:13.050 --> 00:05:15.000
+of partners right here.
+
+133
+00:05:15.000 --> 00:05:16.050
+And API destinations.
+
+134
+00:05:16.050 --> 00:05:17.820
+That means that, for example, if you wanted
+
+135
+00:05:17.820 --> 00:05:19.770
+to have an event within EventBridge,
+
+136
+00:05:19.770 --> 00:05:24.060
+but then to connect to an external HTP destination,
+
+137
+00:05:24.060 --> 00:05:26.130
+you can also define one here.
+
+138
+00:05:26.130 --> 00:05:28.380
+And this allows you to connect EventBridge
+
+139
+00:05:28.380 --> 00:05:30.330
+to an outside source, for example,
+
+140
+00:05:30.330 --> 00:05:32.640
+to have integration with your own infrastructure.
+
+141
+00:05:32.640 --> 00:05:34.320
+So it's quite a lot of different things.
+
+142
+00:05:34.320 --> 00:05:37.530
+And finally, for schemas, this is all the schemas
+
+143
+00:05:37.530 --> 00:05:40.170
+of all the AWS events that you have.
+
+144
+00:05:40.170 --> 00:05:41.730
+Or you can have your own custom registry
+
+145
+00:05:41.730 --> 00:05:43.050
+for your own events.
+
+146
+00:05:43.050 --> 00:05:45.210
+But this allows you to understand the shape
+
+147
+00:05:45.210 --> 00:05:48.600
+and form the events will have in Amazon EventBridge.
+
+148
+00:05:48.600 --> 00:05:50.160
+And that's it. So I hope you liked it.
+
+149
+00:05:50.160 --> 00:05:52.470
+You can go here in the rules
+
+150
+00:05:52.470 --> 00:05:55.350
+and also disable them if you wanted to.
+
+151
+00:05:55.350 --> 00:05:56.430
+But I hope you liked this lecture
+
+152
+00:05:56.430 --> 00:05:58.503
+and I will see you in the next lecture.
+

@@ -1,0 +1,278 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.000
+Knowing that Claude routes on descriptions is the foundation of tool selection.
+
+2
+00:00:06.000 --> 00:00:12.000
+Writing a description that actually works across varied inputs, handles ambiguous cases,
+
+3
+00:00:12.000 --> 00:00:16.000
+and holds up under real-world agent traffic is the craft.
+
+4
+00:00:16.000 --> 00:00:18.000
+That's what this lesson is about.
+
+5
+00:00:18.000 --> 00:00:23.000
+These ideas frame everything we'll do from here related to tool use.
+
+6
+00:00:23.000 --> 00:00:27.000
+A strong tool description has three required components.
+
+7
+00:00:27.000 --> 00:00:32.000
+First is what it does, a clear purpose statement covering the tool's function and its return value.
+
+8
+00:00:32.000 --> 00:00:37.000
+Second is when to use it, the explicit conditions that should trigger selection.
+
+9
+00:00:37.000 --> 00:00:43.000
+Third is when not to use it, the exclusion clause that tells Claude what falls out of scope.
+
+10
+00:00:43.000 --> 00:00:47.000
+Anthropic recommends at least three to four sentences per description,
+
+11
+00:00:47.000 --> 00:00:54.000
+and more when the tool is complex, because that is usually what it takes to cover all three parts well.
+
+12
+00:00:54.000 --> 00:00:57.000
+The third component is the one most commonly skipped,
+
+13
+00:00:57.000 --> 00:01:02.000
+and it is often the direct reason for misrouting when tools share a similar function.
+
+14
+00:01:02.000 --> 00:01:09.000
+Leave any component out, and you have opened a routing gap that surfaces when your agent is handling real traffic.
+
+15
+00:01:09.000 --> 00:01:14.000
+Your description should also signal what kinds of inputs the tool expects.
+
+16
+00:01:14.000 --> 00:01:18.000
+This doesn't mean pasting the JSON schema into the description.
+
+17
+00:01:18.000 --> 00:01:21.000
+It means summarizing the input intent.
+
+18
+00:01:21.000 --> 00:01:24.000
+If the tool takes a customer ID and a date range, say so.
+
+19
+00:01:24.000 --> 00:01:27.000
+If it expects a query string, say that.
+
+20
+00:01:27.000 --> 00:01:31.000
+If the input needs to be a valid enum value, name the constraint.
+
+21
+00:01:31.000 --> 00:01:38.000
+These input hints in the description help Claude form the call correctly, not just select the right tool.
+
+22
+00:01:38.000 --> 00:01:41.000
+There's a meaningful difference between those two outcomes.
+
+23
+00:01:41.000 --> 00:01:48.000
+One gets you the right tool, the other gets you a correct tool invocation with well-formed arguments.
+
+24
+00:01:48.000 --> 00:01:51.000
+Output format is equally important and equally skipped.
+
+25
+00:01:51.000 --> 00:01:58.000
+When Claude selects a tool, it's implicitly asking whether calling this tool will produce what the request needs.
+
+26
+00:01:58.000 --> 00:02:04.000
+If the description doesn't say what the tool returns, Claude can't answer that question with confidence.
+
+27
+00:02:04.000 --> 00:02:10.000
+Tell it whether you're returning a single object, a list, a Boolean, or a status code.
+
+28
+00:02:10.000 --> 00:02:14.000
+Note whether the output is ready to use or requires transformation.
+
+29
+00:02:14.000 --> 00:02:16.000
+Flag how errors surface.
+
+30
+00:02:16.000 --> 00:02:22.000
+Does the tool return null, raise an exception, or include an error field in the response?
+
+31
+00:02:22.000 --> 00:02:28.000
+Output framing completes the picture Claude needs to select and use a tool correctly.
+
+32
+00:02:28.000 --> 00:02:33.664
+When your tool surface grows, three strategies keep selection unambiguous, and the first two come
+
+33
+00:02:33.664 --> 00:02:35.941
+straight from Anthropic's own guidance.
+
+34
+00:02:36.000 --> 00:02:38.000
+The first is consolidation.
+
+35
+00:02:38.000 --> 00:02:44.506
+Rather than a separate tool for every action, like create, review, and merge, group the related
+
+36
+00:02:44.506 --> 00:02:47.931
+operations into one tool with an action parameter.
+
+37
+00:02:48.000 --> 00:02:52.000
+Fewer, more capable tools mean less for Claude to disambiguate.
+
+38
+00:02:52.000 --> 00:02:55.000
+The second is namespacing.
+
+39
+00:02:55.000 --> 00:03:01.766
+When tools span multiple services, prefix each name with its service, like github underscore listprs
+
+40
+00:03:01.766 --> 00:03:03.932
+or slack underscore sendmessage,
+
+41
+00:03:04.000 --> 00:03:07.000
+so the owning service is obvious from the name alone.
+
+42
+00:03:07.000 --> 00:03:09.000
+The third is explicit exclusion.
+
+43
+00:03:09.000 --> 00:03:14.000
+State what a tool doesn't handle, such as it doesn't do bulk updates or deletions.
+
+44
+00:03:14.000 --> 00:03:21.000
+Together, these shrink the space Claude has to reason over, and make the right tool the obvious one.
+
+45
+00:03:21.000 --> 00:03:28.000
+Let's look at what happens when two tools have overlapping, vague descriptions, versus when they're cleanly separated.
+
+46
+00:03:28.000 --> 00:03:32.000
+With overlap, Claude has no confident basis for selection.
+
+47
+00:03:32.000 --> 00:03:38.000
+It might call either tool, and the routing is essentially unpredictable, across varied input phrasings.
+
+48
+00:03:38.000 --> 00:03:44.173
+With clean separation of domain anchors, trigger conditions, and exclusion clauses, Claude selects
+
+49
+00:03:44.173 --> 00:03:45.937
+the right tool consistently.
+
+50
+00:03:46.000 --> 00:03:52.000
+The descriptions did the disambiguation work up front, so Claude doesn't have to guess at runtime.
+
+51
+00:03:52.000 --> 00:03:54.000
+That's the standard you're aiming for.
+
+52
+00:03:54.000 --> 00:04:00.118
+You want descriptions so precise and well-bounded that correct selection becomes the reliable
+
+53
+00:04:00.118 --> 00:04:03.934
+outcome, regardless of how the user phrases their request.
+
+54
+00:04:04.000 --> 00:04:07.000
+Writing a good description gets you to step one.
+
+55
+00:04:07.000 --> 00:04:13.000
+Confirming it routes correctly across the real input distribution gets you to step two.
+
+56
+00:04:13.000 --> 00:04:16.000
+And there are three tests worth running before you ship.
+
+57
+00:04:16.000 --> 00:04:21.406
+A positive test sends a request the tool should handle, and confirms both correct selection and
+
+58
+00:04:21.406 --> 00:04:22.943
+correct argument formation.
+
+59
+00:04:23.000 --> 00:04:28.986
+A negative test sends a request the tool shouldn't handle, and confirms Claude routes to an
+
+60
+00:04:28.986 --> 00:04:32.934
+alternative, or asks for clarification rather than guessing.
+
+61
+00:04:33.000 --> 00:04:39.816
+A disambiguation test sends a request that plausibly matches more than one tool, and confirms the
+
+62
+00:04:39.816 --> 00:04:45.929
+right one wins on description specificity, not position in the list or name similarity.
+
+63
+00:04:46.000 --> 00:04:52.000
+Run all three before deploying any toolset, and you get evidence-based confidence in routing reliability.
+
+64
+00:04:52.000 --> 00:04:55.000
+In production, this can go wrong quietly.
+
+65
+00:04:55.000 --> 00:05:01.433
+A toolset that routes perfectly with a handful of tools starts picking the wrong one once the
+
+66
+00:05:01.433 --> 00:05:05.930
+catalog grows and users phrase requests that you never predicted.
+
+67
+00:05:06.000 --> 00:05:12.000
+Purpose, trigger conditions, and exclusions keep those boundaries sharp.
+
+68
+00:05:12.000 --> 00:05:20.000
+And the positive, negative, and disambiguation tests are how you prove they hold before real traffic finds a gap.
+
+69
+00:05:20.000 --> 00:05:23.000
+That wraps up this one. I'll see you in the next lesson.
+

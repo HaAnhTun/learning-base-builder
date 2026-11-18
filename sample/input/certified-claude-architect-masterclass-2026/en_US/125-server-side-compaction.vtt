@@ -1,0 +1,242 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.960
+Every long conversation runs into the same ceiling. A session eventually fills the token
+
+2
+00:00:04.960 --> 00:00:10.560
+space the model can read. For the next few minutes, we'll dig into server-side compaction,
+
+3
+00:00:10.560 --> 00:00:17.360
+the API's own opt-in version, not the compact command inside Cloud Code. We'll see what it does,
+
+4
+00:00:17.360 --> 00:00:23.040
+how it differs from your own rolling summary, and one habit that protects your facts. Let's dig in.
+
+5
+00:00:24.079 --> 00:00:28.319
+A conversation isn't storage. Everything the model can see right now
+
+6
+00:00:28.319 --> 00:00:33.439
+sits inside the context window, the fixed span of tokens it reads at once,
+
+7
+00:00:33.439 --> 00:00:40.159
+and every message you send, every tool call, and every tool result eats into it. Compaction
+
+8
+00:00:40.159 --> 00:00:46.880
+is a server-side step that kicks in once you cross a token threshold you set. By default,
+
+9
+00:00:46.880 --> 00:00:53.279
+it summarizes the whole conversation so far into a compact form, then lets the session continue
+
+10
+00:00:53.279 --> 00:00:59.439
+from that summary. Durable state is the one I care about most. That's any fact you deliberately
+
+11
+00:00:59.439 --> 00:01:05.440
+store outside the conversation in a file or a database, so it survives no matter what happens
+
+12
+00:01:05.440 --> 00:01:12.080
+to the transcript. Everything ahead builds on that last one. So what does compaction actually do?
+
+13
+00:01:12.879 --> 00:01:18.400
+First, it's opt-in. You turn it on with a beta header and a context management strategy,
+
+14
+00:01:18.400 --> 00:01:23.760
+and you set the trigger threshold, which defaults to 150,000 input tokens
+
+15
+00:01:23.760 --> 00:01:30.400
+and can go as low as 50,000. Once it's enabled, the platform does the rest automatically. When
+
+16
+00:01:30.400 --> 00:01:36.000
+the session reaches that threshold, by default it summarizes the whole conversation up to that point
+
+17
+00:01:36.000 --> 00:01:41.599
+and distills it into a compact block, then continues from that summary. It doesn't keep
+
+18
+00:01:41.599 --> 00:01:47.040
+your recent turns word-for-word unless you opt-in. There's a client-managed setting,
+
+19
+00:01:47.040 --> 00:01:53.279
+pause after compaction, where your own code reinserts the recent messages verbatim. But
+
+20
+00:01:53.279 --> 00:01:59.199
+that's on you to wire up, not automatic. From your seat, you keep talking to the model exactly
+
+21
+00:01:59.199 --> 00:02:05.519
+as before. Why does this feature exist at all? Because every long agent run collides with the
+
+22
+00:02:05.519 --> 00:02:11.360
+same wall. Extended chats and multi-step agent runs fill the window fastest, so that's where
+
+23
+00:02:11.360 --> 00:02:17.440
+this earns its keep. The window is finite, old turns pile up, and eventually they crowd out room
+
+24
+00:02:17.440 --> 00:02:23.600
+for new ones. Without some kind of help, a session just stalls once the history overflows the space
+
+25
+00:02:23.600 --> 00:02:29.600
+available. Compaction buys back room so the work can continue past that point. I want you to see
+
+26
+00:02:29.600 --> 00:02:35.759
+the intent clearly. The goal is a longer effective session with as little loss as possible of what
+
+27
+00:02:35.759 --> 00:02:41.759
+actually mattered. It's not magic, and it isn't free, but it turns a hard stop into a soft one.
+
+28
+00:02:42.320 --> 00:02:49.440
+That alone is worth understanding as a foundation. Now the contrast that matters. Earlier in the
+
+29
+00:02:49.440 --> 00:02:54.960
+course, we taught an application-level rolling summary. That's where your own code watches how
+
+30
+00:02:54.960 --> 00:03:00.479
+long the conversation is getting and, at some threshold, calls the model to summarize and trim
+
+31
+00:03:00.479 --> 00:03:07.199
+the history itself. You own the timing, you own the prompt, you own what gets kept. Server-side
+
+32
+00:03:07.199 --> 00:03:12.960
+compaction moves the heavy lifting into the platform. You still opt in and set the threshold,
+
+33
+00:03:12.960 --> 00:03:18.720
+but once it's enabled, the platform does the summarizing for you at that point. Both solve the
+
+34
+00:03:18.720 --> 00:03:25.039
+same core problem. The real question is who writes the summarize loop. With your rolling summary,
+
+35
+00:03:25.039 --> 00:03:31.119
+you do. With compaction, the platform does. And you trade some control for a lot less to build.
+
+36
+00:03:32.399 --> 00:03:38.559
+That trade shows up as three things worth naming. First, there's less to build. Compaction runs
+
+37
+00:03:38.559 --> 00:03:45.039
+inside the platform, so you skip writing, testing, and tuning your own summarize and trim loop.
+
+38
+00:03:45.039 --> 00:03:51.119
+For a lot of applications, that's a genuine relief. Second, there's less control. Because the platform
+
+39
+00:03:51.119 --> 00:03:57.520
+decides what the summary keeps, you give up fine-grained say over exactly which details survive,
+
+40
+00:03:57.520 --> 00:04:04.000
+so plan for some to be dropped. Third, it isn't free. The summary still costs a step to produce.
+
+41
+00:04:04.800 --> 00:04:09.520
+None of these is a flaw. They're just the shape of the deal. Knowing what you're getting is the
+
+42
+00:04:09.520 --> 00:04:17.279
+foundations-level point here. Here's the catch I most want to land. Any summary is lossy by nature.
+
+43
+00:04:17.279 --> 00:04:22.640
+That's not a bug in compaction. It's simply what summarizing means. A fact that doesn't make it
+
+44
+00:04:22.640 --> 00:04:29.040
+into the summary is gone from the model's context. Exact numbers, identifiers, a snippet of code the
+
+45
+00:04:29.040 --> 00:04:35.119
+model wrote earlier, all of that can quietly drop out when the history is compressed. And once it's
+
+46
+00:04:35.119 --> 00:04:41.279
+gone, the model can't recover it because the raw turns it came from are no longer there to read.
+
+47
+00:04:41.279 --> 00:04:48.000
+So the lesson is blunt. Treat the summarized history as a gist, not a ledger. Never treat the
+
+48
+00:04:48.000 --> 00:04:53.600
+transcript as your only copy of something you actually need. If it matters, it has to live
+
+49
+00:04:53.600 --> 00:05:00.799
+somewhere the summary can't erase. The fix is a habit, not a setting you flip on. As you work,
+
+50
+00:05:00.799 --> 00:05:06.880
+write your durable facts to a file or a database, then re-read that store when you need them.
+
+51
+00:05:06.880 --> 00:05:12.799
+Instead of trusting that an old turn is still sitting in context, let compaction do what it's
+
+52
+00:05:12.799 --> 00:05:18.160
+good at, which is handling the bulk of the conversation while your own store holds the
+
+53
+00:05:18.160 --> 00:05:24.640
+handful of things that truly can't be lost. Think of it as a division of labor. The platform keeps
+
+54
+00:05:24.640 --> 00:05:30.399
+the session flowing. You keep the essentials safe outside it. This pairs naturally with a tool built
+
+55
+00:05:30.399 --> 00:05:38.640
+exactly for that job, the memory tool. Think of a compacted history as a gist, a summary,
+
+56
+00:05:38.640 --> 00:05:44.559
+not a ledger. The platform buys you room by summarizing what came before, and a summary
+
+57
+00:05:44.559 --> 00:05:50.959
+is lossy by definition. So exact numbers and identifiers can quietly vanish. That's the trade
+
+58
+00:05:50.959 --> 00:05:56.880
+you're accepting when you turn it on. It holds up as long as anything you truly can't lose
+
+59
+00:05:56.880 --> 00:05:59.200
+already lives somewhere outside the transcript.
+
+60
+00:05:59.839 --> 00:06:02.880
+That's where we'll leave this lesson. I'll see you in the next one.
+

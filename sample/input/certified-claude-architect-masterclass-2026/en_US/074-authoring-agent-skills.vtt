@@ -1,0 +1,354 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.999
+Let's get into how you actually author a skill.
+
+2
+00:00:03.000 --> 00:00:10.000
+A skill is really just a folder with a skill.md file inside of it, and Claude finds it on its own.
+
+3
+00:00:10.000 --> 00:00:15.000
+For the next few minutes, we'll walk through where skills live, what the front matter holds,
+
+4
+00:00:15.000 --> 00:00:21.000
+and why the description is the one part you have to get right. Let's dig in.
+
+5
+00:00:21.000 --> 00:00:24.000
+A skill has less structure than people expect.
+
+6
+00:00:24.000 --> 00:00:29.000
+It's a folder, a markdown file inside it, and that's genuinely the whole requirement.
+
+7
+00:00:29.000 --> 00:00:33.000
+The skill directory is a named folder holding a skill.md file.
+
+8
+00:00:33.000 --> 00:00:37.000
+That folder name is the skill's name, and it's how you invoke it.
+
+9
+00:00:37.000 --> 00:00:42.000
+It gets discovered automatically, with no registration step anywhere.
+
+10
+00:00:42.000 --> 00:00:47.000
+The skill.md body is the markdown that sits below the front matter.
+
+11
+00:00:47.000 --> 00:00:55.000
+It's the actual set of instructions Claude follows, and it always loads, even when there's no front matter at all.
+
+12
+00:00:55.000 --> 00:01:00.000
+The front matter itself is an optional YAML block at the very top.
+
+13
+00:01:00.000 --> 00:01:02.000
+Every field in it is optional.
+
+14
+00:01:02.000 --> 00:01:06.000
+The one field genuinely worth adding is the description,
+
+15
+00:01:06.000 --> 00:01:11.000
+because that's what Claude reads to decide whether the skill fits what you asked for.
+
+16
+00:01:11.000 --> 00:01:14.000
+Directory, body, front matter.
+
+17
+00:01:14.000 --> 00:01:19.000
+The first thing to internalize is that a skill is a directory, not a loose file.
+
+18
+00:01:19.000 --> 00:01:23.000
+The layout is a .claude folder, a skills folder inside it,
+
+19
+00:01:23.000 --> 00:01:28.000
+and then a named folder for your skill that holds the skill.md.
+
+20
+00:01:28.000 --> 00:01:31.000
+That folder name matters more than you'd expect.
+
+21
+00:01:31.000 --> 00:01:35.000
+It becomes the skill's name and the handle you use to invoke it.
+
+22
+00:01:35.000 --> 00:01:39.000
+Claude discovers every skill folder that's present automatically.
+
+23
+00:01:39.000 --> 00:01:45.689
+There's no registry to update, no manifest to edit, and nothing to declare somewhere else to make
+
+24
+00:01:45.689 --> 00:01:46.931
+the skill visible.
+
+25
+00:01:47.000 --> 00:01:50.000
+Drop the folder in the right place, and it's found.
+
+26
+00:01:50.000 --> 00:01:55.000
+When you want to run a specific skill directly, you call it by that folder name.
+
+27
+00:01:55.000 --> 00:01:59.000
+The directory name really is the entire addressing scheme here.
+
+28
+00:01:59.000 --> 00:02:03.000
+Here's the part that trips almost everyone up, so slow down on it.
+
+29
+00:02:03.000 --> 00:02:05.000
+The front matter is optional.
+
+30
+00:02:05.000 --> 00:02:11.000
+A skill.md file with no front matter block at all is still a perfectly working skill.
+
+31
+00:02:11.000 --> 00:02:14.000
+The markdown body loads, and Claude runs it.
+
+32
+00:02:14.000 --> 00:02:19.000
+Invoking the skill by its folder name still works with zero fields declared.
+
+33
+00:02:19.000 --> 00:02:23.000
+There is no silent failure lurking behind a missing front matter block.
+
+34
+00:02:23.000 --> 00:02:29.000
+That idea that leaving out front matter quietly breaks the skill is simply wrong.
+
+35
+00:02:29.000 --> 00:02:34.000
+The body is the substance of the skill, and it loads either way.
+
+36
+00:02:34.000 --> 00:02:40.600
+Front matter is there to tune how the skill behaves, which model it uses, which tools it can touch,
+
+37
+00:02:40.600 --> 00:02:41.933
+when it should fire.
+
+38
+00:02:42.000 --> 00:02:47.000
+But the skill exists and runs the moment the body exists.
+
+39
+00:02:47.000 --> 00:02:50.000
+So, what can the front matter actually hold?
+
+40
+00:02:50.000 --> 00:02:52.000
+Quite a lot, and all of it optional.
+
+41
+00:02:52.000 --> 00:02:58.000
+Name sets the display label, and description tells Claude when the skill fits a request.
+
+42
+00:02:58.000 --> 00:03:03.000
+A when to use field gives a plain language cue about the situations it should handle,
+
+43
+00:03:03.000 --> 00:03:09.000
+and an argument hint field signals the arguments the skill expects when you invoke it directly.
+
+44
+00:03:09.000 --> 00:03:12.000
+Allowed tools and disallowed tools aren't symmetric.
+
+45
+00:03:12.000 --> 00:03:17.727
+Allowed tools pre-approves the tools you list, so they skip the permission prompt while every other
+
+46
+00:03:17.727 --> 00:03:18.942
+tool stays available.
+
+47
+00:03:19.000 --> 00:03:24.000
+Disallowed tools is the one that actually removes tools from the pool.
+
+48
+00:03:24.000 --> 00:03:28.000
+A paths field restricts the skill to certain file locations.
+
+49
+00:03:28.000 --> 00:03:32.000
+Model and effort let you pick a model and set reasoning effort.
+
+50
+00:03:32.000 --> 00:03:38.158
+Set context to fork, and the skill runs in an isolated sub-agent, paired with the agent field, to
+
+51
+00:03:38.158 --> 00:03:39.936
+choose which one handles it.
+
+52
+00:03:40.000 --> 00:03:43.000
+A hooks field wires in lifecycle behavior.
+
+53
+00:03:43.000 --> 00:03:50.000
+Of all these fields, the description is the one that carries real weight, so it's worth writing carefully.
+
+54
+00:03:50.000 --> 00:03:56.000
+Claude reads the description to decide whether a given skill fits the request in front of it.
+
+55
+00:03:56.000 --> 00:03:58.000
+That's the whole matching mechanism.
+
+56
+00:03:58.000 --> 00:04:03.000
+If the description is vague, the skill gets passed over in situations where it should have fired.
+
+57
+00:04:03.000 --> 00:04:10.000
+If it's sharp and specific, auto-invocation becomes reliable, and the skill fires exactly when it should.
+
+58
+00:04:10.000 --> 00:04:15.000
+Everything else in the front matter tunes how the skill behaves once it's chosen.
+
+59
+00:04:15.000 --> 00:04:18.000
+The description is what gets it chosen in the first place.
+
+60
+00:04:18.000 --> 00:04:20.000
+So spend your effort there.
+
+61
+00:04:20.000 --> 00:04:25.000
+Say plainly what the skill does and the kinds of requests it's meant to handle.
+
+62
+00:04:25.000 --> 00:04:31.000
+Now for a quick myth-clearing pass, because a few fields get quoted that simply don't exist.
+
+63
+00:04:31.000 --> 00:04:33.000
+There is no trigger field.
+
+64
+00:04:33.000 --> 00:04:37.000
+Matching runs off the description, not off a separate trigger declaration.
+
+65
+00:04:37.000 --> 00:04:41.000
+If you've seen a skill written with a trigger field, that field does nothing.
+
+66
+00:04:41.000 --> 00:04:46.000
+There is no version field baked into the format, and there is no author tags field either.
+
+67
+00:04:46.000 --> 00:04:52.426
+And to say it one more time, because it's the stickiest myth, a missing front matter block doesn't
+
+68
+00:04:52.426 --> 00:04:53.934
+cause a silent failure.
+
+69
+00:04:54.000 --> 00:04:57.000
+The body loads and the skill runs.
+
+70
+00:04:57.000 --> 00:05:01.000
+Reach for the real fields, the description, the tool scoping, the paths.
+
+71
+00:05:01.000 --> 00:05:09.000
+Invented fields just sit there inert and mislead the next person who opens the file expecting them to matter.
+
+72
+00:05:09.000 --> 00:05:14.000
+Let's tie invocation together, because there are two clean ways it happens.
+
+73
+00:05:14.000 --> 00:05:16.000
+The default is auto-invocation.
+
+74
+00:05:16.000 --> 00:05:20.971
+Claude reads each skill's description, matches it against what you asked for, and runs the fitting
+
+75
+00:05:20.971 --> 00:05:22.949
+skill on its own without you naming it.
+
+76
+00:05:23.000 --> 00:05:26.000
+This is why the description does so much work.
+
+77
+00:05:26.000 --> 00:05:28.000
+The other way is direct invocation.
+
+78
+00:05:28.000 --> 00:05:35.000
+You call the skill yourself by its folder name, which is handy when you already know exactly which skill you want.
+
+79
+00:05:35.000 --> 00:05:38.000
+Same skill, same folder, two paths to reach it.
+
+80
+00:05:38.000 --> 00:05:42.000
+Auto-invocation leans entirely on a good description.
+
+81
+00:05:42.000 --> 00:05:46.000
+Direct invocation leans on you knowing the folder name.
+
+82
+00:05:46.000 --> 00:05:53.000
+Between them, a well-named folder and a well-written description cover almost everything you'll want to do.
+
+83
+00:05:53.000 --> 00:05:59.242
+Authoring a skill comes down to the folder, the markdown file, and a description sharp enough that
+
+84
+00:05:59.242 --> 00:06:02.936
+Claude recognizes when the work in front of it is a match.
+
+85
+00:06:03.000 --> 00:06:10.000
+That description is the whole matching service, so a vague one leaves good instructions sitting unused.
+
+86
+00:06:10.000 --> 00:06:15.444
+Keep in mind that the description is everything when it comes to tool matching, so you have to get
+
+87
+00:06:15.444 --> 00:06:18.944
+it right and it has to be a good match for the actual workload.
+
+88
+00:06:19.000 --> 00:06:22.000
+And that's where we'll leave this one. I'll see you in the next lesson.
+

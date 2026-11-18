@@ -1,0 +1,654 @@
+WEBVTT
+
+1
+00:00:00.330 --> 00:00:02.310
+<v Instructor>So now, let's talk about Direct Connect.</v>
+
+2
+00:00:02.310 --> 00:00:03.360
+So Direct Connect provides you
+
+3
+00:00:03.360 --> 00:00:06.120
+a dedicated, private connection from a remote network
+
+4
+00:00:06.120 --> 00:00:07.980
+into your VPC,
+
+5
+00:00:07.980 --> 00:00:10.320
+and the dedicated connection must be set up
+
+6
+00:00:10.320 --> 00:00:13.980
+between data center and the AWS Direct Connect locations.
+
+7
+00:00:13.980 --> 00:00:15.210
+So it's really a private connection,
+
+8
+00:00:15.210 --> 00:00:16.440
+and therefore, because it's private,
+
+9
+00:00:16.440 --> 00:00:18.030
+it's going to be more expensive
+
+10
+00:00:18.030 --> 00:00:20.280
+than running your own VPN solution.
+
+11
+00:00:20.280 --> 00:00:23.280
+And then, when you want to access the services of AWS,
+
+12
+00:00:23.280 --> 00:00:27.270
+you're going to access them through a private VIF.
+
+13
+00:00:27.270 --> 00:00:29.250
+Now, it's going to bypass completely
+
+14
+00:00:29.250 --> 00:00:30.510
+your Internet service provider,
+
+15
+00:00:30.510 --> 00:00:33.060
+so that means that it goes over private networks.
+
+16
+00:00:33.060 --> 00:00:36.000
+So therefore, it's going to reduce your public network cost.
+
+17
+00:00:36.000 --> 00:00:37.980
+It's going to also to increase the bandwidth
+
+18
+00:00:37.980 --> 00:00:39.660
+that you have into AWS
+
+19
+00:00:39.660 --> 00:00:42.030
+and increase the stability of your connection.
+
+20
+00:00:42.030 --> 00:00:44.190
+By default, Direct Connect is not redundant,
+
+21
+00:00:44.190 --> 00:00:47.070
+and so you must set up a failover Direct Connect connection,
+
+22
+00:00:47.070 --> 00:00:49.920
+so a second one, or use a VPN as a failover,
+
+23
+00:00:49.920 --> 00:00:51.960
+which is a very common setup as well.
+
+24
+00:00:51.960 --> 00:00:54.780
+So let's talk about the visual interfaces or VIF.
+
+25
+00:00:54.780 --> 00:00:56.460
+So you have two kinds of VIF for Direct Connect.
+
+26
+00:00:56.460 --> 00:00:57.810
+You have the public VIF,
+
+27
+00:00:57.810 --> 00:01:01.140
+which allows you to connect to public AWS endpoints.
+
+28
+00:01:01.140 --> 00:01:03.660
+For example, your S3 buckets, your EC2 services,
+
+29
+00:01:03.660 --> 00:01:05.250
+or anything AWS.
+
+30
+00:01:05.250 --> 00:01:06.720
+And then, you have a private VIF
+
+31
+00:01:06.720 --> 00:01:08.670
+to connect to resources within your VPC
+
+32
+00:01:08.670 --> 00:01:09.503
+that are gonna be private.
+
+33
+00:01:09.503 --> 00:01:12.930
+So your EC2 instances, your ALB, and so on.
+
+34
+00:01:12.930 --> 00:01:15.630
+Then, you have a transit virtual interface,
+
+35
+00:01:15.630 --> 00:01:17.940
+which allows you to connect to resources in VPC
+
+36
+00:01:17.940 --> 00:01:20.070
+through a transit gateway.
+
+37
+00:01:20.070 --> 00:01:22.770
+And if you had a VPC interface endpoint,
+
+38
+00:01:22.770 --> 00:01:25.597
+they can be accessed through your private VIF.
+
+39
+00:01:26.640 --> 00:01:28.170
+So if you look at Direct Connect, how does that work?
+
+40
+00:01:28.170 --> 00:01:30.270
+Well, we have a region that we want to connect
+
+41
+00:01:30.270 --> 00:01:31.260
+to a corporate data center
+
+42
+00:01:31.260 --> 00:01:33.060
+where we run our customer network,
+
+43
+00:01:33.060 --> 00:01:35.460
+and then we have a Direct Connect location
+
+44
+00:01:35.460 --> 00:01:38.820
+that has an AWS cage with a Direct Connect endpoint
+
+45
+00:01:38.820 --> 00:01:41.250
+and has also a customer or partner cage
+
+46
+00:01:41.250 --> 00:01:43.920
+with a customer or a partner router.
+
+47
+00:01:43.920 --> 00:01:45.390
+Then, on your own data center,
+
+48
+00:01:45.390 --> 00:01:48.240
+you're going to run your customer router or firewall.
+
+49
+00:01:48.240 --> 00:01:50.280
+And so, in blue is a private VIF,
+
+50
+00:01:50.280 --> 00:01:51.930
+and in green is a public VIF.
+
+51
+00:01:51.930 --> 00:01:54.330
+So blue is a private VIF that we connect
+
+52
+00:01:54.330 --> 00:01:57.810
+from the customer router to the customer or partner router,
+
+53
+00:01:57.810 --> 00:02:00.240
+to the Direct Connect endpoint
+
+54
+00:02:00.240 --> 00:02:02.490
+into a virtual private gateway,
+
+55
+00:02:02.490 --> 00:02:04.170
+which allows us, because it's a private VIF,
+
+56
+00:02:04.170 --> 00:02:06.540
+to connect to the private subnet
+
+57
+00:02:06.540 --> 00:02:09.330
+and our EC2 instances within it.
+
+58
+00:02:09.330 --> 00:02:11.940
+But if you wanted to connect to the public AWS services,
+
+59
+00:02:11.940 --> 00:02:15.510
+for example, Amazon Glacier or Amazon S3,
+
+60
+00:02:15.510 --> 00:02:19.560
+then you would require to use a public virtual interface.
+
+61
+00:02:19.560 --> 00:02:22.950
+So for this, you would also connect the same way, okay,
+
+62
+00:02:22.950 --> 00:02:24.750
+all the way to Direct Connect endpoint,
+
+63
+00:02:24.750 --> 00:02:26.370
+but then the public VIF directly goes
+
+64
+00:02:26.370 --> 00:02:29.400
+into the AWS services and you're good to go.
+
+65
+00:02:29.400 --> 00:02:32.070
+We have the option of dedicated connections
+
+66
+00:02:32.070 --> 00:02:34.260
+that range from one Gigabits per second
+
+67
+00:02:34.260 --> 00:02:37.620
+up to different options, up to 400 Gigabits per second.
+
+68
+00:02:37.620 --> 00:02:39.480
+You get a physical Ethernet port
+
+69
+00:02:39.480 --> 00:02:41.400
+that's dedicated to a customer,
+
+70
+00:02:41.400 --> 00:02:43.740
+and the request is made to AWS first,
+
+71
+00:02:43.740 --> 00:02:47.130
+and then it's completed by an AWS direct partner.
+
+72
+00:02:47.130 --> 00:02:49.800
+And then, we have a hosted connection
+
+73
+00:02:49.800 --> 00:02:52.980
+from 50 Megabits per second to 25 Gigabits per second.
+
+74
+00:02:52.980 --> 00:02:56.100
+Here, we make the connection request directly
+
+75
+00:02:56.100 --> 00:02:59.340
+via the AWS Direct Connect partners as well,
+
+76
+00:02:59.340 --> 00:03:03.720
+and the capacity can then be added or removed on demand.
+
+77
+00:03:03.720 --> 00:03:06.210
+Oftentimes, to build these connections,
+
+78
+00:03:06.210 --> 00:03:07.860
+it takes over a month,
+
+79
+00:03:07.860 --> 00:03:10.140
+so you need to be mindful of this.
+
+80
+00:03:10.140 --> 00:03:11.850
+So what about encryption on Direct Connect?
+
+81
+00:03:11.850 --> 00:03:13.110
+Well, by default,
+
+82
+00:03:13.110 --> 00:03:16.020
+data in transit is not encrypted on Direct Connect,
+
+83
+00:03:16.020 --> 00:03:17.310
+but it is private to you
+
+84
+00:03:17.310 --> 00:03:19.200
+because it's using a private connection.
+
+85
+00:03:19.200 --> 00:03:21.570
+So if you wanted to also encrypt the data,
+
+86
+00:03:21.570 --> 00:03:23.400
+then you would need to use Direct Connect
+
+87
+00:03:23.400 --> 00:03:25.710
+in combination with a VPN
+
+88
+00:03:25.710 --> 00:03:29.310
+to get IPsec-encrypted private connection.
+
+89
+00:03:29.310 --> 00:03:31.830
+Then, if you were to use the VPN of a direct connection,
+
+90
+00:03:31.830 --> 00:03:33.990
+it will leverage the public VIF,
+
+91
+00:03:33.990 --> 00:03:35.640
+and you would use the setup
+
+92
+00:03:35.640 --> 00:03:37.920
+to get an extra level of security,
+
+93
+00:03:37.920 --> 00:03:40.410
+but it's slightly more complex to put in place
+
+94
+00:03:40.410 --> 00:03:42.030
+and may not be as beneficial
+
+95
+00:03:42.030 --> 00:03:44.100
+as encrypting a public connection.
+
+96
+00:03:44.100 --> 00:03:45.090
+So let's take an example.
+
+97
+00:03:45.090 --> 00:03:47.730
+So we have our corporate data center and our VPC,
+
+98
+00:03:47.730 --> 00:03:49.320
+and then we have the Direct Connect connection
+
+99
+00:03:49.320 --> 00:03:50.220
+in the middle.
+
+100
+00:03:50.220 --> 00:03:51.480
+So we establish the connection
+
+101
+00:03:51.480 --> 00:03:54.510
+and then we would establish a VPN connection over it
+
+102
+00:03:54.510 --> 00:03:58.593
+to encrypt all the data on your Direct Connect connection.
+
+103
+00:03:59.430 --> 00:04:01.950
+Now, we also have LAG, or link aggregation groups,
+
+104
+00:04:01.950 --> 00:04:03.090
+on Direct Connect,
+
+105
+00:04:03.090 --> 00:04:04.770
+and this is to increase the speed
+
+106
+00:04:04.770 --> 00:04:06.150
+of your Direct Connect connection
+
+107
+00:04:06.150 --> 00:04:07.680
+and also allow failover
+
+108
+00:04:07.680 --> 00:04:09.900
+by summing up existing Direct Connect connections
+
+109
+00:04:09.900 --> 00:04:12.090
+into one logical bigger one.
+
+110
+00:04:12.090 --> 00:04:13.980
+So you can aggregate up to four connections
+
+111
+00:04:13.980 --> 00:04:15.330
+in an active-active mode.
+
+112
+00:04:15.330 --> 00:04:18.690
+And obviously, you can add connections to the LAG over time.
+
+113
+00:04:18.690 --> 00:04:20.160
+So if you wanna start by one, then two,
+
+114
+00:04:20.160 --> 00:04:21.930
+all the way up to four, you can.
+
+115
+00:04:21.930 --> 00:04:25.350
+So the way it works that we have our Direct Connect location
+
+116
+00:04:25.350 --> 00:04:27.120
+connected to our corporate data center,
+
+117
+00:04:27.120 --> 00:04:28.410
+and we'll have one connection setup.
+
+118
+00:04:28.410 --> 00:04:30.570
+We'll also have a second connection setup.
+
+119
+00:04:30.570 --> 00:04:35.040
+And then we can create a LAG, so a link aggregation group,
+
+120
+00:04:35.040 --> 00:04:38.100
+by adding connection one and connection two together.
+
+121
+00:04:38.100 --> 00:04:39.840
+And similarly, if we have a different
+
+122
+00:04:39.840 --> 00:04:42.720
+Direct Connect location, location B,
+
+123
+00:04:42.720 --> 00:04:45.510
+then we can also sum up these connections together
+
+124
+00:04:45.510 --> 00:04:48.840
+to get a second link aggregation group.
+
+125
+00:04:48.840 --> 00:04:50.310
+So all the connections in the LAG
+
+126
+00:04:50.310 --> 00:04:52.170
+must be dedicated connections,
+
+127
+00:04:52.170 --> 00:04:54.000
+they must have the same bandwidth,
+
+128
+00:04:54.000 --> 00:04:55.797
+and they must terminate at the same
+
+129
+00:04:55.797 --> 00:04:58.170
+AWS Direct Connect connection endpoint.
+
+130
+00:04:58.170 --> 00:04:59.730
+You can also set, if you wanted to,
+
+131
+00:04:59.730 --> 00:05:02.700
+a minimum number of connections for the LAG to function.
+
+132
+00:05:02.700 --> 00:05:04.920
+But, by default, it's going to be one.
+
+133
+00:05:04.920 --> 00:05:07.320
+So next, we have the Direct Connect gateway.
+
+134
+00:05:07.320 --> 00:05:09.330
+And the use case is that you wanna set up
+
+135
+00:05:09.330 --> 00:05:10.440
+a Direct Connect connection
+
+136
+00:05:10.440 --> 00:05:13.740
+into one or more VPC in many different regions
+
+137
+00:05:13.740 --> 00:05:15.660
+within the same or across accounts.
+
+138
+00:05:15.660 --> 00:05:18.630
+In that case, you must set up a Direct Connect gateway
+
+139
+00:05:18.630 --> 00:05:20.280
+because otherwise it would not be scalable for you
+
+140
+00:05:20.280 --> 00:05:21.570
+to set up a Direct Connect connection
+
+141
+00:05:21.570 --> 00:05:23.760
+into each and every region.
+
+142
+00:05:23.760 --> 00:05:26.670
+So we have two regions here and we have a customer network.
+
+143
+00:05:26.670 --> 00:05:28.890
+Now, you're going to establish a Direct Connect connection
+
+144
+00:05:28.890 --> 00:05:30.420
+into one specific region,
+
+145
+00:05:30.420 --> 00:05:32.340
+but then, you're going to connect the private VIF
+
+146
+00:05:32.340 --> 00:05:35.070
+into a Direct Connect gateway.
+
+147
+00:05:35.070 --> 00:05:37.890
+And this gateway is going to talk to the private VIF
+
+148
+00:05:37.890 --> 00:05:40.110
+of each VPC you're trying to connect to,
+
+149
+00:05:40.110 --> 00:05:42.720
+and the role of the gateway is going to distribute,
+
+150
+00:05:42.720 --> 00:05:44.460
+I mean, to allow your Direct Connect connection
+
+151
+00:05:44.460 --> 00:05:46.740
+to be directly connected to multiple regions,
+
+152
+00:05:46.740 --> 00:05:49.950
+multiple VPCs in AWS.
+
+153
+00:05:49.950 --> 00:05:52.920
+Finally, you can also leverage the Direct Connect gateway
+
+154
+00:05:52.920 --> 00:05:54.630
+with a transit gateway.
+
+155
+00:05:54.630 --> 00:05:56.010
+So the transit gateway allows you
+
+156
+00:05:56.010 --> 00:05:59.880
+to link up together many VPCs, VPN connections,
+
+157
+00:05:59.880 --> 00:06:01.290
+and Direct Connect connections.
+
+158
+00:06:01.290 --> 00:06:02.220
+And at the very top,
+
+159
+00:06:02.220 --> 00:06:05.340
+for you to connect your transit gateway to Direct Connect,
+
+160
+00:06:05.340 --> 00:06:08.550
+you must go through a Direct Connect gateway.
+
+161
+00:06:08.550 --> 00:06:09.900
+All right, that's it for this lecture.
+
+162
+00:06:09.900 --> 00:06:10.980
+I hope you liked it.
+
+163
+00:06:10.980 --> 00:06:12.930
+And I will see you in the next lecture.
+

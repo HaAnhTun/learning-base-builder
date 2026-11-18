@@ -1,0 +1,130 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.719
+Alright, you've made it through the major lecture content for this program, and that's a real
+
+2
+00:00:04.719 --> 00:00:10.560
+accomplishment. CCAF is Anthropic's first formal technical credential, and you're part of the first
+
+3
+00:00:10.560 --> 00:00:16.479
+cohort of developers preparing for it. Before you jump into the first practice exam, I want to set
+
+4
+00:00:16.479 --> 00:00:21.360
+your expectations and give you a framework for what's coming up. What you're about to experience
+
+5
+00:00:21.360 --> 00:00:26.159
+is fundamentally different from what you've been doing in the lessons. Understanding that difference
+
+6
+00:00:26.159 --> 00:00:31.520
+is going to save you some frustration and get you far more value out of the practice process.
+
+7
+00:00:32.240 --> 00:00:36.720
+So here's what you've built. You have a working understanding of the agentic patterns,
+
+8
+00:00:36.720 --> 00:00:42.720
+tool design, and MCP, cloud code workflow service, structured output prompt engineering,
+
+9
+00:00:42.720 --> 00:00:48.560
+and context management. That's the full surface of the exam, but knowing the material and passing
+
+10
+00:00:48.560 --> 00:00:54.240
+an architecture exam are two different skills. The course taught you the building blocks. Now
+
+11
+00:00:54.240 --> 00:00:59.360
+you need to learn how to recognize the right architecture under exam pressure when several
+
+12
+00:00:59.360 --> 00:01:05.519
+options look reasonable. That's the gap that the practice exams are designed to close. While you
+
+13
+00:01:05.519 --> 00:01:11.279
+work on that gap, connect with me on LinkedIn. That's where the early CCAF cohort is gathering
+
+14
+00:01:11.279 --> 00:01:17.279
+and where I post exam outline shifts and new content drops. Here's something important about
+
+15
+00:01:17.279 --> 00:01:22.080
+how the practice exams work. The questions come from the same pool you've already seen in the
+
+16
+00:01:22.080 --> 00:01:27.279
+quizzes, but the experience is going to feel different. In the lessons, a question landed
+
+17
+00:01:27.279 --> 00:01:32.879
+right after the topic that supports it. The answer felt obvious because the context was right there.
+
+18
+00:01:32.879 --> 00:01:38.160
+On the practice exam, that same question shows up alongside questions from every other domain,
+
+19
+00:01:38.160 --> 00:01:42.800
+and you've got to recall the reasoning on your own without the lesson framing for it.
+
+20
+00:01:43.680 --> 00:01:49.199
+That's the skill gap that practice exams are designed to close. The course built the foundation.
+
+21
+00:01:49.199 --> 00:01:55.120
+The practice exams build the judgment, and because CCAF is an architecture exam, not
+
+22
+00:01:55.120 --> 00:02:00.000
+memorization, that judgment matters more than for almost any other certification you'll take.
+
+23
+00:02:00.879 --> 00:02:05.360
+Now let me tell you what's probably going to happen on your first practice exam because I don't
+
+24
+00:02:05.360 --> 00:02:10.720
+want you to be surprised. Most students score somewhere between 50 and 65 percent on their
+
+25
+00:02:10.720 --> 00:02:16.399
+first attempt. That's completely normal, completely expected. The practice exams use progressive
+
+26
+00:02:16.399 --> 00:02:21.919
+difficulty by design. The first one is built to expose your gaps, not to make you feel good.
+
+27
+00:02:21.919 --> 00:02:27.520
+So here's the mindset. The goal isn't to pass the first practice exam. The goal is to find out
+
+28
+00:02:27.520 --> 00:02:33.039
+exactly where your understanding breaks down. Those gaps are golden for your development.
+
+29
+00:02:33.039 --> 00:02:38.240
+They tell you exactly where to focus before the next test. And by the way, if this course has
+
+30
+00:02:38.240 --> 00:02:44.399
+been useful for you, a Udemy review at this point makes a real difference. CCAF is a brand new
+
+31
+00:02:44.399 --> 00:02:49.199
+certification, and your review tells other developers whether this prep is worth their time.
+
+32
+00:02:49.919 --> 00:02:53.679
+Okay, let's go find those gaps. I'll see you after the first exam.
+

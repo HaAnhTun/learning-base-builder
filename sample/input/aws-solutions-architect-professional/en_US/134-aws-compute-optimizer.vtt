@@ -1,0 +1,146 @@
+WEBVTT
+
+1
+00:00:00.240 --> 00:00:02.910
+<v ->Now let's talk about AWS Compute Optimizer,</v>
+
+2
+00:00:02.910 --> 00:00:05.730
+which is used to reduce cost and improve performance
+
+3
+00:00:05.730 --> 00:00:09.360
+by recommending optimal AWS resources for your workload.
+
+4
+00:00:09.360 --> 00:00:13.408
+So this is going to do an analysis of your EC2 instances,
+
+5
+00:00:13.408 --> 00:00:15.630
+your autoscaling groups, and tell you, for example,
+
+6
+00:00:15.630 --> 00:00:18.330
+which one are over provisioned or under provisioned.
+
+7
+00:00:18.330 --> 00:00:20.610
+And then you can build your optimizations.
+
+8
+00:00:20.610 --> 00:00:22.440
+And then you can have a better cost perspective,
+
+9
+00:00:22.440 --> 00:00:23.970
+and also a better performance.
+
+10
+00:00:23.970 --> 00:00:25.950
+This way it does it is that it will use machine learning
+
+11
+00:00:25.950 --> 00:00:28.650
+under the hood to analyze your resource configuration,
+
+12
+00:00:28.650 --> 00:00:30.780
+as well as track their CloudWatch metrics
+
+13
+00:00:30.780 --> 00:00:32.790
+to understand their utilization.
+
+14
+00:00:32.790 --> 00:00:34.830
+So supported resources by Compute Optimizer
+
+15
+00:00:34.830 --> 00:00:37.530
+are EC2 instances, auto scanning groups,
+
+16
+00:00:37.530 --> 00:00:39.870
+EBS volumes, Lambda functions.
+
+17
+00:00:39.870 --> 00:00:41.640
+And this allows you to lower your cost
+
+18
+00:00:41.640 --> 00:00:44.280
+by up to 25% without doing much.
+
+19
+00:00:44.280 --> 00:00:46.357
+And the recommendations themselves
+
+20
+00:00:46.357 --> 00:00:48.300
+can be exported into Amazon S3
+
+21
+00:00:48.300 --> 00:00:52.110
+In order to get the most out of Compute Optimizer,
+
+22
+00:00:52.110 --> 00:00:55.230
+and if you want to analyze also the memory utilization
+
+23
+00:00:55.230 --> 00:00:58.200
+and so therefore get recommendations on RAM,
+
+24
+00:00:58.200 --> 00:01:01.200
+then you need to install the CloudWatch Agents.
+
+25
+00:01:01.200 --> 00:01:03.810
+So therefore, you have your EC2 instances.
+
+26
+00:01:03.810 --> 00:01:05.730
+And they're running the CloudWatch agents.
+
+27
+00:01:05.730 --> 00:01:07.620
+And then they will send their metrics,
+
+28
+00:01:07.620 --> 00:01:10.770
+including the Ram, to CloudWatch service itself.
+
+29
+00:01:10.770 --> 00:01:13.830
+And then Compute Optimizer can analyze these metrics
+
+30
+00:01:13.830 --> 00:01:16.920
+out of CloudWatch and make recommendations as well
+
+31
+00:01:16.920 --> 00:01:20.820
+for the Compute Optimizer on the RAM, on the memory.
+
+32
+00:01:20.820 --> 00:01:24.030
+But just so you know, this CloudWatch Agent is not needed
+
+33
+00:01:24.030 --> 00:01:27.240
+if you analyze the CPU or the NetworkIn/out
+
+34
+00:01:27.240 --> 00:01:29.283
+or the DiskReadOps and the DiskWriteOps.
+
+35
+00:01:30.750 --> 00:01:31.830
+So that's it for this lecture,
+
+36
+00:01:31.830 --> 00:01:35.013
+I hope you liked it, and I will see you in the next lecture.
+

@@ -1,0 +1,726 @@
+WEBVTT
+
+1
+00:00:00.540 --> 00:00:02.670
+<v Narrator>So now let's discuss advanced concepts</v>
+
+2
+00:00:02.670 --> 00:00:05.280
+of Aurora that you need to know going into the exam.
+
+3
+00:00:05.280 --> 00:00:07.710
+So let's talk about replica auto-scaling.
+
+4
+00:00:07.710 --> 00:00:09.390
+So let's say we have a client
+
+5
+00:00:09.390 --> 00:00:12.390
+and we have three Aurora instances right now.
+
+6
+00:00:12.390 --> 00:00:15.690
+So one will be writing through the writer endpoint
+
+7
+00:00:15.690 --> 00:00:17.460
+and the other two would be reading
+
+8
+00:00:17.460 --> 00:00:19.620
+through the reader endpoint, okay?
+
+9
+00:00:19.620 --> 00:00:22.200
+Now let's say that we are having many, many requests,
+
+10
+00:00:22.200 --> 00:00:24.660
+read requests on the reader endpoint,
+
+11
+00:00:24.660 --> 00:00:27.210
+and so therefore, the Amazon Aurora databases
+
+12
+00:00:27.210 --> 00:00:29.520
+have an increased CPU usage.
+
+13
+00:00:29.520 --> 00:00:32.370
+In that case, we can set up replica auto-scaling.
+
+14
+00:00:32.370 --> 00:00:34.440
+And what this will do is that it will add
+
+15
+00:00:34.440 --> 00:00:36.840
+obviously Amazon Aurora replicas,
+
+16
+00:00:36.840 --> 00:00:39.120
+and then what will happen is that automatically,
+
+17
+00:00:39.120 --> 00:00:41.730
+the reader endpoint is going to be extended
+
+18
+00:00:41.730 --> 00:00:44.580
+to cover these new replicas.
+
+19
+00:00:44.580 --> 00:00:45.900
+And therefore, these new replicas
+
+20
+00:00:45.900 --> 00:00:47.880
+will start receiving some traffic
+
+21
+00:00:47.880 --> 00:00:50.310
+and the reads will be happening
+
+22
+00:00:50.310 --> 00:00:51.930
+in a more distributed fashion,
+
+23
+00:00:51.930 --> 00:00:54.750
+hopefully bringing down the overall CPU usage.
+
+24
+00:00:54.750 --> 00:00:56.553
+So this is replica auto-scaling.
+
+25
+00:00:57.840 --> 00:01:00.150
+The second thing is custom endpoints.
+
+26
+00:01:00.150 --> 00:01:02.520
+So let's say we have the same setup,
+
+27
+00:01:02.520 --> 00:01:06.000
+but this time, we have two different kinds of replicas.
+
+28
+00:01:06.000 --> 00:01:09.120
+As you can see, we have some db.r3.large
+
+29
+00:01:09.120 --> 00:01:11.970
+and some db.r5.2xlarge.
+
+30
+00:01:11.970 --> 00:01:15.840
+So some read replicas are bigger than others.
+
+31
+00:01:15.840 --> 00:01:17.370
+And the reason you would do this
+
+32
+00:01:17.370 --> 00:01:21.120
+is that you wanna define a subset of your Aurora instances
+
+33
+00:01:21.120 --> 00:01:23.010
+as a custom endpoint.
+
+34
+00:01:23.010 --> 00:01:25.320
+So let's say we define a custom endpoint
+
+35
+00:01:25.320 --> 00:01:28.860
+on these two bigger Aurora instances.
+
+36
+00:01:28.860 --> 00:01:31.470
+The reason we would do so is, for example, that we know
+
+37
+00:01:31.470 --> 00:01:34.470
+that these instances are more powerful
+
+38
+00:01:34.470 --> 00:01:36.150
+and therefore they're going to be better
+
+39
+00:01:36.150 --> 00:01:40.380
+to run analytical queries on these specific replicas.
+
+40
+00:01:40.380 --> 00:01:41.550
+So when you do so,
+
+41
+00:01:41.550 --> 00:01:43.770
+you have a custom endpoint that's defined.
+
+42
+00:01:43.770 --> 00:01:45.630
+And when you have a custom endpoint,
+
+43
+00:01:45.630 --> 00:01:48.060
+generally the reader endpoint itself
+
+44
+00:01:48.060 --> 00:01:50.520
+is not used after defining custom endpoints.
+
+45
+00:01:50.520 --> 00:01:53.940
+So it would not disappear, but you would not use it anymore.
+
+46
+00:01:53.940 --> 00:01:57.630
+And what you would do, like practically speaking,
+
+47
+00:01:57.630 --> 00:01:59.970
+is set up many custom endpoints
+
+48
+00:01:59.970 --> 00:02:02.130
+for many different kind of workloads,
+
+49
+00:02:02.130 --> 00:02:03.750
+therefore allowing you to query
+
+50
+00:02:03.750 --> 00:02:07.083
+only a subsets of your Aurora replicas.
+
+51
+00:02:08.310 --> 00:02:09.960
+Next, we have serverless.
+
+52
+00:02:09.960 --> 00:02:11.310
+So this is going to give you
+
+53
+00:02:11.310 --> 00:02:13.710
+automated database instantiation
+
+54
+00:02:13.710 --> 00:02:16.470
+and auto-scaling based on actual usage,
+
+55
+00:02:16.470 --> 00:02:19.830
+which is great when you have infrequent, intermittent,
+
+56
+00:02:19.830 --> 00:02:21.840
+or unpredictable workloads.
+
+57
+00:02:21.840 --> 00:02:24.870
+And therefore, you don't need to do any capacity planning.
+
+58
+00:02:24.870 --> 00:02:28.110
+You're going to pay per the second of each Aurora instance
+
+59
+00:02:28.110 --> 00:02:29.400
+that is being spun up,
+
+60
+00:02:29.400 --> 00:02:31.650
+and this can be a lot more cost-effective.
+
+61
+00:02:31.650 --> 00:02:32.700
+So how does that work?
+
+62
+00:02:32.700 --> 00:02:34.860
+Well, the client is going to talk
+
+63
+00:02:34.860 --> 00:02:37.620
+to a proxy fleet that is managed by Aurora.
+
+64
+00:02:37.620 --> 00:02:41.370
+And in the backend, many Aurora instances will be created
+
+65
+00:02:41.370 --> 00:02:43.860
+based on your workload in a serverless fashion,
+
+66
+00:02:43.860 --> 00:02:48.270
+so you don't have to provision capacity at all in advance.
+
+67
+00:02:48.270 --> 00:02:50.700
+Finally, we have Global Aurora.
+
+68
+00:02:50.700 --> 00:02:55.170
+So in case we have Aurora Cross Region Read Replica,
+
+69
+00:02:55.170 --> 00:02:57.390
+it's going to be very helpful for disaster recovery.
+
+70
+00:02:57.390 --> 00:02:58.860
+Very simple to put in place,
+
+71
+00:02:58.860 --> 00:03:01.710
+but you can also set up the Aurora Global Database,
+
+72
+00:03:01.710 --> 00:03:03.810
+which is the recommended way of doing things today.
+
+73
+00:03:03.810 --> 00:03:05.820
+In this case, you have one primary region
+
+74
+00:03:05.820 --> 00:03:07.980
+where all the reads and writes happen.
+
+75
+00:03:07.980 --> 00:03:11.760
+You can set up up to 10 secondary read-only regions
+
+76
+00:03:11.760 --> 00:03:14.610
+where the replication lag should be less than one second
+
+77
+00:03:14.610 --> 00:03:19.050
+and up to 16 read replicas per secondary region.
+
+78
+00:03:19.050 --> 00:03:21.360
+And this will help you decrease latency
+
+79
+00:03:21.360 --> 00:03:23.370
+for the read workloads all over the world,
+
+80
+00:03:23.370 --> 00:03:26.940
+but also in case you have a database outage in one region.
+
+81
+00:03:26.940 --> 00:03:29.700
+Promoting another region for disaster recovery purposes
+
+82
+00:03:29.700 --> 00:03:32.430
+has an RTO, so recovery time objective,
+
+83
+00:03:32.430 --> 00:03:33.300
+of less than one minute,
+
+84
+00:03:33.300 --> 00:03:34.320
+so it takes less than one minute
+
+85
+00:03:34.320 --> 00:03:36.090
+to recover into another region.
+
+86
+00:03:36.090 --> 00:03:38.010
+And here is a sentence you should look out for
+
+87
+00:03:38.010 --> 00:03:39.570
+from an exam perspective,
+
+88
+00:03:39.570 --> 00:03:42.000
+it takes on average less than one second
+
+89
+00:03:42.000 --> 00:03:43.890
+to replicate data across region
+
+90
+00:03:43.890 --> 00:03:46.140
+for your Aurora Global Database.
+
+91
+00:03:46.140 --> 00:03:47.880
+So this is something that if you see in the exam,
+
+92
+00:03:47.880 --> 00:03:50.970
+it's a hint to use a Global Aurora.
+
+93
+00:03:50.970 --> 00:03:52.050
+So let's have a look.
+
+94
+00:03:52.050 --> 00:03:54.060
+We have us-east-1 as our primary region,
+
+95
+00:03:54.060 --> 00:03:56.700
+which is where the applications do the read and writes,
+
+96
+00:03:56.700 --> 00:03:59.850
+and then we'll set up a secondary region in eu-west-1
+
+97
+00:03:59.850 --> 00:04:01.320
+or some replication happening
+
+98
+00:04:01.320 --> 00:04:03.630
+with a global database of Aurora.
+
+99
+00:04:03.630 --> 00:04:07.590
+And the applications there can do read-only from that setup.
+
+100
+00:04:07.590 --> 00:04:09.600
+But in case us-east-1 fails,
+
+101
+00:04:09.600 --> 00:04:11.610
+then we can failover to eu-west-1
+
+102
+00:04:11.610 --> 00:04:15.450
+by promoting it as a read-write Aurora cluster.
+
+103
+00:04:15.450 --> 00:04:17.280
+Aurora also has an integration
+
+104
+00:04:17.280 --> 00:04:19.380
+with machine learning services within AWS.
+
+105
+00:04:19.380 --> 00:04:21.120
+So the idea with Aurora Machine Learning
+
+106
+00:04:21.120 --> 00:04:23.520
+is that you can have ML-based predictions
+
+107
+00:04:23.520 --> 00:04:25.830
+to your applications via the SQL interface.
+
+108
+00:04:25.830 --> 00:04:27.960
+It's a simple, optimized, and secure integration
+
+109
+00:04:27.960 --> 00:04:31.800
+between Aurora and different AWS machine learning services.
+
+110
+00:04:31.800 --> 00:04:34.200
+So two supported services are SageMaker,
+
+111
+00:04:34.200 --> 00:04:35.310
+which allows you to use
+
+112
+00:04:35.310 --> 00:04:37.590
+any kind of machine learning model in the backend,
+
+113
+00:04:37.590 --> 00:04:40.740
+or Amazon Comprehend, if you want to do sentiment analysis.
+
+114
+00:04:40.740 --> 00:04:41.700
+Now, you don't need to be an expert
+
+115
+00:04:41.700 --> 00:04:43.320
+in SageMaker or Comprehend.
+
+116
+00:04:43.320 --> 00:04:44.250
+You just need to know that
+
+117
+00:04:44.250 --> 00:04:46.530
+Aurora has an integration with those.
+
+118
+00:04:46.530 --> 00:04:49.260
+So in order to use Aurora Machine Learning,
+
+119
+00:04:49.260 --> 00:04:51.690
+you don't need to have a machine learning experience.
+
+120
+00:04:51.690 --> 00:04:54.990
+And the use cases for this would be to have fraud detection,
+
+121
+00:04:54.990 --> 00:04:56.580
+ads targeting, sentiment analysis,
+
+122
+00:04:56.580 --> 00:04:59.400
+or product recommendation all within Aurora.
+
+123
+00:04:59.400 --> 00:05:01.650
+So to give you the architecture idea,
+
+124
+00:05:01.650 --> 00:05:03.270
+Aurora is going to be connected
+
+125
+00:05:03.270 --> 00:05:06.150
+to the machine learning services in AWS.
+
+126
+00:05:06.150 --> 00:05:09.150
+And your application can just run a very simple SQL query.
+
+127
+00:05:09.150 --> 00:05:11.820
+For example, what are the recommended products?
+
+128
+00:05:11.820 --> 00:05:13.800
+Aurora will send some data
+
+129
+00:05:13.800 --> 00:05:15.600
+into the machine learning services,
+
+130
+00:05:15.600 --> 00:05:17.280
+such as, for example, the user's profile,
+
+131
+00:05:17.280 --> 00:05:18.990
+the shopping history, et cetera, et cetera.
+
+132
+00:05:18.990 --> 00:05:21.000
+And then the machine learning service
+
+133
+00:05:21.000 --> 00:05:23.430
+will return a prediction directly to Aurora.
+
+134
+00:05:23.430 --> 00:05:26.940
+For example, the user should buy a red shirt and blue pants,
+
+135
+00:05:26.940 --> 00:05:29.430
+and then Aurora can just return the query results
+
+136
+00:05:29.430 --> 00:05:30.810
+to the application,
+
+137
+00:05:30.810 --> 00:05:34.410
+all through as a result of the SQL query,
+
+138
+00:05:34.410 --> 00:05:35.580
+which is very handy.
+
+139
+00:05:35.580 --> 00:05:39.240
+So let's talk about Babelfish for Aurora PostgreSQL.
+
+140
+00:05:39.240 --> 00:05:43.290
+So this is a feature that allows Amazon Aurora PostgreSQL
+
+141
+00:05:43.290 --> 00:05:44.730
+to understand commands
+
+142
+00:05:44.730 --> 00:05:47.820
+that are targeted for Microsoft SQL Server
+
+143
+00:05:47.820 --> 00:05:49.470
+using the language T-SQL.
+
+144
+00:05:49.470 --> 00:05:51.270
+So let me explain so it's clearer.
+
+145
+00:05:51.270 --> 00:05:54.810
+If you have an application in your company today
+
+146
+00:05:54.810 --> 00:05:57.750
+that's using Microsoft SQL Server as a database,
+
+147
+00:05:57.750 --> 00:06:00.090
+then your applications are going to be written
+
+148
+00:06:00.090 --> 00:06:01.530
+and they're going to use a driver
+
+149
+00:06:01.530 --> 00:06:04.020
+called the SQL Server Client Driver,
+
+150
+00:06:04.020 --> 00:06:05.610
+which is going to send the commands
+
+151
+00:06:05.610 --> 00:06:08.970
+to your Microsoft SQL Server using T-SQL.
+
+152
+00:06:08.970 --> 00:06:11.280
+But tomorrow, you want to migrate to the cloud.
+
+153
+00:06:11.280 --> 00:06:13.680
+And so you migrate to Aurora PostgreSQL,
+
+154
+00:06:13.680 --> 00:06:16.410
+which is a scalable database in the cloud that you like,
+
+155
+00:06:16.410 --> 00:06:19.230
+but the engine is PostgreSQL.
+
+156
+00:06:19.230 --> 00:06:22.710
+So that means that your applications must be converted
+
+157
+00:06:22.710 --> 00:06:24.810
+to using the PostgreSQL driver.
+
+158
+00:06:24.810 --> 00:06:27.090
+And the SQL language is a little bit different.
+
+159
+00:06:27.090 --> 00:06:29.850
+It's using the PL/pgSQL language.
+
+160
+00:06:29.850 --> 00:06:30.748
+So it's just a different language.
+
+161
+00:06:30.748 --> 00:06:32.550
+You don't need to remember the name of it.
+
+162
+00:06:32.550 --> 00:06:34.830
+So the idea is that how do we make sure
+
+163
+00:06:34.830 --> 00:06:39.480
+that our SQL Server application does not have to be migrated
+
+164
+00:06:39.480 --> 00:06:40.800
+to be rewritten?
+
+165
+00:06:40.800 --> 00:06:41.633
+For this, we use Babelfish
+
+166
+00:06:41.633 --> 00:06:45.870
+and Babelfish is going to be enabled on Aurora PostgreSQL,
+
+167
+00:06:45.870 --> 00:06:48.390
+and this allows your application
+
+168
+00:06:48.390 --> 00:06:51.330
+to just communicate to Aurora PostgreSQL
+
+169
+00:06:51.330 --> 00:06:54.360
+using the T-SQL language through Babelfish.
+
+170
+00:06:54.360 --> 00:06:56.400
+And so there's almost nothing to change.
+
+171
+00:06:56.400 --> 00:06:58.470
+So that means that your SQL Server applications
+
+172
+00:06:58.470 --> 00:07:00.900
+can now work on Aurora PostgreSQL
+
+173
+00:07:00.900 --> 00:07:05.370
+with little to no code changes using the same driver.
+
+174
+00:07:05.370 --> 00:07:06.690
+And so this is very handy
+
+175
+00:07:06.690 --> 00:07:09.060
+because well, migrations are super easy.
+
+176
+00:07:09.060 --> 00:07:11.880
+Now to do the migration, you use something called,
+
+177
+00:07:11.880 --> 00:07:13.440
+and we'll see this later on this course,
+
+178
+00:07:13.440 --> 00:07:17.850
+something called AWS SCT and DMS to migrate from,
+
+179
+00:07:17.850 --> 00:07:20.820
+for example, SQL Server to Aurora PostgreSQL.
+
+180
+00:07:20.820 --> 00:07:25.020
+But Babelfish is here to do the translation of T-SQL queries
+
+181
+00:07:25.020 --> 00:07:26.930
+into Aurora PostgreSQL.
+

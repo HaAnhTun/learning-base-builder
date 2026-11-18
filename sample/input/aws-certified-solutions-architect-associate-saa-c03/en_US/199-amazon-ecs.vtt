@@ -1,0 +1,622 @@
+WEBVTT
+
+1
+00:00:00.600 --> 00:00:03.540
+<v Instructor>Okay, so now let's talk about Amazon ECS</v>
+
+2
+00:00:03.540 --> 00:00:05.130
+and we're going to get an overview
+
+3
+00:00:05.130 --> 00:00:07.590
+into all different aspects of it.
+
+4
+00:00:07.590 --> 00:00:09.180
+So the first thing I want to talk to you about
+
+5
+00:00:09.180 --> 00:00:11.610
+is the EC2 launch type.
+
+6
+00:00:11.610 --> 00:00:14.700
+So ECS stands for Elastic Container Service.
+
+7
+00:00:14.700 --> 00:00:17.700
+And when you launch Docker containers on AWS,
+
+8
+00:00:17.700 --> 00:00:20.310
+you are launching what's called an ECS task
+
+9
+00:00:20.310 --> 00:00:22.620
+on an ECS cluster.
+
+10
+00:00:22.620 --> 00:00:25.890
+And an ECS cluster is made of things.
+
+11
+00:00:25.890 --> 00:00:27.930
+And with the EC2 launch type,
+
+12
+00:00:27.930 --> 00:00:30.810
+well, these things are EC2 instances.
+
+13
+00:00:30.810 --> 00:00:33.420
+And in that case, if you use an ECS cluster
+
+14
+00:00:33.420 --> 00:00:36.120
+with an EC2 launch type, you must provision
+
+15
+00:00:36.120 --> 00:00:38.880
+and maintain the infrastructure yourself.
+
+16
+00:00:38.880 --> 00:00:42.120
+So that means that your Amazon ECS cluster
+
+17
+00:00:42.120 --> 00:00:45.840
+is going to be composed of multiple EC2 instances.
+
+18
+00:00:45.840 --> 00:00:47.610
+Now, these instances are a little bit special
+
+19
+00:00:47.610 --> 00:00:51.840
+because each of them must run the ECS agent
+
+20
+00:00:51.840 --> 00:00:56.460
+and then this agent is going to register each EC2 instance
+
+21
+00:00:56.460 --> 00:01:01.460
+into the Amazon ECS service and the specified ECS cluster.
+
+22
+00:01:01.980 --> 00:01:03.720
+Now, once you have that in place,
+
+23
+00:01:03.720 --> 00:01:06.270
+then when you start ECS tasks,
+
+24
+00:01:06.270 --> 00:01:09.750
+then AWS is going to be starting or stopping the containers.
+
+25
+00:01:09.750 --> 00:01:12.210
+That means that whenever you have a new Docker container,
+
+26
+00:01:12.210 --> 00:01:14.400
+it's going to be placed accordingly
+
+27
+00:01:14.400 --> 00:01:18.540
+on each EC2 instance over time, as you can see right here.
+
+28
+00:01:18.540 --> 00:01:22.170
+And you can start or stop the ECS task
+
+29
+00:01:22.170 --> 00:01:24.180
+and it will be placed automatically.
+
+30
+00:01:24.180 --> 00:01:26.790
+So that's the EC2 launch type and Docker containers
+
+31
+00:01:26.790 --> 00:01:28.860
+are placed on Amazon EC2 instances
+
+32
+00:01:28.860 --> 00:01:31.500
+that we provision in advance, okay?
+
+33
+00:01:31.500 --> 00:01:32.940
+Now there's a second launch type
+
+34
+00:01:32.940 --> 00:01:35.280
+called the Fargate launch type.
+
+35
+00:01:35.280 --> 00:01:37.440
+And again, you launch Docker containers on AWS,
+
+36
+00:01:37.440 --> 00:01:40.320
+but this time you do not provision the infrastructure.
+
+37
+00:01:40.320 --> 00:01:42.750
+So there are no EC2 instances to manage.
+
+38
+00:01:42.750 --> 00:01:44.230
+It's all serverless.
+
+39
+00:01:44.230 --> 00:01:45.900
+Well, because we don't manage servers,
+
+40
+00:01:45.900 --> 00:01:48.030
+but of course there are servers behind.
+
+41
+00:01:48.030 --> 00:01:52.500
+So in the Fargate type, if we have an ECS cluster,
+
+42
+00:01:52.500 --> 00:01:56.430
+we just create task definition to define our ECS tasks,
+
+43
+00:01:56.430 --> 00:02:00.180
+and then AWS will run these ECS tasks for us
+
+44
+00:02:00.180 --> 00:02:02.700
+based on how many CPU and RAM we need.
+
+45
+00:02:02.700 --> 00:02:05.790
+So whenever we want to run a new Docker container,
+
+46
+00:02:05.790 --> 00:02:09.630
+simple as that, it's going to be run without us knowing
+
+47
+00:02:09.630 --> 00:02:12.270
+where it's run and without an EC2 instance
+
+48
+00:02:12.270 --> 00:02:16.110
+to be created in the backend in our accounts for it to work.
+
+49
+00:02:16.110 --> 00:02:17.460
+So it's a little bit magic.
+
+50
+00:02:17.460 --> 00:02:19.530
+And then to scale, well, you just need
+
+51
+00:02:19.530 --> 00:02:20.970
+to increase the number of tasks.
+
+52
+00:02:20.970 --> 00:02:24.900
+Simple, you don't need to manage any more EC2 instances.
+
+53
+00:02:24.900 --> 00:02:28.950
+And the exam loves to go and tell you to use Fargate
+
+54
+00:02:28.950 --> 00:02:31.860
+because Fargate is serverless and it's way easier
+
+55
+00:02:31.860 --> 00:02:33.903
+to manage than the EC2 launch type.
+
+56
+00:02:35.040 --> 00:02:37.800
+Okay, so we've seen the two launch types for Amazon ECS.
+
+57
+00:02:37.800 --> 00:02:40.920
+Now let's talk about the IAM roles for ECS tasks.
+
+58
+00:02:40.920 --> 00:02:43.680
+So let's take an example of the EC2 launch type
+
+59
+00:02:43.680 --> 00:02:45.720
+in which we have an EC2 instance running
+
+60
+00:02:45.720 --> 00:02:48.450
+the ECS agent on Docker.
+
+61
+00:02:48.450 --> 00:02:51.960
+So in this case, we can create an EC2 instance profile,
+
+62
+00:02:51.960 --> 00:02:55.170
+which is only valid, of course, if you use EC2 launch type,
+
+63
+00:02:55.170 --> 00:02:58.980
+and it's going to be used by the ECS agent only.
+
+64
+00:02:58.980 --> 00:03:02.970
+And then the ECS agent will use the EC2 instance profile
+
+65
+00:03:02.970 --> 00:03:05.040
+to make API calls to the ECS service
+
+66
+00:03:05.040 --> 00:03:06.450
+to register the instance.
+
+67
+00:03:06.450 --> 00:03:07.740
+It's going to make API calls
+
+68
+00:03:07.740 --> 00:03:09.990
+to CloudWatch Logs to send container logs.
+
+69
+00:03:09.990 --> 00:03:12.120
+It's going to use the API calls to ECR
+
+70
+00:03:12.120 --> 00:03:14.370
+to pull Docker images from ECR,
+
+71
+00:03:14.370 --> 00:03:17.520
+and also reference sensitive data in Secrets Manager
+
+72
+00:03:17.520 --> 00:03:20.010
+or the SSM Parameter Store.
+
+73
+00:03:20.010 --> 00:03:24.330
+And then our ECS tasks are going to get ECS task roles.
+
+74
+00:03:24.330 --> 00:03:27.780
+And so this is valid for both EC2 launch type and Fargate.
+
+75
+00:03:27.780 --> 00:03:29.520
+And so here I have two tasks
+
+76
+00:03:29.520 --> 00:03:33.480
+and we can create a specific role per task.
+
+77
+00:03:33.480 --> 00:03:37.500
+So my first task A will have an ECS task A role,
+
+78
+00:03:37.500 --> 00:03:40.020
+and the first task B, the second task B,
+
+79
+00:03:40.020 --> 00:03:42.600
+is going to have the task B role.
+
+80
+00:03:42.600 --> 00:03:44.550
+Well, why do we have different roles?
+
+81
+00:03:44.550 --> 00:03:47.160
+Because each role allows you to be linked
+
+82
+00:03:47.160 --> 00:03:48.990
+to different ECS services.
+
+83
+00:03:48.990 --> 00:03:53.370
+And so for example, the ECS task A role allows you
+
+84
+00:03:53.370 --> 00:03:58.370
+to have your task A run some API calls against Amazon S3,
+
+85
+00:03:58.410 --> 00:04:01.470
+whereas task B role allows you to run
+
+86
+00:04:01.470 --> 00:04:04.350
+again API calls against DynamoDB.
+
+87
+00:04:04.350 --> 00:04:07.530
+And you define the task role in the task definition
+
+88
+00:04:07.530 --> 00:04:09.720
+of your ECS service.
+
+89
+00:04:09.720 --> 00:04:10.650
+So remember this,
+
+90
+00:04:10.650 --> 00:04:13.620
+the distinction between EC2 instance profile role
+
+91
+00:04:13.620 --> 00:04:16.023
+and the ECS task role.
+
+92
+00:04:17.250 --> 00:04:19.050
+Next, load balancer integrations.
+
+93
+00:04:19.050 --> 00:04:21.900
+So in this example, I'm in the EC2 launch type,
+
+94
+00:04:21.900 --> 00:04:24.000
+but it could be Fargate as well, of course,
+
+95
+00:04:24.000 --> 00:04:26.670
+and have multiple ECS tasks running.
+
+96
+00:04:26.670 --> 00:04:28.500
+It's all in this ECS cluster
+
+97
+00:04:28.500 --> 00:04:30.180
+and we want to expose these tasks
+
+98
+00:04:30.180 --> 00:04:33.420
+as a HTTP or HTTPS endpoint.
+
+99
+00:04:33.420 --> 00:04:36.960
+Therefore, we can run an application balancer in front of it
+
+100
+00:04:36.960 --> 00:04:39.960
+and then our users will be going to the ALB
+
+101
+00:04:39.960 --> 00:04:43.140
+and in the backend to the ECS tasks directly.
+
+102
+00:04:43.140 --> 00:04:45.960
+So in that case, the ALB is supported
+
+103
+00:04:45.960 --> 00:04:49.590
+and will support most use cases and that's a good choice.
+
+104
+00:04:49.590 --> 00:04:52.080
+The network load balancer is recommended only
+
+105
+00:04:52.080 --> 00:04:53.820
+if you have very high throughput
+
+106
+00:04:53.820 --> 00:04:55.590
+or high performance use cases,
+
+107
+00:04:55.590 --> 00:04:57.540
+or as you learn later on in this course,
+
+108
+00:04:57.540 --> 00:04:59.493
+if you use it with AWS PrivateLink,
+
+109
+00:05:00.420 --> 00:05:01.650
+or if you want to use
+
+110
+00:05:01.650 --> 00:05:04.620
+the older generation classic load balancer, you can,
+
+111
+00:05:04.620 --> 00:05:06.810
+but it's definitely not recommended
+
+112
+00:05:06.810 --> 00:05:08.850
+because you don't get any advanced features
+
+113
+00:05:08.850 --> 00:05:12.150
+and you cannot link your Elastic Load Balancer to Fargate.
+
+114
+00:05:12.150 --> 00:05:14.550
+Whereas if you're using the application balancer,
+
+115
+00:05:14.550 --> 00:05:16.833
+then it works of course with Fargate.
+
+116
+00:05:17.730 --> 00:05:20.700
+So what about data persistence on Amazon ECS?
+
+117
+00:05:20.700 --> 00:05:23.040
+For this, you need data volumes and they're different kinds,
+
+118
+00:05:23.040 --> 00:05:26.280
+but one of them is noticeable and that's EFS.
+
+119
+00:05:26.280 --> 00:05:27.750
+So say you have an ECS cluster
+
+120
+00:05:27.750 --> 00:05:31.290
+and in this case I represented both the EC2 instance
+
+121
+00:05:31.290 --> 00:05:35.310
+as well as the Fargate launch type for my ECS cluster.
+
+122
+00:05:35.310 --> 00:05:37.200
+And we want to mount a file system
+
+123
+00:05:37.200 --> 00:05:40.050
+onto the ECS task to share some data.
+
+124
+00:05:40.050 --> 00:05:43.950
+In that case, we use an Amazon EFS file system.
+
+125
+00:05:43.950 --> 00:05:45.240
+Because it's a network file system
+
+126
+00:05:45.240 --> 00:05:47.880
+it's going to be compatible with both EC2
+
+127
+00:05:47.880 --> 00:05:49.410
+and the Fargate launch types,
+
+128
+00:05:49.410 --> 00:05:52.020
+and it allows us to mount the file system directly
+
+129
+00:05:52.020 --> 00:05:54.300
+onto our ECS tasks.
+
+130
+00:05:54.300 --> 00:05:55.133
+Why?
+
+131
+00:05:55.133 --> 00:05:58.290
+Well, then tasks running in any AZ linked
+
+132
+00:05:58.290 --> 00:06:01.950
+to this Amazon EFS file system will share the same data,
+
+133
+00:06:01.950 --> 00:06:04.050
+and therefore can communicate with another
+
+134
+00:06:04.050 --> 00:06:06.600
+via the file system if they wanted to.
+
+135
+00:06:06.600 --> 00:06:09.780
+So the ultimate combo is to use Fargate
+
+136
+00:06:09.780 --> 00:06:13.260
+to launch ECS task in a serverless fashion
+
+137
+00:06:13.260 --> 00:06:16.470
+and Amazon EFS for file system persistence
+
+138
+00:06:16.470 --> 00:06:18.690
+because EFS again is also serverless.
+
+139
+00:06:18.690 --> 00:06:20.190
+We don't manage any servers.
+
+140
+00:06:20.190 --> 00:06:22.200
+It's pay as you go, it's just provisioned
+
+141
+00:06:22.200 --> 00:06:24.510
+in advance and you're good to go.
+
+142
+00:06:24.510 --> 00:06:27.180
+So the use cases of using EFS with ECS
+
+143
+00:06:27.180 --> 00:06:29.190
+is to do persistent multi-AZ
+
+144
+00:06:29.190 --> 00:06:31.470
+shared storage for your containers.
+
+145
+00:06:31.470 --> 00:06:33.300
+And now you also have the option
+
+146
+00:06:33.300 --> 00:06:36.570
+to have data volumes for ECS to be S3 file system.
+
+147
+00:06:36.570 --> 00:06:39.030
+So you can mount an S3 bucket exposed
+
+148
+00:06:39.030 --> 00:06:42.600
+as a file system on your ECS task, which is amazing.
+
+149
+00:06:42.600 --> 00:06:46.830
+It works for ECS managed instances and Fargate
+
+150
+00:06:46.830 --> 00:06:51.030
+and the changes will sync automatically to the S3 bucket.
+
+151
+00:06:51.030 --> 00:06:53.730
+So here the use case is that if your containers need
+
+152
+00:06:53.730 --> 00:06:57.210
+shared file access to data that already lives in Amazon S3,
+
+153
+00:06:57.210 --> 00:07:00.183
+you can just mount that S3 bucket onto your tasks.
+
+154
+00:07:01.050 --> 00:07:03.000
+So that's it for this lecture, I hope you liked it,
+
+155
+00:07:03.000 --> 00:07:04.953
+and I will see you in the next lecture.
+

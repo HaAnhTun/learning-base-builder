@@ -1,0 +1,294 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.559
+In this lesson we walk through the three decomposition patterns you'll see in almost
+
+2
+00:00:04.559 --> 00:00:11.119
+every agentic system. Hierarchical, sequential, and parallel. We'll look at how each one works,
+
+3
+00:00:11.119 --> 00:00:17.120
+when to apply it, how real systems combine all three, and which anti-patterns to watch out for.
+
+4
+00:00:17.120 --> 00:00:22.879
+Let's get into it. Almost every decomposition you'll ever design is one of three shapes,
+
+5
+00:00:22.879 --> 00:00:29.520
+or a mix of them. Hierarchical decomposition recursively splits goals into sub-goals
+
+6
+00:00:29.520 --> 00:00:35.439
+across multiple levels, creating a tree where each level handles only its own tier of complexity.
+
+7
+00:00:36.000 --> 00:00:41.680
+Sequential execution runs tasks in a defined order, each one potentially depending on the
+
+8
+00:00:41.680 --> 00:00:48.159
+output of the step before it, and that dependency is exactly what forces the sequence. Parallel
+
+9
+00:00:48.159 --> 00:00:54.000
+execution runs independent tasks at the same time, cutting total wall clock time,
+
+10
+00:00:54.000 --> 00:00:59.520
+but introducing the need for synchronization when the branches converge back into the main workflow.
+
+11
+00:01:00.080 --> 00:01:05.680
+Keep those shapes distinct in your head because real systems mix all of them, and you need to
+
+12
+00:01:05.680 --> 00:01:12.239
+see which one applies where. Hierarchical decomposition builds a goal tree. At the top
+
+13
+00:01:12.239 --> 00:01:19.839
+you have the high level goal. Below it, sub-goals. Below those, tasks. Below those, individual steps.
+
+14
+00:01:19.839 --> 00:01:25.199
+The orchestrator at each level holds only its tier of complexity, and doesn't need to know the
+
+15
+00:01:25.199 --> 00:01:31.599
+details of how lower levels execute. It delegates down and waits for results to flow back up.
+
+16
+00:01:31.599 --> 00:01:38.000
+This mirrors how real organizations delegate work. An executive sets a strategic goal, a manager
+
+17
+00:01:38.000 --> 00:01:43.599
+breaks it into projects, a team breaks those projects into tasks, and individuals handle
+
+18
+00:01:43.599 --> 00:01:49.599
+specific steps. The advantage of this structure is specialization at each level. The risk is that
+
+19
+00:01:49.599 --> 00:01:55.839
+coordination overhead grows with every layer you add, and errors at the bottom have to travel all
+
+20
+00:01:55.839 --> 00:02:01.279
+the way back up before they're handled. One of the most important design decisions with hierarchical
+
+21
+00:02:01.279 --> 00:02:09.119
+decomposition is how deep to go. Going deeper adds specialization. You can route sub-goals to agents
+
+22
+00:02:09.119 --> 00:02:14.240
+that are purpose-built for that specific tier of complexity, and they don't have to deal with the
+
+23
+00:02:14.240 --> 00:02:20.160
+broader context above them. But each added level increases what's called the error propagation
+
+24
+00:02:20.160 --> 00:02:26.000
+surface. An error at the bottom of a five-level hierarchy has to travel back up through four
+
+25
+00:02:26.000 --> 00:02:31.360
+orchestration layers before it's caught. Each of those layers is a chance for the error to be
+
+26
+00:02:31.360 --> 00:02:37.919
+misinterpreted or swallowed. Flatten wherever you can. If two adjacent levels would run the same
+
+27
+00:02:37.919 --> 00:02:43.759
+type of agent with nearly the same prompt, there's no reason for the separation. Depth should earn
+
+28
+00:02:43.759 --> 00:02:49.360
+its cost through genuine specialization gains, not just because it looks clean on a diagram.
+
+29
+00:02:50.559 --> 00:02:56.559
+Sequential decomposition is the straightforward pattern. Step 1 runs, produces output. Step 2
+
+30
+00:02:56.559 --> 00:03:03.199
+takes that output as input, produces its own output, and so on down the chain. The key characteristic
+
+31
+00:03:03.199 --> 00:03:10.399
+is that step order is enforced by data dependency. You can't run step 3 before step 2 because step 3
+
+32
+00:03:10.399 --> 00:03:16.720
+needs what step 2 produces. Sequential patterns are the simplest to reason about and debug. When
+
+33
+00:03:16.720 --> 00:03:22.320
+something goes wrong, you know exactly which step failed and what state the workflow was in. The
+
+34
+00:03:22.320 --> 00:03:28.160
+trade-off is that sequential chains can't exploit any parallelism, and total time equals the sum of
+
+35
+00:03:28.160 --> 00:03:34.559
+all step durations. When you're choosing between sequential and parallel, the deciding factor is
+
+36
+00:03:34.559 --> 00:03:41.600
+always data dependency. If step B needs step A's output to function, it's sequential by necessity.
+
+37
+00:03:41.600 --> 00:03:47.679
+If steps B and C both need step A's output but don't need anything from each other, they can
+
+38
+00:03:47.679 --> 00:03:54.720
+run in parallel after A completes. Using sequential execution when steps are actually independent is a
+
+39
+00:03:54.720 --> 00:04:01.039
+missed optimization. You're adding latency for no reliability benefit. But the reverse mistake
+
+40
+00:04:01.039 --> 00:04:08.399
+is worse. Treating dependent steps as if they're parallel causes data hazards. Step B starts before
+
+41
+00:04:08.399 --> 00:04:15.759
+it has the input it needs, uses stale or missing data, and produces wrong output. Dependency analysis
+
+42
+00:04:15.759 --> 00:04:22.079
+has to come first. Before you decide on execution pattern, map out what each step actually needs.
+
+43
+00:04:23.359 --> 00:04:28.480
+Parallel decomposition identifies subtasks that have no data dependencies on each other
+
+44
+00:04:28.480 --> 00:04:34.160
+and runs them concurrently. This is where you recover the latency that sequential patterns
+
+45
+00:04:34.160 --> 00:04:39.359
+sacrifice. If you have five independent research tasks that each take 10 seconds,
+
+46
+00:04:39.920 --> 00:04:47.440
+sequential execution takes 50 seconds. Parallel takes 10. The design requirements are strict.
+
+47
+00:04:47.440 --> 00:04:53.679
+Each parallel branch has to be truly independent with no shared mutable state. If two branches
+
+48
+00:04:53.679 --> 00:04:59.279
+write to the same resource without coordination, you get race conditions. When all branches
+
+49
+00:04:59.279 --> 00:05:06.239
+complete, a fan-in step collects results and continues the workflow. Parallel execution
+
+50
+00:05:06.239 --> 00:05:13.200
+introduces a failure scenario. Sequential patterns avoid partial failure where some branches succeed
+
+51
+00:05:13.200 --> 00:05:19.359
+and others don't. Your orchestration logic has to handle that explicitly with a defined policy for
+
+52
+00:05:19.359 --> 00:05:26.640
+what happens when the fan-in collects incomplete results. Real systems combine all three patterns
+
+53
+00:05:26.640 --> 00:05:32.000
+and seeing them together is more representative of actual architectures than studying each one
+
+54
+00:05:32.000 --> 00:05:38.079
+in isolation. A hierarchical orchestrator might delegate to a pair of specialized sub-agents
+
+55
+00:05:38.079 --> 00:05:43.519
+running in parallel where each sub-agent internally runs a sequential pipeline of steps
+
+56
+00:05:44.160 --> 00:05:51.440
+or a sequential pipeline might fan out to parallel branches for a batch operation, then fan back in
+
+57
+00:05:51.440 --> 00:05:57.519
+before the next stage. The decision at each point is local. What does this specific segment of the
+
+58
+00:05:57.519 --> 00:06:04.640
+workflow need? Sequential, where dependencies exist, parallel where they don't, and hierarchical,
+
+59
+00:06:04.640 --> 00:06:10.959
+where specialization justifies the layering. The most reliable architectures pick the right pattern
+
+60
+00:06:11.040 --> 00:06:16.160
+for each segment based on its structure, not based on a preference for any one approach.
+
+61
+00:06:17.440 --> 00:06:23.679
+Three anti-patterns show up repeatedly in agentic systems and all three are worth recognizing
+
+62
+00:06:23.679 --> 00:06:29.600
+on site. Over-decomposition happens when you've added so many steps and handoffs that the cost of
+
+63
+00:06:29.600 --> 00:06:35.839
+coordinating them exceeds the cost of just running the task as a single unit. The workflow spends
+
+64
+00:06:35.839 --> 00:06:42.160
+more time passing context around than doing work. Under-decomposition is the opposite. Tasks are so
+
+65
+00:06:42.160 --> 00:06:48.320
+large that a single failure kills the whole workflow and retry means starting from scratch,
+
+66
+00:06:48.320 --> 00:06:54.079
+and false parallelism is the most dangerous. Treating steps with data dependencies as if
+
+67
+00:06:54.079 --> 00:06:59.839
+they're independent, running them in parallel, and getting data hazards and silent incorrect outputs.
+
+68
+00:07:00.399 --> 00:07:06.559
+When you see a failing system, diagnosing which anti-pattern it has tells you exactly what kind
+
+69
+00:07:06.559 --> 00:07:13.679
+of fix is needed. A pattern isn't a preference you bring into a workflow. It's a reading of what the
+
+70
+00:07:13.679 --> 00:07:19.760
+dependencies already are. Parallel describes steps that don't need each other. It isn't a wish for
+
+71
+00:07:19.760 --> 00:07:26.160
+things to run faster. Confuse those two and you get false parallelism. It fails quietly and hands
+
+72
+00:07:26.160 --> 00:07:32.079
+you the wrong answers instead of giving you what you're going for. That wraps up this one. I'll see
+
+73
+00:07:32.079 --> 00:07:33.119
+you in the next lesson.
+

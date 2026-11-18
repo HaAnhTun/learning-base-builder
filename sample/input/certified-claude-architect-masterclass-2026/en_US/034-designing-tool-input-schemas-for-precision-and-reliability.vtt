@@ -1,0 +1,358 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.119
+When Claude calls a tool, it generates arguments based entirely on your schema.
+
+2
+00:00:05.119 --> 00:00:08.159
+If the schema is vague, Claude's arguments will be too.
+
+3
+00:00:08.720 --> 00:00:14.640
+A well-designed schema acts like a contract, specifying what to send and in what format.
+
+4
+00:00:14.640 --> 00:00:19.440
+For this video, we'll cover how JSON Schema drives tool input design
+
+5
+00:00:19.440 --> 00:00:23.280
+and why precision is the biggest lever for call reliability.
+
+6
+00:00:24.319 --> 00:00:28.319
+Every argument Claude generates is shaped by what your schema declares,
+
+7
+00:00:28.319 --> 00:00:32.080
+so it's worth knowing exactly what that object contains.
+
+8
+00:00:32.080 --> 00:00:36.959
+A tool schema is the JSON schema object you attach to your tool definition.
+
+9
+00:00:36.959 --> 00:00:43.759
+It specifies every accepted parameter, its type, any constraints, and which fields are required.
+
+10
+00:00:43.759 --> 00:00:47.520
+Claude uses this schema to shape the arguments it generates.
+
+11
+00:00:47.520 --> 00:00:50.159
+By default, the schema is best effort guidance.
+
+12
+00:00:50.720 --> 00:00:56.560
+To guarantee arguments conform exactly, you set strict tool use on the definition.
+
+13
+00:00:56.560 --> 00:01:00.639
+A tool input parameter is any named field inside that schema,
+
+14
+00:01:00.639 --> 00:01:03.200
+carrying a value Claude has to supply.
+
+15
+00:01:03.200 --> 00:01:06.720
+Parameters can be required or optional, typed, and described.
+
+16
+00:01:07.440 --> 00:01:12.419
+Schema validation is the step where generated arguments are checked against the declared structure.
+
+17
+00:01:13.599 --> 00:01:19.199
+JSON Schema is the standard format for declaring tool inputs in the Anthropic API.
+
+18
+00:01:19.199 --> 00:01:23.360
+It's a machine-readable object that tells Claude which fields exist,
+
+19
+00:01:23.360 --> 00:01:26.559
+what types they accept, and what constraints apply.
+
+20
+00:01:26.559 --> 00:01:28.080
+Here's an important detail.
+
+21
+00:01:28.080 --> 00:01:32.639
+Claude reads your schema at inference time, not just at definition time.
+
+22
+00:01:32.639 --> 00:01:36.160
+That means every property you declare is actively shaping
+
+23
+00:01:36.160 --> 00:01:39.120
+how Claude constructs its arguments right now in this call.
+
+24
+00:01:39.680 --> 00:01:45.120
+If you enable strict tool use, the model is held to the grammar-enforced parts of your schema,
+
+25
+00:01:45.120 --> 00:01:50.720
+its types, enums, and required fields, which acts as a safety net at generation time.
+
+26
+00:01:51.279 --> 00:01:55.040
+Length and range bounds stay advisory, so that safety net
+
+27
+00:01:55.040 --> 00:01:58.800
+only helps where your schema uses the constraints that are actually enforced.
+
+28
+00:02:00.000 --> 00:02:04.720
+Parameter names are the first signal Claude uses to understand what a field is for.
+
+29
+00:02:04.720 --> 00:02:10.720
+A field called ID could mean a user ID, an order ID, a product ID, or a session ID,
+
+30
+00:02:10.720 --> 00:02:12.399
+depending on context.
+
+31
+00:02:12.399 --> 00:02:16.559
+A field called customer ID removes that ambiguity completely.
+
+32
+00:02:16.559 --> 00:02:18.479
+The guidance here is straightforward.
+
+33
+00:02:18.479 --> 00:02:24.880
+Use specific descriptive names in SnakeCase, avoid abbreviations the model might misinterpret,
+
+34
+00:02:24.880 --> 00:02:29.039
+and make sure the name reflects the domain meaning of the field
+
+35
+00:02:29.039 --> 00:02:31.839
+rather than how you've implemented it internally.
+
+36
+00:02:31.839 --> 00:02:37.199
+This matters because Claude is reading names as semantic signals, not just identifiers.
+
+37
+00:02:37.199 --> 00:02:41.919
+When parameter names are clear, Claude is far less likely to populate them
+
+38
+00:02:41.919 --> 00:02:43.919
+with plausible but wrong values.
+
+39
+00:02:44.479 --> 00:02:48.000
+Naming anti-patterns are worth calling out directly,
+
+40
+00:02:48.000 --> 00:02:50.720
+because they show up all the time in real schemas.
+
+41
+00:02:51.199 --> 00:02:58.559
+Generic names like data, input, or value give Claude no context about the field's purpose,
+
+42
+00:02:58.559 --> 00:03:01.759
+so it's left to infer from surrounding conversation.
+
+43
+00:03:02.320 --> 00:03:06.720
+Overloaded names, where the same field name means different things in different tools,
+
+44
+00:03:06.720 --> 00:03:11.600
+compound the problem because Claude builds up associations over a session
+
+45
+00:03:12.399 --> 00:03:14.160
+that carry over incorrectly.
+
+46
+00:03:14.800 --> 00:03:21.679
+Cryptic abbreviations like usractnum or acttpcd force the model to guess at meaning,
+
+47
+00:03:21.679 --> 00:03:24.160
+and increase the risk that it guesses wrong.
+
+48
+00:03:24.720 --> 00:03:29.039
+Each of these patterns produces tool calls that look structurally valid,
+
+49
+00:03:29.039 --> 00:03:30.800
+but carry incorrect content.
+
+50
+00:03:32.000 --> 00:03:35.600
+Here's a design insight that surprises a lot of developers.
+
+51
+00:03:35.600 --> 00:03:39.600
+Parameter descriptions aren't just documentation for humans.
+
+52
+00:03:39.679 --> 00:03:43.360
+Claude reads them at inference time as part of argument generation.
+
+53
+00:03:43.919 --> 00:03:49.520
+A description like the user id technically communicates what kind of data belongs in the field,
+
+54
+00:03:49.520 --> 00:03:53.440
+but a richly specified description tells Claude the source,
+
+55
+00:03:53.440 --> 00:03:56.800
+the expected format, and the constraints all at once.
+
+56
+00:03:56.800 --> 00:03:59.600
+The strongest descriptions name the field's purpose,
+
+57
+00:03:59.600 --> 00:04:03.520
+the valid values it accepts, and how it should behave at the edges.
+
+58
+00:04:04.080 --> 00:04:08.720
+Omitting descriptions degrades argument quality even when your types are correct.
+
+59
+00:04:08.720 --> 00:04:11.520
+Think of every description as a mini instruction,
+
+60
+00:04:11.520 --> 00:04:14.720
+written directly to the model, because that's exactly what it is.
+
+61
+00:04:16.000 --> 00:04:18.239
+Let's make the contrast concrete.
+
+62
+00:04:18.239 --> 00:04:21.200
+A weak description says the user id.
+
+63
+00:04:21.200 --> 00:04:24.640
+That's technically accurate, but seriously underspecified.
+
+64
+00:04:24.640 --> 00:04:28.480
+Claude knows it's some kind of identifier, but it doesn't know the format,
+
+65
+00:04:28.480 --> 00:04:33.519
+where it comes from, whether it's numeric, or a uuid, or how long it should be.
+
+66
+00:04:33.519 --> 00:04:38.799
+A strong description says uuid of the authenticated user from the session token,
+
+67
+00:04:38.799 --> 00:04:46.239
+formatted as 32 hexadecimal digits, displayed in 5 hyphen separated groups, 36 characters total.
+
+68
+00:04:47.040 --> 00:04:53.200
+That tells Claude the exact format, the source of the value, and the length, all in one sentence.
+
+69
+00:04:53.200 --> 00:04:55.359
+There's no room for misinterpretation.
+
+70
+00:04:55.359 --> 00:04:59.839
+The difference in argument quality between these two descriptions is measurable,
+
+71
+00:04:59.839 --> 00:05:05.359
+especially for identifier fields where the format has to be precisely right, or the call fails.
+
+72
+00:05:06.640 --> 00:05:11.519
+Under strict tool use, JSON schema constraints aren't all enforced the same way.
+
+73
+00:05:12.160 --> 00:05:17.119
+Type, enum, and supported format values are grammar-enforced,
+
+74
+00:05:17.119 --> 00:05:19.440
+so Claude can't generate anything outside them.
+
+75
+00:05:20.000 --> 00:05:25.440
+The type property declares whether a field is a string, an integer, a number, a boolean,
+
+76
+00:05:25.440 --> 00:05:32.079
+or an array. The format property adds a semantic layer, hints like date, time, or email,
+
+77
+00:05:32.079 --> 00:05:35.920
+that tell both Claude and your validators what the string represents.
+
+78
+00:05:36.720 --> 00:05:40.000
+Pattern is a regular expression the value has to match,
+
+79
+00:05:40.000 --> 00:05:43.119
+and it's only partially enforced, so check it in your own code.
+
+80
+00:05:43.679 --> 00:05:48.799
+Length and range, bounds like min-length and maximum, are purely advisory,
+
+81
+00:05:48.799 --> 00:05:54.079
+validated after the fact. Lean on the enforced constraints for hard guarantees,
+
+82
+00:05:54.079 --> 00:05:58.320
+and re-validate the advisory ones before the call reaches your backend.
+
+83
+00:05:59.760 --> 00:06:04.799
+There's a line worth drawing between the parts of a schema that constrain Claude,
+
+84
+00:06:04.799 --> 00:06:06.640
+and the parts that only persuade it.
+
+85
+00:06:07.359 --> 00:06:10.559
+Types and enums are enforced at generation.
+
+86
+00:06:11.119 --> 00:06:15.600
+Names and descriptions steer, and length bounds get checked after the fact.
+
+87
+00:06:16.239 --> 00:06:20.959
+Once you know which is which, you stop trusting a good description to guarantee everything.
+
+88
+00:06:21.519 --> 00:06:23.920
+The rest you validate in your own code.
+
+89
+00:06:24.720 --> 00:06:27.760
+That's a wrap on this one. I'll see you in the next video.
+

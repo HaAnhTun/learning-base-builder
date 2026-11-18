@@ -1,0 +1,382 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.839
+Complex prompts need structural signals the model can rely on,
+
+2
+00:00:03.839 --> 00:00:07.599
+and XML tags are the most reliable way to provide them.
+
+3
+00:00:07.599 --> 00:00:11.840
+For this one, we'll look at why XML outperforms plain delimiters,
+
+4
+00:00:11.840 --> 00:00:17.200
+walk through the standard tag conventions, explore nested tags for hierarchical data,
+
+5
+00:00:17.200 --> 00:00:23.600
+and finish on the role structure plays in defending against prompt injection. Let's dive in.
+
+6
+00:00:24.559 --> 00:00:30.479
+Imagine handing the model a wall of text where your instructions and a customer's email
+
+7
+00:00:30.479 --> 00:00:32.959
+sit side-by-side with nothing between them.
+
+8
+00:00:33.599 --> 00:00:37.520
+That ambiguity is exactly what XML tags remove.
+
+9
+00:00:37.520 --> 00:00:40.400
+XML tags are structured markup elements,
+
+10
+00:00:40.400 --> 00:00:45.599
+things like document, instructions, or example, that label and separate parts of a prompt.
+
+11
+00:00:46.240 --> 00:00:49.599
+Claude is specifically trained to respect those boundaries,
+
+12
+00:00:49.599 --> 00:00:52.639
+which makes them more reliable than prose separators.
+
+13
+00:00:53.279 --> 00:00:57.520
+Prompt injection is an attack where malicious user-supplied content
+
+14
+00:00:57.520 --> 00:00:59.919
+tries to override the developer's instructions.
+
+15
+00:01:00.560 --> 00:01:05.919
+Tags help the model tell data from directives, but they aren't the primary defense.
+
+16
+00:01:05.919 --> 00:01:10.720
+The real mitigations are treating tool and document content as untrusted
+
+17
+00:01:10.720 --> 00:01:12.400
+and giving the model least privilege.
+
+18
+00:01:12.959 --> 00:01:17.440
+Tag consistency means using the same tag names for the same roles throughout,
+
+19
+00:01:17.440 --> 00:01:22.160
+which reinforces the structural signal Claude relies on when parsing your input.
+
+20
+00:01:23.360 --> 00:01:27.040
+Let's start with why XML beats plain delimiters.
+
+21
+00:01:27.040 --> 00:01:31.839
+When you use dashes, asterisks, or markdown headers as separators,
+
+22
+00:01:31.839 --> 00:01:36.239
+the model has to infer whether they're structure signals or actual content.
+
+23
+00:01:36.800 --> 00:01:41.839
+That inference can go wrong, especially in longer prompts where section boundaries matter.
+
+24
+00:01:42.400 --> 00:01:47.199
+XML tags have unambiguous, open, and close syntax.
+
+25
+00:01:47.199 --> 00:01:51.120
+There's no guessing whether a line of dashes is a separator or part of a table.
+
+26
+00:01:51.680 --> 00:01:55.360
+Claude's training reinforces tag boundaries consistently,
+
+27
+00:01:55.360 --> 00:02:00.400
+so the model reliably treats the content inside a tag as a distinct section.
+
+28
+00:02:00.959 --> 00:02:05.440
+For any prompt where you need clear, dependable separation between sections,
+
+29
+00:02:05.440 --> 00:02:08.800
+XML is the right choice over prose or markdown.
+
+30
+00:02:10.080 --> 00:02:13.440
+Four standard tag names cover most of what you'll build.
+
+31
+00:02:13.440 --> 00:02:18.080
+The instructions tag wraps the task directive, the thing you're asking the model to do.
+
+32
+00:02:18.720 --> 00:02:22.880
+The context tag holds background information the task depends on,
+
+33
+00:02:22.880 --> 00:02:26.479
+things the model needs to know but isn't being asked to produce.
+
+34
+00:02:26.479 --> 00:02:32.240
+The examples tag contains few-shot demonstrations of the output format or reasoning style you want.
+
+35
+00:02:32.240 --> 00:02:37.600
+The output format tag specifies the structure and format you expect back from the model.
+
+36
+00:02:37.600 --> 00:02:42.559
+You're not required to use these exact names, but they're widely recognized conventions.
+
+37
+00:02:42.559 --> 00:02:46.479
+Using them makes your prompts easier for collaborators to read
+
+38
+00:02:46.479 --> 00:02:49.839
+and maintains the kind of consistency that improves follow-through.
+
+39
+00:02:51.039 --> 00:02:54.720
+Good tag naming is a small habit that pays off at scale.
+
+40
+00:02:54.720 --> 00:02:59.119
+Choose names that describe what the content is, not just that it exists.
+
+41
+00:02:59.119 --> 00:03:03.440
+A tag named customer data is clearer than data or block.
+
+42
+00:03:03.440 --> 00:03:05.440
+Stay consistent with those names.
+
+43
+00:03:05.440 --> 00:03:09.520
+If you call something document in one prompt, call it document everywhere,
+
+44
+00:03:09.520 --> 00:03:13.199
+because when tag names drift, the structural signal weakens.
+
+45
+00:03:13.839 --> 00:03:17.119
+Every tag also needs its matching close.
+
+46
+00:03:17.119 --> 00:03:20.880
+An unclosed tag is a common source of subtle bugs,
+
+47
+00:03:20.880 --> 00:03:25.039
+where the model treats everything after the opening tag as part of that section.
+
+48
+00:03:25.039 --> 00:03:27.679
+And if you are building a system with many prompts,
+
+49
+00:03:27.679 --> 00:03:30.479
+align your tag vocabulary across all of them.
+
+50
+00:03:31.360 --> 00:03:36.720
+That shared vocabulary is what keeps a multi-prompt system coherent and debuggable as it grows.
+
+51
+00:03:38.000 --> 00:03:41.199
+Flat and nested tags serve different needs.
+
+52
+00:03:41.199 --> 00:03:44.479
+Flat tags work well when sections are independent.
+
+53
+00:03:44.479 --> 00:03:48.639
+You have instructions, context, and examples at the same level,
+
+54
+00:03:48.639 --> 00:03:51.279
+each clearly labeled, no hierarchy needed.
+
+55
+00:03:51.839 --> 00:03:54.479
+That covers most single document prompts.
+
+56
+00:03:55.119 --> 00:03:59.440
+Nested tags come into play when a section has its own internal structure.
+
+57
+00:04:00.000 --> 00:04:04.800
+If you're passing a document with a source, a date, and the actual content,
+
+58
+00:04:04.800 --> 00:04:09.839
+nesting a source tag and a content tag inside a parent document tag
+
+59
+00:04:09.839 --> 00:04:12.160
+preserves those relationships.
+
+60
+00:04:12.160 --> 00:04:17.440
+The model can read each child independently while knowing they belong to the same document.
+
+61
+00:04:18.000 --> 00:04:21.279
+Nesting adds clarity when hierarchy exists.
+
+62
+00:04:21.279 --> 00:04:23.519
+It adds noise when it doesn't.
+
+63
+00:04:23.519 --> 00:04:26.720
+So keep it to one or two levels in practice.
+
+64
+00:04:28.079 --> 00:04:32.320
+Nested tags let you represent structured data without ambiguity.
+
+65
+00:04:32.320 --> 00:04:37.760
+A document tag can contain a source tag, a date tag, and a document content tag as children.
+
+66
+00:04:38.320 --> 00:04:42.480
+The model reads each child independently within the context of its parent.
+
+67
+00:04:43.119 --> 00:04:47.200
+That parent-child relationship matters when you have multiple documents.
+
+68
+00:04:47.200 --> 00:04:52.320
+Each one has its own source and content, and the tags make those pairings explicit.
+
+69
+00:04:52.880 --> 00:04:56.239
+Practically, you should keep nesting to one or two levels deep.
+
+70
+00:04:56.959 --> 00:05:01.839
+Deeper nesting becomes hard to read and maintain, and the clarity benefit disappears.
+
+71
+00:05:02.480 --> 00:05:06.320
+When a section has internal structure that needs to be parsed separately,
+
+72
+00:05:06.320 --> 00:05:08.959
+one level of nesting is usually all you need.
+
+73
+00:05:10.160 --> 00:05:14.959
+Separating data from instructions is one useful thing XML tags enable.
+
+74
+00:05:14.959 --> 00:05:17.359
+The risk without it is prompt injection,
+
+75
+00:05:17.359 --> 00:05:21.440
+where user-supplied content in the same undifferentiated block
+
+76
+00:05:21.440 --> 00:05:23.440
+tries to override your task directive.
+
+77
+00:05:24.079 --> 00:05:29.519
+By placing task directives inside an instructions tag and user-supplied content
+
+78
+00:05:29.519 --> 00:05:32.000
+inside context or document tags,
+
+79
+00:05:32.000 --> 00:05:36.000
+you make it less likely the model confuses data for a directive.
+
+80
+00:05:36.720 --> 00:05:39.920
+That said, tagging isn't a guaranteed barrier.
+
+81
+00:05:39.920 --> 00:05:43.119
+Adversarial input can attempt to break out of a tag,
+
+82
+00:05:43.119 --> 00:05:46.880
+so treat tags as one layer of clarity, not the primary defense.
+
+83
+00:05:47.440 --> 00:05:52.880
+The real mitigations are treating any tool or document content as untrusted
+
+84
+00:05:52.880 --> 00:05:54.799
+and giving the model least privilege,
+
+85
+00:05:54.799 --> 00:05:58.320
+so a compromised input can't trigger harmful actions.
+
+86
+00:06:00.079 --> 00:06:02.000
+So here's the failure this prevents.
+
+87
+00:06:02.000 --> 00:06:04.559
+A customer email lands in the middle of your prompt
+
+88
+00:06:04.559 --> 00:06:06.880
+with nothing marking where it starts,
+
+89
+00:06:06.880 --> 00:06:09.679
+and the model treats a line inside it as a command.
+
+90
+00:06:10.480 --> 00:06:14.559
+Tags close that gap because Claude is trained to honor that boundary
+
+91
+00:06:14.559 --> 00:06:17.519
+in a way that it never honors a row of dashes.
+
+92
+00:06:18.480 --> 00:06:20.480
+They won't stop an injection on their own,
+
+93
+00:06:20.480 --> 00:06:24.320
+but every real defense assumes that boundary is already in play.
+
+94
+00:06:25.119 --> 00:06:26.239
+That's where we'll leave it.
+
+95
+00:06:26.239 --> 00:06:27.760
+I'll see you in the next lesson.
+

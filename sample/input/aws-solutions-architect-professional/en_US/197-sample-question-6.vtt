@@ -1,0 +1,574 @@
+WEBVTT
+
+1
+00:00:00.210 --> 00:00:03.690
+<v Instructor>So, a company has two AWS accounts,</v>
+
+2
+00:00:03.690 --> 00:00:05.040
+one for production workloads
+
+3
+00:00:05.040 --> 00:00:06.900
+and one for development workloads.
+
+4
+00:00:06.900 --> 00:00:10.050
+Creating and managing these workloads are a development team
+
+5
+00:00:10.050 --> 00:00:11.580
+and an operations team.
+
+6
+00:00:11.580 --> 00:00:14.160
+The company needs a security strategy
+
+7
+00:00:14.160 --> 00:00:16.200
+that meets the following requirements.
+
+8
+00:00:16.200 --> 00:00:17.610
+Developers need to create
+
+9
+00:00:17.610 --> 00:00:21.330
+and delete development application infrastructure.
+
+10
+00:00:21.330 --> 00:00:23.820
+Operators need to create and delete both development
+
+11
+00:00:23.820 --> 00:00:26.250
+and production application infrastructure.
+
+12
+00:00:26.250 --> 00:00:27.840
+Developers should have no access
+
+13
+00:00:27.840 --> 00:00:29.670
+to production infrastructure.
+
+14
+00:00:29.670 --> 00:00:34.050
+And all users should have a single set of AWS credentials.
+
+15
+00:00:34.050 --> 00:00:37.080
+What strategy meets these requirements?
+
+16
+00:00:37.080 --> 00:00:39.240
+So, if you had a look at your own at this question
+
+17
+00:00:39.240 --> 00:00:40.320
+and you look at the answers,
+
+18
+00:00:40.320 --> 00:00:42.000
+you can see they're very long question
+
+19
+00:00:42.000 --> 00:00:43.770
+and very long answers.
+
+20
+00:00:43.770 --> 00:00:46.710
+So, in the exam, I really recommend you,
+
+21
+00:00:46.710 --> 00:00:49.230
+for those very long questions and very long answers,
+
+22
+00:00:49.230 --> 00:00:51.780
+to flag these, skip them,
+
+23
+00:00:51.780 --> 00:00:53.580
+and do them at the end
+
+24
+00:00:53.580 --> 00:00:56.880
+because they can take so much valuable time away from you.
+
+25
+00:00:56.880 --> 00:00:59.340
+It's better to go ahead and do the other questions
+
+26
+00:00:59.340 --> 00:01:01.110
+and come back to those at the end.
+
+27
+00:01:01.110 --> 00:01:04.380
+The reason is the Certified Solution Architect
+
+28
+00:01:04.380 --> 00:01:06.120
+professional exam is very, very long
+
+29
+00:01:06.120 --> 00:01:07.560
+and very, very difficult.
+
+30
+00:01:07.560 --> 00:01:10.710
+And you would rather spend some time on a simpler question
+
+31
+00:01:10.710 --> 00:01:13.950
+and less lengthy question than this one.
+
+32
+00:01:13.950 --> 00:01:16.080
+Still, we're going to address this question.
+
+33
+00:01:16.080 --> 00:01:18.240
+So, here we have many requirements,
+
+34
+00:01:18.240 --> 00:01:19.710
+and one of the important requirements
+
+35
+00:01:19.710 --> 00:01:21.810
+is that developers should have no access
+
+36
+00:01:21.810 --> 00:01:23.430
+to production infrastructure
+
+37
+00:01:23.430 --> 00:01:26.100
+and the user should have a single set of credentials.
+
+38
+00:01:26.100 --> 00:01:29.040
+So, let's go ahead and see how things can work.
+
+39
+00:01:29.040 --> 00:01:30.000
+So, let's have a look.
+
+40
+00:01:30.000 --> 00:01:32.430
+So, option A is in the dev account,
+
+41
+00:01:32.430 --> 00:01:34.860
+create a dev IAM group with the ability to create
+
+42
+00:01:34.860 --> 00:01:36.660
+and delete application infrastructure.
+
+43
+00:01:36.660 --> 00:01:37.920
+So, this is great.
+
+44
+00:01:37.920 --> 00:01:40.200
+Create an IAM user for each operator and developer
+
+45
+00:01:40.200 --> 00:01:42.000
+and assign them to the development group.
+
+46
+00:01:42.000 --> 00:01:42.930
+This works too.
+
+47
+00:01:42.930 --> 00:01:44.640
+And in the production account,
+
+48
+00:01:44.640 --> 00:01:46.980
+create an operations IAM group with the ability
+
+49
+00:01:46.980 --> 00:01:48.840
+to create and delete application infrastructure.
+
+50
+00:01:48.840 --> 00:01:49.710
+Okay.
+
+51
+00:01:49.710 --> 00:01:51.570
+Create an IAM user for each operator
+
+52
+00:01:51.570 --> 00:01:53.490
+and assign them to the ops group.
+
+53
+00:01:53.490 --> 00:01:55.020
+So, here in option A,
+
+54
+00:01:55.020 --> 00:01:57.930
+we are creating IAM users in both the dev account
+
+55
+00:01:57.930 --> 00:01:59.370
+and the prod account.
+
+56
+00:01:59.370 --> 00:02:01.500
+And that goes against the requirement
+
+57
+00:02:01.500 --> 00:02:05.130
+that we should have only one set of a risk credentials.
+
+58
+00:02:05.130 --> 00:02:07.650
+So, we have to rule out option A.
+
+59
+00:02:07.650 --> 00:02:09.630
+Option B says in the dev account,
+
+60
+00:02:09.630 --> 00:02:12.180
+create a dev IAM group with the ability to create
+
+61
+00:02:12.180 --> 00:02:14.730
+and delete application infrastructure.
+
+62
+00:02:14.730 --> 00:02:16.710
+Create an IAM user for each developer
+
+63
+00:02:16.710 --> 00:02:18.900
+and assign them to the development group.
+
+64
+00:02:18.900 --> 00:02:21.270
+Create an IAM user for each operator
+
+65
+00:02:21.270 --> 00:02:24.000
+and assign them to development group and the operations
+
+66
+00:02:24.000 --> 00:02:25.620
+in the production account.
+
+67
+00:02:25.620 --> 00:02:26.670
+And in the prod account,
+
+68
+00:02:26.670 --> 00:02:29.040
+create an IAM group with the ability to create
+
+69
+00:02:29.040 --> 00:02:31.620
+and delete application infrastructure.
+
+70
+00:02:31.620 --> 00:02:33.960
+So, this looks very wrong. Why?
+
+71
+00:02:33.960 --> 00:02:37.830
+Because we cannot assign an IAM user from an account
+
+72
+00:02:37.830 --> 00:02:39.870
+into a group of another account.
+
+73
+00:02:39.870 --> 00:02:41.223
+It is impossible, okay?
+
+74
+00:02:44.535 --> 00:02:46.980
+Groups and users are linked to a single account.
+
+75
+00:02:46.980 --> 00:02:50.310
+So, here, we cannot create a user in the development account
+
+76
+00:02:50.310 --> 00:02:52.620
+and assign it to a group in the production account.
+
+77
+00:02:52.620 --> 00:02:55.110
+So we have to rule out that answer.
+
+78
+00:02:55.110 --> 00:02:57.450
+Option C says in the dev account,
+
+79
+00:02:57.450 --> 00:03:00.240
+create a shared IAM role with the ability to create
+
+80
+00:03:00.240 --> 00:03:02.070
+and delete applications infrastructure
+
+81
+00:03:02.070 --> 00:03:03.600
+in the production account.
+
+82
+00:03:03.600 --> 00:03:06.510
+Create a dev IAM group with the ability to do so
+
+83
+00:03:06.510 --> 00:03:08.460
+in the application infrastructure.
+
+84
+00:03:08.460 --> 00:03:09.690
+Create an ops IAM group
+
+85
+00:03:09.690 --> 00:03:12.210
+with the ability to assume the shared role.
+
+86
+00:03:12.210 --> 00:03:14.580
+And create an IAM user for each developer
+
+87
+00:03:14.580 --> 00:03:16.650
+and assign them to the development group.
+
+88
+00:03:16.650 --> 00:03:19.020
+And then create an IAM user for each operator
+
+89
+00:03:19.020 --> 00:03:22.050
+and assign them to the dev and operations group.
+
+90
+00:03:22.050 --> 00:03:24.750
+So, here, the thing that very wrong about that answer
+
+91
+00:03:24.750 --> 00:03:26.430
+is the first point,
+
+92
+00:03:26.430 --> 00:03:29.670
+create a shared IAM role with the ability to create
+
+93
+00:03:29.670 --> 00:03:31.410
+and delete application infrastructure
+
+94
+00:03:31.410 --> 00:03:32.820
+in the production account.
+
+95
+00:03:32.820 --> 00:03:35.670
+It is impossible for you to create a role
+
+96
+00:03:35.670 --> 00:03:39.810
+that has a power over another account in AWS, okay?
+
+97
+00:03:39.810 --> 00:03:41.580
+So, it's impossible to create a role
+
+98
+00:03:41.580 --> 00:03:44.970
+that has access to the production account directly.
+
+99
+00:03:44.970 --> 00:03:47.910
+We would need to assume another role into another account.
+
+100
+00:03:47.910 --> 00:03:50.250
+So, option C is completely wrong
+
+101
+00:03:50.250 --> 00:03:52.530
+because of that first bullet point.
+
+102
+00:03:52.530 --> 00:03:53.820
+Now, option D.
+
+103
+00:03:53.820 --> 00:03:55.170
+In the development account,
+
+104
+00:03:55.170 --> 00:03:57.300
+create an IAM group with the ability to create
+
+105
+00:03:57.300 --> 00:03:59.190
+and delete application infrastructure.
+
+106
+00:03:59.190 --> 00:04:00.023
+Okay.
+
+107
+00:04:00.023 --> 00:04:01.290
+Create an ops IAM group
+
+108
+00:04:01.290 --> 00:04:03.600
+with the ability to assume the shared role
+
+109
+00:04:03.600 --> 00:04:04.620
+in the production account.
+
+110
+00:04:04.620 --> 00:04:05.453
+This looks great.
+
+111
+00:04:05.453 --> 00:04:07.680
+There is assuming a role right now.
+
+112
+00:04:07.680 --> 00:04:09.510
+Create an IAM user for each developer
+
+113
+00:04:09.510 --> 00:04:12.840
+and assign them to the development group, okay?
+
+114
+00:04:12.840 --> 00:04:14.970
+Create an IAM user for each operator
+
+115
+00:04:14.970 --> 00:04:16.590
+and assign them to the development group
+
+116
+00:04:16.590 --> 00:04:18.060
+and operations group.
+
+117
+00:04:18.060 --> 00:04:19.440
+Okay, that works. Right?
+
+118
+00:04:19.440 --> 00:04:21.510
+And then finally, in the production account,
+
+119
+00:04:21.510 --> 00:04:23.940
+create a shared IAM role with the ability to create
+
+120
+00:04:23.940 --> 00:04:25.860
+and delete application infrastructure.
+
+121
+00:04:25.860 --> 00:04:28.980
+And add the development account to the trust policy
+
+122
+00:04:28.980 --> 00:04:30.300
+for the shared role.
+
+123
+00:04:30.300 --> 00:04:31.770
+So, this is a great answer.
+
+124
+00:04:31.770 --> 00:04:34.200
+It says that there is a role to assume
+
+125
+00:04:34.200 --> 00:04:35.520
+in the production account,
+
+126
+00:04:35.520 --> 00:04:38.160
+we only have one set of IAM credentials,
+
+127
+00:04:38.160 --> 00:04:40.470
+and the users are created and assigned
+
+128
+00:04:40.470 --> 00:04:43.350
+to various groups based on the things they can do.
+
+129
+00:04:43.350 --> 00:04:44.190
+So, this is great.
+
+130
+00:04:44.190 --> 00:04:45.720
+This is the perfect answer.
+
+131
+00:04:45.720 --> 00:04:48.450
+And here we really had to look for what was wrong
+
+132
+00:04:48.450 --> 00:04:50.910
+in each of these long answers
+
+133
+00:04:50.910 --> 00:04:52.770
+to understand if it was correct or not.
+
+134
+00:04:52.770 --> 00:04:54.990
+So, as I said, for these long questions,
+
+135
+00:04:54.990 --> 00:04:57.510
+make sure to do them at the end.
+
+136
+00:04:57.510 --> 00:04:59.970
+And then look for something that looks wrong
+
+137
+00:04:59.970 --> 00:05:02.940
+in these answers based on the requirements you have,
+
+138
+00:05:02.940 --> 00:05:04.080
+and you should be good to go.
+
+139
+00:05:04.080 --> 00:05:04.913
+But to be honest,
+
+140
+00:05:04.913 --> 00:05:06.930
+this is a very difficult and lengthy question,
+
+141
+00:05:06.930 --> 00:05:08.850
+and one I personally hated.
+
+142
+00:05:08.850 --> 00:05:10.170
+Okay, so that's it.
+
+143
+00:05:10.170 --> 00:05:11.920
+I will see you in the next lecture.
+

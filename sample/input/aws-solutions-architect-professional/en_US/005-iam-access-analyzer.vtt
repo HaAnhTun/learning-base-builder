@@ -1,0 +1,266 @@
+WEBVTT
+
+1
+00:00:00.330 --> 00:00:03.120
+<v Instructor>So now let's discuss IAM Access Analyzer.</v>
+
+2
+00:00:03.120 --> 00:00:05.790
+And this is a service within the IAM console
+
+3
+00:00:05.790 --> 00:00:06.767
+that is used to find out
+
+4
+00:00:06.767 --> 00:00:09.420
+which resources are going to be shared externally.
+
+5
+00:00:09.420 --> 00:00:12.090
+So this applies with S3 buckets, IAM roles, KMS keys,
+
+6
+00:00:12.090 --> 00:00:13.200
+Lambda functions and layers,
+
+7
+00:00:13.200 --> 00:00:16.500
+SQS queues, and Secrets Manager Secrets.
+
+8
+00:00:16.500 --> 00:00:18.570
+So the idea is that some of these, obviously,
+
+9
+00:00:18.570 --> 00:00:20.490
+can have resource policies attached to them,
+
+10
+00:00:20.490 --> 00:00:22.530
+or they can be shared with other accounts.
+
+11
+00:00:22.530 --> 00:00:25.140
+But sometimes you forget about sharing these items
+
+12
+00:00:25.140 --> 00:00:27.570
+and it can be a security risk for your company
+
+13
+00:00:27.570 --> 00:00:29.640
+because some of the data may be
+
+14
+00:00:29.640 --> 00:00:32.130
+accessible by external sources.
+
+15
+00:00:32.130 --> 00:00:34.500
+And so, you define a zone of trust,
+
+16
+00:00:34.500 --> 00:00:37.260
+which is going to correspond to your AWS accounts
+
+17
+00:00:37.260 --> 00:00:39.570
+or your entire AWS organization.
+
+18
+00:00:39.570 --> 00:00:41.700
+And then anything outside your zone of trust
+
+19
+00:00:41.700 --> 00:00:45.300
+that has access to the resources said above
+
+20
+00:00:45.300 --> 00:00:47.670
+are going to be reported as findings.
+
+21
+00:00:47.670 --> 00:00:49.440
+So for example, we have an S3 bucket,
+
+22
+00:00:49.440 --> 00:00:52.770
+we can share it with a specific role, a user, an account,
+
+23
+00:00:52.770 --> 00:00:55.740
+an external client by IP, or a VPC endpoint.
+
+24
+00:00:55.740 --> 00:00:58.350
+But if we define the zone of trust to be our accounts
+
+25
+00:00:58.350 --> 00:01:00.900
+and only the role, the user, and the VPC endpoints
+
+26
+00:01:00.900 --> 00:01:02.370
+are within our accounts,
+
+27
+00:01:02.370 --> 00:01:05.430
+then the accounts and the external clients
+
+28
+00:01:05.430 --> 00:01:08.310
+are going to be flagged as a finding,
+
+29
+00:01:08.310 --> 00:01:09.780
+and you can look at it within the console
+
+30
+00:01:09.780 --> 00:01:12.380
+to take action if you think this is a security risk.
+
+31
+00:01:13.682 --> 00:01:16.620
+There are other sides of IAM Access Analyzer
+
+32
+00:01:16.620 --> 00:01:17.850
+you need to know about.
+
+33
+00:01:17.850 --> 00:01:20.340
+So first of all, you can do policy validation
+
+34
+00:01:20.340 --> 00:01:21.630
+on IAM Access Analyzer.
+
+35
+00:01:21.630 --> 00:01:23.070
+So you can validate your policy
+
+36
+00:01:23.070 --> 00:01:26.250
+against the policy grammar and best practices.
+
+37
+00:01:26.250 --> 00:01:28.020
+You're going to get general warnings,
+
+38
+00:01:28.020 --> 00:01:30.690
+security warnings, errors, and suggestions,
+
+39
+00:01:30.690 --> 00:01:32.670
+as well as actionable recommendations
+
+40
+00:01:32.670 --> 00:01:35.280
+on how to improve your policies.
+
+41
+00:01:35.280 --> 00:01:37.230
+But also you can generate policies
+
+42
+00:01:37.230 --> 00:01:39.660
+directly from IAM Access Analyzer.
+
+43
+00:01:39.660 --> 00:01:40.493
+And that's really cool
+
+44
+00:01:40.493 --> 00:01:43.260
+because it's actually going to generate an IAM policy
+
+45
+00:01:43.260 --> 00:01:46.260
+tailored to your access activity
+
+46
+00:01:46.260 --> 00:01:48.660
+based on the API calls that have been made.
+
+47
+00:01:48.660 --> 00:01:50.940
+So let's take an example of a Lambda function
+
+48
+00:01:50.940 --> 00:01:53.100
+doing API calls into an S3 bucket
+
+49
+00:01:53.100 --> 00:01:54.840
+or a Kinesis Data Stream.
+
+50
+00:01:54.840 --> 00:01:56.490
+Then, of course, these API calls
+
+51
+00:01:56.490 --> 00:01:59.250
+are going to be logged into CloudTrail.
+
+52
+00:01:59.250 --> 00:02:00.630
+Now, what's going to happen is that
+
+53
+00:02:00.630 --> 00:02:02.730
+the CloudTrail logs are going to be reviewed
+
+54
+00:02:02.730 --> 00:02:07.500
+by the IAM Access Analyzer feature to generate a policy
+
+55
+00:02:07.500 --> 00:02:10.650
+and then is going to get fine-grained permissions
+
+56
+00:02:10.650 --> 00:02:13.800
+with the appropriate actions and services.
+
+57
+00:02:13.800 --> 00:02:15.840
+So IAM Access Analyzer review the logs.
+
+58
+00:02:15.840 --> 00:02:18.030
+And it's up to 90 days of logs.
+
+59
+00:02:18.030 --> 00:02:21.000
+And then, out of it, will generate an IAM policy
+
+60
+00:02:21.000 --> 00:02:24.060
+that is going to be most likely security best practice
+
+61
+00:02:24.060 --> 00:02:25.560
+because it will encompass
+
+62
+00:02:25.560 --> 00:02:28.350
+all the API calls that your application has been making
+
+63
+00:02:28.350 --> 00:02:30.780
+over the past 90 days.
+
+64
+00:02:30.780 --> 00:02:32.970
+Okay, so that's it for this lecture,
+
+65
+00:02:32.970 --> 00:02:34.170
+I hope you liked it,
+
+66
+00:02:34.170 --> 00:02:36.183
+and I will see you in the next lecture.
+

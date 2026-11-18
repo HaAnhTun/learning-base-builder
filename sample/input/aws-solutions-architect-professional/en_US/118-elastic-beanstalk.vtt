@@ -1,0 +1,734 @@
+WEBVTT
+
+1
+00:00:00.210 --> 00:00:01.858
+<v Instructor>Okay, so let's get into</v>
+
+2
+00:00:01.858 --> 00:00:03.990
+AWS Elastic Beanstalk.
+
+3
+00:00:03.990 --> 00:00:06.510
+Beanstalk is going to be more on the developer exam,
+
+4
+00:00:06.510 --> 00:00:08.940
+but from a solutions architect professional exam,
+
+5
+00:00:08.940 --> 00:00:11.670
+you need to understand that it is a great platform
+
+6
+00:00:11.670 --> 00:00:15.060
+to re-platform your application from on-premise
+
+7
+00:00:15.060 --> 00:00:16.950
+to the AWS cloud.
+
+8
+00:00:16.950 --> 00:00:19.800
+So the idea is that it's a developer-centric view
+
+9
+00:00:19.800 --> 00:00:22.020
+of deploying an application on AWS,
+
+10
+00:00:22.020 --> 00:00:23.340
+and it's just a wrapper
+
+11
+00:00:23.340 --> 00:00:25.740
+around all the components that we know from before.
+
+12
+00:00:25.740 --> 00:00:28.980
+So EC2 instances, auto scaling groups, Elastic IP,
+
+13
+00:00:28.980 --> 00:00:31.500
+Elastic Cloud balancers, RDS, et cetera.
+
+14
+00:00:31.500 --> 00:00:34.560
+But it's in one view and it's easy to make sense of it.
+
+15
+00:00:34.560 --> 00:00:37.020
+So we still have control over all the configuration
+
+16
+00:00:37.020 --> 00:00:39.540
+of each components, but Beanstalk gives us
+
+17
+00:00:39.540 --> 00:00:41.730
+some flexibility for deployment.
+
+18
+00:00:41.730 --> 00:00:43.320
+Beanstalk is going to be free,
+
+19
+00:00:43.320 --> 00:00:46.380
+but you're going to pay for the underlying instances.
+
+20
+00:00:46.380 --> 00:00:48.930
+Okay, So Beanstalk has support for many platforms,
+
+21
+00:00:48.930 --> 00:00:50.550
+and you have to remember some of them.
+
+22
+00:00:50.550 --> 00:00:54.030
+Go, Java, Java with Tomcat, and that is very important
+
+23
+00:00:54.030 --> 00:00:56.130
+because if you have a Tomcat application on premise
+
+24
+00:00:56.130 --> 00:00:58.050
+and you want to migrate it to the cloud,
+
+25
+00:00:58.050 --> 00:01:00.907
+Java with Tomcat is a great option on Beanstalk.
+
+26
+00:01:00.907 --> 00:01:04.770
+.Net applications for Windows server, node.js, PHP, Python,
+
+27
+00:01:04.770 --> 00:01:06.210
+Ruby, Packer.
+
+28
+00:01:06.210 --> 00:01:08.280
+So as you can see, there's a bunch of support
+
+29
+00:01:08.280 --> 00:01:10.140
+for many, many different runtimes.
+
+30
+00:01:10.140 --> 00:01:12.450
+And if you don't have a runtime that is supported
+
+31
+00:01:12.450 --> 00:01:14.310
+by Beanstalk, it is possible for you
+
+32
+00:01:14.310 --> 00:01:15.398
+to use a single Docker container,
+
+33
+00:01:15.398 --> 00:01:19.050
+or a multicontainer Docker, or a preconfigured Docker.
+
+34
+00:01:19.050 --> 00:01:21.930
+The idea is that if you can dockerize your application,
+
+35
+00:01:21.930 --> 00:01:24.600
+then you can migrate it to Elastic Beanstalk.
+
+36
+00:01:24.600 --> 00:01:26.070
+And so the idea is that Beanstalk
+
+37
+00:01:26.070 --> 00:01:28.380
+is going to be a perfect solution
+
+38
+00:01:28.380 --> 00:01:30.030
+to re-platform your application
+
+39
+00:01:30.030 --> 00:01:31.410
+from on-premise to the cloud.
+
+40
+00:01:31.410 --> 00:01:34.290
+That means moving your runtime onto Beanstalk
+
+41
+00:01:34.290 --> 00:01:35.940
+and have your application run
+
+42
+00:01:35.940 --> 00:01:38.370
+as a native AWS application
+
+43
+00:01:38.370 --> 00:01:40.890
+without changing the code too much.
+
+44
+00:01:40.890 --> 00:01:43.230
+Okay, so Beanstalk is a managed service.
+
+45
+00:01:43.230 --> 00:01:45.420
+That means that all the instance configuration
+
+46
+00:01:45.420 --> 00:01:48.120
+and the OS configuration will be handled by Beanstalk.
+
+47
+00:01:48.120 --> 00:01:49.680
+The deployment strategy is configurable,
+
+48
+00:01:49.680 --> 00:01:51.390
+but it will be performed by Beanstalk as well,
+
+49
+00:01:51.390 --> 00:01:53.730
+so we have different rollout strategies.
+
+50
+00:01:53.730 --> 00:01:55.350
+The only thing in responsibility
+
+51
+00:01:55.350 --> 00:01:57.780
+of you is the application code.
+
+52
+00:01:57.780 --> 00:01:59.340
+And so you have three architecture models
+
+53
+00:01:59.340 --> 00:02:00.840
+on Beanstalk we can see,
+
+54
+00:02:00.840 --> 00:02:02.730
+the number one is a single-instance deployment,
+
+55
+00:02:02.730 --> 00:02:04.350
+which is great for dev.
+
+56
+00:02:04.350 --> 00:02:06.600
+Load balancer plus ASG, which is good for production
+
+57
+00:02:06.600 --> 00:02:08.580
+or pre-production web applications.
+
+58
+00:02:08.580 --> 00:02:10.740
+And finally, just an OTO scaling group,
+
+59
+00:02:10.740 --> 00:02:12.030
+which is good if you have
+
+60
+00:02:12.030 --> 00:02:13.860
+a non-web application in production,
+
+61
+00:02:13.860 --> 00:02:16.440
+and this is usually called a worker environment.
+
+62
+00:02:16.440 --> 00:02:17.273
+So let's have a look
+
+63
+00:02:17.273 --> 00:02:19.173
+at how it looks like in terms of diagram.
+
+64
+00:02:20.100 --> 00:02:23.460
+So the first thing we have is going to be a single instance,
+
+65
+00:02:23.460 --> 00:02:26.550
+and the architecture chosen by Beanstalk in this example
+
+66
+00:02:26.550 --> 00:02:29.310
+is obviously only one availability zone.
+
+67
+00:02:29.310 --> 00:02:31.140
+We have an EC2 instance in it,
+
+68
+00:02:31.140 --> 00:02:34.830
+and we'll have an elastic IP attached to our EC2 instance.
+
+69
+00:02:34.830 --> 00:02:38.460
+Why? Because in case the EC2 instance is replaced
+
+70
+00:02:38.460 --> 00:02:42.000
+for whatever updates, then the elastic IP can be moved over
+
+71
+00:02:42.000 --> 00:02:43.710
+to the new EC2 instance,
+
+72
+00:02:43.710 --> 00:02:45.660
+and from a client perspective,
+
+73
+00:02:45.660 --> 00:02:48.900
+the change in the upgrade is going to be seamless.
+
+74
+00:02:48.900 --> 00:02:51.270
+Finally, you can set up an Amazon RDS database
+
+75
+00:02:51.270 --> 00:02:53.790
+through Beanstalk for having your EC2 instance
+
+76
+00:02:53.790 --> 00:02:56.250
+communicate with a database layer if you needs to.
+
+77
+00:02:56.250 --> 00:02:58.890
+And that RDS instance is going to be, obviously,
+
+78
+00:02:58.890 --> 00:03:00.780
+set up in only one AZ.
+
+79
+00:03:00.780 --> 00:03:03.660
+So, these single-instance deployments are great
+
+80
+00:03:03.660 --> 00:03:04.890
+for development environments
+
+81
+00:03:04.890 --> 00:03:07.200
+because you can quickly show your application
+
+82
+00:03:07.200 --> 00:03:09.600
+and it's going to be very cost effective.
+
+83
+00:03:09.600 --> 00:03:13.380
+If you want high availability, a more production-like setup,
+
+84
+00:03:13.380 --> 00:03:16.293
+then you need to use a load balancer, for example, ALB.
+
+85
+00:03:17.400 --> 00:03:20.070
+And then your application is going to be multi-AZ.
+
+86
+00:03:20.070 --> 00:03:22.380
+So in this example, I've only represented two AZ,
+
+87
+00:03:22.380 --> 00:03:23.940
+but it can obviously be three.
+
+88
+00:03:23.940 --> 00:03:27.270
+So you have two AZ, an auto-scaling group of EC2 instances
+
+89
+00:03:27.270 --> 00:03:30.570
+that can scale over time to handle more or less traffic.
+
+90
+00:03:30.570 --> 00:03:33.720
+And then we can even set up an RDS database, again,
+
+91
+00:03:33.720 --> 00:03:35.970
+in terms of storing our backend data.
+
+92
+00:03:35.970 --> 00:03:38.370
+But this time, because this is more a production deployment,
+
+93
+00:03:38.370 --> 00:03:41.580
+we should use a multi-AZ deployment of RDS
+
+94
+00:03:41.580 --> 00:03:45.060
+where we have a master and a standby database.
+
+95
+00:03:45.060 --> 00:03:46.470
+That is for number two.
+
+96
+00:03:46.470 --> 00:03:49.230
+And then number three is a worker tier,
+
+97
+00:03:49.230 --> 00:03:50.400
+which is very important.
+
+98
+00:03:50.400 --> 00:03:52.980
+So in this example, we have an SQS queue
+
+99
+00:03:52.980 --> 00:03:54.360
+that is managed by Beanstalk,
+
+100
+00:03:54.360 --> 00:03:56.040
+and we have a worker tier
+
+101
+00:03:56.040 --> 00:03:59.190
+which consists of an EC2 auto-scaling group
+
+102
+00:03:59.190 --> 00:04:01.350
+that will read from the SQS queue
+
+103
+00:04:01.350 --> 00:04:04.590
+and scale based on the queue load.
+
+104
+00:04:04.590 --> 00:04:06.540
+So the idea is that we have three different kinds
+
+105
+00:04:06.540 --> 00:04:07.560
+of deployment for Beanstalk
+
+106
+00:04:07.560 --> 00:04:10.050
+and you need to know them going into the exam.
+
+107
+00:04:10.050 --> 00:04:12.900
+Now let's talk about the difference between a web server
+
+108
+00:04:12.900 --> 00:04:15.360
+and a worker environment in Beanstalk.
+
+109
+00:04:15.360 --> 00:04:17.880
+So in case your application performs long tasks,
+
+110
+00:04:17.880 --> 00:04:20.760
+and this task can take a lot of CPU power
+
+111
+00:04:20.760 --> 00:04:24.360
+and threads from your web servers, it's usually better
+
+112
+00:04:24.360 --> 00:04:28.530
+to upload these tasks into a dedicated worker environment.
+
+113
+00:04:28.530 --> 00:04:30.780
+And by doing this, you are decoupling your application
+
+114
+00:04:30.780 --> 00:04:32.820
+into two tiers, and that is very common.
+
+115
+00:04:32.820 --> 00:04:34.710
+And so anytime we hear decoupling,
+
+116
+00:04:34.710 --> 00:04:37.230
+remember it has to be SQS.
+
+117
+00:04:37.230 --> 00:04:38.940
+So for example, what are the kind of tasks
+
+118
+00:04:38.940 --> 00:04:40.470
+that could be long to complete?
+
+119
+00:04:40.470 --> 00:04:42.720
+While processing a video if you want to add
+
+120
+00:04:42.720 --> 00:04:44.790
+some kind of text on top of the video,
+
+121
+00:04:44.790 --> 00:04:46.320
+or generating a zip file,
+
+122
+00:04:46.320 --> 00:04:50.100
+or creating a very complicated filter for your images,
+
+123
+00:04:50.100 --> 00:04:51.300
+et cetera.
+
+124
+00:04:51.300 --> 00:04:53.490
+On top of it, in your worker environment
+
+125
+00:04:53.490 --> 00:04:56.250
+you are able to define a bunch of periodic tasks
+
+126
+00:04:56.250 --> 00:04:58.650
+to be done using a cron.yami file,
+
+127
+00:04:58.650 --> 00:04:59.730
+which will run cron jobs
+
+128
+00:04:59.730 --> 00:05:02.400
+directly from your worker environment.
+
+129
+00:05:02.400 --> 00:05:03.233
+Okay, so let's have a look
+
+130
+00:05:03.233 --> 00:05:06.150
+at a typical architecture for Beanstalk.
+
+131
+00:05:06.150 --> 00:05:08.040
+You would have your web tier for Beanstalk,
+
+132
+00:05:08.040 --> 00:05:11.250
+which consists of your ALB and your auto scaling group,
+
+133
+00:05:11.250 --> 00:05:13.980
+and that is going to be a production-like deployment.
+
+134
+00:05:13.980 --> 00:05:16.380
+And then we're going to have a worker tier,
+
+135
+00:05:16.380 --> 00:05:19.770
+also managed by Beanstalk, which consists of an SQS queue
+
+136
+00:05:19.770 --> 00:05:22.890
+and an EC2 instances managed by an auto scaling group.
+
+137
+00:05:22.890 --> 00:05:27.210
+And the idea is that if the web tier has some dedicated task
+
+138
+00:05:27.210 --> 00:05:30.660
+that are going be long to complete, then it would insert,
+
+139
+00:05:30.660 --> 00:05:33.510
+put these tasks into an SQS queue,
+
+140
+00:05:33.510 --> 00:05:35.070
+and your auto scaling group would
+
+141
+00:05:35.070 --> 00:05:36.960
+automatically process these tasks.
+
+142
+00:05:36.960 --> 00:05:38.520
+This is a classic architecture,
+
+143
+00:05:38.520 --> 00:05:39.353
+and the good thing is that
+
+144
+00:05:39.353 --> 00:05:42.960
+both of these tiers can be managed using Beanstalk.
+
+145
+00:05:42.960 --> 00:05:45.540
+Okay, next we have blue/green deployment,
+
+146
+00:05:45.540 --> 00:05:47.760
+which is not a direct feature of Beanstalk,
+
+147
+00:05:47.760 --> 00:05:50.220
+but the idea is that it gives you zero downtime
+
+148
+00:05:50.220 --> 00:05:51.750
+and release facility.
+
+149
+00:05:51.750 --> 00:05:53.940
+So the idea is that you would create a new stage environment
+
+150
+00:05:53.940 --> 00:05:55.590
+and you would deploy a v2 there.
+
+151
+00:05:55.590 --> 00:05:58.170
+So you create a new Beanstalk environment,
+
+152
+00:05:58.170 --> 00:05:59.910
+then you validate that this environment,
+
+153
+00:05:59.910 --> 00:06:03.840
+which is the green environment, can be working as expected,
+
+154
+00:06:03.840 --> 00:06:05.100
+and in case there is any problem,
+
+155
+00:06:05.100 --> 00:06:07.170
+you can roll it back by deleting it,
+
+156
+00:06:07.170 --> 00:06:09.510
+and then you would set up Route 53
+
+157
+00:06:09.510 --> 00:06:10.950
+to use weighted routing
+
+158
+00:06:10.950 --> 00:06:13.050
+to make sure you can shift a little bit of traffic
+
+159
+00:06:13.050 --> 00:06:14.400
+to the new environment.
+
+160
+00:06:14.400 --> 00:06:16.650
+If you use the Beanstalk Swap URL feature,
+
+161
+00:06:16.650 --> 00:06:20.040
+which is a DNS swap, this basically shifts all the traffic
+
+162
+00:06:20.040 --> 00:06:21.570
+from one environment to another,
+
+163
+00:06:21.570 --> 00:06:23.490
+so you have two different strategies.
+
+164
+00:06:23.490 --> 00:06:26.733
+So here's the example, using weighted routing in Route 53.
+
+165
+00:06:27.646 --> 00:06:30.810
+So the web traffic does DNS queries onto Route 53,
+
+166
+00:06:30.810 --> 00:06:32.130
+and then maybe 90%
+
+167
+00:06:32.130 --> 00:06:35.910
+of your traffic will be sent into your blue environment,
+
+168
+00:06:35.910 --> 00:06:37.920
+and 10% of your traffic will be sent
+
+169
+00:06:37.920 --> 00:06:39.510
+into your green environment.
+
+170
+00:06:39.510 --> 00:06:43.350
+And that is using a weighted routing policy in Route 53.
+
+171
+00:06:43.350 --> 00:06:46.380
+And then you can shift the percentages over time.
+
+172
+00:06:46.380 --> 00:06:48.660
+And then when you're ready, you have effectively shifted
+
+173
+00:06:48.660 --> 00:06:51.330
+all your traffic from your v1 to your v2.
+
+174
+00:06:51.330 --> 00:06:55.050
+And this is called a blue/green deployment, okay?
+
+175
+00:06:55.050 --> 00:06:56.610
+So that's all you need to know for Beanstalk
+
+176
+00:06:56.610 --> 00:06:57.630
+going into the exam.
+
+177
+00:06:57.630 --> 00:06:59.820
+Remember, Beanstalk is going to be a great platform
+
+178
+00:06:59.820 --> 00:07:02.760
+when you want to migrate an application
+
+179
+00:07:02.760 --> 00:07:05.670
+from on-premise to the cloud and re-platform it.
+
+180
+00:07:05.670 --> 00:07:08.100
+And finally, it's going to be a great choice
+
+181
+00:07:08.100 --> 00:07:10.380
+to manage both your web server applications
+
+182
+00:07:10.380 --> 00:07:11.850
+and your worker tiers.
+
+183
+00:07:11.850 --> 00:07:13.900
+Okay, I will see you in the next lecture.
+

@@ -1,0 +1,194 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.210
+<v ->And so next, let's talk about AppStream 2.0.</v>
+
+2
+00:00:03.210 --> 00:00:06.450
+This is a desktop application streaming service.
+
+3
+00:00:06.450 --> 00:00:08.730
+The idea is that you're gonna have a desktop application,
+
+4
+00:00:08.730 --> 00:00:11.550
+but you want to deliver it to any computer
+
+5
+00:00:11.550 --> 00:00:14.340
+without acquiring or provisioning infrastructure.
+
+6
+00:00:14.340 --> 00:00:17.310
+The way this works is that this app is going to be delivered
+
+7
+00:00:17.310 --> 00:00:19.260
+from within a web browser,
+
+8
+00:00:19.260 --> 00:00:21.300
+and this is why it's called AppStream,
+
+9
+00:00:21.300 --> 00:00:23.940
+because your web browser is going to stream the application
+
+10
+00:00:23.940 --> 00:00:26.610
+that's going to be run, but from your web browser.
+
+11
+00:00:26.610 --> 00:00:28.170
+I'll give you a very graphical example,
+
+12
+00:00:28.170 --> 00:00:31.740
+so I used the AppStream service to open up Blender,
+
+13
+00:00:31.740 --> 00:00:33.630
+which is a desktop application,
+
+14
+00:00:33.630 --> 00:00:36.450
+and as you can see, Blender was streaming
+
+15
+00:00:36.450 --> 00:00:40.830
+from somewhere into my Chrome web browser,
+
+16
+00:00:40.830 --> 00:00:42.990
+and I was able to use Blender as is.
+
+17
+00:00:42.990 --> 00:00:45.870
+So AppStream is really to stream applications,
+
+18
+00:00:45.870 --> 00:00:49.260
+whereas Workspaces is to get a true desktop
+
+19
+00:00:49.260 --> 00:00:51.660
+on which you can run any application you want.
+
+20
+00:00:51.660 --> 00:00:55.440
+So let's compare AppStream's 2.0 and Workspaces.
+
+21
+00:00:55.440 --> 00:00:59.160
+Workspaces is a fully managed VDI and desktop.
+
+22
+00:00:59.160 --> 00:01:00.720
+The users will connect to the VDI
+
+23
+00:01:00.720 --> 00:01:03.000
+and open native applications,
+
+24
+00:01:03.000 --> 00:01:04.770
+or applications that have been packaged
+
+25
+00:01:04.770 --> 00:01:08.190
+using Workspace Application Manager, or WAM.
+
+26
+00:01:08.190 --> 00:01:10.080
+The Workspaces can be on demand
+
+27
+00:01:10.080 --> 00:01:13.050
+and then it will turn off whenever we're done, or always on,
+
+28
+00:01:13.050 --> 00:01:16.290
+whereas AppStream's 2.0 is going to be to stream
+
+29
+00:01:16.290 --> 00:01:19.230
+a desktop application into your web browsers,
+
+30
+00:01:19.230 --> 00:01:21.360
+and so you don't need to connect to a VDI,
+
+31
+00:01:21.360 --> 00:01:24.780
+and it works with really any device that has a web browser,
+
+32
+00:01:24.780 --> 00:01:27.930
+so you can stream a desktop application for Windows
+
+33
+00:01:27.930 --> 00:01:32.070
+onto a Mac device through a Chrome web browser, for example.
+
+34
+00:01:32.070 --> 00:01:33.870
+And the cool thing is that each
+
+35
+00:01:33.870 --> 00:01:37.020
+of these AppStream applications can be configured
+
+36
+00:01:37.020 --> 00:01:40.080
+to run on an instance type per application type.
+
+37
+00:01:40.080 --> 00:01:42.210
+So maybe if you're running something like Photoshop,
+
+38
+00:01:42.210 --> 00:01:44.520
+you need more CPU, more RAM, and more GPU,
+
+39
+00:01:44.520 --> 00:01:47.160
+you can configure your AppStream container
+
+40
+00:01:47.160 --> 00:01:48.630
+to have more of that,
+
+41
+00:01:48.630 --> 00:01:50.190
+and so that gives you full control
+
+42
+00:01:50.190 --> 00:01:53.250
+over how much power should be allocated
+
+43
+00:01:53.250 --> 00:01:55.500
+to the application that you're streaming.
+
+44
+00:01:55.500 --> 00:01:57.870
+And if you make the differences between the two,
+
+45
+00:01:57.870 --> 00:02:00.210
+between Workspaces and AppStream 2.0,
+
+46
+00:02:00.210 --> 00:02:01.890
+then you're good to go for the exam.
+
+47
+00:02:01.890 --> 00:02:02.880
+All right, that's it.
+
+48
+00:02:02.880 --> 00:02:04.630
+I will see you in the next lecture.
+

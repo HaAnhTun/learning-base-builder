@@ -1,0 +1,374 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.400
+This lesson walks through clarity and specificity in prompt instructions.
+
+2
+00:00:04.400 --> 00:00:08.159
+We'll look at why vague instructions produce inconsistent outputs,
+
+3
+00:00:08.159 --> 00:00:11.920
+why specificity is the primary lever for output quality,
+
+4
+00:00:11.920 --> 00:00:17.040
+how the direct instruction principle works, how ambiguity forces the model to fill gaps
+
+5
+00:00:17.040 --> 00:00:23.440
+with assumptions, and what imprecise prompts actually cost across a full iteration cycle.
+
+6
+00:00:23.440 --> 00:00:24.319
+Let's get into it.
+
+7
+00:00:25.920 --> 00:00:29.440
+Precision in an instruction isn't a stylistic preference.
+
+8
+00:00:29.440 --> 00:00:33.919
+It is the main thing separating a reliable output from a coin flip.
+
+9
+00:00:33.919 --> 00:00:38.799
+Specificity is the degree to which an instruction precisely defines the expected output,
+
+10
+00:00:38.799 --> 00:00:43.840
+and when it is high, the model has very little room to interpret or fill gaps on its own.
+
+11
+00:00:44.479 --> 00:00:46.959
+Ambiguity is the opposite condition.
+
+12
+00:00:46.959 --> 00:00:50.560
+When an instruction has more than one plausible interpretation,
+
+13
+00:00:50.560 --> 00:00:52.880
+the model has to choose between them.
+
+14
+00:00:52.880 --> 00:00:57.759
+That choice is never visible to you, and it may not be the choice you intended.
+
+15
+00:00:57.759 --> 00:01:01.520
+Direct instruction means stating what you want the model to do
+
+16
+00:01:01.520 --> 00:01:03.439
+rather than what you want it to avoid.
+
+17
+00:01:04.000 --> 00:01:08.879
+Negative framing tells the model what to skip but leaves the positive goal undefined.
+
+18
+00:01:10.080 --> 00:01:13.040
+Let's start with why vague instructions fail.
+
+19
+00:01:13.040 --> 00:01:17.519
+When a prompt is open-ended, the model doesn't stall or ask for clarification.
+
+20
+00:01:18.080 --> 00:01:22.559
+It resolves the openness by selecting the most statistically likely interpretation
+
+21
+00:01:22.559 --> 00:01:24.559
+and produces output from that choice.
+
+22
+00:01:25.040 --> 00:01:28.400
+Each plausible interpretation produces a different output,
+
+23
+00:01:28.400 --> 00:01:32.480
+so run the same vague prompt twice and you get two different results.
+
+24
+00:01:33.120 --> 00:01:34.959
+That variance isn't a model defect,
+
+25
+00:01:34.959 --> 00:01:39.919
+it's a direct reflection of how much room the prompt leaves for interpretation.
+
+26
+00:01:39.919 --> 00:01:42.559
+And the reading it lands on may not be yours,
+
+27
+00:01:42.559 --> 00:01:45.519
+while neither party is aware another one was even possible.
+
+28
+00:01:46.080 --> 00:01:50.080
+The output looks plausible because it is plausible, it just isn't what you wanted.
+
+29
+00:01:50.639 --> 00:01:54.480
+Precision at the prompt stage prevents that entire class of problems.
+
+30
+00:01:56.000 --> 00:01:59.599
+Let's make the difference between abstract and concrete instructions
+
+31
+00:01:59.599 --> 00:02:01.360
+visible with a direct comparison.
+
+32
+00:02:01.919 --> 00:02:05.040
+An abstract vague instruction might read like this.
+
+33
+00:02:05.599 --> 00:02:07.360
+Write a summary of this document.
+
+34
+00:02:07.360 --> 00:02:11.679
+That prompt forces the model to decide length, format, tone,
+
+35
+00:02:11.679 --> 00:02:16.240
+level of detail, intended audience, and what counts as the key points.
+
+36
+00:02:16.240 --> 00:02:20.320
+Every one of those decisions is an assumption and none of them are visible to you.
+
+37
+00:02:20.880 --> 00:02:25.119
+A concrete, specific version of the same instruction reads differently.
+
+38
+00:02:25.119 --> 00:02:29.600
+Write a three-sentence summary of this document for a non-technical audience,
+
+39
+00:02:29.600 --> 00:02:34.320
+including the main finding, one supporting detail, and the recommended action.
+
+40
+00:02:35.039 --> 00:02:40.320
+The second version closes all six of those interpretation gaps in a single sentence.
+
+41
+00:02:40.320 --> 00:02:43.919
+The output becomes predictable because the decision space is closed.
+
+42
+00:02:44.240 --> 00:02:49.759
+Specificity is the single most reliable variable under your control when writing instructions.
+
+43
+00:02:50.320 --> 00:02:54.479
+Every added dimension of specificity narrows the output space further.
+
+44
+00:02:55.119 --> 00:02:58.399
+Specifying format removes ambiguity about structure.
+
+45
+00:02:59.039 --> 00:03:02.160
+Specifying length removes ambiguity about scope.
+
+46
+00:03:02.720 --> 00:03:06.240
+Specifying tone and perspective removes ambiguity about voice.
+
+47
+00:03:06.800 --> 00:03:08.960
+Each constraint compounds on the others.
+
+48
+00:03:09.839 --> 00:03:15.360
+A prompt with four specific constraints produces a much narrower output space
+
+49
+00:03:15.360 --> 00:03:20.639
+than a prompt with one, and that narrower space is where consistent, repeatable outputs live.
+
+50
+00:03:21.199 --> 00:03:24.800
+When an output disappoints, the right question is almost always,
+
+51
+00:03:25.360 --> 00:03:29.039
+what did I leave unspecified that the model had to assume?
+
+52
+00:03:29.600 --> 00:03:34.720
+Identifying that gap and closing it is usually the fastest path to the output you actually want.
+
+53
+00:03:35.039 --> 00:03:39.199
+The direct instruction principle says to state what you want the model to do,
+
+54
+00:03:39.759 --> 00:03:41.279
+not what you want it to avoid.
+
+55
+00:03:41.919 --> 00:03:45.440
+Negative framing, like don't be vague or avoid jargon,
+
+56
+00:03:45.440 --> 00:03:50.240
+tells the model what to subtract, but leaves the positive goal undefined.
+
+57
+00:03:50.240 --> 00:03:53.600
+The model still has to guess what the output should look like.
+
+58
+00:03:53.600 --> 00:03:57.919
+Direct instructions, by contrast, map to concrete actions.
+
+59
+00:03:57.919 --> 00:04:02.960
+Write, summarize, list, compare, extract, classify.
+
+60
+00:04:03.360 --> 00:04:07.839
+Each of those verbs specifies a clear operation.
+
+61
+00:04:07.839 --> 00:04:11.039
+Keeping one goal per instruction also matters.
+
+62
+00:04:11.039 --> 00:04:15.839
+Compound instructions that combine multiple objectives split the model's focus
+
+63
+00:04:15.839 --> 00:04:18.880
+and reduce the reliability of each individual goal.
+
+64
+00:04:19.600 --> 00:04:22.880
+State one goal, then layer constraints on top of it.
+
+65
+00:04:24.079 --> 00:04:27.279
+Let's talk about the actual cost of ambiguous prompts,
+
+66
+00:04:27.279 --> 00:04:30.320
+because it shows up in places that are easy to underestimate.
+
+67
+00:04:31.040 --> 00:04:35.119
+Variance in outputs means you can't build reliable expectations
+
+68
+00:04:35.119 --> 00:04:36.799
+about what a prompt will return.
+
+69
+00:04:37.440 --> 00:04:40.959
+Unpredictability makes quality evaluation harder,
+
+70
+00:04:40.959 --> 00:04:46.000
+because you have to account for the fact that the same prompt might perform differently tomorrow.
+
+71
+00:04:46.720 --> 00:04:49.839
+Debugging ambiguous outputs is expensive.
+
+72
+00:04:49.839 --> 00:04:54.079
+You have to go back to the prompt, identify what gap the model filled,
+
+73
+00:04:54.079 --> 00:04:57.119
+decide what you actually wanted, and rewrite.
+
+74
+00:04:57.839 --> 00:05:02.000
+Do that across dozens of iterations, and the time adds up fast.
+
+75
+00:05:02.000 --> 00:05:04.880
+The cost of ambiguity is hidden at writing time,
+
+76
+00:05:04.880 --> 00:05:08.720
+and fully paid at review time, which is the worst possible accounting.
+
+77
+00:05:09.920 --> 00:05:14.480
+There are four reliable ways to turn a vague instruction into a specific one.
+
+78
+00:05:14.480 --> 00:05:17.839
+Add a format, tell the model whether you want a bullet list,
+
+79
+00:05:17.839 --> 00:05:21.040
+numbered steps, a table, or a paragraph.
+
+80
+00:05:21.040 --> 00:05:25.440
+That single constraint eliminates a major category of interpretation gaps.
+
+81
+00:05:25.440 --> 00:05:31.679
+Add a length, specify word count, sentence count, or a natural bound, like in one paragraph.
+
+82
+00:05:32.320 --> 00:05:37.119
+Add an audience, naming who will read the output determines tone,
+
+83
+00:05:37.119 --> 00:05:40.640
+vocabulary level, and assumed background knowledge.
+
+84
+00:05:40.640 --> 00:05:46.559
+Add a perspective, first person, third person, or a named role, like senior analyst.
+
+85
+00:05:46.559 --> 00:05:50.559
+Each of these dimensions is a constraint you can apply independently,
+
+86
+00:05:50.559 --> 00:05:53.519
+and any one of them meaningfully narrows the output space.
+
+87
+00:05:54.160 --> 00:05:58.640
+A model getting something wrong and a model resolving a choice you never made
+
+88
+00:05:58.640 --> 00:06:02.640
+are not the same failure. Ambiguity is that second case.
+
+89
+00:06:02.640 --> 00:06:07.359
+Every gap in an instruction gets filled with an assumption silently,
+
+90
+00:06:07.359 --> 00:06:10.880
+and the output looks plausible because it is plausible.
+
+91
+00:06:11.440 --> 00:06:15.839
+Once you see it that way, adding another constraint stops feeling like fussiness,
+
+92
+00:06:15.839 --> 00:06:19.119
+and starts looking like the cheapest debugging you'll ever do.
+
+93
+00:06:19.760 --> 00:06:23.760
+That's where we'll end this lesson. I'll see you in the next one. Bye.
+

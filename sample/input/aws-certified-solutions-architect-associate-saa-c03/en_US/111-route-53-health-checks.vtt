@@ -1,0 +1,526 @@
+WEBVTT
+
+1
+00:00:00.240 --> 00:00:01.560
+<v Instructor>So let's talk about health checks</v>
+
+2
+00:00:01.560 --> 00:00:02.970
+in Route 53.
+
+3
+00:00:02.970 --> 00:00:05.190
+So health checks are a way for you to check
+
+4
+00:00:05.190 --> 00:00:07.770
+the health of mainly public resources,
+
+5
+00:00:07.770 --> 00:00:09.060
+although there's a way for us to do it
+
+6
+00:00:09.060 --> 00:00:11.670
+for private resources as well, as we'll see in this lecture.
+
+7
+00:00:11.670 --> 00:00:12.660
+So the idea is that, for example,
+
+8
+00:00:12.660 --> 00:00:15.630
+we have two load balancers in different regions
+
+9
+00:00:15.630 --> 00:00:17.940
+and they're public load balancers, okay?
+
+10
+00:00:17.940 --> 00:00:18.773
+And behind the scenes,
+
+11
+00:00:18.773 --> 00:00:20.700
+we have our application running in both of them.
+
+12
+00:00:20.700 --> 00:00:22.710
+So we're running into a multi-region setup
+
+13
+00:00:22.710 --> 00:00:24.720
+because we want high availability and so on,
+
+14
+00:00:24.720 --> 00:00:25.980
+at the region level.
+
+15
+00:00:25.980 --> 00:00:29.700
+Then, we're going to use Route 53 to create DNS records.
+
+16
+00:00:29.700 --> 00:00:32.490
+So that's when users access our URL, for example,
+
+17
+00:00:32.490 --> 00:00:35.910
+MyDomain.com, then they get redirected to, for example,
+
+18
+00:00:35.910 --> 00:00:38.100
+the closest load balancer they have.
+
+19
+00:00:38.100 --> 00:00:41.550
+So this would be the case with a latency-type of record.
+
+20
+00:00:41.550 --> 00:00:44.040
+But we want to make sure that if one region is down,
+
+21
+00:00:44.040 --> 00:00:45.720
+then we don't send our users
+
+22
+00:00:45.720 --> 00:00:47.430
+to that region obviously, right?
+
+23
+00:00:47.430 --> 00:00:49.530
+So to do so, we're going to create health checks
+
+24
+00:00:49.530 --> 00:00:51.000
+from Route 53.
+
+25
+00:00:51.000 --> 00:00:54.030
+So we'll create health checks on the one in us-east-1
+
+26
+00:00:54.030 --> 00:00:55.140
+and we'll create a health check
+
+27
+00:00:55.140 --> 00:00:58.560
+on our instance in eu-west-1.
+
+28
+00:00:58.560 --> 00:00:59.940
+Well, with these two health checks,
+
+29
+00:00:59.940 --> 00:01:01.890
+we're going to be able to associate them
+
+30
+00:01:01.890 --> 00:01:04.440
+with our Route 53 records.
+
+31
+00:01:04.440 --> 00:01:08.160
+And the reason we do so is to get automated DNS failover.
+
+32
+00:01:08.160 --> 00:01:10.620
+So we have three health checks that are possible.
+
+33
+00:01:10.620 --> 00:01:11.490
+The ones I just showed you
+
+34
+00:01:11.490 --> 00:01:13.260
+which are the health checks that monitor an endpoint,
+
+35
+00:01:13.260 --> 00:01:15.540
+which is a public endpoint, so it could be an application,
+
+36
+00:01:15.540 --> 00:01:18.090
+a server, or another AWS resource.
+
+37
+00:01:18.090 --> 00:01:18.960
+It could be a health check
+
+38
+00:01:18.960 --> 00:01:20.430
+that monitors other health checks,
+
+39
+00:01:20.430 --> 00:01:22.890
+also called a calculated health checks.
+
+40
+00:01:22.890 --> 00:01:23.820
+Or it could be a health check
+
+41
+00:01:23.820 --> 00:01:25.560
+that monitors a CloudWatch alarm,
+
+42
+00:01:25.560 --> 00:01:27.510
+which gives you more control and is helpful
+
+43
+00:01:27.510 --> 00:01:30.090
+for private resources, as we'll see in this lecture.
+
+44
+00:01:30.090 --> 00:01:32.460
+Finally, these health checks have their own metric
+
+45
+00:01:32.460 --> 00:01:35.310
+and you can view them in CloudWatch metrics as well.
+
+46
+00:01:35.310 --> 00:01:37.320
+So let's look at how health checks work
+
+47
+00:01:37.320 --> 00:01:38.280
+with a specific endpoint.
+
+48
+00:01:38.280 --> 00:01:41.880
+So if we have a health check for eu-west-1 for an ALB,
+
+49
+00:01:41.880 --> 00:01:44.220
+then the health checkers of AWS
+
+50
+00:01:44.220 --> 00:01:46.020
+are coming from all around the world.
+
+51
+00:01:46.020 --> 00:01:47.460
+So it's not just one health checker,
+
+52
+00:01:47.460 --> 00:01:50.040
+it's about 15 health checkers from all around the world.
+
+53
+00:01:50.040 --> 00:01:51.600
+And they're all going to send requests
+
+54
+00:01:51.600 --> 00:01:55.050
+into our public endpoint to wherever route we set.
+
+55
+00:01:55.050 --> 00:01:57.630
+And then, if it gets 200 okay code back,
+
+56
+00:01:57.630 --> 00:02:01.170
+or the code we defined, then the resource is deemed healthy.
+
+57
+00:02:01.170 --> 00:02:02.970
+So about 15 global health checkers
+
+58
+00:02:02.970 --> 00:02:04.320
+will check the endpoint health,
+
+59
+00:02:04.320 --> 00:02:07.380
+and then you can set a threshold for healthy or unhealthy.
+
+60
+00:02:07.380 --> 00:02:09.630
+You can set an interval, so we have two options.
+
+61
+00:02:09.630 --> 00:02:12.210
+It could be either 30 seconds for regular health checks
+
+62
+00:02:12.210 --> 00:02:14.430
+or every 10 seconds, which is a higher cost,
+
+63
+00:02:14.430 --> 00:02:16.500
+which is what's called a fast health check.
+
+64
+00:02:16.500 --> 00:02:20.880
+It supports many protocols, so HTTP, HTTPS, and TCP.
+
+65
+00:02:20.880 --> 00:02:24.420
+And the rule is that if over 18% of the health checkers
+
+66
+00:02:24.420 --> 00:02:26.280
+say that the endpoint is healthy,
+
+67
+00:02:26.280 --> 00:02:28.530
+then Route 53 will consider it healthy,
+
+68
+00:02:28.530 --> 00:02:30.690
+otherwise it's deemed unhealthy.
+
+69
+00:02:30.690 --> 00:02:31.770
+And you have the ability to choose
+
+70
+00:02:31.770 --> 00:02:34.410
+which locations you want to use for the health checks.
+
+71
+00:02:34.410 --> 00:02:35.700
+Now, the health checks will only pass
+
+72
+00:02:35.700 --> 00:02:39.180
+if you have the status 2xx or 3xx status code back
+
+73
+00:02:39.180 --> 00:02:40.980
+from the load balancer
+
+74
+00:02:40.980 --> 00:02:42.830
+and the health check has a cool capability.
+
+75
+00:02:42.830 --> 00:02:45.600
+So if it is a text-based response,
+
+76
+00:02:45.600 --> 00:02:47.700
+then the health checkers can check
+
+77
+00:02:47.700 --> 00:02:50.640
+the first 5,120 bytes of the response
+
+78
+00:02:50.640 --> 00:02:53.940
+to look for some specific text in the response itself.
+
+79
+00:02:53.940 --> 00:02:56.430
+Finally, very important from a network perspective,
+
+80
+00:02:56.430 --> 00:02:58.980
+if you want for it to work, obviously,
+
+81
+00:02:58.980 --> 00:03:01.530
+the health checkers must be able to access
+
+82
+00:03:01.530 --> 00:03:04.380
+your application balancer or whatever endpoint you have.
+
+83
+00:03:04.380 --> 00:03:06.750
+And so, therefore, you must allow incoming requests
+
+84
+00:03:06.750 --> 00:03:09.750
+coming from the Route 53 health checkers IP address range,
+
+85
+00:03:09.750 --> 00:03:11.490
+and you can find this address range
+
+86
+00:03:11.490 --> 00:03:13.983
+at the URL in the bottom right of the screen.
+
+87
+00:03:14.880 --> 00:03:16.560
+Now, the second type of health checks we have
+
+88
+00:03:16.560 --> 00:03:18.480
+are calculated health checks.
+
+89
+00:03:18.480 --> 00:03:20.130
+And so, this is to combine the results
+
+90
+00:03:20.130 --> 00:03:22.470
+of multiple health checks into a single health check.
+
+91
+00:03:22.470 --> 00:03:25.380
+And so, if we look at Route 53, with three EC2 instance,
+
+92
+00:03:25.380 --> 00:03:27.180
+we can create three health checks.
+
+93
+00:03:27.180 --> 00:03:28.590
+They're all going to be children health check
+
+94
+00:03:28.590 --> 00:03:31.800
+and they can all monitor each EC2 instance one by one.
+
+95
+00:03:31.800 --> 00:03:33.960
+And then, we can define a parent health check,
+
+96
+00:03:33.960 --> 00:03:35.460
+which is going to be defined
+
+97
+00:03:35.460 --> 00:03:38.100
+on all these child health checks.
+
+98
+00:03:38.100 --> 00:03:40.410
+And so, the conditions to combine all these health checks
+
+99
+00:03:40.410 --> 00:03:43.110
+could be an or, an and, or a not.
+
+100
+00:03:43.110 --> 00:03:47.160
+You can monitor up to 255 child health checks
+
+101
+00:03:47.160 --> 00:03:49.260
+and you can specify how many of the health checks
+
+102
+00:03:49.260 --> 00:03:51.810
+need to pass to make the parent pass.
+
+103
+00:03:51.810 --> 00:03:53.880
+So the use case for this, for example,
+
+104
+00:03:53.880 --> 00:03:55.380
+if you want to have a parent health check
+
+105
+00:03:55.380 --> 00:03:57.120
+to perform maintenance on your website
+
+106
+00:03:57.120 --> 00:04:00.210
+without causing all the health checks to fail.
+
+107
+00:04:00.210 --> 00:04:03.720
+And so, how do we monitor the health of a private resource?
+
+108
+00:04:03.720 --> 00:04:06.690
+So in case you want to monitor something private,
+
+109
+00:04:06.690 --> 00:04:08.070
+it's going to be difficult because,
+
+110
+00:04:08.070 --> 00:04:09.960
+well, all the Route 53 health checkers
+
+111
+00:04:09.960 --> 00:04:12.810
+live on the public web and they're outside of your VPC.
+
+112
+00:04:12.810 --> 00:04:14.730
+So they cannot access private endpoints,
+
+113
+00:04:14.730 --> 00:04:18.210
+so if it's a private VPC or an on-premises resource.
+
+114
+00:04:18.210 --> 00:04:19.890
+And so, the way we can do it, though,
+
+115
+00:04:19.890 --> 00:04:21.960
+is to create a CloudWatch metric
+
+116
+00:04:21.960 --> 00:04:24.090
+and assign a CloudWatch alarm on it.
+
+117
+00:04:24.090 --> 00:04:25.980
+And then, you can assign the CloudWatch alarm
+
+118
+00:04:25.980 --> 00:04:27.240
+into the health checker.
+
+119
+00:04:27.240 --> 00:04:29.280
+So the idea is that we're going to monitor the health
+
+120
+00:04:29.280 --> 00:04:31.710
+of our EC2 instance in a private subnet
+
+121
+00:04:31.710 --> 00:04:32.760
+with a CloudWatch metric,
+
+122
+00:04:32.760 --> 00:04:34.860
+and then, if the metric is breached,
+
+123
+00:04:34.860 --> 00:04:37.290
+we're going to create a CloudWatch alarm on it.
+
+124
+00:04:37.290 --> 00:04:39.840
+And when the alarm goes into the alarm state,
+
+125
+00:04:39.840 --> 00:04:40.920
+then the health checker
+
+126
+00:04:40.920 --> 00:04:43.140
+is going to be automatically unhealthy,
+
+127
+00:04:43.140 --> 00:04:45.300
+and therefore, we'll have created exactly what we want,
+
+128
+00:04:45.300 --> 00:04:48.180
+which is a health check on a private resource,
+
+129
+00:04:48.180 --> 00:04:50.490
+which is the most common use case on how to do it.
+
+130
+00:04:50.490 --> 00:04:52.890
+So that's it for this lecture, I hope you liked it.
+
+131
+00:04:52.890 --> 00:04:54.840
+And I will see you in the next lecture.
+

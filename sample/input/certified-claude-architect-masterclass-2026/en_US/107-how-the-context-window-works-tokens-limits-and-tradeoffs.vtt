@@ -1,0 +1,466 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.159
+The context window is the boundary on every Claude inference call.
+
+2
+00:00:04.159 --> 00:00:06.880
+In this lesson, we'll cover what a token is,
+
+3
+00:00:06.880 --> 00:00:09.199
+what actually counts against the window,
+
+4
+00:00:09.199 --> 00:00:12.319
+how different content types tokenize,
+
+5
+00:00:12.319 --> 00:00:15.800
+and what the limits look like across Claude model tiers.
+
+6
+00:00:15.800 --> 00:00:18.959
+Understanding this constraint in detail is what
+
+7
+00:00:18.959 --> 00:00:23.239
+separates systems that hold up to scale and ones that break under load.
+
+8
+00:00:23.239 --> 00:00:27.979
+Everything the model can see in a single call lives inside the context window.
+
+9
+00:00:27.979 --> 00:00:29.719
+That includes the system prompt,
+
+10
+00:00:29.739 --> 00:00:31.379
+the conversation history,
+
+11
+00:00:31.379 --> 00:00:33.340
+any documents you have injected,
+
+12
+00:00:33.340 --> 00:00:36.500
+the tool definitions, and the model's own output.
+
+13
+00:00:36.500 --> 00:00:39.500
+Anything outside it may as well not exist.
+
+14
+00:00:39.500 --> 00:00:41.799
+The unit of measure is the token,
+
+15
+00:00:41.799 --> 00:00:45.860
+roughly four characters or three-quarters of an English word.
+
+16
+00:00:45.860 --> 00:00:48.060
+The window has a hard ceiling,
+
+17
+00:00:48.060 --> 00:00:53.380
+a maximum token count for one request that covers input and output together.
+
+18
+00:00:53.380 --> 00:00:57.819
+Cross it and the request either fails outright or gets truncated.
+
+19
+00:00:58.119 --> 00:01:02.080
+Those boundaries govern every design decision in this lesson,
+
+20
+00:01:02.080 --> 00:01:05.760
+so it's worth being precise about them from the outset.
+
+21
+00:01:05.760 --> 00:01:09.559
+One of the most common mistakes I see in production systems is treating
+
+22
+00:01:09.559 --> 00:01:13.720
+the context window as if it only contains the user's message.
+
+23
+00:01:13.720 --> 00:01:17.879
+In reality, every component of the request contributes tokens.
+
+24
+00:01:17.879 --> 00:01:20.680
+Your system prompt might be 500 words.
+
+25
+00:01:20.680 --> 00:01:24.839
+A multi-turn conversation with 20 exchanges adds up fast.
+
+26
+00:01:24.839 --> 00:01:26.220
+If you're using RAG,
+
+27
+00:01:26.220 --> 00:01:32.379
+the retrieved document chunks can be thousands of tokens before the user says a single word.
+
+28
+00:01:32.379 --> 00:01:35.519
+Tool schemas, injected metadata,
+
+29
+00:01:35.519 --> 00:01:38.319
+and memory summaries all add up.
+
+30
+00:01:38.319 --> 00:01:45.279
+Then the model's own output tokens count too at a higher price per token on most tiers.
+
+31
+00:01:45.279 --> 00:01:47.760
+In well-instrumented production systems,
+
+32
+00:01:47.760 --> 00:01:52.900
+the actual user message is often a small fraction of total context usage.
+
+33
+00:01:52.900 --> 00:01:58.500
+Input and output tokens serve different functions and have different cost profiles.
+
+34
+00:01:58.500 --> 00:02:00.980
+Input tokens are everything you send.
+
+35
+00:02:00.980 --> 00:02:03.739
+The system prompt, conversation history,
+
+36
+00:02:03.739 --> 00:02:07.980
+documents, tool definitions, and the current user message.
+
+37
+00:02:07.980 --> 00:02:10.100
+In RAG and agentic pipelines,
+
+38
+00:02:10.100 --> 00:02:14.660
+input is almost always the dominant share of total context usage.
+
+39
+00:02:14.660 --> 00:02:18.320
+Output tokens are what the model generates in return.
+
+40
+00:02:18.320 --> 00:02:22.559
+Output tokens typically cost more per token than input,
+
+41
+00:02:22.559 --> 00:02:25.679
+and they also count against the context window limit.
+
+42
+00:02:25.679 --> 00:02:27.919
+This matters for chain of thought reasoning.
+
+43
+00:02:27.919 --> 00:02:31.240
+When you enable extended thinking or scratchpad reasoning,
+
+44
+00:02:31.240 --> 00:02:35.080
+the model can generate a lot of output tokens that eat into
+
+45
+00:02:35.080 --> 00:02:39.000
+the available budget before it ever produces a final answer.
+
+46
+00:02:39.000 --> 00:02:41.440
+Tokenization isn't uniform,
+
+47
+00:02:41.440 --> 00:02:44.199
+and this affects your cost and your architecture.
+
+48
+00:02:44.199 --> 00:02:47.520
+Plain English prose tokenizes efficiently,
+
+49
+00:02:47.520 --> 00:02:52.000
+roughly one token per four characters or about three-quarters of a word.
+
+50
+00:02:52.000 --> 00:02:56.440
+Code tends to be similarly efficient because programming keywords and
+
+51
+00:02:56.440 --> 00:03:01.160
+common identifiers are well-represented in the tokenizer vocabulary.
+
+52
+00:03:01.160 --> 00:03:06.820
+Structured formats like JSON and XML are less efficient because all those brackets,
+
+53
+00:03:06.820 --> 00:03:10.600
+quotes, colons, and new lines each consume tokens.
+
+54
+00:03:10.600 --> 00:03:14.000
+Non-English text can be significantly less efficient.
+
+55
+00:03:14.000 --> 00:03:17.679
+Some languages require two to four times as many tokens
+
+56
+00:03:17.679 --> 00:03:20.779
+as the same semantic content in English.
+
+57
+00:03:20.779 --> 00:03:24.059
+When you're choosing a data format for injected content,
+
+58
+00:03:24.059 --> 00:03:27.699
+tokenization efficiency is a real factor.
+
+59
+00:03:27.699 --> 00:03:30.380
+Claude comes in multiple model tiers,
+
+60
+00:03:30.380 --> 00:03:33.259
+and it's worth being precise about what separates them.
+
+61
+00:03:33.259 --> 00:03:36.899
+Context window size isn't the main dividing line.
+
+62
+00:03:36.899 --> 00:03:38.619
+Haiku is the exception here.
+
+63
+00:03:38.619 --> 00:03:41.919
+It carries a smaller 200,000 token window,
+
+64
+00:03:41.919 --> 00:03:47.580
+and is optimized for speed and cost on lighter tasks like single-turn classification,
+
+65
+00:03:47.580 --> 00:03:51.979
+short document summarization, and fast response chatbots.
+
+66
+00:03:51.979 --> 00:03:53.899
+Sonnet and Opus are different.
+
+67
+00:03:53.899 --> 00:03:57.619
+Both share the same large one million token window.
+
+68
+00:03:57.619 --> 00:04:00.660
+So the choice between them isn't about how much fits,
+
+69
+00:04:00.660 --> 00:04:03.139
+it's about capability and cost.
+
+70
+00:04:03.139 --> 00:04:06.580
+Sonnet gives you strong performance at a lower price
+
+71
+00:04:06.580 --> 00:04:10.720
+for multi-document retrieval and everyday agentic pipelines.
+
+72
+00:04:10.720 --> 00:04:16.579
+Opus is the most capable tier for the hardest reasoning and long horizon work.
+
+73
+00:04:16.579 --> 00:04:20.540
+So match the tier to the task's difficulty and your budget,
+
+74
+00:04:20.540 --> 00:04:22.459
+not to a bigger window.
+
+75
+00:04:22.459 --> 00:04:25.660
+Overflow shows up in two distinct places,
+
+76
+00:04:25.660 --> 00:04:28.119
+and the API tells you about them differently.
+
+77
+00:04:28.119 --> 00:04:30.940
+The first case is input that's too large.
+
+78
+00:04:30.940 --> 00:04:33.700
+If the tokens you send already exceed the window,
+
+79
+00:04:33.700 --> 00:04:35.380
+the request never runs.
+
+80
+00:04:35.380 --> 00:04:37.019
+You get a 400 error,
+
+81
+00:04:37.019 --> 00:04:41.779
+a rejection saying the prompt is too long before a single output token is generated.
+
+82
+00:04:41.779 --> 00:04:43.880
+The second case is subtler.
+
+83
+00:04:43.880 --> 00:04:46.720
+Your input fits, generation starts,
+
+84
+00:04:46.720 --> 00:04:50.799
+and then the model runs out of room partway through its own response.
+
+85
+00:04:50.799 --> 00:04:52.959
+Here, the request doesn't error out,
+
+86
+00:04:52.959 --> 00:04:58.359
+it stops early, and the stop reason comes back as model context window exceeded.
+
+87
+00:04:58.359 --> 00:05:00.000
+That's a truncated answer,
+
+88
+00:05:00.000 --> 00:05:01.200
+not a failed call.
+
+89
+00:05:01.200 --> 00:05:04.359
+So your handling code has to check for it explicitly.
+
+90
+00:05:04.359 --> 00:05:09.720
+Treat the upfront rejection and the midstream stop as two separate cases.
+
+91
+00:05:09.720 --> 00:05:13.359
+A context budget is a deliberate allocation plan.
+
+92
+00:05:13.359 --> 00:05:17.000
+You decide in advance how many tokens each component gets.
+
+93
+00:05:17.000 --> 00:05:18.679
+So much for the system prompt,
+
+94
+00:05:18.679 --> 00:05:19.959
+so much for history,
+
+95
+00:05:19.959 --> 00:05:21.799
+so much for retrieved chunks,
+
+96
+00:05:21.799 --> 00:05:23.720
+and headroom for the output,
+
+97
+00:05:23.720 --> 00:05:28.359
+and you enforce those limits in code rather than hoping the content fits.
+
+98
+00:05:28.359 --> 00:05:33.700
+In practice, that means summarizing older turns instead of carrying them verbatim,
+
+99
+00:05:33.700 --> 00:05:35.799
+retrieving only the chunks that matter,
+
+100
+00:05:35.799 --> 00:05:37.480
+capping output tokens,
+
+101
+00:05:37.480 --> 00:05:41.760
+and watching usage per request so growth doesn't creep up on you.
+
+102
+00:05:41.760 --> 00:05:44.119
+Budgeting also protects quality.
+
+103
+00:05:44.119 --> 00:05:47.519
+Anthropic calls the failure mode context rot,
+
+104
+00:05:47.519 --> 00:05:52.239
+where attention dilutes as total tokens grow and recall degrades,
+
+105
+00:05:52.239 --> 00:05:54.720
+even though the answer is sitting right there.
+
+106
+00:05:54.720 --> 00:05:58.600
+The position-based version of that idea is lost in the middle,
+
+107
+00:05:58.600 --> 00:06:03.399
+where content stranded in the center of a long context gets read least.
+
+108
+00:06:03.399 --> 00:06:07.359
+The context window doesn't announce itself when you cross it.
+
+109
+00:06:07.359 --> 00:06:09.839
+What you notice is a system that starts ignoring
+
+110
+00:06:09.839 --> 00:06:12.239
+the instructions that you gave it in the beginning,
+
+111
+00:06:12.239 --> 00:06:17.760
+or a call that fails outright in production on the input that happened to run long.
+
+112
+00:06:17.760 --> 00:06:22.480
+That's why knowing what tokenizes into what is worth your time.
+
+113
+00:06:22.480 --> 00:06:26.000
+You're budgeting a space you can't actually see,
+
+114
+00:06:26.000 --> 00:06:27.760
+so you have to pay attention to it.
+
+115
+00:06:27.760 --> 00:06:29.119
+That's it for this one.
+
+116
+00:06:29.119 --> 00:06:31.559
+I'll see you in the next lesson.
+

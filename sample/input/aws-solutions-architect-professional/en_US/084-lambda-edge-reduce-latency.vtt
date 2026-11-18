@@ -1,0 +1,250 @@
+WEBVTT
+
+1
+00:00:00.300 --> 00:00:02.700
+<v Instructor>So here is a use case for Lambda@Edge</v>
+
+2
+00:00:02.700 --> 00:00:05.400
+where you can use it to root to a different origin
+
+3
+00:00:05.400 --> 00:00:09.840
+and reduce the latency of some calls from CloudFront Edge.
+
+4
+00:00:09.840 --> 00:00:11.160
+So how does that work?
+
+5
+00:00:11.160 --> 00:00:14.040
+Well say we are using the classic architecture
+
+6
+00:00:14.040 --> 00:00:15.810
+of an S3 bucket
+
+7
+00:00:15.810 --> 00:00:19.684
+and then we'll have a CloudFront Edge location.
+
+8
+00:00:19.684 --> 00:00:23.280
+So it turns out that's if we link these two together,
+
+9
+00:00:23.280 --> 00:00:24.660
+then it's going to work.
+
+10
+00:00:24.660 --> 00:00:28.800
+But in case the edge location is far away from the bucket,
+
+11
+00:00:28.800 --> 00:00:31.440
+then the first request to get some files
+
+12
+00:00:31.440 --> 00:00:32.910
+may take a long time.
+
+13
+00:00:32.910 --> 00:00:34.470
+So how do we solve for this?
+
+14
+00:00:34.470 --> 00:00:36.540
+Well, in the case, for example,
+
+15
+00:00:36.540 --> 00:00:38.640
+where the users are in Europe
+
+16
+00:00:38.640 --> 00:00:41.070
+and they want to access our Edge location
+
+17
+00:00:41.070 --> 00:00:44.550
+if the content is already cashed, then it's perfect.
+
+18
+00:00:44.550 --> 00:00:48.690
+The object is returned with very, very little latency.
+
+19
+00:00:48.690 --> 00:00:50.580
+So this is how the edge location works.
+
+20
+00:00:50.580 --> 00:00:52.980
+But to get the object into the cache,
+
+21
+00:00:52.980 --> 00:00:55.770
+because the CloudFront edge location is to make a request
+
+22
+00:00:55.770 --> 00:00:58.770
+from Europe into the US East 1 region
+
+23
+00:00:58.770 --> 00:01:00.870
+it can have some latency added
+
+24
+00:01:00.870 --> 00:01:02.640
+which may not be acceptable to you.
+
+25
+00:01:02.640 --> 00:01:04.080
+So how do we solve for this?
+
+26
+00:01:04.080 --> 00:01:07.140
+Well, we're going to create a second S3 Bucket,
+
+27
+00:01:07.140 --> 00:01:09.540
+this time in EU West 2,
+
+28
+00:01:09.540 --> 00:01:10.950
+and we're going to set up
+
+29
+00:01:10.950 --> 00:01:15.150
+S3 cross region replication across my two buckets.
+
+30
+00:01:15.150 --> 00:01:17.670
+The reason we do so is that all the buckets,
+
+31
+00:01:17.670 --> 00:01:20.520
+all the content of bucket one is now in bucket two
+
+32
+00:01:20.520 --> 00:01:23.940
+in a region close earth to the user.
+
+33
+00:01:23.940 --> 00:01:28.050
+Next we're going to create a Lambda@Edge function
+
+34
+00:01:28.050 --> 00:01:29.490
+which is going to be triggered
+
+35
+00:01:29.490 --> 00:01:32.220
+by your CloudFront's Edge locations.
+
+36
+00:01:32.220 --> 00:01:34.170
+And what's going to happen here is that
+
+37
+00:01:34.170 --> 00:01:36.300
+whenever the users are accessing
+
+38
+00:01:36.300 --> 00:01:37.920
+the CloudFront Edge location,
+
+39
+00:01:37.920 --> 00:01:40.260
+the Lambda at edge function is going to look
+
+40
+00:01:40.260 --> 00:01:42.810
+where the request is coming from.
+
+41
+00:01:42.810 --> 00:01:45.540
+And if it comes from a region
+
+42
+00:01:45.540 --> 00:01:47.790
+that is closer to the first bucket
+
+43
+00:01:47.790 --> 00:01:50.190
+then it's going to direct users to the first bucket.
+
+44
+00:01:50.190 --> 00:01:52.470
+But else, if the request comes
+
+45
+00:01:52.470 --> 00:01:54.660
+from a region closer to the second bucket,
+
+46
+00:01:54.660 --> 00:01:57.060
+then it's going to modify the origin request
+
+47
+00:01:57.060 --> 00:02:00.180
+and send it to my second origin.
+
+48
+00:02:00.180 --> 00:02:03.870
+The reason is that the data is the same across both regions,
+
+49
+00:02:03.870 --> 00:02:04.950
+and so therefore,
+
+50
+00:02:04.950 --> 00:02:08.310
+the Lambda@Edge function will help us route the request
+
+51
+00:02:08.310 --> 00:02:11.640
+to the bucket that is the closest to the edge location
+
+52
+00:02:11.640 --> 00:02:14.340
+thus reducing the latency
+
+53
+00:02:14.340 --> 00:02:18.630
+of our first call to get a file into an edge location.
+
+54
+00:02:18.630 --> 00:02:20.670
+Then of course, the object will be returned
+
+55
+00:02:20.670 --> 00:02:21.930
+and will be good to go.
+
+56
+00:02:21.930 --> 00:02:23.910
+So it's a tricky pattern
+
+57
+00:02:23.910 --> 00:02:27.180
+but a very useful one to reduce the latency
+
+58
+00:02:27.180 --> 00:02:29.610
+of the first call of a file
+
+59
+00:02:29.610 --> 00:02:32.040
+into the CloudFront Edge location
+
+60
+00:02:32.040 --> 00:02:35.910
+based on Lambda@Edge and different origins.
+
+61
+00:02:35.910 --> 00:02:38.070
+So that's it this lecture, I hope you liked it
+
+62
+00:02:38.070 --> 00:02:40.020
+and I will see you in the next lecture.
+

@@ -1,0 +1,766 @@
+WEBVTT
+
+1
+00:00:00.150 --> 00:00:02.460
+<v ->Okay, so now let's discuss CloudTrail</v>
+
+2
+00:00:02.460 --> 00:00:05.280
+and some solution architectures that can be interesting
+
+3
+00:00:05.280 --> 00:00:06.600
+with CloudTrail.
+
+4
+00:00:06.600 --> 00:00:08.430
+So the first one is around
+
+5
+00:00:08.430 --> 00:00:10.920
+how to deliver files from CloudTrail to S3
+
+6
+00:00:10.920 --> 00:00:14.100
+and the type of use case that it opens up.
+
+7
+00:00:14.100 --> 00:00:18.180
+So we have CloudTrail, and you can set up a dump
+
+8
+00:00:18.180 --> 00:00:22.950
+of the CloudTrail files into S3 every five minutes.
+
+9
+00:00:22.950 --> 00:00:24.990
+And so this encryption can be enabled.
+
+10
+00:00:24.990 --> 00:00:28.110
+And by default it's going to be SSE-S3 encryption.
+
+11
+00:00:28.110 --> 00:00:31.020
+But you can set up manually SSE-KMS
+
+12
+00:00:31.020 --> 00:00:33.060
+for your CloudTrail files.
+
+13
+00:00:33.060 --> 00:00:36.360
+You could set up a lifecycle policy on your S3 buckets
+
+14
+00:00:36.360 --> 00:00:39.540
+to deliver files to the Glacier tier
+
+15
+00:00:39.540 --> 00:00:40.680
+in case they're archives
+
+16
+00:00:40.680 --> 00:00:44.220
+and you don't need to have them around for a long time
+
+17
+00:00:44.220 --> 00:00:45.570
+or you just wanna archive them
+
+18
+00:00:45.570 --> 00:00:47.820
+and make sure that if you need to access them
+
+19
+00:00:47.820 --> 00:00:50.220
+you can wait maybe for 6, 12 hours
+
+20
+00:00:50.220 --> 00:00:51.633
+before you analyze these.
+
+21
+00:00:52.470 --> 00:00:55.050
+When a file is delivered into S3,
+
+22
+00:00:55.050 --> 00:00:59.310
+you can leverage S3 events to notify either an SQS queue,
+
+23
+00:00:59.310 --> 00:01:02.070
+an SNS topic, or a Lambda function.
+
+24
+00:01:02.070 --> 00:01:04.680
+But you can also have CloudTrail deliver notifications
+
+25
+00:01:04.680 --> 00:01:06.270
+directly into SNS.
+
+26
+00:01:06.270 --> 00:01:10.380
+And from SNS you could invoke SQS or Lambda.
+
+27
+00:01:10.380 --> 00:01:12.810
+So this gives you a bunch of different options
+
+28
+00:01:12.810 --> 00:01:14.640
+you can have for this architecture.
+
+29
+00:01:14.640 --> 00:01:16.830
+As you can see, there's not one way of doing things.
+
+30
+00:01:16.830 --> 00:01:18.870
+But getting into thinking
+
+31
+00:01:18.870 --> 00:01:21.930
+how these things fit together is the key
+
+32
+00:01:21.930 --> 00:01:25.020
+to passing the Solutions Architect Professional exam.
+
+33
+00:01:25.020 --> 00:01:26.940
+Okay, on top of it, you need to think
+
+34
+00:01:26.940 --> 00:01:29.730
+about all the enhancements we can have from S3.
+
+35
+00:01:29.730 --> 00:01:32.670
+So we can enable versioning to prevent accidental deletes.
+
+36
+00:01:32.670 --> 00:01:34.950
+We can have MFA for delete protection.
+
+37
+00:01:34.950 --> 00:01:36.630
+We can have S3 lifecycle policies, as I said,
+
+38
+00:01:36.630 --> 00:01:39.120
+to move it to S3 IA or Glacier.
+
+39
+00:01:39.120 --> 00:01:41.310
+You can have S3 object lock to make sure
+
+40
+00:01:41.310 --> 00:01:44.100
+that the S3 buckets' objects are never deleted
+
+41
+00:01:44.100 --> 00:01:45.930
+and will never be modified as well.
+
+42
+00:01:45.930 --> 00:01:47.370
+So this could be very powerful.
+
+43
+00:01:47.370 --> 00:01:51.450
+You can enable encryption such as SSE-S3 or SSE-KMS.
+
+44
+00:01:51.450 --> 00:01:53.070
+And you can even have a feature
+
+45
+00:01:53.070 --> 00:01:56.190
+to perform CloudTrail log file integrity validation
+
+46
+00:01:56.190 --> 00:01:58.020
+that will verify that the files delivered
+
+47
+00:01:58.020 --> 00:02:00.630
+in S3 are exactly as they should be
+
+48
+00:02:00.630 --> 00:02:02.220
+and they have not been tempered with,
+
+49
+00:02:02.220 --> 00:02:03.750
+they have not been modified.
+
+50
+00:02:03.750 --> 00:02:05.520
+So this is getting interesting, right?
+
+51
+00:02:05.520 --> 00:02:08.043
+Because from CloudTrail, in combining this
+
+52
+00:02:08.043 --> 00:02:09.780
+with S3 and all these notifications,
+
+53
+00:02:09.780 --> 00:02:12.270
+we can have a bunch of use case being opened up.
+
+54
+00:02:12.270 --> 00:02:15.570
+So this is hopefully opening some stuff for you
+
+55
+00:02:15.570 --> 00:02:18.180
+and helping you understand the kind of architectures
+
+56
+00:02:18.180 --> 00:02:20.970
+we can be looking at going into the exam.
+
+57
+00:02:20.970 --> 00:02:22.920
+Okay, another architecture now.
+
+58
+00:02:22.920 --> 00:02:25.410
+CloudTrail can be multi-account and multi-region.
+
+59
+00:02:25.410 --> 00:02:28.500
+So say we have two accounts, Account A and Account B.
+
+60
+00:02:28.500 --> 00:02:30.180
+And we have a security account
+
+61
+00:02:30.180 --> 00:02:32.190
+that we want to send the logs to.
+
+62
+00:02:32.190 --> 00:02:33.690
+So we'll have CloudTrail in the first account
+
+63
+00:02:33.690 --> 00:02:35.820
+and CloudTrail in the second account.
+
+64
+00:02:35.820 --> 00:02:38.820
+And we'll set up an S3 bucket that will be holding the logs
+
+65
+00:02:38.820 --> 00:02:40.620
+of all these CloudTrails.
+
+66
+00:02:40.620 --> 00:02:43.020
+The thing is CloudTrail needs to be delivering
+
+67
+00:02:43.020 --> 00:02:44.940
+these log files into the S3 buckets
+
+68
+00:02:44.940 --> 00:02:46.560
+of the security account.
+
+69
+00:02:46.560 --> 00:02:48.870
+And so the only way for us to do it is
+
+70
+00:02:48.870 --> 00:02:50.790
+to define an S3 bucket policy.
+
+71
+00:02:50.790 --> 00:02:53.790
+And the S3 bucket policy should allow CloudTrail
+
+72
+00:02:53.790 --> 00:02:56.130
+to deliver files into S3.
+
+73
+00:02:56.130 --> 00:02:57.840
+And the cool thing we have here is
+
+74
+00:02:57.840 --> 00:03:00.600
+that the S3 bucket policy, first of all, is necessary
+
+75
+00:03:00.600 --> 00:03:03.480
+and very simple to maintain for cross-account delivery.
+
+76
+00:03:03.480 --> 00:03:07.560
+The second is that if Account A needs to access
+
+77
+00:03:07.560 --> 00:03:10.530
+you know, the logs for the CloudTrail bucket
+
+78
+00:03:10.530 --> 00:03:13.020
+we can create, for example, a cross-account role
+
+79
+00:03:13.020 --> 00:03:15.420
+and assume the role in the security account.
+
+80
+00:03:15.420 --> 00:03:18.600
+Or we can edit the bucket policy to allow reads
+
+81
+00:03:18.600 --> 00:03:20.010
+from the Account A.
+
+82
+00:03:20.010 --> 00:03:21.270
+So it's really up to you to see
+
+83
+00:03:21.270 --> 00:03:23.010
+the kind of architectures then you need.
+
+84
+00:03:23.010 --> 00:03:25.080
+But it's really interesting here to see
+
+85
+00:03:25.080 --> 00:03:27.210
+that there's different options to provide the reads access
+
+86
+00:03:27.210 --> 00:03:29.070
+to S3 based on the use case.
+
+87
+00:03:29.070 --> 00:03:30.690
+And on top of it, we have demonstrated
+
+88
+00:03:30.690 --> 00:03:33.150
+a good way to have a security account in the middle
+
+89
+00:03:33.150 --> 00:03:36.090
+to keep all these CloudTrail logs into a secure place.
+
+90
+00:03:36.090 --> 00:03:38.340
+And maybe the security account has a much tighter security
+
+91
+00:03:38.340 --> 00:03:40.020
+for user management and so on.
+
+92
+00:03:40.020 --> 00:03:42.060
+And so we have the certainty that these logs are safe
+
+93
+00:03:42.060 --> 00:03:44.160
+and secure for a long time.
+
+94
+00:03:44.160 --> 00:03:46.710
+Okay, so yet another solution architecture.
+
+95
+00:03:46.710 --> 00:03:48.060
+Say you want to create alerts
+
+96
+00:03:48.060 --> 00:03:50.220
+when certain API calls are done.
+
+97
+00:03:50.220 --> 00:03:51.510
+So you have CloudTrail.
+
+98
+00:03:51.510 --> 00:03:55.050
+And you can stream all these events into CloudWatch Logs.
+
+99
+00:03:55.050 --> 00:03:56.670
+And then from CloudWatch Logs you can open up
+
+100
+00:03:56.670 --> 00:03:57.780
+a bunch of use case.
+
+101
+00:03:57.780 --> 00:04:00.000
+And one of the things you can do with CloudWatch logs is
+
+102
+00:04:00.000 --> 00:04:01.800
+to create a metrics filter
+
+103
+00:04:01.800 --> 00:04:03.660
+and then a CloudWatch alarm on top of it.
+
+104
+00:04:03.660 --> 00:04:05.580
+And this filter will basically filter
+
+105
+00:04:05.580 --> 00:04:08.070
+for the API call you're looking for.
+
+106
+00:04:08.070 --> 00:04:10.470
+Maybe you're looking for a terminate instance.
+
+107
+00:04:10.470 --> 00:04:13.260
+So you create metric filter for terminate instance.
+
+108
+00:04:13.260 --> 00:04:15.720
+And then if that filter passes through
+
+109
+00:04:15.720 --> 00:04:18.897
+then you would have the metric incremented by one.
+
+110
+00:04:18.897 --> 00:04:21.360
+And maybe your CloudWatch alarm is set up to be triggered
+
+111
+00:04:21.360 --> 00:04:23.820
+whenever the metric filter is equals to one,
+
+112
+00:04:23.820 --> 00:04:26.700
+in which case the CloudWatch alarm can deliver
+
+113
+00:04:26.700 --> 00:04:27.930
+to an SNS topic.
+
+114
+00:04:27.930 --> 00:04:30.450
+And from that SNS topic, you could have a Lambda function.
+
+115
+00:04:30.450 --> 00:04:31.500
+You could have an SQS queue.
+
+116
+00:04:31.500 --> 00:04:32.850
+You could have multiple things.
+
+117
+00:04:32.850 --> 00:04:35.703
+But this would be a way to create alerts for API calls.
+
+118
+00:04:36.840 --> 00:04:39.420
+Now these log metric filters can be detecting also
+
+119
+00:04:39.420 --> 00:04:40.890
+a high level of API happening.
+
+120
+00:04:40.890 --> 00:04:43.080
+Doesn't have to be a specific API.
+
+121
+00:04:43.080 --> 00:04:45.810
+So you can be counting the occurrences of a specific API,
+
+122
+00:04:45.810 --> 00:04:48.030
+for example terminate EC2 instances
+
+123
+00:04:48.030 --> 00:04:50.580
+or count the API calls per user
+
+124
+00:04:50.580 --> 00:04:53.040
+or detect a high level of denied API calls.
+
+125
+00:04:53.040 --> 00:04:56.010
+Maybe someone is trying to breach into your security.
+
+126
+00:04:56.010 --> 00:04:57.570
+So it's not just for one API call
+
+127
+00:04:57.570 --> 00:04:59.520
+you can be creating a metrics filter.
+
+128
+00:04:59.520 --> 00:05:01.650
+And CloudWatch alarms is for counting them
+
+129
+00:05:01.650 --> 00:05:06.000
+or detecting high level of unusual activity.
+
+130
+00:05:06.000 --> 00:05:07.410
+Okay, so there is another feature
+
+131
+00:05:07.410 --> 00:05:08.340
+of CloudTrail need to know about,
+
+132
+00:05:08.340 --> 00:05:10.650
+which is the organizational trail.
+
+133
+00:05:10.650 --> 00:05:13.140
+So if you have AWS organizations,
+
+134
+00:05:13.140 --> 00:05:14.850
+for example, you have a management account,
+
+135
+00:05:14.850 --> 00:05:17.400
+and then you have several OUs with other member accounts,
+
+136
+00:05:17.400 --> 00:05:19.650
+then it is possible for you to set up
+
+137
+00:05:19.650 --> 00:05:23.610
+a organizational trail directly in the management accounts.
+
+138
+00:05:23.610 --> 00:05:25.200
+Okay, so it's very important for you to remember
+
+139
+00:05:25.200 --> 00:05:27.720
+this trail is created in the management accounts
+
+140
+00:05:27.720 --> 00:05:29.670
+and not in the children accounts,
+
+141
+00:05:29.670 --> 00:05:32.250
+in the member accounts of your organization.
+
+142
+00:05:32.250 --> 00:05:34.440
+Now what's happening is that once you create this trail
+
+143
+00:05:34.440 --> 00:05:37.980
+then any events into all the member accounts will be
+
+144
+00:05:37.980 --> 00:05:39.960
+monitored by this trail directly,
+
+145
+00:05:39.960 --> 00:05:41.550
+which is very easy to understand.
+
+146
+00:05:41.550 --> 00:05:43.530
+So that means that any accounts in the prod OU
+
+147
+00:05:43.530 --> 00:05:45.510
+or the dev OU will be monitored.
+
+148
+00:05:45.510 --> 00:05:48.630
+And from there, while you can send the information
+
+149
+00:05:48.630 --> 00:05:51.420
+from a trail into an S3 bucket, that will be again
+
+150
+00:05:51.420 --> 00:05:52.740
+in your management accounts.
+
+151
+00:05:52.740 --> 00:05:54.600
+And this S3 bucket will contain
+
+152
+00:05:54.600 --> 00:05:56.790
+a certain kind of organization,
+
+153
+00:05:56.790 --> 00:05:58.950
+where as you see the suffix
+
+154
+00:05:58.950 --> 00:06:02.430
+of the S3 prefix represents the account number
+
+155
+00:06:02.430 --> 00:06:04.923
+that is being monitored by CloudTrail.
+
+156
+00:06:06.120 --> 00:06:09.750
+So how can you react to events the fastest in CloudTrail?
+
+157
+00:06:09.750 --> 00:06:12.570
+Well, first of all, any event in CloudTrail may take
+
+158
+00:06:12.570 --> 00:06:14.340
+15 minutes to be delivered.
+
+159
+00:06:14.340 --> 00:06:15.540
+So this is something to know.
+
+160
+00:06:15.540 --> 00:06:18.270
+But anyways, so we have EventBridge.
+
+161
+00:06:18.270 --> 00:06:20.640
+And this is cool because this can be triggered
+
+162
+00:06:20.640 --> 00:06:23.730
+for any API call done within CloudTrail,
+
+163
+00:06:23.730 --> 00:06:26.430
+which gives you by far the fastest, most reactive way
+
+164
+00:06:26.430 --> 00:06:28.980
+to react to any events in CloudTrail.
+
+165
+00:06:28.980 --> 00:06:31.710
+So you can have deep integration between them.
+
+166
+00:06:31.710 --> 00:06:34.200
+Then we have CloudTrail Delivery in CloudWatch logs.
+
+167
+00:06:34.200 --> 00:06:36.210
+So that means that all the events are going to be streamed
+
+168
+00:06:36.210 --> 00:06:37.380
+in the CloudWatch Logs.
+
+169
+00:06:37.380 --> 00:06:39.750
+And you can create a metric filter
+
+170
+00:06:39.750 --> 00:06:42.240
+to analyze occurrences and detect anomalies.
+
+171
+00:06:42.240 --> 00:06:43.860
+So this is when you wanna see
+
+172
+00:06:43.860 --> 00:06:47.070
+if someone is trying too fast to log into your accounts,
+
+173
+00:06:47.070 --> 00:06:49.110
+that kind of things that could be a trigger
+
+174
+00:06:49.110 --> 00:06:50.940
+for maybe an attack.
+
+175
+00:06:50.940 --> 00:06:53.760
+And you have CloudTrail Delivery in Amazon S3.
+
+176
+00:06:53.760 --> 00:06:56.700
+So there the events are delivered every five minutes.
+
+177
+00:06:56.700 --> 00:06:58.740
+And you have also the possibility to guarantee
+
+178
+00:06:58.740 --> 00:07:02.070
+that the logs in S3 are having integrity
+
+179
+00:07:02.070 --> 00:07:03.960
+with a hashing feature.
+
+180
+00:07:03.960 --> 00:07:05.580
+You can deliver them cross-account.
+
+181
+00:07:05.580 --> 00:07:08.700
+It's good for long-term storage and analytics.
+
+182
+00:07:08.700 --> 00:07:10.080
+So based on use case you have,
+
+183
+00:07:10.080 --> 00:07:12.150
+if you want to react to an event right away,
+
+184
+00:07:12.150 --> 00:07:13.140
+it's EventBridge.
+
+185
+00:07:13.140 --> 00:07:15.060
+If you want to count events,
+
+186
+00:07:15.060 --> 00:07:16.470
+it's going to be CloudWatch Logs.
+
+187
+00:07:16.470 --> 00:07:19.320
+And if you want to do analytics on all of them at scale,
+
+188
+00:07:19.320 --> 00:07:21.420
+it's going to be Amazon S3.
+
+189
+00:07:21.420 --> 00:07:22.500
+So that's it for this lecture.
+
+190
+00:07:22.500 --> 00:07:23.580
+I hope you liked it.
+
+191
+00:07:23.580 --> 00:07:25.530
+And I will see you in the next lecture.
+

@@ -1,0 +1,258 @@
+WEBVTT
+
+1
+00:00:00.180 --> 00:00:02.010
+<v Instructor>So you also have the possibility</v>
+
+2
+00:00:02.010 --> 00:00:05.460
+to define multi-region access points on Amazon S3.
+
+3
+00:00:05.460 --> 00:00:07.230
+The idea is that with this access point,
+
+4
+00:00:07.230 --> 00:00:08.490
+you have a global endpoint
+
+5
+00:00:08.490 --> 00:00:12.630
+that will span multiple S3 buckets in multiple regions.
+
+6
+00:00:12.630 --> 00:00:16.020
+And the idea is that you access it only through one endpoint
+
+7
+00:00:16.020 --> 00:00:18.780
+and this endpoint will redirect you to the S3 bucket
+
+8
+00:00:18.780 --> 00:00:21.150
+that makes sense in the region that makes sense.
+
+9
+00:00:21.150 --> 00:00:23.160
+So it's going to dynamically route requests
+
+10
+00:00:23.160 --> 00:00:24.600
+to the nearest S3 bucket,
+
+11
+00:00:24.600 --> 00:00:27.360
+therefore providing you the lowest latency
+
+12
+00:00:27.360 --> 00:00:29.100
+and to make sure that while the data
+
+13
+00:00:29.100 --> 00:00:31.260
+in all the S3 buckets are equal,
+
+14
+00:00:31.260 --> 00:00:33.240
+you have bidirectional replication.
+
+15
+00:00:33.240 --> 00:00:34.890
+So the data is replicated
+
+16
+00:00:34.890 --> 00:00:38.010
+from one bucket to the next and vice versa.
+
+17
+00:00:38.010 --> 00:00:40.650
+This way, all your regions are synchronized
+
+18
+00:00:40.650 --> 00:00:42.870
+and we'll see as well, we have failover controls,
+
+19
+00:00:42.870 --> 00:00:45.870
+so it's possible for us to define all buckets are active,
+
+20
+00:00:45.870 --> 00:00:49.320
+or to have some buckets as a backup, so as a passive,
+
+21
+00:00:49.320 --> 00:00:52.800
+so that if we failover if there's a region problem,
+
+22
+00:00:52.800 --> 00:00:55.830
+then we can failover to the passive buckets.
+
+23
+00:00:55.830 --> 00:00:57.300
+So let's have a look at, for example,
+
+24
+00:00:57.300 --> 00:00:59.280
+an example with three regions.
+
+25
+00:00:59.280 --> 00:01:02.970
+We have US-EAST-1, EU-WEST-1, and AP-SOUTHEAST-1,
+
+26
+00:01:02.970 --> 00:01:04.710
+with the same S3 bucket
+
+27
+00:01:04.710 --> 00:01:07.770
+that's going to be replicated across all regions.
+
+28
+00:01:07.770 --> 00:01:10.830
+So automatically, these roles are created
+
+29
+00:01:10.830 --> 00:01:12.360
+by Amazon S3 for you,
+
+30
+00:01:12.360 --> 00:01:13.860
+so you just have to say it.
+
+31
+00:01:13.860 --> 00:01:15.930
+But then all the data within these buckets is
+
+32
+00:01:15.930 --> 00:01:18.150
+going to be replicated no matter what.
+
+33
+00:01:18.150 --> 00:01:20.280
+And as you can see, we must have replication rules
+
+34
+00:01:20.280 --> 00:01:22.860
+across all buckets to one another.
+
+35
+00:01:22.860 --> 00:01:25.830
+Then we create this S3 multi-region access point.
+
+36
+00:01:25.830 --> 00:01:27.420
+And then when our application is going to
+
+37
+00:01:27.420 --> 00:01:29.580
+request an S3 bucket object
+
+38
+00:01:29.580 --> 00:01:32.190
+then we're going to be routed automatically
+
+39
+00:01:32.190 --> 00:01:35.280
+to the region with the lowest latency.
+
+40
+00:01:35.280 --> 00:01:36.900
+And in case this region is down
+
+41
+00:01:36.900 --> 00:01:40.950
+then we may be redirected into the other regions.
+
+42
+00:01:40.950 --> 00:01:43.080
+So then we have the fellow rear controls I told you
+
+43
+00:01:43.080 --> 00:01:44.520
+about for your S3 access point.
+
+44
+00:01:44.520 --> 00:01:47.640
+So let's take an example of a bucket that's across
+
+45
+00:01:47.640 --> 00:01:49.680
+that's replicated across two regions.
+
+46
+00:01:49.680 --> 00:01:52.770
+Okay? And we have a multi-region access point.
+
+47
+00:01:52.770 --> 00:01:55.690
+Now in the case of an active passive fellow rear control
+
+48
+00:01:56.628 --> 00:01:58.350
+where you're going to designate one bucket as active
+
+49
+00:01:58.350 --> 00:02:00.450
+and the other one as passive.
+
+50
+00:02:00.450 --> 00:02:02.370
+Therefore whenever we request an object.
+
+51
+00:02:02.370 --> 00:02:04.320
+We're not going to go this time to the lowest latency
+
+52
+00:02:04.320 --> 00:02:06.390
+we're just going to go to the one that's active.
+
+53
+00:02:06.390 --> 00:02:07.997
+And of course, if you have multiple active ones
+
+54
+00:02:07.997 --> 00:02:10.170
+you will have the lowest latency.
+
+55
+00:02:10.170 --> 00:02:13.620
+And in case you will have a regional traffic discretion
+
+56
+00:02:13.620 --> 00:02:17.490
+for example, US-East-1 is experiencing a bad outage
+
+57
+00:02:17.490 --> 00:02:21.330
+then automatically you're going to have a failover initiated
+
+58
+00:02:21.330 --> 00:02:24.720
+and your request will go to the passive S3 bucket
+
+59
+00:02:24.720 --> 00:02:27.450
+which no matter what will contain all your data.
+
+60
+00:02:27.450 --> 00:02:30.060
+And these kind of failover controls are valid
+
+61
+00:02:30.060 --> 00:02:33.090
+for active/passive type of setups, but also active/active.
+
+62
+00:02:33.090 --> 00:02:36.090
+This is when you can write to multiple regions at a time.
+
+63
+00:02:36.090 --> 00:02:37.230
+Alright, that's it for this lecture.
+
+64
+00:02:37.230 --> 00:02:40.180
+I hope you liked it and I will see you in the next lecture.
+

@@ -1,0 +1,278 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.840
+The focus of this lesson is sequential pipelines. In this one, we'll cover how they're structured,
+
+2
+00:00:05.840 --> 00:00:12.000
+how to map dependencies between steps, how to design clean handoffs, where sequential execution
+
+3
+00:00:12.000 --> 00:00:18.239
+is actually the right call, and where it quietly costs you latency when steps don't actually need
+
+4
+00:00:18.239 --> 00:00:24.559
+to be ordered. Let's get into it. Most pipelines end up more sequential than they actually need to
+
+5
+00:00:24.559 --> 00:00:30.479
+be, and the reason is that nobody checked what forces each step to wait. Sequential execution
+
+6
+00:00:30.479 --> 00:00:36.959
+means tasks run one at a time in a fixed order, where each step may depend on the previous output.
+
+7
+00:00:36.959 --> 00:00:42.560
+It's simpler to reason about than parallel execution, but it can't exploit task-level
+
+8
+00:00:42.560 --> 00:00:48.080
+parallelism. Prompt chaining is the specific version of that pattern, where the output of
+
+9
+00:00:48.080 --> 00:00:55.119
+one LLM call becomes the input to the next, giving each step a narrow single responsibility.
+
+10
+00:00:55.680 --> 00:01:01.520
+And a dependency graph is the tool that tells you which steps genuinely have to come before which
+
+11
+00:01:01.520 --> 00:01:08.480
+others, and which ones never needed to be ordered at all. A sequential pipeline is a chain where each
+
+12
+00:01:08.480 --> 00:01:15.040
+step's output feeds forward into the next step's input. The execution order is fixed and deterministic.
+
+13
+00:01:15.040 --> 00:01:21.120
+There's no branching by default. If step 2 depends on step 1's output, step 2 can't start
+
+14
+00:01:21.120 --> 00:01:26.959
+until step 1 completes. That's the defining constraint. It also means the pipeline halts
+
+15
+00:01:26.959 --> 00:01:32.879
+on failure. If any step fails, every downstream step is blocked because they have no input to
+
+16
+00:01:32.879 --> 00:01:38.639
+work with. This is the basic structure of prompt chaining, which is a deterministic workflow
+
+17
+00:01:38.639 --> 00:01:43.760
+technique rather than an agentic pattern. Understanding this structure is the starting
+
+18
+00:01:43.760 --> 00:01:49.919
+point for knowing when to use it and when to break out of it. Dependency graphs are the practical
+
+19
+00:01:49.919 --> 00:01:56.480
+tool for designing sequential pipelines. You draw an edge from step A to step B if B needs A's output
+
+20
+00:01:56.480 --> 00:02:02.480
+to run. Steps with no incoming edges have no prerequisites and can potentially run first or
+
+21
+00:02:02.480 --> 00:02:09.279
+in parallel with other independent steps. Steps with multiple incoming edges are synchronization
+
+22
+00:02:09.279 --> 00:02:15.199
+points. They can't proceed until all predecessors complete. Reading the graph tells you the minimum
+
+23
+00:02:15.199 --> 00:02:20.720
+required sequential ordering, which is often less than what your initial pipeline design assumes.
+
+24
+00:02:21.360 --> 00:02:26.080
+Many pipelines end up more sequential than they need to be because the dependency graph
+
+25
+00:02:26.080 --> 00:02:32.000
+was never drawn. Drawing it first is a fast way to find opportunities to reduce latency
+
+26
+00:02:32.000 --> 00:02:37.839
+without changing correctness. Sequential execution is the right choice in four situations.
+
+27
+00:02:38.399 --> 00:02:44.559
+First, when there's a true data dependency where step B literally needs step A's output as its
+
+28
+00:02:44.559 --> 00:02:52.000
+input. Parallel execution won't work here. Second, when steps accumulate state where each step builds
+
+29
+00:02:52.000 --> 00:02:58.240
+on a growing context that prior steps produced. Third, when operations need to run in a specific
+
+30
+00:02:58.240 --> 00:03:04.160
+order like parsing before validation before enrichment. And fourth, when simplicity and
+
+31
+00:03:04.160 --> 00:03:11.119
+auditability matter more than speed. A sequential pipeline is easy to step through, log, and debug.
+
+32
+00:03:11.119 --> 00:03:15.600
+If you're building something where correctness and traceability are the top priorities,
+
+33
+00:03:15.600 --> 00:03:20.160
+sequential is often the cleaner design, even if parallel would technically be faster.
+
+34
+00:03:21.360 --> 00:03:28.000
+Let's weigh sequential strengths against sequential costs. The main cost is that total latency equals
+
+35
+00:03:28.000 --> 00:03:33.679
+the sum of every step's latency. That's fine when steps genuinely depend on each other. It's a
+
+36
+00:03:33.679 --> 00:03:39.839
+problem when they don't. On the other side, sequential pipelines are genuinely easier to debug.
+
+37
+00:03:39.839 --> 00:03:46.160
+A failure in step 3 means you look at step 3's input and output and you know exactly what happened.
+
+38
+00:03:46.160 --> 00:03:51.839
+There's no synchronization logic to reason about. No partial failures from concurrent branches.
+
+39
+00:03:51.839 --> 00:03:57.279
+The data flow is linear and transparent. The key lesson here is that sequential is the correct
+
+40
+00:03:57.279 --> 00:04:03.199
+pattern when dependencies are real. Choosing sequential over parallel when steps are actually
+
+41
+00:04:03.199 --> 00:04:10.559
+independent wastes latency and is an exam trap worth knowing. Every boundary between pipeline
+
+42
+00:04:10.559 --> 00:04:17.920
+steps needs a defined schema for what passes from one step to the next. The output schema of step n
+
+43
+00:04:17.920 --> 00:04:24.320
+becomes the input contract for step n plus 1. Making these schemas explicit catches mismatches
+
+44
+00:04:24.320 --> 00:04:30.959
+early before they cause runtime failures, include required fields, types, and nullability in every
+
+45
+00:04:30.959 --> 00:04:37.600
+handoff spec. Loose informal handoffs are a common source of silent data loss. Step n plus
+
+46
+00:04:37.600 --> 00:04:44.000
+1 might receive a response that's missing a field it expects, silently default to a null or empty
+
+47
+00:04:44.000 --> 00:04:49.839
+value, and continue running with corrupted data that only shows up as a wrong result several
+
+48
+00:04:49.839 --> 00:04:55.920
+steps later. Explicit schemas give you a clear failure mode at the boundary rather than a
+
+49
+00:04:55.920 --> 00:05:02.559
+mysterious output failure at the end of the pipeline. Error handling in sequential pipelines
+
+50
+00:05:02.559 --> 00:05:09.679
+deserves specific attention because failures cascade. If step 2 fails, step 3 has no input
+
+51
+00:05:09.679 --> 00:05:16.320
+and can't run. Step 4 has nothing from step 3 and can't run either. The failure propagates down the
+
+52
+00:05:16.320 --> 00:05:22.480
+entire remaining pipeline. The cascade risk increases with depth. A five-step pipeline has
+
+53
+00:05:22.480 --> 00:05:28.959
+more failure surface than a two-step one. Early validation at each step's entry point reduces how
+
+54
+00:05:28.959 --> 00:05:34.880
+far bad data travels before someone catches it. Design explicit error handling at every step
+
+55
+00:05:34.880 --> 00:05:41.279
+boundary, not just at the pipeline's final output. When a step gets invalid input, it should fail
+
+56
+00:05:41.279 --> 00:05:47.359
+loudly and immediately rather than silently passing malformed data forward to the next step.
+
+57
+00:05:48.320 --> 00:05:54.000
+Not every sequential pipeline has genuine data dependencies. Some are sequential purely by
+
+58
+00:05:54.000 --> 00:06:00.559
+convention. A true dependency means step B reads a field that step A produced. The ordering is
+
+59
+00:06:00.559 --> 00:06:06.720
+required by the data. An artificial dependency means the steps are run sequentially only because
+
+60
+00:06:06.720 --> 00:06:12.079
+that's how the code was written, not because B actually needs A's output. Removing artificial
+
+61
+00:06:12.320 --> 00:06:17.519
+dependencies unlocks parallel execution opportunities. Before committing to a fully
+
+62
+00:06:17.519 --> 00:06:24.079
+sequential design, audit each step boundary. Ask whether each step genuinely needs its predecessor's
+
+63
+00:06:24.079 --> 00:06:30.320
+output or whether it could run concurrently. That audit is often where the biggest latency wins are
+
+64
+00:06:30.320 --> 00:06:36.959
+found without any change to correctness or reliability. There's a real difference between
+
+65
+00:06:36.959 --> 00:06:41.679
+a step that has to wait and a step that's only waiting because that's how somebody wrote it.
+
+66
+00:06:42.160 --> 00:06:47.279
+The first is a data dependency, and you're stuck with it. The second is just convention,
+
+67
+00:06:47.279 --> 00:06:52.000
+and it's charging you while clock time for nothing. Once you can tell those apart,
+
+68
+00:06:52.000 --> 00:06:56.559
+the biggest latency wins don't cost you reliability or correctness at all.
+
+69
+00:06:57.359 --> 00:07:00.640
+And with that, we wrap up this lesson. I'll see you in the next one.
+

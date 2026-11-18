@@ -1,0 +1,346 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.000
+In this lesson we'll go through keeping a Scratchpad healthy. Writing one is the easy part.
+
+2
+00:00:06.000 --> 00:00:10.000
+Maintaining it over days and weeks is where most projects fall short.
+
+3
+00:00:10.000 --> 00:00:17.000
+We'll cover length discipline, structure, pruning policy, how to handle conflicts with Cloud.md,
+
+4
+00:00:17.000 --> 00:00:24.000
+multi-developer coordination, and privacy boundaries. It's a lot to go over, so let's get into it.
+
+5
+00:00:24.000 --> 00:00:28.000
+A Scratchpad earns its keep only while it stays accurate.
+
+6
+00:00:28.000 --> 00:00:34.000
+Scratchpad hygiene is the discipline of keeping the file accurate, pruned, and consistently structured.
+
+7
+00:00:34.000 --> 00:00:40.000
+It isn't a one-time setup task. It is an ongoing practice that has to happen every session.
+
+8
+00:00:40.000 --> 00:00:48.000
+Then there is the boundary between Cloud.md and the Scratchpad, which is the most important conflict to understand.
+
+9
+00:00:48.000 --> 00:00:56.000
+Cloud.md holds stable rules that apply across all sessions, while the Scratchpad holds evolving session state.
+
+10
+00:00:56.000 --> 00:01:03.000
+When they say different things, Cloud.md wins, and that priority needs to be explicit in how you configure the agent.
+
+11
+00:01:03.000 --> 00:01:07.000
+Pruning policy is the defined rule for what gets removed and when.
+
+12
+00:01:07.000 --> 00:01:12.802
+Without a policy, nothing ever leaves the file, and it grows into a record of every thought anyone
+
+13
+00:01:12.802 --> 00:01:15.940
+ever had about the project, including the wrong ones.
+
+14
+00:01:16.000 --> 00:01:21.000
+Scratchpads bloat fast. Every session adds entries.
+
+15
+00:01:21.000 --> 00:01:26.000
+Sessions that resolve items rarely take the time to remove the old ones.
+
+16
+00:01:26.000 --> 00:01:32.000
+Over a week of active work, a Scratchpad that started at 50 lines can easily reach 500.
+
+17
+00:01:32.000 --> 00:01:37.000
+At that length, it is slower for the agent to process and harder to reason over.
+
+18
+00:01:37.000 --> 00:01:43.364
+The fix is a cap with a pruning trigger. Pick a threshold and treat crossing it as a signal to do a
+
+19
+00:01:43.364 --> 00:01:45.935
+pruning pass before adding more content.
+
+20
+00:01:46.000 --> 00:01:51.863
+Remove entries that are fully resolved. Archive completed task state to a separate history file if
+
+21
+00:01:51.863 --> 00:01:52.940
+you need a record.
+
+22
+00:01:53.000 --> 00:01:57.000
+Rewrite the current state block rather than appending to it.
+
+23
+00:01:57.000 --> 00:02:04.000
+These habits together keep the file at a useful size and prevent it from becoming an obstacle instead of an aid.
+
+24
+00:02:04.000 --> 00:02:09.000
+Structure matters because it makes the file scannable for both you and the agent.
+
+25
+00:02:09.000 --> 00:02:15.413
+I recommend four blocks. First, dated entries at the top, with a timestamp on each so you can
+
+26
+00:02:15.413 --> 00:02:18.931
+identify stale notes quickly during a pruning pass.
+
+27
+00:02:19.000 --> 00:02:24.937
+Second, a decision log for architectural choices and their rationale. This block changes rarely
+
+28
+00:02:24.937 --> 00:02:27.937
+because good decisions have a long, useful life.
+
+29
+00:02:28.000 --> 00:02:33.000
+Third, a current state block that gets rewritten each session rather than appended to.
+
+30
+00:02:33.000 --> 00:02:38.000
+This is the block that tells the next session exactly where work stands right now.
+
+31
+00:02:38.000 --> 00:02:44.000
+Fourth, an open questions block for unresolved issues the next session needs to address.
+
+32
+00:02:44.000 --> 00:02:47.000
+When a question is answered, the entry comes out.
+
+33
+00:02:47.000 --> 00:02:54.000
+These four blocks give the Scratchpad a shape that stays manageable even under active, sustained use.
+
+34
+00:02:54.000 --> 00:02:59.000
+Let's be precise about the boundary between clod.md and the Scratchpad.
+
+35
+00:02:59.000 --> 00:03:06.155
+Clod.md holds stable rules. Coding conventions, tool permissions, standing instructions about how
+
+36
+00:03:06.155 --> 00:03:07.926
+the agent should behave.
+
+37
+00:03:08.000 --> 00:03:12.000
+These change rarely and represent the settled state of the project.
+
+38
+00:03:12.000 --> 00:03:15.000
+The Scratchpad holds evolving session state.
+
+39
+00:03:15.000 --> 00:03:20.000
+What is in progress? What decisions were made this session? What questions are open?
+
+40
+00:03:20.000 --> 00:03:22.000
+These change every session.
+
+41
+00:03:22.000 --> 00:03:26.000
+When the two contradict each other, clod.md takes precedence.
+
+42
+00:03:26.000 --> 00:03:30.000
+This priority needs to be explicit in the clod.md itself.
+
+43
+00:03:30.000 --> 00:03:37.000
+Something like, the Scratchpad records session state, and in case of conflict, these rules apply.
+
+44
+00:03:37.000 --> 00:03:43.000
+Without that explicit hierarchy, the agent may try to reconcile the two in unpredictable ways.
+
+45
+00:03:43.000 --> 00:03:49.000
+Make the precedence rule visible and unambiguous so there is no room for misinterpretation.
+
+46
+00:03:49.000 --> 00:03:55.000
+When a Scratchpad is committed to Git, it becomes a shared resource across the team.
+
+47
+00:03:55.000 --> 00:03:58.000
+That is mostly a good thing.
+
+48
+00:03:58.000 --> 00:04:03.000
+Developers can read each other's session state, see decisions that were made without them,
+
+49
+00:04:03.000 --> 00:04:07.000
+and avoid re-exploring dead ends their colleagues already documented.
+
+50
+00:04:07.000 --> 00:04:11.000
+But shared Scratchpads introduce coordination overhead.
+
+51
+00:04:11.000 --> 00:04:16.932
+Merge conflicts on the Scratchpad signal that two people worked on the same task concurrently, which
+
+52
+00:04:16.932 --> 00:04:17.940
+is worth knowing.
+
+53
+00:04:18.000 --> 00:04:24.000
+The current state block needs clear ownership when two developers are working in parallel.
+
+54
+00:04:24.000 --> 00:04:29.000
+A simple convention is that whoever is driving the active task owns that block.
+
+55
+00:04:29.000 --> 00:04:35.000
+For small teams with clear task ownership, one Scratchpad per repo works well.
+
+56
+00:04:35.000 --> 00:04:43.000
+Larger teams with parallel workstreams may want per-developer or per-feature Scratchpad files instead.
+
+57
+00:04:43.000 --> 00:04:46.000
+Privacy is an active choice, not a default.
+
+58
+00:04:46.000 --> 00:04:50.000
+Before you commit the Scratchpad, review what it actually contains.
+
+59
+00:04:50.000 --> 00:04:55.748
+This sounds obvious, but under deadline pressure, people paste things into the Scratchpad quickly
+
+60
+00:04:55.748 --> 00:04:57.940
+without thinking about commit safety.
+
+61
+00:04:58.000 --> 00:05:03.000
+Credentials, tokens, and API keys should never appear in a committed file.
+
+62
+00:05:03.000 --> 00:05:08.000
+If the nature of your work means the Scratchpad frequently contains sensitive context,
+
+63
+00:05:08.000 --> 00:05:12.000
+add it to .gitignore and treat it as a local-only file.
+
+64
+00:05:12.000 --> 00:05:19.000
+Document that choice explicitly in clod.md so future developers know the Scratchpad isn't tracked.
+
+65
+00:05:19.000 --> 00:05:24.000
+The tradeoff is that a git-ignored Scratchpad can't be shared via git.
+
+66
+00:05:24.000 --> 00:05:26.000
+You lose the team coordination benefit.
+
+67
+00:05:26.000 --> 00:05:34.000
+Make that tradeoff consciously and explicitly rather than discovering it after a credential ends up in a commit.
+
+68
+00:05:34.000 --> 00:05:39.000
+The graveyard failure mode is the most common way Scratchpads go wrong.
+
+69
+00:05:39.000 --> 00:05:42.000
+It happens when entries accumulate without removal.
+
+70
+00:05:42.000 --> 00:05:48.360
+The file grows into a record of everything that was ever true about the project, including things
+
+71
+00:05:48.360 --> 00:05:49.934
+that are no longer true.
+
+72
+00:05:50.000 --> 00:05:54.000
+The agent reads the file and treats all of it as current.
+
+73
+00:05:54.000 --> 00:05:56.000
+Stale notes propagate into decisions.
+
+74
+00:05:56.000 --> 00:06:04.000
+The agent recommends an approach you already ruled out or references a naming convention you changed weeks ago.
+
+75
+00:06:04.000 --> 00:06:06.000
+The agent isn't being careless.
+
+76
+00:06:06.000 --> 00:06:08.000
+It is doing exactly what it should.
+
+77
+00:06:08.000 --> 00:06:11.000
+Trusting the authoritative state file, you gave it.
+
+78
+00:06:11.000 --> 00:06:15.000
+The problem is that the file stopped being authoritative.
+
+79
+00:06:15.000 --> 00:06:19.000
+Avoiding the graveyard requires consistent pruning discipline.
+
+80
+00:06:19.000 --> 00:06:23.000
+Without it, the Scratchpad eventually does more harm than good.
+
+81
+00:06:23.000 --> 00:06:28.000
+A healthy Scratchpad requires active maintenance, not just initial setup.
+
+82
+00:06:28.000 --> 00:06:34.508
+Cap the length, prune resolved entries every session, and rewrite the current state block rather
+
+83
+00:06:34.508 --> 00:06:35.932
+than appending to it.
+
+84
+00:06:36.000 --> 00:06:40.000
+Keep the structure consistent so the file stays scannable for Claude.
+
+85
+00:06:40.000 --> 00:06:48.000
+Keep credentials out of anything that you commit, and let Claude.md win whenever the file and the rules disagree.
+
+86
+00:06:48.000 --> 00:06:52.000
+That's it for this lesson. I'll see you in the next one.
+

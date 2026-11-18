@@ -1,0 +1,378 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.149
+Human review only adds safety when the pause lands in the right place and the handoff tells the
+
+2
+00:00:05.149 --> 00:00:07.425
+reviewer what they're actually looking at.
+
+3
+00:00:08.000 --> 00:00:13.680
+For this video, we'll look at where in the workflow to interrupt, what a good handoff message contains,
+
+4
+00:00:14.020 --> 00:00:22.200
+how to preserve state so the agent can resume after approval, and how async escalations work. Let's jump into it.
+
+5
+00:00:23.200 --> 00:00:29.979
+A pause is only as good as the design behind it. An interruption point is a defined location in an agentic workflow.
+
+6
+00:00:30.079 --> 00:00:35.490
+Where the agent stops and waits for human input and its placement decides whether that pause
+
+7
+00:00:35.490 --> 00:00:36.961
+actually buys any safety.
+
+8
+00:00:37.380 --> 00:00:44.439
+State management is the set of mechanisms that persist task progress and agent decisions across workflow steps.
+
+9
+00:00:44.680 --> 00:00:50.778
+The constraint that trips people up is that in-context state is lost when the context window is
+
+10
+00:00:50.778 --> 00:00:52.575
+truncated or a session ends.
+
+11
+00:00:52.639 --> 00:00:59.360
+So anything that matters has to be stored externally. And a fallback chain is the ordered sequence of alternatives.
+
+12
+00:00:59.439 --> 00:01:05.245
+The agent tries when a primary action fails. Each one has to be pre-validated so it doesn't
+
+13
+00:01:05.245 --> 00:01:07.096
+introduce a new failure mode.
+
+14
+00:01:08.160 --> 00:01:13.636
+Where you place an interruption point is one of the highest leveraged decisions in HITL design.
+
+15
+00:01:13.636 --> 00:01:15.942
+Three placements are consistently valid.
+
+16
+00:01:16.400 --> 00:01:22.599
+Before irreversible actions is the most critical because that's where a pause prevents an uncorrectable error,
+
+17
+00:01:22.720 --> 00:01:28.415
+which is the whole point of human review. At phase boundaries makes sense because these are natural
+
+18
+00:01:28.415 --> 00:01:31.982
+transition points where the agent's scope or authority shifts.
+
+19
+00:01:32.540 --> 00:01:38.199
+Asking a human to confirm that the next phase should proceed is reasonable and low overhead.
+
+20
+00:01:38.959 --> 00:01:45.800
+Anomaly detection covers unexpected inputs, unusual patterns, or values outside the normal operating range.
+
+21
+00:01:46.199 --> 00:01:51.480
+One placement that provides no meaningful safety benefit is after irreversible actions.
+
+22
+00:01:52.199 --> 00:01:57.578
+Reviewing what already happened doesn't prevent the error. Placement before the action is what makes
+
+23
+00:01:57.578 --> 00:01:58.546
+the review useful.
+
+24
+00:01:59.720 --> 00:02:06.599
+A handoff message that dumps raw tool output at a reviewer forces them to do the agent's analytical work themselves.
+
+25
+00:02:07.000 --> 00:02:12.300
+That defeats the purpose. A well-designed handoff message answers three questions immediately.
+
+26
+00:02:12.759 --> 00:02:15.160
+What was the agent doing and why did it pause?
+
+27
+00:02:15.720 --> 00:02:21.179
+Give the reviewer enough context to orient quickly without jargon or internal model terminology.
+
+28
+00:02:21.800 --> 00:02:27.639
+What decision is required? This should be a specific answerable question, not a vague request for review.
+
+29
+00:02:28.119 --> 00:02:33.160
+And what are the consequences? What follows from approval and what follows from rejection?
+
+30
+00:02:33.860 --> 00:02:38.460
+Reviewers who understand the downstream impact make faster and better decisions.
+
+31
+00:02:38.919 --> 00:02:44.252
+A handoff message that does this translation work turns human review from a bottleneck into a
+
+32
+00:02:44.252 --> 00:02:45.742
+genuine safety checkpoint.
+
+33
+00:02:47.000 --> 00:02:49.500
+A good handoff message has four components.
+
+34
+00:02:50.119 --> 00:02:53.580
+Context is what the agent was doing and why it paused.
+
+35
+00:02:54.059 --> 00:02:58.220
+Written in plain language without internal jargon or raw tool output.
+
+36
+00:02:58.779 --> 00:03:03.899
+Decision required is the exact thing the reviewer is being asked to approve or reject.
+
+37
+00:03:04.380 --> 00:03:08.539
+Stated as a specific question rather than an open-ended review request.
+
+38
+00:03:09.399 --> 00:03:12.539
+Consequences are what happens downstream from each choice.
+
+39
+00:03:12.860 --> 00:03:18.508
+So the reviewer understands what they're authorizing and the deadline says when this review request
+
+40
+00:03:18.508 --> 00:03:20.562
+expires and what happens at timeout.
+
+41
+00:03:21.240 --> 00:03:27.039
+Omitting the deadline creates ambiguity about urgency and leaves the agent design incomplete.
+
+42
+00:03:27.660 --> 00:03:33.419
+Reviewers should always know how long they have and what the fallback is if they don't respond in time.
+
+43
+00:03:33.820 --> 00:03:38.619
+These four components give reviewers everything they need to make a real decision quickly.
+
+44
+00:03:38.940 --> 00:03:44.139
+State preservation is what determines whether a paused workflow is resumable or disposable.
+
+45
+00:03:44.699 --> 00:03:50.940
+If the agent stores nothing before pausing, the only option when approval arrives is to restart from scratch.
+
+46
+00:03:51.580 --> 00:03:54.779
+That wastes time and may produce different outputs on retry.
+
+47
+00:03:55.339 --> 00:04:01.339
+What needs to be persisted? Task progress, meaning what steps completed and what outputs were produced.
+
+48
+00:04:01.820 --> 00:04:06.619
+And agent decisions, meaning what the model chose at each branch point.
+
+49
+00:04:06.619 --> 00:04:10.940
+The critical constraint is that you can't rely on in-context state for this.
+
+50
+00:04:10.940 --> 00:04:17.251
+The context window can be truncated and the session can end between when the agent pauses and when
+
+51
+00:04:17.251 --> 00:04:18.475
+the human responds.
+
+52
+00:04:19.100 --> 00:04:23.739
+External persistence in a database or structured store is the only reliable mechanism.
+
+53
+00:04:24.299 --> 00:04:29.899
+State preservation separates a workflow that can pick up where it left off from one that has to start over.
+
+54
+00:04:31.100 --> 00:04:35.339
+Synchronous and async escalation handle the blocking question differently.
+
+55
+00:04:35.579 --> 00:04:43.339
+Synchronous escalation means the agent halts completely and waits for human approval before doing anything else.
+
+56
+00:04:43.339 --> 00:04:48.700
+It's simple to implement, but the entire workflow is blocked during the review period.
+
+57
+00:04:48.700 --> 00:04:53.899
+That's appropriate when the dependent work genuinely can't proceed without the decision.
+
+58
+00:04:53.899 --> 00:04:59.916
+Async escalation means the agent queues the review request and continues working on independent
+
+59
+00:04:59.916 --> 00:05:01.436
+branches while it waits.
+
+60
+00:05:01.500 --> 00:05:08.004
+Non-blocking, but it requires more state management because now you have work proceeding in parallel
+
+61
+00:05:08.004 --> 00:05:09.434
+with a pending review.
+
+62
+00:05:09.500 --> 00:05:15.500
+Async escalation is appropriate when independent work can move forward without the pending decision.
+
+63
+00:05:15.500 --> 00:05:21.515
+The choice between the two comes down to whether anything else in the workflow actually needs the
+
+64
+00:05:21.515 --> 00:05:23.437
+decision before it can proceed.
+
+65
+00:05:23.500 --> 00:05:27.500
+Resumption design is the other half of state preservation.
+
+66
+00:05:27.500 --> 00:05:33.500
+When approval arrives, the agent needs enough context to continue without rerunning completed work.
+
+67
+00:05:33.500 --> 00:05:37.500
+The approval message should include the decision and any notes the reviewer added.
+
+68
+00:05:37.500 --> 00:05:41.500
+The agent then loads persisted state and resumes from the interruption point.
+
+69
+00:05:41.500 --> 00:05:43.500
+There are a couple of traps here.
+
+70
+00:05:43.500 --> 00:05:49.500
+Rerunning completed steps wastes time and can produce different outputs if the underlying data has changed.
+
+71
+00:05:49.500 --> 00:05:53.500
+And don't assume the agent can reconstruct context on its own.
+
+72
+00:05:53.500 --> 00:05:57.500
+After an interruption, the agent's active context may be gone.
+
+73
+00:05:57.500 --> 00:06:01.500
+The persisted state is the only source of truth for what happened before the pause.
+
+74
+00:06:01.500 --> 00:06:07.500
+Design the resumption path explicitly as part of the workflow design, not as an afterthought.
+
+75
+00:06:07.500 --> 00:06:11.500
+Async escalation requires explicit design for the timeout case.
+
+76
+00:06:11.500 --> 00:06:19.500
+When you queue a review and continue working, you need to define what happens if no human responds before the pause.
+
+77
+00:06:19.500 --> 00:06:21.500
+Three components matter.
+
+78
+00:06:21.500 --> 00:06:27.500
+The queue and continue pattern has the agent proceed on independent branches while the review is pending,
+
+79
+00:06:27.500 --> 00:06:31.500
+requiring careful state tracking to know what's waiting.
+
+80
+00:06:31.500 --> 00:06:35.500
+The timeout threshold is a specific time limit after which a fallback is triggered.
+
+81
+00:06:35.500 --> 00:06:41.500
+And the timeout action is to escalate the request further, abort the task entirely,
+
+82
+00:06:41.500 --> 00:06:45.500
+or apply a predefined safe default and continue.
+
+83
+00:06:45.500 --> 00:06:47.500
+What you can't do is silently hang.
+
+84
+00:06:47.500 --> 00:06:49.500
+An unhandled timeout is a silent failure.
+
+85
+00:06:49.500 --> 00:06:55.500
+The workflow appears to be running, but is actually stuck waiting for a response that may never come.
+
+86
+00:06:55.500 --> 00:07:01.500
+Define the timeout threshold and the timeout action before deploying any async escalation pattern.
+
+87
+00:07:01.500 --> 00:07:07.500
+Think of human review as a gate that opens up a path for the agent to proceed.
+
+88
+00:07:08.500 --> 00:07:13.500
+Think of human review as a gate that only works when both parts land.
+
+89
+00:07:13.500 --> 00:07:18.500
+There's the moment the agent stops, and there's the message that reaches the person standing there.
+
+90
+00:07:18.500 --> 00:07:21.500
+A pause in the wrong place reviews nothing.
+
+91
+00:07:21.500 --> 00:07:25.500
+A pause with a vague message gets rubber stamp approval.
+
+92
+00:07:25.500 --> 00:07:29.500
+What holds the pattern together is state you can persist,
+
+93
+00:07:29.500 --> 00:07:34.500
+because approval an hour later is worthless if the work restarts from scratch.
+
+94
+00:07:34.500 --> 00:07:38.500
+That's it for this lesson. I'll see you in the next one.
+

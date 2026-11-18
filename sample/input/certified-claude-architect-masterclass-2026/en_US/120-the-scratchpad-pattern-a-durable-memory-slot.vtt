@@ -1,0 +1,302 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.763
+This lesson covers Scratchpad files, and although it's late in the course, it is critically
+
+2
+00:00:05.763 --> 00:00:08.676
+important to understanding how Clodd operates.
+
+3
+00:00:08.739 --> 00:00:16.340
+Every new Clodd code session opens with zero memory of past work. A Scratchpad file is the repo that solves that.
+
+4
+00:00:16.340 --> 00:00:22.800
+We'll look at the problem, what to put in the file, what to keep out, and how to enforce the habit
+
+5
+00:00:22.800 --> 00:00:25.174
+of reading and writing consistently.
+
+6
+00:00:25.239 --> 00:00:27.000
+Let's get into it.
+
+7
+00:00:27.239 --> 00:00:34.967
+A Scratchpad file is just a plain text file in the repo, typically named notes.md or context.md, and
+
+8
+00:00:34.967 --> 00:00:40.222
+it is the entire mechanism for carrying work across a context reset.
+
+9
+00:00:40.299 --> 00:00:46.900
+What it holds is cross-session knowledge, the category of information that should survive that reset.
+
+10
+00:00:46.900 --> 00:00:52.959
+Decisions you have made, dead ends you have already explored, naming conventions your team has agreed on.
+
+11
+00:00:52.959 --> 00:00:59.659
+Inside it, a decision log is a dedicated subsection for architectural choices and their rationale.
+
+12
+00:00:59.659 --> 00:01:05.959
+The decision log matters most because without it, a future session will re-examine a question you already resolved.
+
+13
+00:01:05.959 --> 00:01:11.781
+All three of these are practical tools, not just vocabulary, and together they define what a
+
+14
+00:01:11.781 --> 00:01:13.996
+Scratchpad is trying to accomplish.
+
+15
+00:01:14.059 --> 00:01:20.360
+Here is the core problem. When a new Clodd code session starts, the context window is completely blank.
+
+16
+00:01:20.360 --> 00:01:25.169
+The agent has no memory of what happened in the previous session. That sounds like a minor
+
+17
+00:01:25.169 --> 00:01:27.306
+inconvenience, but it compounds quickly.
+
+18
+00:01:27.360 --> 00:01:33.760
+The agent will re-explore dead ends you already ruled out. It will re-ask questions you already answered.
+
+19
+00:01:33.760 --> 00:01:38.760
+It will make naming choices that contradict decisions from earlier sessions.
+
+20
+00:01:38.760 --> 00:01:44.126
+Every session effectively starts over, which means you are paying the cost of discovery work
+
+21
+00:01:44.126 --> 00:01:45.701
+repeatedly instead of once.
+
+22
+00:01:45.760 --> 00:01:51.452
+The Scratchpad file is the practical fix for this. It is a lightweight mechanism to carry knowledge
+
+23
+00:01:51.452 --> 00:01:54.902
+forward across the boundary that the context window creates.
+
+24
+00:01:54.959 --> 00:02:01.360
+The cost of maintaining a Scratchpad is low. The cost of not having one grows with every session.
+
+25
+00:02:01.360 --> 00:02:08.160
+Think of it as two workflows, side by side. In the no-Scratchpad workflow, each session starts from scratch.
+
+26
+00:02:08.160 --> 00:02:13.592
+The agent doesn't know about the dead ends, doesn't remember the agreed naming conventions, and may
+
+27
+00:02:13.592 --> 00:02:17.105
+contradict earlier architectural decisions without realizing it.
+
+28
+00:02:17.160 --> 00:02:23.099
+That drift accumulates across a long project. In the with-Scratchpad workflow, the agent reads the
+
+29
+00:02:23.099 --> 00:02:25.099
+file at the start of the session,
+
+30
+00:02:25.160 --> 00:02:31.660
+picks up current task state, respects recorded decisions, and avoids already explored dead ends.
+
+31
+00:02:31.660 --> 00:02:37.710
+Before the session closes, it writes updates. The gap between those two workflows gets wider the
+
+32
+00:02:37.710 --> 00:02:39.096
+longer a project runs.
+
+33
+00:02:39.160 --> 00:02:45.453
+A single day of work without a Scratchpad is manageable. A week or a month of work without one is
+
+34
+00:02:45.453 --> 00:02:47.595
+genuinely painful to reconstruct.
+
+35
+00:02:47.660 --> 00:02:52.660
+What belongs in the Scratchpad? Think of it as the evolving layer of your project.
+
+36
+00:02:52.660 --> 00:02:59.660
+The Scratchpad holds things that change run-to-run. First, architectural decisions and the reasoning behind them.
+
+37
+00:02:59.660 --> 00:03:05.641
+If you decided to use a particular data structure, a particular API shape, or a particular file
+
+38
+00:03:05.641 --> 00:03:08.097
+layout, record that choice and the why.
+
+39
+00:03:08.160 --> 00:03:13.983
+Second, dead ends. If you tried an approach and it didn't work, write that down so the next session
+
+40
+00:03:13.983 --> 00:03:16.101
+doesn't waste time on the same path.
+
+41
+00:03:16.160 --> 00:03:22.660
+Third, naming conventions. If a term has a specific meaning in this codebase, state it.
+
+42
+00:03:22.660 --> 00:03:28.660
+Fourth, current task state. What is in progress? What is blocked? What the next action is?
+
+43
+00:03:28.660 --> 00:03:33.660
+These four categories cover most of what persistence actually needs to capture.
+
+44
+00:03:33.660 --> 00:03:39.962
+Just as important as knowing what to include is knowing what to leave out. Three things don't belong
+
+45
+00:03:39.962 --> 00:03:41.096
+in the Scratchpad.
+
+46
+00:03:41.160 --> 00:03:48.113
+First, code. The codebase is where code lives. Copying snippets into the Scratchpad creates a second
+
+47
+00:03:48.113 --> 00:03:51.590
+source that drifts from the actual implementation.
+
+48
+00:03:51.660 --> 00:03:55.660
+If you need to reference code, point to the file, not the content.
+
+49
+00:03:55.660 --> 00:04:02.240
+Second, credentials. Secrets, tokens, and API keys should never appear in a plain text file that
+
+50
+00:04:02.240 --> 00:04:04.091
+gets committed to the repo.
+
+51
+00:04:04.160 --> 00:04:07.660
+That is a security boundary, not a style preference.
+
+52
+00:04:07.660 --> 00:04:14.660
+Third, private user data. Any personal or sensitive information has no place in a shared Scratchpad.
+
+53
+00:04:14.660 --> 00:04:22.660
+Keeping the Scratchpad focused on workflow state, not content, also makes it easier to prune and maintain over time.
+
+54
+00:04:22.660 --> 00:04:28.660
+Reading the Scratchpad at session start sounds obvious, but it requires explicit enforcement.
+
+55
+00:04:28.660 --> 00:04:34.160
+Left to default behavior, an agent won't automatically seek out a file you haven't told it about.
+
+56
+00:04:34.160 --> 00:04:41.660
+The most reliable approach is to list the Scratchpad in clod.md as one of the first files to read at session start.
+
+57
+00:04:41.660 --> 00:04:45.160
+That puts the instruction in a place the agent checks reliably.
+
+58
+00:04:45.160 --> 00:04:52.160
+A more automated approach is a session start hook that surfaces the file before any user message is processed.
+
+59
+00:04:52.160 --> 00:04:57.660
+Either approach works. What doesn't work is assuming the agent will find and read the file on its own.
+
+60
+00:04:57.660 --> 00:05:04.660
+The read has to be mandatory, not optional, and the mechanism has to enforce that consistently every session.
+
+61
+00:05:04.660 --> 00:05:08.660
+The write half of the discipline is as important as the read half.
+
+62
+00:05:08.660 --> 00:05:13.660
+Before you close a session, the agent should update the Scratchpad to reflect what happened.
+
+63
+00:05:13.660 --> 00:05:18.660
+That means recording decisions made during the session, noting any dead ends reached,
+
+64
+00:05:18.660 --> 00:05:23.660
+and updating the current task state block so the next session knows where to pick up.
+
+65
+00:05:23.660 --> 00:05:29.156
+A session end hook runs on termination for cleanup, but it can't block, so the write stays
+
+66
+00:05:29.156 --> 00:05:31.598
+instruction-driven and depends on habit.
+
+67
+00:05:31.660 --> 00:05:37.160
+One detail worth emphasizing is that a stale Scratchpad is worse than no Scratchpad.
+
+68
+00:05:37.160 --> 00:05:43.097
+If the agent reads an outdated file and trusts what it says, it will act on information that no
+
+69
+00:05:43.097 --> 00:05:44.597
+longer reflects reality.
+
+70
+00:05:44.660 --> 00:05:49.660
+The read and the write are a pair, and both have to happen reliably.
+
+71
+00:05:49.660 --> 00:05:54.160
+The Scratchpad puts memory in the repo instead of inside the model.
+
+72
+00:05:54.160 --> 00:06:00.660
+The habit that makes it pay off is writing the file for the next session, not for yourself.
+
+73
+00:06:00.660 --> 00:06:06.408
+If it doesn't say what got decided and what was already ruled out, tomorrow's session starts cold
+
+74
+00:06:06.408 --> 00:06:08.600
+and quietly re-does all of your work.
+
+75
+00:06:08.660 --> 00:06:12.660
+That closes out this session. I'll see you in the next one.
+

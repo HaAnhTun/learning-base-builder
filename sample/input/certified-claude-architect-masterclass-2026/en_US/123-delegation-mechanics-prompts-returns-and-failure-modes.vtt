@@ -1,0 +1,338 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.280
+Let's spend a few minutes going over the mechanics of sub-agent delegation, writing
+
+2
+00:00:05.280 --> 00:00:11.579
+a precise prompt, defining a return contract, scoping the tool palette, and recognizing
+
+3
+00:00:11.579 --> 00:00:14.939
+the failure modes that undermine the whole pattern.
+
+4
+00:00:14.939 --> 00:00:19.420
+Getting delegation right in practice means knowing all four of these pieces, not just
+
+5
+00:00:19.420 --> 00:00:20.659
+the high-level idea.
+
+6
+00:00:20.659 --> 00:00:23.860
+Let's work through each one.
+
+7
+00:00:23.860 --> 00:00:27.159
+Delegation succeeds or fails on the shape of the handoff.
+
+8
+00:00:27.159 --> 00:00:32.880
+The return contract is the explicit shape of the response the sub-agent produces, defined
+
+9
+00:00:32.880 --> 00:00:38.900
+up front so the parent's context stays clean after the sub-agent returns.
+
+10
+00:00:38.900 --> 00:00:43.700
+The trust boundary is the architectural rule that the parent treats sub-agent output as
+
+11
+00:00:43.700 --> 00:00:47.939
+a hypothesis, to verify, not a definitive truth.
+
+12
+00:00:47.939 --> 00:00:52.819
+And sub-agent delegation is the pattern itself, spawning a child agent to perform verbose
+
+13
+00:00:52.819 --> 00:00:56.860
+investigation and returning only a focused summary.
+
+14
+00:00:56.860 --> 00:01:02.979
+The mechanics in this lesson all exist to make those ideas work reliably in a real system,
+
+15
+00:01:02.979 --> 00:01:06.540
+not just as an abstract design principle.
+
+16
+00:01:06.540 --> 00:01:07.739
+Start with the prompt.
+
+17
+00:01:07.739 --> 00:01:12.919
+A sub-agent prompt is a precise question, not an open-ended task, and a well-formed
+
+18
+00:01:12.919 --> 00:01:15.339
+one specifies four things.
+
+19
+00:01:15.339 --> 00:01:20.959
+The question, stated as a single concrete ask, rather than a broad directive.
+
+20
+00:01:20.959 --> 00:01:26.540
+The scope, naming which directories or file types to search and which to ignore.
+
+21
+00:01:26.540 --> 00:01:30.919
+The return shape, describing exactly what format the answer should take.
+
+22
+00:01:30.919 --> 00:01:37.720
+And the stop condition, telling the sub-agent when to return what it has, rather than continuing to search.
+
+23
+00:01:37.720 --> 00:01:42.160
+Without a stop condition, a sub-agent can spin on a hard lookup and return late with
+
+24
+00:01:42.160 --> 00:01:45.120
+more information than the parent needs.
+
+25
+00:01:45.120 --> 00:01:50.220
+Vague prompts produce vague answers that re-pollute the parent's context, so the quality of the
+
+26
+00:01:50.220 --> 00:01:54.319
+outcome tracks the quality of the prompt you write.
+
+27
+00:01:54.500 --> 00:01:57.220
+Compare a vague prompt to a precise one directly.
+
+28
+00:01:57.220 --> 00:02:02.739
+A vague prompt says, find the authentication logic and explain how it works.
+
+29
+00:02:02.739 --> 00:02:07.459
+The sub-agent reads broadly, follows tangents, and comes back with a narrative.
+
+30
+00:02:07.459 --> 00:02:10.179
+The parent receives a wall of text.
+
+31
+00:02:10.179 --> 00:02:11.339
+Context is polluted.
+
+32
+00:02:11.339 --> 00:02:17.979
+A precise prompt says, return the file path and function name that handles JWT validation
+
+33
+00:02:17.979 --> 00:02:23.899
+in one file path and one function name, with one sentence of context, nothing else.
+
+34
+00:02:23.899 --> 00:02:26.160
+The parent gets exactly what it needs.
+
+35
+00:02:26.160 --> 00:02:31.759
+The difference between those two prompts is the entire difference between delegation working
+
+36
+00:02:31.759 --> 00:02:35.440
+and delegation failing to deliver value.
+
+37
+00:02:35.440 --> 00:02:40.080
+The return contract is the specification for what the sub-agent hands back.
+
+38
+00:02:40.080 --> 00:02:43.440
+A structured finding beats a narrative every time.
+
+39
+00:02:43.440 --> 00:02:47.960
+A strong default shape is, file path, line number, brief summary.
+
+40
+00:02:47.960 --> 00:02:53.279
+That gives the parent enough to act on without loading it with content it didn't ask for.
+
+41
+00:02:53.279 --> 00:02:57.940
+You should also specify a maximum length explicitly in the prompt.
+
+42
+00:02:57.940 --> 00:03:02.380
+Without a length cap, a sub-agent that found something interesting has no guidance about
+
+43
+00:03:02.380 --> 00:03:03.820
+how much to return.
+
+44
+00:03:03.820 --> 00:03:08.979
+A well-defined contract keeps parent context clean, regardless of how much the sub-agent
+
+45
+00:03:08.979 --> 00:03:11.660
+read during its investigation.
+
+46
+00:03:11.660 --> 00:03:14.779
+The contract is the guardrail.
+
+47
+00:03:14.779 --> 00:03:18.619
+Scoping the sub-agent's tool palette is the third mechanical decision.
+
+48
+00:03:18.619 --> 00:03:22.580
+Give the sub-agent enough tools to investigate, and no more than that.
+
+49
+00:03:22.580 --> 00:03:25.660
+Read tools and search tools belong on the palette.
+
+50
+00:03:25.660 --> 00:03:30.660
+Write tools, delete tools, and API call tools generally don't.
+
+51
+00:03:30.660 --> 00:03:34.460
+The sub-agent's job is to find things, not to change them.
+
+52
+00:03:34.460 --> 00:03:39.779
+A narrow palette prevents accidental side effects during discovery, and keeps the sub-agent's
+
+53
+00:03:39.779 --> 00:03:42.619
+behavior predictable and auditable.
+
+54
+00:03:42.619 --> 00:03:48.259
+If you let a discovery sub-agent write files or make API calls, you have turned a low-risk
+
+55
+00:03:48.259 --> 00:03:51.960
+investigation into something with real consequences.
+
+56
+00:03:51.960 --> 00:03:56.479
+Keep the palette small and read-only as the default.
+
+57
+00:03:56.479 --> 00:04:02.639
+The trust boundary is the rule that the parent treats sub-agent output as a hypothesis, not
+
+58
+00:04:02.639 --> 00:04:05.080
+a verified truth.
+
+59
+00:04:05.080 --> 00:04:06.800
+Sub-agents can be wrong.
+
+60
+00:04:06.800 --> 00:04:11.919
+They can misread a function, miss a file that overrides the one they found, or return a
+
+61
+00:04:11.919 --> 00:04:14.720
+stale result from a cached document.
+
+62
+00:04:14.720 --> 00:04:20.299
+For low-stakes lookups, proceeding directly on the sub-agent's answer is usually fine.
+
+63
+00:04:20.299 --> 00:04:25.540
+For critical path decisions, like identifying the function you are about to modify, or the
+
+64
+00:04:25.540 --> 00:04:30.820
+config you are about to update, the parent should spot-check the finding before acting.
+
+65
+00:04:30.820 --> 00:04:35.980
+Calibrating how much trust to extend based on what is at stake is the practical skill
+
+66
+00:04:35.980 --> 00:04:39.380
+the boundary concept is really about.
+
+67
+00:04:39.380 --> 00:04:42.940
+Three failure modes show up repeatedly in practice.
+
+68
+00:04:42.940 --> 00:04:47.739
+The first is a wall-of-text return, where the sub-agent ignores the return contract
+
+69
+00:04:47.739 --> 00:04:49.619
+and sends back a narrative.
+
+70
+00:04:49.619 --> 00:04:53.700
+This re-pollutes the parent's context and defeats the whole purpose.
+
+71
+00:04:53.700 --> 00:04:58.700
+The second is scope creep, where the sub-agent reads beyond the specified scope and returns
+
+72
+00:04:58.700 --> 00:05:04.179
+extra findings the parent didn't request, adding noise and latency to the interaction.
+
+73
+00:05:04.179 --> 00:05:09.220
+The third is blind trust, where the parent acts on sub-agent output, without verifying
+
+74
+00:05:09.220 --> 00:05:13.779
+critical findings, and propagates errors into downstream work.
+
+75
+00:05:13.779 --> 00:05:18.420
+All three failures trace back to the same root cause, insufficient specification in
+
+76
+00:05:18.420 --> 00:05:20.540
+the original prompt.
+
+77
+00:05:20.540 --> 00:05:25.179
+Tight prompts and clean returns is the idea to carry forward here.
+
+78
+00:05:25.179 --> 00:05:30.019
+The return contract carries most of the weight, because an uncapped answer walks the same
+
+79
+00:05:30.019 --> 00:05:34.619
+verbosity right back to the context you delegated to protect.
+
+80
+00:05:34.619 --> 00:05:40.500
+A sub-agent isn't a smaller you, it's a narrow question with a shape on the answer,
+
+81
+00:05:40.500 --> 00:05:43.700
+and whatever comes back is still a claim worth checking.
+
+82
+00:05:43.700 --> 00:05:45.260
+Keep that in mind.
+
+83
+00:05:45.260 --> 00:05:46.600
+That wraps up this lesson.
+
+84
+00:05:46.600 --> 00:05:47.739
+I'll see you in the next one.
+

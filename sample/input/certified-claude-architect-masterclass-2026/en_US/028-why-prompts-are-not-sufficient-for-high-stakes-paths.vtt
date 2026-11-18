@@ -1,0 +1,310 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.800
+Here's what we're tackling in this lesson. Why prompt-based guardrails aren't sufficient for
+
+2
+00:00:04.800 --> 00:00:11.600
+high-stakes pads. Coming up, we'll look at what prompt guardrails actually are, why LLM outputs
+
+3
+00:00:11.600 --> 00:00:16.959
+are probabilistic rather than guaranteed, which use cases they're appropriate for, which ones
+
+4
+00:00:16.959 --> 00:00:23.120
+they're not, and what the core design principle is when the cost of non-compliance is high.
+
+5
+00:00:23.120 --> 00:00:29.360
+Let's get into it. A system prompt that says never delete a production record is a request,
+
+6
+00:00:29.360 --> 00:00:35.119
+not a rule. That distinction runs through this entire lesson. A prompt-based guardrail is a
+
+7
+00:00:35.119 --> 00:00:40.400
+behavioral constraint embedded in the system prompt that asks the model to avoid certain
+
+8
+00:00:40.400 --> 00:00:45.840
+outputs or actions. It's cheap to implement and genuinely useful, but it's probabilistic.
+
+9
+00:00:46.400 --> 00:00:51.360
+Programmatic enforcement is the code layer alternative. Schema validation, permission
+
+10
+00:00:51.360 --> 00:00:57.040
+checks, output filters, mechanisms that hold regardless of what the model produces,
+
+11
+00:00:57.040 --> 00:01:03.119
+and that a crafted user prompt can't override. Silent failure is what you're trying to prevent,
+
+12
+00:01:03.119 --> 00:01:09.519
+a response that looks successful but is incorrect or incomplete, slipping past informal checks and
+
+13
+00:01:09.519 --> 00:01:16.160
+causing downstream harm before anyone notices. Prompt guardrails are behavioral guidance embedded
+
+14
+00:01:16.160 --> 00:01:22.000
+in instructions. They ask the model to avoid certain outputs. They rely on the model choosing
+
+15
+00:01:22.000 --> 00:01:27.680
+compliance at inference time. There's no code check, no deterministic enforcement. Compliance
+
+16
+00:01:27.680 --> 00:01:33.440
+is the expected outcome most of the time, but that expectation isn't architecturally guaranteed.
+
+17
+00:01:33.440 --> 00:01:38.879
+A system that relies on prompt guardrails for high-stakes constraints is implicitly betting
+
+18
+00:01:38.879 --> 00:01:44.239
+that the model will always comply. That bet is reasonable for low-stakes guidance, where
+
+19
+00:01:44.239 --> 00:01:50.080
+occasional non-compliance causes a minor inconvenience. It's an unacceptable bet when the
+
+20
+00:01:50.080 --> 00:01:56.160
+stakes are financial, legal, or safety critical. On those paths, the model's compliance rate isn't
+
+21
+00:01:56.160 --> 00:02:00.720
+the right metric. What matters is whether a violation is architecturally prevented.
+
+22
+00:02:01.919 --> 00:02:07.199
+The probabilistic nature of LLM outputs is what makes prompt-only enforcement fragile.
+
+23
+00:02:07.760 --> 00:02:14.880
+Three failure modes stand out. Context drift is what happens in long agent runs. As new content
+
+24
+00:02:14.880 --> 00:02:20.880
+accumulates in the conversation, earlier prompt instructions lose salience. The model's effective
+
+25
+00:02:20.880 --> 00:02:27.520
+attention shifts away from the initial constraints. Adversarial inputs are crafted to steer the model
+
+26
+00:02:27.520 --> 00:02:33.119
+past its prompt guardrails. No prompt wording provides complete resistance to a determined
+
+27
+00:02:33.119 --> 00:02:39.360
+attacker who knows how to probe the system. Edge cases are inputs that fall outside the training
+
+28
+00:02:39.360 --> 00:02:45.279
+distribution coverage. Novel inputs can produce non-compliant outputs even when the model is
+
+29
+00:02:45.279 --> 00:02:51.919
+operating in good faith. Each of these failure modes is individually rare. Rare isn't acceptable
+
+30
+00:02:51.919 --> 00:02:59.279
+on paths where a single failure causes real harm. The appropriate use of prompt guardrails depends
+
+31
+00:02:59.279 --> 00:03:05.440
+entirely on the cost of a failure. Low-stakes, reversible paths are where prompt guardrails are
+
+32
+00:03:05.440 --> 00:03:11.839
+sufficient. Tone guidance, formatting preferences, behavioral defaults for ordinary interactions.
+
+33
+00:03:12.399 --> 00:03:17.279
+If the prompt guardrail fails on one of these paths, the result is a recoverable,
+
+34
+00:03:17.279 --> 00:03:23.759
+low-cost error. Probabilistic compliance is an acceptable design choice. High-stakes paths are
+
+35
+00:03:23.759 --> 00:03:30.720
+a different category. Financial transactions, PII handling, safety critical actions, irreversible
+
+36
+00:03:30.720 --> 00:03:38.639
+operations. A prompt guardrail failure on one of these paths can mean legal exposure, financial loss,
+
+37
+00:03:38.639 --> 00:03:45.520
+or physical harm. For these paths, probabilistic compliance isn't acceptable. The architectural
+
+38
+00:03:45.520 --> 00:03:52.720
+answer is always the same. Code has to enforce what the prompt can't guarantee. Three failure
+
+39
+00:03:52.720 --> 00:03:58.639
+modes define the limits of prompt-only enforcement. Adversarial inputs are the most discussed,
+
+40
+00:03:58.639 --> 00:04:05.119
+a crafted user message that navigates around the prompt's instructions and elicits a non-compliant
+
+41
+00:04:05.119 --> 00:04:12.639
+response. The prompt can be carefully worded, but no wording is universally robust. Context drift
+
+42
+00:04:12.639 --> 00:04:19.119
+is less dramatic but more common in production. Long-running agents accumulate context, and as
+
+43
+00:04:19.119 --> 00:04:24.640
+that context grows, the salience of early constraints diminishes. The model's effective
+
+44
+00:04:24.640 --> 00:04:30.480
+weight in the output distribution shifts, even if it doesn't outright ignore the prompt. Edge case
+
+45
+00:04:30.480 --> 00:04:36.480
+coverage is the third failure mode. Novel inputs can produce outputs that technically violate the
+
+46
+00:04:36.480 --> 00:04:42.640
+prompt constraint without any adversarial intent. All three modes underscore the same point.
+
+47
+00:04:42.640 --> 00:04:49.519
+Prompts set behavioral expectations. They don't replace code enforcement. Specific high-stakes
+
+48
+00:04:49.519 --> 00:04:54.959
+use cases each have a corresponding enforcement requirement at the code layer. Financial
+
+49
+00:04:54.959 --> 00:05:00.799
+transactions need hard-coded amount limits and authorization checks that run before execution.
+
+50
+00:05:01.359 --> 00:05:08.160
+Those checks can't rely on the model deciding not to authorize an out-of-range transaction. PII
+
+51
+00:05:08.160 --> 00:05:14.720
+handling requires redaction and masking, enforced by output filters that run after generation,
+
+52
+00:05:14.720 --> 00:05:20.399
+before any response reaches storage or a downstream system. Safety-critical actions
+
+53
+00:05:20.399 --> 00:05:25.760
+need hard blocks at the pre-execution layer, not behavioral guidance that might be followed.
+
+54
+00:05:26.320 --> 00:05:31.920
+In each case, the pattern is the same. The code layer runs a deterministic check that the model's
+
+55
+00:05:31.920 --> 00:05:38.160
+compliance can't substitute for. The prompt still guides behavior. The code check is what actually
+
+56
+00:05:38.160 --> 00:05:44.959
+prevents the bad outcome. The design principle is clear once you separate the roles. Prompts guide
+
+57
+00:05:44.959 --> 00:05:50.480
+behavior. Code enforces constraints. These are different functions in a system architecture,
+
+58
+00:05:50.480 --> 00:05:56.480
+and conflating them is an architectural mistake. A prompt reduces the frequency of non-compliant
+
+59
+00:05:56.480 --> 00:06:02.640
+outputs. That's genuinely useful, but a code enforcement layer prevents non-compliant outputs
+
+60
+00:06:02.640 --> 00:06:08.079
+from reaching the execution layer at all. The frequency argument is about how often the system
+
+61
+00:06:08.079 --> 00:06:13.679
+behaves well. The enforcement argument is about what happens when it doesn't. On a high-stakes
+
+62
+00:06:13.679 --> 00:06:20.000
+path, the enforcement layer is what stands between a rare model failure and an actual system failure.
+
+63
+00:06:20.000 --> 00:06:24.959
+Treating a prompt as a substitute for that enforcement layer isn't a trade-off. It's a gap.
+
+64
+00:06:26.239 --> 00:06:30.720
+Reliable high-stakes systems use multiple enforcement layers in combination.
+
+65
+00:06:30.720 --> 00:06:35.839
+The prompt layer provides behavioral guidance and intent. It's the first and cheapest layer of
+
+66
+00:06:35.839 --> 00:06:42.239
+constraint. The validation layer runs deterministic code checks, schema validation, business rule
+
+67
+00:06:42.239 --> 00:06:48.959
+enforcement, range checks, permission verification. The runtime layer provides live monitoring during
+
+68
+00:06:48.959 --> 00:06:56.239
+execution, cost limits, iteration caps, scope boundary detection, anomaly signals. No single
+
+69
+00:06:56.239 --> 00:07:02.480
+layer is sufficient alone. The value of depth is resilience across failure modes. If the prompt
+
+70
+00:07:02.480 --> 00:07:08.480
+layer slips, the validation layer catches it. If an edge case gets through the validation layer,
+
+71
+00:07:08.480 --> 00:07:14.160
+the runtime layer flags the anomaly. Layered enforcement is what makes a high-stakes agent
+
+72
+00:07:14.160 --> 00:07:20.320
+system defensible. Changing the prompt shifts how often a model behaves as you expect, and that
+
+73
+00:07:20.320 --> 00:07:26.880
+shift is real, but it's never a guarantee. On a payment path, for example, frequency isn't what
+
+74
+00:07:26.880 --> 00:07:33.279
+you're protecting. Something deterministic has to sit between a possible bad output and the actual
+
+75
+00:07:33.279 --> 00:07:40.480
+response. Keep in mind prompts aren't optional here. They carry intent. They just can't carry
+
+76
+00:07:40.480 --> 00:07:45.279
+the last line of defense. You have to have something deterministic in play if there's high
+
+77
+00:07:45.279 --> 00:07:49.200
+risk. And that wraps up this lesson. I'll see you in the next one.
+

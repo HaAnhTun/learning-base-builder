@@ -1,0 +1,298 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.400
+In this lesson, we're looking at one of the most consequential design decisions in the multi-agent system.
+
+2
+00:00:06.400 --> 00:00:13.600
+When a sub-agent hits an error, does it handle that error itself, or does it surface the failure to a coordinator?
+
+3
+00:00:13.600 --> 00:00:19.000
+The answer isn't obvious, and getting it wrong in either direction can cause real problems.
+
+4
+00:00:19.000 --> 00:00:21.600
+Let's map out the decision space.
+
+5
+00:00:21.600 --> 00:00:27.600
+Every sub-agent failure ends up in one of two places, and the architect decides which.
+
+6
+00:00:27.600 --> 00:00:33.580
+Local recovery means the sub-agent catches the failure, handles it internally, and returns to the
+
+7
+00:00:33.580 --> 00:00:35.738
+coordinator as if nothing happened.
+
+8
+00:00:35.799 --> 00:00:42.537
+Coordinator propagation means the sub-agent surfaces the failure, passes structured information
+
+9
+00:00:42.537 --> 00:00:45.729
+upward, and lets the higher-level plan adapt.
+
+10
+00:00:45.799 --> 00:00:52.160
+In between those two sites, the propagation boundary, the interface where the architect decides,
+
+11
+00:00:52.160 --> 00:00:56.333
+deliberately, which failures cross up and which stay contained.
+
+12
+00:00:56.400 --> 00:01:04.199
+That boundary isn't a runtime behavior, it's a design choice, and it should be documented, tested, and enforced.
+
+13
+00:01:04.199 --> 00:01:10.716
+Most production failures in multi-agent systems trace back to a propagation boundary that was never
+
+14
+00:01:10.716 --> 00:01:14.534
+consciously set and defaulted to one extreme or the other.
+
+15
+00:01:14.599 --> 00:01:20.400
+Teams that skip a deliberate policy land on one of two extremes, and both have a name,
+
+16
+00:01:20.599 --> 00:01:26.599
+Silent corruption happens when a sub-agent catches every exception and returns a vague success.
+
+17
+00:01:26.599 --> 00:01:32.028
+The coordinator proceeds on the assumption that the task completed correctly, but the data it's
+
+18
+00:01:32.028 --> 00:01:35.342
+planning on may be malformed, incomplete, or simply wrong,
+
+19
+00:01:35.400 --> 00:01:41.400
+and the defect hides until it causes downstream failures that are far harder to diagnose.
+
+20
+00:01:41.400 --> 00:01:43.800
+Coordinator thrash is the opposite.
+
+21
+00:01:43.800 --> 00:01:50.466
+Every internal hiccup propagates. A rate limit pause, a minor validation issue, a transient timeout,
+
+22
+00:01:50.466 --> 00:01:52.333
+all flow up as error events.
+
+23
+00:01:52.400 --> 00:01:59.400
+The coordinator retries and escalates constantly, which masks the signal from the failures it should be acting on.
+
+24
+00:01:59.400 --> 00:02:04.800
+Neither extreme is a strategy. What you want is a deliberate boundary between them.
+
+25
+00:02:04.800 --> 00:02:07.199
+So what belongs at the local recovery level?
+
+26
+00:02:07.199 --> 00:02:10.399
+Retryable transients are the clearest case.
+
+27
+00:02:10.399 --> 00:02:16.899
+A retryable error is one where repeating the same call without changing anything might succeed.
+
+28
+00:02:16.899 --> 00:02:23.800
+If the sub-agent hits a rate limit and waits 200 milliseconds before going through, the coordinator doesn't need to know.
+
+29
+00:02:23.800 --> 00:02:28.699
+That blip resolved itself. Recoverable validation failures are similar.
+
+30
+00:02:28.699 --> 00:02:33.699
+If the agent receives malformed input, it can sanitize and reprocess.
+
+31
+00:02:33.699 --> 00:02:37.800
+That's an internal correction, not a system-level failure.
+
+32
+00:02:37.800 --> 00:02:41.500
+Idempotent refetches fall in the same category.
+
+33
+00:02:41.500 --> 00:02:46.199
+The key test is whether the coordinator's plan depends on knowing this happened.
+
+34
+00:02:46.199 --> 00:02:52.643
+If handling it locally leaves the coordinator with accurate information and a valid path forward,
+
+35
+00:02:52.643 --> 00:02:55.433
+local recovery is the right design choice.
+
+36
+00:02:55.500 --> 00:03:01.600
+On the other side of the boundary, some failures carry information the coordinator's plan genuinely depends on.
+
+37
+00:03:01.600 --> 00:03:04.500
+Scope violations are the clearest example.
+
+38
+00:03:04.500 --> 00:03:10.600
+If a sub-agent is asked to perform an action outside its authorization, that's not a transient blip,
+
+39
+00:03:10.600 --> 00:03:14.199
+and the coordinator's task decomposition may need to change entirely.
+
+40
+00:03:14.199 --> 00:03:20.699
+Policy denials fall in the same category because a guardrail blocked the action permanently, and no
+
+41
+00:03:20.699 --> 00:03:22.734
+retry will change that outcome.
+
+42
+00:03:22.800 --> 00:03:29.014
+Those are non-retryable errors. Repeating the same call produces the same failure, so every
+
+43
+00:03:29.014 --> 00:03:31.131
+sub-agent needs a retry budget.
+
+44
+00:03:31.199 --> 00:03:36.600
+A maximum number of local attempts before it stops and hands the failure upward.
+
+45
+00:03:36.600 --> 00:03:42.597
+Once that budget is spent with no progress, the coordinator needs to know so it can reroute,
+
+46
+00:03:42.597 --> 00:03:45.334
+substitute a different agent, or escalate.
+
+47
+00:03:45.399 --> 00:03:49.600
+Here's a practical test you can apply to any failure mode in your system.
+
+48
+00:03:49.600 --> 00:03:54.600
+Ask, would the coordinator's higher-level plan change if it knew this happened?
+
+49
+00:03:54.600 --> 00:03:56.699
+If yes, propagate.
+
+50
+00:03:56.800 --> 00:04:04.699
+The failure affects scope, sequencing, or resource allocation, and surfacing it lets the coordinator adapt correctly.
+
+51
+00:04:04.699 --> 00:04:07.199
+If no, recover locally.
+
+52
+00:04:07.199 --> 00:04:13.095
+The failure is fully resolved inside the sub-agent's own retry or sanitization loop, and the
+
+53
+00:04:13.095 --> 00:04:16.235
+coordinator receives accurate results regardless.
+
+54
+00:04:16.299 --> 00:04:21.700
+If you're genuinely unsure, default to propagating with a low severity signal.
+
+55
+00:04:21.700 --> 00:04:24.700
+Visibility is almost always safer than silence.
+
+56
+00:04:24.700 --> 00:04:27.700
+An operator can dismiss a low-priority warning.
+
+57
+00:04:27.700 --> 00:04:30.700
+No one can act on a failure that was never reported.
+
+58
+00:04:30.700 --> 00:04:34.700
+When in doubt, let it surface with a clear label attached.
+
+59
+00:04:34.700 --> 00:04:37.700
+One principle often gets skipped.
+
+60
+00:04:37.700 --> 00:04:42.700
+Even when a sub-agent recovers locally, that recovery should leave a structured trace.
+
+61
+00:04:42.700 --> 00:04:45.700
+Logging at the boundary isn't optional.
+
+62
+00:04:45.700 --> 00:04:53.200
+The sub-agent should record the failure type, the timestamp, and how many retries it took before returning success.
+
+63
+00:04:53.200 --> 00:04:58.200
+Why? Because patterns in local recoveries are diagnostic signals.
+
+64
+00:04:58.200 --> 00:05:04.221
+If a particular sub-agent is retrying three times on nearly every call, something upstream is
+
+65
+00:05:04.221 --> 00:05:07.135
+degraded, and no one can see it without logs.
+
+66
+00:05:07.200 --> 00:05:14.200
+A silent local recovery with no trace is the first step toward the silent corruption we talked about earlier.
+
+67
+00:05:14.200 --> 00:05:19.932
+The coordinator may not need to act on every recovery event, but the operator always needs
+
+68
+00:05:19.932 --> 00:05:24.136
+visibility into how the system is actually behaving in production.
+
+69
+00:05:24.200 --> 00:05:29.200
+The propagation boundary is a design decision, not a default.
+
+70
+00:05:29.200 --> 00:05:35.200
+A deliberate policy prevents both silent corruption and coordinator thrash.
+
+71
+00:05:35.200 --> 00:05:39.200
+Ask whether the coordinator's plan would actually change.
+
+72
+00:05:39.200 --> 00:05:46.200
+Log transient recoveries local, propagate scope violations, policy denials, and exhausted retry budgets,
+
+73
+00:05:46.200 --> 00:05:53.200
+and log every local recovery so operators can see the pattern before it becomes an incident.
+
+74
+00:05:53.200 --> 00:05:56.200
+That wraps up this lesson. I'll see you in the next one.
+

@@ -1,0 +1,554 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.190
+<v Stephane>Okay, so now let's talk about DMS,</v>
+
+2
+00:00:02.190 --> 00:00:04.620
+which is a Database Migration Service.
+
+3
+00:00:04.620 --> 00:00:06.150
+This allows you, as the name indicates,
+
+4
+00:00:06.150 --> 00:00:10.050
+to quickly and securely migrate databases to AWS.
+
+5
+00:00:10.050 --> 00:00:12.420
+The beautiful thing is that it's resilient and self-healing,
+
+6
+00:00:12.420 --> 00:00:15.930
+so your database migration job can recover from failure.
+
+7
+00:00:15.930 --> 00:00:17.760
+The source database will remain available
+
+8
+00:00:17.760 --> 00:00:19.620
+during the migration, which is a good thing.
+
+9
+00:00:19.620 --> 00:00:21.420
+That means you can keep on using the source database
+
+10
+00:00:21.420 --> 00:00:23.160
+while migrating to the target database
+
+11
+00:00:23.160 --> 00:00:26.460
+and then safely migrate your application over.
+
+12
+00:00:26.460 --> 00:00:27.810
+It supports many different things.
+
+13
+00:00:27.810 --> 00:00:29.550
+It supports homogenous migrations.
+
+14
+00:00:29.550 --> 00:00:31.770
+For example, if you migrate an Oracle database
+
+15
+00:00:31.770 --> 00:00:33.420
+to another Oracle database.
+
+16
+00:00:33.420 --> 00:00:35.400
+It supports heterogeneous migration,
+
+17
+00:00:35.400 --> 00:00:37.680
+which is when you have a different database engine.
+
+18
+00:00:37.680 --> 00:00:40.470
+For example, for Microsoft SQL Server to Aurora.
+
+19
+00:00:40.470 --> 00:00:43.470
+And also it supports Continuous Data Replication using CDC
+
+20
+00:00:43.470 --> 00:00:45.570
+so that you can do one of migrations
+
+21
+00:00:45.570 --> 00:00:48.330
+or continuous migrations using CDC.
+
+22
+00:00:48.330 --> 00:00:51.060
+And for this, you need to create an EC2 instance
+
+23
+00:00:51.060 --> 00:00:53.520
+that will perform the replication tasks for you.
+
+24
+00:00:53.520 --> 00:00:54.780
+So the idea is very simple.
+
+25
+00:00:54.780 --> 00:00:56.100
+The source database is on-premise.
+
+26
+00:00:56.100 --> 00:00:58.170
+We're going to create an EC2 instance
+
+27
+00:00:58.170 --> 00:01:00.510
+that will be running the DMS software,
+
+28
+00:01:00.510 --> 00:01:04.560
+and then it will insert the data into the target database.
+
+29
+00:01:04.560 --> 00:01:08.220
+Now what are the sources for DMS as well as the targets?
+
+30
+00:01:08.220 --> 00:01:10.350
+Well, for sources, we have on-premises
+
+31
+00:01:10.350 --> 00:01:14.280
+and EC2 instance databases such as Oracle,
+
+32
+00:01:14.280 --> 00:01:18.480
+Microsoft SQL Server, MySQL, MariaDB,
+
+33
+00:01:18.480 --> 00:01:22.020
+PostgreSQL, MongoDB, SAP, and DB2.
+
+34
+00:01:22.020 --> 00:01:24.990
+So a wide variety of databases.
+
+35
+00:01:24.990 --> 00:01:27.690
+Azure, so any Azure SQL Database.
+
+36
+00:01:27.690 --> 00:01:28.800
+Also, you can migrate
+
+37
+00:01:28.800 --> 00:01:33.150
+all Amazon RDS databases, including Aurora.
+
+38
+00:01:33.150 --> 00:01:38.150
+Amazon S3, and then MongoDB's running on DocumentDB.
+
+39
+00:01:38.430 --> 00:01:42.660
+Now for targets of DMS, we have any on-premises
+
+40
+00:01:42.660 --> 00:01:46.170
+and EC2 instances database such as Oracle,
+
+41
+00:01:46.170 --> 00:01:51.170
+Microsoft SQL Server, MySQL, MariaDB, PostgreSQL, and SAP.
+
+42
+00:01:51.600 --> 00:01:55.350
+But also Amazon RDS, including Aurora, Amazon Redshift,
+
+43
+00:01:55.350 --> 00:01:59.940
+Amazon DynamoDB, Amazon S3, the OpenSearch Service,
+
+44
+00:01:59.940 --> 00:02:03.390
+the Kinesis Data Streams, and DocumentDB.
+
+45
+00:02:03.390 --> 00:02:06.570
+So a few things to note is that Amazon Redshift,
+
+46
+00:02:06.570 --> 00:02:10.440
+and Kinesis Date Streams, and OpenSearch Service
+
+47
+00:02:10.440 --> 00:02:14.190
+are not sources, they are targets of DMS.
+
+48
+00:02:14.190 --> 00:02:16.890
+So hopefully, that helps you for your exam.
+
+49
+00:02:16.890 --> 00:02:20.430
+So AWS SCT, for Schema Conversion Tool,
+
+50
+00:02:20.430 --> 00:02:22.860
+which is to convert your database schema
+
+51
+00:02:22.860 --> 00:02:24.570
+from one engine to another.
+
+52
+00:02:24.570 --> 00:02:27.000
+For example, if you're doing an OLTP, for example,
+
+53
+00:02:27.000 --> 00:02:31.170
+from SQL Server or Oracle into MySQL, PostgreSQL, or Aurora,
+
+54
+00:02:31.170 --> 00:02:32.910
+then you have to change the database engine.
+
+55
+00:02:32.910 --> 00:02:34.999
+And, so, you're going to use SCT.
+
+56
+00:02:34.999 --> 00:02:36.510
+For OLAP, for example, you want to migrate
+
+57
+00:02:36.510 --> 00:02:39.750
+from Teradata or Oracle into Redshift.
+
+58
+00:02:39.750 --> 00:02:40.860
+So here's the example.
+
+59
+00:02:40.860 --> 00:02:44.070
+In this example, SCT will be running alongside DMS
+
+60
+00:02:44.070 --> 00:02:47.100
+to convert the schema from the source database
+
+61
+00:02:47.100 --> 00:02:48.480
+to the targets.
+
+62
+00:02:48.480 --> 00:02:50.400
+The one thing you have to remember is that you do not need
+
+63
+00:02:50.400 --> 00:02:54.060
+to use SCT if you are migrating the same database engine.
+
+64
+00:02:54.060 --> 00:02:56.610
+For example, if you're doing on-premise PostgreSQL
+
+65
+00:02:56.610 --> 00:02:59.790
+to RDS PostgreSQL, this is the same DB engine.
+
+66
+00:02:59.790 --> 00:03:03.210
+This is still PostgreSQL, and RDS is the platform.
+
+67
+00:03:03.210 --> 00:03:05.520
+And if you remember, this migration
+
+68
+00:03:05.520 --> 00:03:08.400
+from on-premise PostgreSQL to RDS PostgreSQL
+
+69
+00:03:08.400 --> 00:03:12.090
+is called a re-platform type of migration.
+
+70
+00:03:12.090 --> 00:03:14.820
+Okay, some good things to know about DMS.
+
+71
+00:03:14.820 --> 00:03:16.980
+First of all, it works over VPC Peering
+
+72
+00:03:16.980 --> 00:03:19.080
+if you wanted to move from one VPC to another.
+
+73
+00:03:19.080 --> 00:03:21.990
+It works over VPN, either site to site or software,
+
+74
+00:03:21.990 --> 00:03:24.180
+or it works for Direct Connect.
+
+75
+00:03:24.180 --> 00:03:25.950
+It supports three kinds of load.
+
+76
+00:03:25.950 --> 00:03:29.670
+Full Load, which is a one-time full load extract and load.
+
+77
+00:03:29.670 --> 00:03:30.780
+Full Load + CDC.
+
+78
+00:03:30.780 --> 00:03:32.580
+So you have some continuous data replication
+
+79
+00:03:32.580 --> 00:03:34.400
+after the first initial load.
+
+80
+00:03:34.400 --> 00:03:37.200
+Or CDC only to just stream changes.
+
+81
+00:03:37.200 --> 00:03:40.110
+For Oracle, it supports TDE for the source
+
+82
+00:03:40.110 --> 00:03:41.850
+using something called a BinaryReader.
+
+83
+00:03:41.850 --> 00:03:43.620
+And for the target, it supports
+
+84
+00:03:43.620 --> 00:03:45.810
+Binary Large Objects, so BLOBs,
+
+85
+00:03:45.810 --> 00:03:48.300
+in tables that will have a primary key,
+
+86
+00:03:48.300 --> 00:03:50.070
+and it also supports TDE.
+
+87
+00:03:50.070 --> 00:03:53.580
+So the idea here is that if you are migrating a BLOB data
+
+88
+00:03:53.580 --> 00:03:56.670
+into an RDS Oracle, then you need to make sure
+
+89
+00:03:56.670 --> 00:04:00.690
+that there is a primary key associated alongside that BLOB.
+
+90
+00:04:00.690 --> 00:04:04.380
+For OpenSearch, as I said, the source does not exist,
+
+91
+00:04:04.380 --> 00:04:06.930
+and for the target, it's possible to migrate
+
+92
+00:04:06.930 --> 00:04:11.520
+from a relational database to OpenSearch using DMS.
+
+93
+00:04:11.520 --> 00:04:14.460
+So that means that DMS cannot be used
+
+94
+00:04:14.460 --> 00:04:16.380
+to replicate OpenSearch data.
+
+95
+00:04:16.380 --> 00:04:18.870
+You cannot have OpenSearch as a source
+
+96
+00:04:18.870 --> 00:04:20.580
+and so, therefore, if you wanted to replicate
+
+97
+00:04:20.580 --> 00:04:22.140
+OpenSearch data somewhere else,
+
+98
+00:04:22.140 --> 00:04:25.470
+you would need to get some tools specific to OpenSearch,
+
+99
+00:04:25.470 --> 00:04:27.990
+maybe to export it into Amazon S3,
+
+100
+00:04:27.990 --> 00:04:32.250
+and then being able to send it wherever you want.
+
+101
+00:04:32.250 --> 00:04:37.250
+But DMS is only used to have the target being OpenSearch.
+
+102
+00:04:37.440 --> 00:04:38.273
+So that means, for example,
+
+103
+00:04:38.273 --> 00:04:42.870
+you can have MySQL migrated into OpenSearch through DMS.
+
+104
+00:04:42.870 --> 00:04:45.420
+Finally, and very important going into the exam,
+
+105
+00:04:45.420 --> 00:04:48.120
+you can combine Snowball and DMS.
+
+106
+00:04:48.120 --> 00:04:50.850
+So in case you're doing a very large database migration,
+
+107
+00:04:50.850 --> 00:04:52.950
+you may have terabytes and terabytes
+
+108
+00:04:52.950 --> 00:04:54.390
+of the information or data.
+
+109
+00:04:54.390 --> 00:04:56.280
+And, so, in case you wanted to go
+
+110
+00:04:56.280 --> 00:04:58.680
+everything over the network, that may not be possible.
+
+111
+00:04:58.680 --> 00:05:00.990
+Maybe because your network bandwidth is too little,
+
+112
+00:05:00.990 --> 00:05:03.330
+or maybe because you have way too much data.
+
+113
+00:05:03.330 --> 00:05:06.030
+And we've seen, from before, that Snowball is a great way
+
+114
+00:05:06.030 --> 00:05:09.510
+to migrate data, large amount of it, into AWS.
+
+115
+00:05:09.510 --> 00:05:13.890
+So you can combine Snowball and DMS together to do so.
+
+116
+00:05:13.890 --> 00:05:14.910
+So how does that work?
+
+117
+00:05:14.910 --> 00:05:16.500
+The following stages happen.
+
+118
+00:05:16.500 --> 00:05:19.290
+First, you're going to use the AWS Schema Conversion Tool,
+
+119
+00:05:19.290 --> 00:05:21.660
+SCT, to extract the data locally,
+
+120
+00:05:21.660 --> 00:05:23.100
+so we're talking about on-premise,
+
+121
+00:05:23.100 --> 00:05:27.090
+and then we'll copy it onto a Snowball Edge device.
+
+122
+00:05:27.090 --> 00:05:31.560
+Then you're shipping the Snowball Edge device back to AWS.
+
+123
+00:05:31.560 --> 00:05:33.750
+And then after AWS receives your shipment,
+
+124
+00:05:33.750 --> 00:05:36.570
+the Edge device will automatically load its data
+
+125
+00:05:36.570 --> 00:05:40.650
+onto the Amazon S3 bucket, and then DMS will kick in.
+
+126
+00:05:40.650 --> 00:05:42.690
+It will take the files from the S3 bucket,
+
+127
+00:05:42.690 --> 00:05:44.850
+migrate the data into the target store,
+
+128
+00:05:44.850 --> 00:05:47.310
+and then if you're using CDC on top of it,
+
+129
+00:05:47.310 --> 00:05:50.280
+any updates that have happened while your Snowball device
+
+130
+00:05:50.280 --> 00:05:53.130
+is being shipped, will be replicated afterwards
+
+131
+00:05:53.130 --> 00:05:54.600
+to the target data store.
+
+132
+00:05:54.600 --> 00:05:57.660
+And here, we get a really good advantage.
+
+133
+00:05:57.660 --> 00:06:00.300
+We get the speed and the efficiency of Snowball
+
+134
+00:06:00.300 --> 00:06:02.940
+and the continuous data replication out of DMS.
+
+135
+00:06:02.940 --> 00:06:05.850
+So using Snowball and DMS is a great combo and, again,
+
+136
+00:06:05.850 --> 00:06:07.950
+something you have to remember going into the exam.
+
+137
+00:06:07.950 --> 00:06:08.880
+So that's it for it.
+
+138
+00:06:08.880 --> 00:06:11.873
+I hope you liked it, and I will see you in the next lecture.
+

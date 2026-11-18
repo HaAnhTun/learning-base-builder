@@ -1,0 +1,578 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.559
+In this lesson, we'll dig into error detection in agentic pipelines.
+
+2
+00:00:04.559 --> 00:00:07.039
+Silent failures are the hardest to catch.
+
+3
+00:00:07.039 --> 00:00:09.199
+A step looks like it succeeded,
+
+4
+00:00:09.199 --> 00:00:13.720
+but returned incorrect or corrupted output with no exception raised.
+
+5
+00:00:13.720 --> 00:00:17.040
+We'll cover output validation, state verification,
+
+6
+00:00:17.040 --> 00:00:20.120
+sanity checks, validation gates, and logging.
+
+7
+00:00:20.120 --> 00:00:21.680
+Let's get into it.
+
+8
+00:00:21.680 --> 00:00:27.280
+The worst failure in an agentic pipeline is the one that never announces itself.
+
+9
+00:00:27.360 --> 00:00:32.319
+A silent failure is a tool or agent returning output that appears successful,
+
+10
+00:00:32.319 --> 00:00:36.400
+but is incorrect or corrupted with no error signal raised.
+
+11
+00:00:36.400 --> 00:00:40.479
+So downstream stages proceed on bad data without any warning.
+
+12
+00:00:40.479 --> 00:00:44.319
+A validation gate is a checkpoint that inspects step output
+
+13
+00:00:44.319 --> 00:00:48.720
+against defined criteria before allowing execution to continue,
+
+14
+00:00:48.720 --> 00:00:51.840
+and it catches both explicit errors and silent ones.
+
+15
+00:00:52.799 --> 00:00:57.439
+Error propagation is the mechanism by which a failure in one stage
+
+16
+00:00:57.439 --> 00:00:59.520
+flows into downstream stages,
+
+17
+00:00:59.520 --> 00:01:03.040
+and causes cascading failures across the pipeline.
+
+18
+00:01:03.040 --> 00:01:06.800
+Those patterns are the foundation for building systems that fail loudly,
+
+19
+00:01:06.800 --> 00:01:08.959
+rather than silently.
+
+20
+00:01:08.959 --> 00:01:13.519
+A silent failure is dangerous precisely because it produces no signal.
+
+21
+00:01:13.519 --> 00:01:16.720
+No exception is thrown. No error code is returned.
+
+22
+00:01:16.720 --> 00:01:18.879
+The pipeline continues normally.
+
+23
+00:01:19.120 --> 00:01:24.000
+Downstream stages receive the bad output and build further work on top of it.
+
+24
+00:01:24.000 --> 00:01:27.120
+By the time the error surfaces as a visible wrong result,
+
+25
+00:01:27.120 --> 00:01:30.239
+its origin may be several steps back in the pipeline.
+
+26
+00:01:30.239 --> 00:01:32.639
+Tracing it becomes a forensics exercise.
+
+27
+00:01:32.639 --> 00:01:36.639
+Error code-based retry logic doesn't help here at all,
+
+28
+00:01:36.639 --> 00:01:39.120
+because there's no error code to catch.
+
+29
+00:01:39.120 --> 00:01:44.879
+The only way to detect silent failures is to actively inspect output at each stage boundary,
+
+30
+00:01:44.879 --> 00:01:49.680
+rather than relying on the tool or API to tell you when something went wrong.
+
+31
+00:01:49.680 --> 00:01:54.239
+Validation gates are the mechanism for doing that inspection reliably.
+
+32
+00:01:54.239 --> 00:01:57.680
+The first detection strategy is output validation.
+
+33
+00:01:57.680 --> 00:02:00.879
+Before passing a step's result to the next stage,
+
+34
+00:02:00.879 --> 00:02:03.760
+inspect it against defined criteria.
+
+35
+00:02:03.760 --> 00:02:06.800
+Schema checks verify required fields are present,
+
+36
+00:02:06.800 --> 00:02:11.360
+types are correct, and there are no unexpected null values.
+
+37
+00:02:11.360 --> 00:02:15.759
+Range checks confirm numeric values fall within expected bounds,
+
+38
+00:02:15.759 --> 00:02:18.240
+and strings are within length limits.
+
+39
+00:02:18.240 --> 00:02:22.240
+Completeness checks verify all required sections are populated,
+
+40
+00:02:22.240 --> 00:02:24.720
+and responses weren't truncated.
+
+41
+00:02:24.720 --> 00:02:28.320
+Together, these three check types catch the structural errors
+
+42
+00:02:28.320 --> 00:02:33.839
+and silent failures that status code only handling misses entirely.
+
+43
+00:02:33.839 --> 00:02:37.440
+Output validation is the first gate between steps in a pipeline,
+
+44
+00:02:37.440 --> 00:02:40.479
+and it handles the majority of silent failure cases
+
+45
+00:02:40.479 --> 00:02:43.279
+you're likely to encounter in production agentic systems.
+
+46
+00:02:44.479 --> 00:02:49.279
+Output validation breaks into two distinct layers that complement each other.
+
+47
+00:02:49.279 --> 00:02:53.839
+Schema validation checks structure, required fields, correct types,
+
+48
+00:02:53.839 --> 00:02:57.440
+no unexpected nulls, it's fast, automatable,
+
+49
+00:02:57.440 --> 00:03:01.199
+and catches formatting errors and truncated responses,
+
+50
+00:03:01.199 --> 00:03:05.360
+but it doesn't verify whether the content is actually correct or meaningful.
+
+51
+00:03:05.919 --> 00:03:10.320
+Semantic validation goes further and asks whether the output is plausible,
+
+52
+00:03:10.399 --> 00:03:11.839
+given the input.
+
+53
+00:03:11.839 --> 00:03:14.080
+Are values in expected ranges?
+
+54
+00:03:14.080 --> 00:03:17.199
+Does the response make sense in context?
+
+55
+00:03:17.199 --> 00:03:19.199
+Does it address what was asked?
+
+56
+00:03:19.199 --> 00:03:22.320
+Semantic validation is harder to automate fully,
+
+57
+00:03:22.320 --> 00:03:26.960
+but it's the layer that catches silent failures that pass schema checks.
+
+58
+00:03:26.960 --> 00:03:30.000
+A complete detection strategy needs both layers
+
+59
+00:03:30.000 --> 00:03:32.240
+working together at each stage boundary.
+
+60
+00:03:33.360 --> 00:03:37.119
+State verification is the second detection strategy.
+
+61
+00:03:37.199 --> 00:03:38.880
+After a step completes,
+
+62
+00:03:38.880 --> 00:03:42.559
+check whether the world actually matches what the agent expects.
+
+63
+00:03:43.279 --> 00:03:44.960
+After a write operation,
+
+64
+00:03:44.960 --> 00:03:48.160
+confirm the record was persisted correctly by reading it back.
+
+65
+00:03:48.800 --> 00:03:50.479
+After a transformation,
+
+66
+00:03:50.479 --> 00:03:53.600
+verify the output reflects the intended change,
+
+67
+00:03:53.600 --> 00:03:56.320
+rather than just trusting the return value of the call.
+
+68
+00:03:56.960 --> 00:04:00.559
+After an API call that's supposed to trigger a side effect,
+
+69
+00:04:00.559 --> 00:04:02.960
+validate that the side effect actually occurred.
+
+70
+00:04:03.600 --> 00:04:06.559
+State verification catches a common failure pattern,
+
+71
+00:04:06.559 --> 00:04:08.960
+where an action appeared to succeed.
+
+72
+00:04:08.960 --> 00:04:11.119
+The call returned without an error,
+
+73
+00:04:11.119 --> 00:04:14.399
+but nothing actually changed in the underlying system.
+
+74
+00:04:14.399 --> 00:04:16.000
+Without state verification,
+
+75
+00:04:16.000 --> 00:04:19.679
+those cases are silent failures that proceed undetected.
+
+76
+00:04:20.880 --> 00:04:23.920
+The third detection strategy is the sanity check.
+
+77
+00:04:24.480 --> 00:04:28.000
+After output validation confirms the structure is correct,
+
+78
+00:04:28.000 --> 00:04:31.760
+sanity checks ask whether the output is actually plausible,
+
+79
+00:04:31.760 --> 00:04:33.519
+given what was input.
+
+80
+00:04:33.519 --> 00:04:35.839
+Is the output length reasonable?
+
+81
+00:04:35.839 --> 00:04:38.799
+A one-word answer to a complex multipart query
+
+82
+00:04:38.799 --> 00:04:41.119
+is a signal that something went wrong,
+
+83
+00:04:41.119 --> 00:04:42.559
+even if the schema is valid.
+
+84
+00:04:43.200 --> 00:04:46.880
+Are the key entities from the input reflected in the output?
+
+85
+00:04:46.880 --> 00:04:49.440
+If a query mentioned three specific items
+
+86
+00:04:49.440 --> 00:04:52.959
+and none of them appear in the response, that's suspicious.
+
+87
+00:04:52.959 --> 00:04:55.040
+Does the output contradict facts
+
+88
+00:04:55.040 --> 00:04:57.040
+that were provided in the input context?
+
+89
+00:04:57.600 --> 00:05:00.160
+Sanity checks catch the semantic errors
+
+90
+00:05:00.160 --> 00:05:02.239
+that pass structural validation,
+
+91
+00:05:02.239 --> 00:05:05.920
+but would still silently corrupt downstream processing
+
+92
+00:05:05.920 --> 00:05:07.119
+if left undetected.
+
+93
+00:05:08.320 --> 00:05:10.640
+Validation gates are the structural mechanism
+
+94
+00:05:10.640 --> 00:05:13.119
+that implements those detection strategies
+
+95
+00:05:13.119 --> 00:05:15.440
+at stage boundaries in a pipeline.
+
+96
+00:05:15.440 --> 00:05:17.519
+A gate has four responsibilities.
+
+97
+00:05:17.519 --> 00:05:20.559
+First, it inspects the output using schema,
+
+98
+00:05:20.559 --> 00:05:23.040
+range, completeness, and plausibility checks.
+
+99
+00:05:23.600 --> 00:05:25.519
+Second, if validation fails,
+
+100
+00:05:25.519 --> 00:05:28.239
+it can trigger a retry with corrected input
+
+101
+00:05:28.239 --> 00:05:29.440
+or a modified prompt.
+
+102
+00:05:30.000 --> 00:05:32.079
+Third, if retries are exhausted,
+
+103
+00:05:32.079 --> 00:05:35.440
+it routes to a fallback path or degrades gracefully.
+
+104
+00:05:36.160 --> 00:05:38.239
+Fourth, if fallback also fails,
+
+105
+00:05:38.239 --> 00:05:40.239
+it escalates to a human reviewer
+
+106
+00:05:40.239 --> 00:05:42.959
+or sends an alert to a monitoring system.
+
+107
+00:05:42.959 --> 00:05:45.040
+The exam trap worth knowing
+
+108
+00:05:45.040 --> 00:05:47.920
+is that gates checking only for error codes
+
+109
+00:05:47.920 --> 00:05:49.200
+miss silent failures.
+
+110
+00:05:49.760 --> 00:05:52.399
+Gates need to validate semantic correctness,
+
+111
+00:05:52.399 --> 00:05:53.519
+not just status codes.
+
+112
+00:05:54.799 --> 00:05:56.320
+Logging and observability
+
+113
+00:05:56.320 --> 00:05:58.799
+are what makes silent failures diagnosable
+
+114
+00:05:58.799 --> 00:05:59.600
+after they occur.
+
+115
+00:06:00.320 --> 00:06:03.279
+Log inputs and outputs at every stage boundary,
+
+116
+00:06:03.279 --> 00:06:05.359
+not just when errors are raised.
+
+117
+00:06:05.359 --> 00:06:07.119
+If you only log on error,
+
+118
+00:06:07.119 --> 00:06:09.760
+you have no record of what the stage received
+
+119
+00:06:09.760 --> 00:06:11.679
+when a silent failure happened.
+
+120
+00:06:11.679 --> 00:06:13.519
+Use structured log formats
+
+121
+00:06:13.519 --> 00:06:17.279
+so individual fields are queryable and filterable.
+
+122
+00:06:17.279 --> 00:06:20.640
+Execution traces record the full sequence of steps,
+
+123
+00:06:20.640 --> 00:06:22.320
+tool calls, and their outcomes.
+
+124
+00:06:22.959 --> 00:06:25.119
+That trace is what lets you reconstruct
+
+125
+00:06:25.119 --> 00:06:27.600
+what happened when a user reports a wrong result.
+
+126
+00:06:28.160 --> 00:06:29.760
+Anomaly detection on logs
+
+127
+00:06:29.760 --> 00:06:32.239
+can flag unusual patterns proactively
+
+128
+00:06:32.239 --> 00:06:33.440
+before users notice.
+
+129
+00:06:34.160 --> 00:06:37.519
+Observability is what transforms a silent failure
+
+130
+00:06:37.519 --> 00:06:39.119
+from an invisible event
+
+131
+00:06:39.119 --> 00:06:41.440
+into a diagnosable and fixable one.
+
+132
+00:06:43.119 --> 00:06:45.519
+Detection is the work of making a pipeline
+
+133
+00:06:45.519 --> 00:06:46.640
+tell you when it's wrong.
+
+134
+00:06:47.200 --> 00:06:48.720
+Nothing raises an exception
+
+135
+00:06:48.720 --> 00:06:51.200
+when a step returns confident garbage.
+
+136
+00:06:51.200 --> 00:06:53.920
+So the signal has to be something
+
+137
+00:06:53.920 --> 00:06:56.640
+you built on purpose at every stage boundary.
+
+138
+00:06:57.279 --> 00:06:59.279
+That's what keeps one bad output
+
+139
+00:06:59.279 --> 00:07:01.519
+from quietly poisoning everything after it.
+
+140
+00:07:02.079 --> 00:07:03.839
+Just remember that a check
+
+141
+00:07:03.839 --> 00:07:06.000
+only covers the dimensions you wrote it for,
+
+142
+00:07:06.000 --> 00:07:08.000
+so one is usually not enough.
+
+143
+00:07:08.720 --> 00:07:10.160
+That does it for this lesson.
+
+144
+00:07:10.160 --> 00:07:11.600
+I'll see you in the next one.
+

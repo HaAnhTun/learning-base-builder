@@ -1,0 +1,990 @@
+WEBVTT
+
+1
+00:00:00.030 --> 00:00:02.310
+<v Instructor>Okay, so now let's get into S3,</v>
+
+2
+00:00:02.310 --> 00:00:04.620
+S3 is gonna be for object storage, it's serverless,
+
+3
+00:00:04.620 --> 00:00:06.750
+you get unlimited storage, it's pay as you go.
+
+4
+00:00:06.750 --> 00:00:09.240
+We already know this, it's good for a static content.
+
+5
+00:00:09.240 --> 00:00:10.650
+You access object using a key
+
+6
+00:00:10.650 --> 00:00:12.330
+and there is no indexing facility,
+
+7
+00:00:12.330 --> 00:00:14.280
+we can use DynamoDB for that.
+
+8
+00:00:14.280 --> 00:00:15.360
+It's not a file system,
+
+9
+00:00:15.360 --> 00:00:18.600
+it cannot be mounted natively on EC2, so it's good to know.
+
+10
+00:00:18.600 --> 00:00:20.040
+As an anti-pattern, what is it?
+
+11
+00:00:20.040 --> 00:00:22.140
+It's not good to have lots of small files.
+
+12
+00:00:22.140 --> 00:00:24.510
+It's not good if you want to have a POSIX file system,
+
+13
+00:00:24.510 --> 00:00:27.030
+you need to use EFS instead for POSIX.
+
+14
+00:00:27.030 --> 00:00:30.210
+It's not good if you want things such as file locking.
+
+15
+00:00:30.210 --> 00:00:31.860
+It doesn't have a search feature,
+
+16
+00:00:31.860 --> 00:00:34.740
+queries, and it's not good for rapidly sharing data.
+
+17
+00:00:34.740 --> 00:00:36.630
+And it's not good if you have a website
+
+18
+00:00:36.630 --> 00:00:39.480
+that has a lot of dynamic content, okay?
+
+19
+00:00:39.480 --> 00:00:41.760
+For the rest, it's a great tool.
+
+20
+00:00:41.760 --> 00:00:43.230
+So here is a comparison
+
+21
+00:00:43.230 --> 00:00:46.110
+of all the storage classes on Amazon S3.
+
+22
+00:00:46.110 --> 00:00:49.710
+So you have Standard, Intelligent-Tiering, Standard-IA,
+
+23
+00:00:49.710 --> 00:00:52.380
+One Zone-IA, and then we have three for Glacier,
+
+24
+00:00:52.380 --> 00:00:54.480
+we have Glacier Instant Retrieval,
+
+25
+00:00:54.480 --> 00:00:58.410
+Glacier Flexible Retrieval, and Glacier Deep Archive.
+
+26
+00:00:58.410 --> 00:01:00.720
+So you should know all of them by then.
+
+27
+00:01:00.720 --> 00:01:03.450
+If you don't, I would suggest you look at the documentation
+
+28
+00:01:03.450 --> 00:01:06.330
+or a video, for example, in my associate courses
+
+29
+00:01:06.330 --> 00:01:08.280
+that will describe all of these.
+
+30
+00:01:08.280 --> 00:01:09.720
+Now, the one thing you should know though
+
+31
+00:01:09.720 --> 00:01:11.790
+around these storage classes that, of course,
+
+32
+00:01:11.790 --> 00:01:14.340
+you can transition objects between different tiers
+
+33
+00:01:14.340 --> 00:01:17.883
+or even delete them using the S3 Lifecycle Policies.
+
+34
+00:01:18.930 --> 00:01:20.790
+So S3 has a replication feature,
+
+35
+00:01:20.790 --> 00:01:23.250
+for this you need to enable versioning on your buckets
+
+36
+00:01:23.250 --> 00:01:24.690
+and you have two kinds of replication.
+
+37
+00:01:24.690 --> 00:01:27.570
+You have the CRR, Cross Region Replication
+
+38
+00:01:27.570 --> 00:01:30.360
+and SRR, Same Region Replication.
+
+39
+00:01:30.360 --> 00:01:32.310
+The idea is that an S3 bucket in one region,
+
+40
+00:01:32.310 --> 00:01:34.890
+for example, for Cross Region Replication
+
+41
+00:01:34.890 --> 00:01:36.480
+is going to be replicated
+
+42
+00:01:36.480 --> 00:01:39.090
+to another region, that happens very fast.
+
+43
+00:01:39.090 --> 00:01:41.340
+You can combine this with Lifecycle Rules, for example,
+
+44
+00:01:41.340 --> 00:01:43.380
+so that's in the target bucket,
+
+45
+00:01:43.380 --> 00:01:44.400
+you have a Lifecycle Rule
+
+46
+00:01:44.400 --> 00:01:47.940
+to transition data into the S3 Glacier tier.
+
+47
+00:01:47.940 --> 00:01:48.960
+But as a default,
+
+48
+00:01:48.960 --> 00:01:51.450
+the S3 replication does not take into account tiers.
+
+49
+00:01:51.450 --> 00:01:54.360
+So you need to manage tiers and Lifecycle Rules
+
+50
+00:01:54.360 --> 00:01:56.520
+directly on the target buckets.
+
+51
+00:01:56.520 --> 00:01:58.470
+So this helps to reduce latency
+
+52
+00:01:58.470 --> 00:02:00.840
+when you want to access your data globally,
+
+53
+00:02:00.840 --> 00:02:02.550
+this helps with disaster recovery,
+
+54
+00:02:02.550 --> 00:02:04.530
+and this helps with security.
+
+55
+00:02:04.530 --> 00:02:06.450
+There's also another feature you need to know about
+
+56
+00:02:06.450 --> 00:02:10.020
+called the S3 Replication Time Control, S3 RTC,
+
+57
+00:02:10.020 --> 00:02:12.120
+which is a way to guarantee
+
+58
+00:02:12.120 --> 00:02:15.300
+that most of the objects that you upload to Amazon S3
+
+59
+00:02:15.300 --> 00:02:20.300
+will be replicated in seconds and 99.99% of those objects
+
+60
+00:02:20.820 --> 00:02:22.560
+within 15 minutes.
+
+61
+00:02:22.560 --> 00:02:26.520
+And in case one object is beyond the 15 minutes threshold,
+
+62
+00:02:26.520 --> 00:02:27.870
+then you will receive an alarm
+
+63
+00:02:27.870 --> 00:02:29.850
+thanks to CloudWatch Alarm and a metric.
+
+64
+00:02:29.850 --> 00:02:31.380
+So it's extremely helpful
+
+65
+00:02:31.380 --> 00:02:33.990
+when you have compliance or digital recovery needs
+
+66
+00:02:33.990 --> 00:02:36.300
+and you want everything to be replicated
+
+67
+00:02:36.300 --> 00:02:40.500
+at the maximum of 15 minutes between buckets.
+
+68
+00:02:40.500 --> 00:02:43.170
+Then we have S3 Event Notifications.
+
+69
+00:02:43.170 --> 00:02:45.450
+So it is for you to react to events happening
+
+70
+00:02:45.450 --> 00:02:46.590
+within your S3 buckets
+
+71
+00:02:46.590 --> 00:02:50.810
+such as S3:ObjectCreated, S3:ObjectRemoved,
+
+72
+00:02:50.810 --> 00:02:52.860
+S3:ObjectRestore, or S3:Replication.
+
+73
+00:02:52.860 --> 00:02:54.270
+You can filter by object name,
+
+74
+00:02:54.270 --> 00:02:57.270
+for example, you say only the JPEG files I want
+
+75
+00:02:57.270 --> 00:02:59.220
+and the use cases, for example, would be
+
+76
+00:02:59.220 --> 00:03:00.780
+to automatically generate thumbnails
+
+77
+00:03:00.780 --> 00:03:03.090
+of images uploaded to Amazon S3.
+
+78
+00:03:03.090 --> 00:03:06.030
+You can create as many S3 events as desired
+
+79
+00:03:06.030 --> 00:03:06.990
+and these notifications
+
+80
+00:03:06.990 --> 00:03:09.030
+are typically delivered within seconds,
+
+81
+00:03:09.030 --> 00:03:11.730
+but sometimes can take a minute or longer.
+
+82
+00:03:11.730 --> 00:03:13.680
+So the events happen to Amazon S3
+
+83
+00:03:13.680 --> 00:03:18.333
+and then you can trigger SNS, SQS, or a Lambda Function.
+
+84
+00:03:19.500 --> 00:03:21.090
+But there's also a second feature
+
+85
+00:03:21.090 --> 00:03:22.530
+with S3 Event Notifications
+
+86
+00:03:22.530 --> 00:03:23.940
+that it was going to be leveraging
+
+87
+00:03:23.940 --> 00:03:25.260
+Amazon EventBridge.
+
+88
+00:03:25.260 --> 00:03:28.200
+So the idea is that all your events in Amazon S3
+
+89
+00:03:28.200 --> 00:03:31.500
+are going to be shared with Amazon EventBridge
+
+90
+00:03:31.500 --> 00:03:33.270
+and this is a feature you can enable
+
+91
+00:03:33.270 --> 00:03:35.010
+and once they are in EventBridge,
+
+92
+00:03:35.010 --> 00:03:38.700
+then you can set up any kind of very complex rules
+
+93
+00:03:38.700 --> 00:03:39.930
+within EventBridge
+
+94
+00:03:39.930 --> 00:03:44.040
+to send to over 18 AWS service destinations.
+
+95
+00:03:44.040 --> 00:03:46.020
+So that means that thanks to EventBridge
+
+96
+00:03:46.020 --> 00:03:48.000
+we can really increase the power
+
+97
+00:03:48.000 --> 00:03:50.460
+of the S3 Event Notifications feature.
+
+98
+00:03:50.460 --> 00:03:51.780
+So thanks to EventBridge,
+
+99
+00:03:51.780 --> 00:03:55.320
+we can have advanced filtering options with JSON rules,
+
+100
+00:03:55.320 --> 00:03:58.770
+so before, for just the normal S3 Event Notifications,
+
+101
+00:03:58.770 --> 00:04:00.510
+you cannot filter by metadata,
+
+102
+00:04:00.510 --> 00:04:02.100
+object size, object name and so on,
+
+103
+00:04:02.100 --> 00:04:05.130
+but you can with EventBridge because all that information
+
+104
+00:04:05.130 --> 00:04:07.440
+is available within EventBridge.
+
+105
+00:04:07.440 --> 00:04:10.920
+You can also set up multiple destinations for one rule.
+
+106
+00:04:10.920 --> 00:04:13.470
+For example, one rule can send data
+
+107
+00:04:13.470 --> 00:04:16.260
+to Step Functions and trigger a workflow.
+
+108
+00:04:16.260 --> 00:04:18.420
+You can send data directly into Kinesis Streams
+
+109
+00:04:18.420 --> 00:04:20.250
+or Firehose and so on.
+
+110
+00:04:20.250 --> 00:04:22.500
+And because it is using Amazon EventBridge,
+
+111
+00:04:22.500 --> 00:04:26.070
+then you get more visibility into the archive feature,
+
+112
+00:04:26.070 --> 00:04:29.790
+you can replay events, and you get more reliable delivery.
+
+113
+00:04:29.790 --> 00:04:33.123
+So it's definitely an enhancement of S3 notifications.
+
+114
+00:04:34.710 --> 00:04:36.780
+Next we get the S3 performance.
+
+115
+00:04:36.780 --> 00:04:38.670
+So by default,
+
+116
+00:04:38.670 --> 00:04:41.790
+Amazon S3 will scale automatically to high request rate
+
+117
+00:04:41.790 --> 00:04:43.140
+and the latency will be between
+
+118
+00:04:43.140 --> 00:04:46.080
+100 and 200 milliseconds to get the first byte.
+
+119
+00:04:46.080 --> 00:04:48.390
+Your application can achieve at least
+
+120
+00:04:48.390 --> 00:04:51.750
+3,500 PUT/COPY/POST/DELETE per second
+
+121
+00:04:51.750 --> 00:04:55.110
+or 5,500 GET/HEAD requests per second
+
+122
+00:04:55.110 --> 00:04:56.940
+per prefix in a bucket.
+
+123
+00:04:56.940 --> 00:04:57.870
+And there's no limit
+
+124
+00:04:57.870 --> 00:05:00.090
+to how many prefixes you can have in a bucket.
+
+125
+00:05:00.090 --> 00:05:02.940
+But when you first need to define what is a prefix.
+
+126
+00:05:02.940 --> 00:05:04.830
+so I'm gonna give you an object path
+
+127
+00:05:04.830 --> 00:05:06.990
+and I'm gonna give you the prefix out of it.
+
+128
+00:05:06.990 --> 00:05:11.990
+So if your file is in bucket/folder1/sub1/file,
+
+129
+00:05:12.360 --> 00:05:17.360
+then your prefix in this example is /folder1/sub1/.
+
+130
+00:05:17.910 --> 00:05:21.600
+If you have a sub2 file in another directory
+
+131
+00:05:21.600 --> 00:05:25.320
+the prefix is going to be /folder1/sub2.
+
+132
+00:05:25.320 --> 00:05:28.920
+Finally, if your file is into the directory name number one,
+
+133
+00:05:28.920 --> 00:05:30.360
+then your prefix is one.
+
+134
+00:05:30.360 --> 00:05:32.760
+And if your file is in prefix number two,
+
+135
+00:05:32.760 --> 00:05:34.680
+then your prefix is two.
+
+136
+00:05:34.680 --> 00:05:36.870
+The idea is that for each of these four prefixes
+
+137
+00:05:36.870 --> 00:05:39.180
+that we have extracted out of the object path,
+
+138
+00:05:39.180 --> 00:05:42.630
+we're going to get 3,500 PUT/COPY/POST/DELETE per second
+
+139
+00:05:42.630 --> 00:05:45.390
+and 5,500 GET/HEAD requests per second.
+
+140
+00:05:45.390 --> 00:05:46.650
+So that means that
+
+141
+00:05:46.650 --> 00:05:49.170
+if you want to have a maximum amount of reads,
+
+142
+00:05:49.170 --> 00:05:51.210
+you can create different prefix for your file
+
+143
+00:05:51.210 --> 00:05:53.220
+and then you can scale this way.
+
+144
+00:05:53.220 --> 00:05:55.740
+So if you've spread the reads of that one file
+
+145
+00:05:55.740 --> 00:05:59.360
+across the four prefixes we have evenly, then we can achieve
+
+146
+00:05:59.360 --> 00:06:02.490
+22,000 requests per second for GET and HEAD.
+
+147
+00:06:02.490 --> 00:06:06.420
+And you can do the math for PUT/COPY/POST/DELETE, etc, etc.
+
+148
+00:06:06.420 --> 00:06:08.490
+So this is for the baseline performance.
+
+149
+00:06:08.490 --> 00:06:10.470
+Then we have other performance optimizations
+
+150
+00:06:10.470 --> 00:06:11.910
+we can get on S3.
+
+151
+00:06:11.910 --> 00:06:14.040
+The first one is for Multi-Part upload.
+
+152
+00:06:14.040 --> 00:06:17.130
+This is going to be recommended for files over 100 megabytes
+
+153
+00:06:17.130 --> 00:06:20.820
+and you must use it for files over five gigabytes.
+
+154
+00:06:20.820 --> 00:06:23.130
+The idea is that you paralyze the upload
+
+155
+00:06:23.130 --> 00:06:24.660
+to speed up the transfers
+
+156
+00:06:24.660 --> 00:06:27.390
+by separating a file into multiple parts,
+
+157
+00:06:27.390 --> 00:06:29.310
+hence the name Multi-Part.
+
+158
+00:06:29.310 --> 00:06:32.490
+So our big file has to be sent to Amazon S3.
+
+159
+00:06:32.490 --> 00:06:34.260
+We're going to divide it into parts,
+
+160
+00:06:34.260 --> 00:06:35.490
+they're gonna be smaller,
+
+161
+00:06:35.490 --> 00:06:38.070
+and all these parts are going to be uploaded in parallel
+
+162
+00:06:38.070 --> 00:06:39.840
+to maximize the bandwidth
+
+163
+00:06:39.840 --> 00:06:40.890
+and then also make sure
+
+164
+00:06:40.890 --> 00:06:44.040
+that in case one of these files cannot be uploaded,
+
+165
+00:06:44.040 --> 00:06:45.540
+we don't have to retry the entire thing,
+
+166
+00:06:45.540 --> 00:06:48.300
+we can just retry that one specific part.
+
+167
+00:06:48.300 --> 00:06:51.150
+Now once the entire Multi-Part upload is done,
+
+168
+00:06:51.150 --> 00:06:53.970
+Amazon S3 will be notified of it
+
+169
+00:06:53.970 --> 00:06:57.480
+and will reconstruct our bigger file into the bucket
+
+170
+00:06:57.480 --> 00:07:00.810
+thanks to all the Multi-Part uploads that have been done.
+
+171
+00:07:00.810 --> 00:07:03.510
+That's number one and that's for upload.
+
+172
+00:07:03.510 --> 00:07:05.430
+Another performance improvement we can get
+
+173
+00:07:05.430 --> 00:07:08.370
+is called S3 Transfer Acceleration.
+
+174
+00:07:08.370 --> 00:07:10.830
+In this case, we increase the transfer speed
+
+175
+00:07:10.830 --> 00:07:14.760
+by transferring a file first to an AWS edge location,
+
+176
+00:07:14.760 --> 00:07:16.200
+which will forward the data
+
+177
+00:07:16.200 --> 00:07:18.360
+to the S3 bucket in the target region,
+
+178
+00:07:18.360 --> 00:07:21.210
+all using the AWS internal network.
+
+179
+00:07:21.210 --> 00:07:24.150
+And this is compatible with Multi-Part upload,
+
+180
+00:07:24.150 --> 00:07:26.460
+so we can combine Multi-Part upload
+
+181
+00:07:26.460 --> 00:07:28.980
+and S3 Transfer Acceleration.
+
+182
+00:07:28.980 --> 00:07:31.350
+So the idea is that our file is in the United States
+
+183
+00:07:31.350 --> 00:07:34.080
+and we are uploading to a bucket in Australia.
+
+184
+00:07:34.080 --> 00:07:36.270
+Instead of going over the public internet,
+
+185
+00:07:36.270 --> 00:07:37.860
+we just go over the public internet
+
+186
+00:07:37.860 --> 00:07:40.380
+to an edge location in the United States
+
+187
+00:07:40.380 --> 00:07:42.810
+and then Amazon from the edge location
+
+188
+00:07:42.810 --> 00:07:45.930
+will go over the private AWS network into Australia
+
+189
+00:07:45.930 --> 00:07:48.630
+and that is supposedly a lot faster
+
+190
+00:07:48.630 --> 00:07:50.250
+than using the public internet
+
+191
+00:07:50.250 --> 00:07:52.530
+and possibly a lot cheaper.
+
+192
+00:07:52.530 --> 00:07:54.960
+So that is performance improvements for uploads.
+
+193
+00:07:54.960 --> 00:07:56.730
+But what about downloads?
+
+194
+00:07:56.730 --> 00:07:59.910
+For this, we can use S3 Byte-Range Fetches.
+
+195
+00:07:59.910 --> 00:08:02.220
+The idea is that we want to receive a big file
+
+196
+00:08:02.220 --> 00:08:04.170
+and we have to separate it into parts
+
+197
+00:08:04.170 --> 00:08:06.270
+and so it's ranges of bytes.
+
+198
+00:08:06.270 --> 00:08:08.010
+And so we're going to paralyze the GETs
+
+199
+00:08:08.010 --> 00:08:11.790
+by requesting specific byte ranges in parallel.
+
+200
+00:08:11.790 --> 00:08:14.280
+As well in case one of these GETs fails,
+
+201
+00:08:14.280 --> 00:08:16.350
+we get better resilience in case of failure
+
+202
+00:08:16.350 --> 00:08:19.650
+because we only need to request the one part, the one range
+
+203
+00:08:19.650 --> 00:08:20.550
+that has failed.
+
+204
+00:08:20.550 --> 00:08:23.130
+So they can be used to speed up downloads.
+
+205
+00:08:23.130 --> 00:08:25.380
+So second example, our file is in S3
+
+206
+00:08:25.380 --> 00:08:27.450
+and we're going to have the first part, the second part,
+
+207
+00:08:27.450 --> 00:08:30.360
+and the Nth part all requested in parallel.
+
+208
+00:08:30.360 --> 00:08:31.470
+And in case one of these fail,
+
+209
+00:08:31.470 --> 00:08:34.170
+we can just re-request that one part as we need.
+
+210
+00:08:34.170 --> 00:08:36.390
+So this is going to speed up definitely
+
+211
+00:08:36.390 --> 00:08:37.980
+your GET performance because
+
+212
+00:08:37.980 --> 00:08:41.250
+we are gonna have a much higher bandwidth utilization.
+
+213
+00:08:41.250 --> 00:08:42.420
+But this can also be used
+
+214
+00:08:42.420 --> 00:08:44.730
+if you want to retrieve only partial data.
+
+215
+00:08:44.730 --> 00:08:47.160
+For example, if you want to retrieve the head of a file
+
+216
+00:08:47.160 --> 00:08:49.560
+and by head of a file, I mean the first few bytes.
+
+217
+00:08:49.560 --> 00:08:51.300
+So in case you have a file in S3
+
+218
+00:08:51.300 --> 00:08:52.830
+and you want to retrieve the header,
+
+219
+00:08:52.830 --> 00:08:54.720
+you're going to do a Byte-range request for the header
+
+220
+00:08:54.720 --> 00:08:56.850
+for the whatever bytes you need
+
+221
+00:08:56.850 --> 00:08:58.890
+and this will give you the part of the file you need.
+
+222
+00:08:58.890 --> 00:09:01.860
+So this saves you a lot of cost, bandwidth, and so on,
+
+223
+00:09:01.860 --> 00:09:03.570
+and you can just look at what you need
+
+224
+00:09:03.570 --> 00:09:06.420
+to retrieve that one specific header.
+
+225
+00:09:06.420 --> 00:09:08.400
+Next we learn about a feature to
+
+226
+00:09:08.400 --> 00:09:11.100
+remove incomplete parts for Multi-Part Upload.
+
+227
+00:09:11.100 --> 00:09:12.570
+So when we have a big file,
+
+228
+00:09:12.570 --> 00:09:15.420
+we know we can use the Multi-Part Upload feature
+
+229
+00:09:15.420 --> 00:09:18.840
+to upload them part by part into an S3 buckets.
+
+230
+00:09:18.840 --> 00:09:21.360
+So what will happen is that there will be parallel uploads
+
+231
+00:09:21.360 --> 00:09:23.010
+into the S3 buckets,
+
+232
+00:09:23.010 --> 00:09:24.660
+but it is possible for you to
+
+233
+00:09:24.660 --> 00:09:26.880
+stop the parallel uploads halfway
+
+234
+00:09:26.880 --> 00:09:28.890
+and therefore you will have on your S3 buckets
+
+235
+00:09:28.890 --> 00:09:31.020
+some parts that are going to be missing
+
+236
+00:09:31.020 --> 00:09:33.660
+and some parts that will just sit there and do nothing.
+
+237
+00:09:33.660 --> 00:09:36.870
+So it's possible for you to set up an S3 Lifecycle Policy
+
+238
+00:09:36.870 --> 00:09:41.610
+to say that if there is an abortion of the
+
+239
+00:09:41.610 --> 00:09:44.130
+parallel upload and the parts
+
+240
+00:09:44.130 --> 00:09:46.560
+haven't been touched for say seven days,
+
+241
+00:09:46.560 --> 00:09:48.900
+then abort the Multi-Part Upload
+
+242
+00:09:48.900 --> 00:09:51.720
+and clean, delete the all files.
+
+243
+00:09:51.720 --> 00:09:53.250
+So then it will be deleted.
+
+244
+00:09:53.250 --> 00:09:56.595
+And for this you can also initiate it with, for example,
+
+245
+00:09:56.595 --> 00:10:01.530
+an CLI API call to list and complete Multi-Part Uploads.
+
+246
+00:10:01.530 --> 00:10:02.610
+So that's it for this lecture,
+
+247
+00:10:02.610 --> 00:10:05.560
+I hope you liked it and I will see you in the next lecture.
+

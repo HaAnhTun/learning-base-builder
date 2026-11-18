@@ -1,0 +1,434 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.719
+In this lesson, we're looking at a problem that quietly degrades agent performance,
+
+2
+00:00:04.719 --> 00:00:09.520
+tool outputs that return far more data than the agent actually needs.
+
+3
+00:00:09.520 --> 00:00:12.600
+We'll cover why this bloat hurts accuracy,
+
+4
+00:00:12.600 --> 00:00:16.420
+how the costs compound across multiple call workflows,
+
+5
+00:00:16.420 --> 00:00:19.040
+and the architecture mistake that leaves a bloat in
+
+6
+00:00:19.040 --> 00:00:23.159
+place even when teams think they've fixed it. Let's get into it.
+
+7
+00:00:23.159 --> 00:00:25.479
+Your agent asked a weather service for
+
+8
+00:00:25.479 --> 00:00:29.799
+the temperature and got back everything the service knows about the atmosphere.
+
+9
+00:00:29.799 --> 00:00:33.279
+That gap is what tool output trimming closes.
+
+10
+00:00:33.279 --> 00:00:38.599
+Trimming means reducing what a tool returns to only the fields the calling agent
+
+11
+00:00:38.599 --> 00:00:43.180
+actually needs and you apply it at the tool wrapper, not the display layer.
+
+12
+00:00:43.180 --> 00:00:46.299
+What it buys you is a better signal-to-noise ratio,
+
+13
+00:00:46.299 --> 00:00:48.720
+meaning more of the context window holds
+
+14
+00:00:48.720 --> 00:00:52.439
+genuinely relevant content and less of it holds filler.
+
+15
+00:00:52.439 --> 00:00:55.279
+What it prevents is context window pressure,
+
+16
+00:00:55.279 --> 00:00:57.759
+the state where accumulated tokens crowd
+
+17
+00:00:57.759 --> 00:01:02.520
+useful content out of the regions where the model pays closest attention.
+
+18
+00:01:02.520 --> 00:01:07.160
+Bloat lowers the ratio and raises the pressure at the same time.
+
+19
+00:01:07.160 --> 00:01:12.160
+Picture a weather API that returns 80 fields, temperature, humidity,
+
+20
+00:01:12.160 --> 00:01:15.839
+barometric pressure, pollen count, UV index,
+
+21
+00:01:15.839 --> 00:01:19.400
+moon phase, historic averages, and dozens more.
+
+22
+00:01:19.400 --> 00:01:21.239
+Your agent needs three of them,
+
+23
+00:01:21.239 --> 00:01:22.519
+but unless you trim,
+
+24
+00:01:22.519 --> 00:01:24.760
+all 80 land in context.
+
+25
+00:01:24.760 --> 00:01:27.540
+Now multiply that across an order management system,
+
+26
+00:01:27.540 --> 00:01:29.059
+a user profile lookup,
+
+27
+00:01:29.059 --> 00:01:32.339
+and a permissions check all in the same workflow.
+
+28
+00:01:32.339 --> 00:01:36.459
+Each call deposits its full payload into the shared context.
+
+29
+00:01:36.459 --> 00:01:39.839
+The agent's attention has to navigate all of it and most of
+
+30
+00:01:39.839 --> 00:01:43.580
+it is completely irrelevant to what the agent is trying to accomplish.
+
+31
+00:01:43.580 --> 00:01:46.440
+That gap between what's returned and what's needed
+
+32
+00:01:46.440 --> 00:01:49.739
+is exactly the definition of the bloat problem.
+
+33
+00:01:49.739 --> 00:01:52.580
+Here's the clearest way to see the difference.
+
+34
+00:01:52.580 --> 00:01:54.099
+With an untrimmed output,
+
+35
+00:01:54.099 --> 00:01:56.699
+all 80 fields enter the context window.
+
+36
+00:01:56.739 --> 00:01:59.500
+The model reasons over timestamps, metadata,
+
+37
+00:01:59.500 --> 00:02:01.860
+pagination cursors, deprecation flags,
+
+38
+00:02:01.860 --> 00:02:04.180
+and audit stamps it doesn't need.
+
+39
+00:02:04.180 --> 00:02:05.860
+Signal gets diluted.
+
+40
+00:02:05.860 --> 00:02:08.779
+Even when the model's logic is completely sound,
+
+41
+00:02:08.779 --> 00:02:11.220
+it can land on a wrong answer because it's
+
+42
+00:02:11.220 --> 00:02:14.020
+attending to noise instead of the relevant fields.
+
+43
+00:02:14.020 --> 00:02:15.300
+With a trimmed output,
+
+44
+00:02:15.300 --> 00:02:18.220
+only the three needed fields enter context.
+
+45
+00:02:18.220 --> 00:02:22.619
+The model focuses entirely on what's relevant to the current task.
+
+46
+00:02:22.619 --> 00:02:25.500
+Reasoning quality improves and the token count for
+
+47
+00:02:25.500 --> 00:02:27.820
+the next request drops immediately.
+
+48
+00:02:27.820 --> 00:02:31.899
+Same data source, very different outcomes for the agent.
+
+49
+00:02:31.899 --> 00:02:36.979
+The bloat problem gets significantly worse when you chain tool calls together,
+
+50
+00:02:36.979 --> 00:02:40.300
+which is exactly what most agentic workflows do.
+
+51
+00:02:40.300 --> 00:02:45.259
+Each call deposits its unreduced payload into the shared context window.
+
+52
+00:02:45.259 --> 00:02:46.779
+After five calls,
+
+53
+00:02:46.779 --> 00:02:51.899
+the context holds five separate layers of noise stacked on top of each other.
+
+54
+00:02:51.899 --> 00:02:53.960
+When the agent reaches step six,
+
+55
+00:02:53.960 --> 00:02:59.039
+it has to reason through all that accumulated clutter from every prior step.
+
+56
+00:02:59.039 --> 00:03:02.000
+The relevant signal at step one is buried under
+
+57
+00:03:02.000 --> 00:03:05.839
+four more noisy payloads by the time you need it again.
+
+58
+00:03:05.839 --> 00:03:09.360
+A single untrimmed call is an annoyance you can work around.
+
+59
+00:03:09.360 --> 00:03:12.720
+A chain of untrimmed calls is a reliability failure
+
+60
+00:03:12.720 --> 00:03:17.039
+that compounds with every additional step you add to the workflow.
+
+61
+00:03:17.039 --> 00:03:20.119
+There are two cost dimensions to bloat that teams
+
+62
+00:03:20.119 --> 00:03:23.320
+often overlook until they're already paying for them.
+
+63
+00:03:23.320 --> 00:03:25.279
+First is token cost.
+
+64
+00:03:25.279 --> 00:03:30.679
+Every extra field in context is a token you'll pay for on the next request.
+
+65
+00:03:30.679 --> 00:03:36.360
+If your tool output carries 500 irrelevant tokens and you make 100 calls per session,
+
+66
+00:03:36.360 --> 00:03:39.960
+that's 50,000 tokens of pure waste per session.
+
+67
+00:03:39.960 --> 00:03:44.880
+Bloat you accept today becomes a recurring charge on every downstream call.
+
+68
+00:03:44.880 --> 00:03:46.440
+Second is latency.
+
+69
+00:03:46.440 --> 00:03:50.839
+Larger context takes more time to process and generate from.
+
+70
+00:03:50.839 --> 00:03:54.160
+Even when the extra tokens don't change the final answer,
+
+71
+00:03:54.160 --> 00:03:56.440
+they slow down every response.
+
+72
+00:03:56.440 --> 00:04:00.080
+Trimming is one of the few optimizations that improves cost,
+
+73
+00:04:00.080 --> 00:04:03.039
+speed, and accuracy simultaneously.
+
+74
+00:04:03.039 --> 00:04:07.800
+Research on transformer attention has shown that models attend most strongly to
+
+75
+00:04:07.800 --> 00:04:12.080
+content positioned near the start and end of the context window.
+
+76
+00:04:12.080 --> 00:04:16.519
+Content buried in the middle receives measurably weaker attention.
+
+77
+00:04:16.519 --> 00:04:19.920
+This phenomenon is called the lost in the middle effect,
+
+78
+00:04:20.079 --> 00:04:24.160
+and it has direct practical consequences for agent design.
+
+79
+00:04:24.160 --> 00:04:30.760
+When verbose tool outputs push key facts toward the center of a long context, accuracy drops.
+
+80
+00:04:30.760 --> 00:04:35.079
+It's not because the model reasoned badly or has a logic problem.
+
+81
+00:04:35.079 --> 00:04:38.760
+It's because the critical signal ended up in a low attention zone,
+
+82
+00:04:38.760 --> 00:04:41.839
+where the model simply doesn't focus as strongly.
+
+83
+00:04:41.839 --> 00:04:45.640
+Trimming keeps your relevant signal in high attention positions
+
+84
+00:04:45.640 --> 00:04:49.079
+where it will actually be weighted appropriately by the model.
+
+85
+00:04:50.279 --> 00:04:54.399
+One of the most common mistakes I see in production agent architectures
+
+86
+00:04:54.399 --> 00:04:58.160
+is trimming at the display layer instead of the model layer.
+
+87
+00:04:58.160 --> 00:05:02.440
+Teams build a clean dashboard that shows only the three relevant fields
+
+88
+00:05:02.440 --> 00:05:04.000
+to human reviewers.
+
+89
+00:05:04.000 --> 00:05:07.839
+The interface looks polished and the team feels like they've solved the bloat
+
+90
+00:05:07.839 --> 00:05:12.359
+problem, but the model is still receiving the full 80 field payload
+
+91
+00:05:12.359 --> 00:05:16.000
+in its context window every single call.
+
+92
+00:05:16.000 --> 00:05:18.959
+The display trim hides the noise from humans,
+
+93
+00:05:18.959 --> 00:05:21.000
+but it does nothing for the model.
+
+94
+00:05:21.000 --> 00:05:23.959
+The agent is still reasoning over all that filler.
+
+95
+00:05:23.959 --> 00:05:28.040
+The fix belongs at the tool wrapper, where field level filtering
+
+96
+00:05:28.040 --> 00:05:32.799
+declares a fixed allow list of fields to keep and drops everything else
+
+97
+00:05:32.799 --> 00:05:35.839
+before the output ever enters context.
+
+98
+00:05:35.839 --> 00:05:38.160
+Downstream display can be handled separately.
+
+99
+00:05:38.160 --> 00:05:41.799
+Model side trim comes first.
+
+100
+00:05:41.799 --> 00:05:44.519
+Verbose tool outputs hurt agent performance
+
+101
+00:05:44.519 --> 00:05:49.239
+in ways that are easy to miss until the workflow is already in production.
+
+102
+00:05:49.239 --> 00:05:52.119
+This bloat compounds across calls.
+
+103
+00:05:52.119 --> 00:05:56.600
+The token and latency costs accumulate on every downstream request,
+
+104
+00:05:56.600 --> 00:06:00.440
+and accuracy erodes not because the model reasons badly,
+
+105
+00:06:00.440 --> 00:06:05.279
+but because the signal ended up buried where the model reads last.
+
+106
+00:06:05.279 --> 00:06:09.760
+Trim at the wrapper before the output ever reaches the model.
+
+107
+00:06:09.760 --> 00:06:11.399
+That closes out this lesson.
+
+108
+00:06:11.399 --> 00:06:13.799
+I'll see you in the next one.
+

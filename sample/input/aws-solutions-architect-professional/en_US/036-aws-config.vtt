@@ -1,0 +1,434 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.700
+<v ->And next we talk about AWS config.</v>
+
+2
+00:00:02.700 --> 00:00:04.560
+So it's a service to help you audit
+
+3
+00:00:04.560 --> 00:00:08.340
+and record compliance of your AWS resources.
+
+4
+00:00:08.340 --> 00:00:11.310
+Why? Because you can record the configurations
+
+5
+00:00:11.310 --> 00:00:12.870
+and their changes to configuration
+
+6
+00:00:12.870 --> 00:00:15.300
+of your resources over time.
+
+7
+00:00:15.300 --> 00:00:17.310
+Now, when you define rules to make sure
+
+8
+00:00:17.310 --> 00:00:19.470
+that these resources configurations
+
+9
+00:00:19.470 --> 00:00:21.630
+are compliant or not over time,
+
+10
+00:00:21.630 --> 00:00:25.140
+these rules are just here to evaluate compliance.
+
+11
+00:00:25.140 --> 00:00:27.150
+They're not here to prevent actions
+
+12
+00:00:27.150 --> 00:00:29.760
+from happening on your resources.
+
+13
+00:00:29.760 --> 00:00:32.400
+So for example, say you have a compliance rule
+
+14
+00:00:32.400 --> 00:00:35.640
+to look at whether or not SSH is opened
+
+15
+00:00:35.640 --> 00:00:37.200
+on any of your security group
+
+16
+00:00:37.200 --> 00:00:39.510
+because you are not using SSH in your company,
+
+17
+00:00:39.510 --> 00:00:42.570
+maybe using something like SSM systems manager.
+
+18
+00:00:42.570 --> 00:00:45.390
+So in this case, if someone creates a change
+
+19
+00:00:45.390 --> 00:00:48.750
+in your security group rule and allows SSH
+
+20
+00:00:48.750 --> 00:00:51.300
+the config rule does not prevent this from happening.
+
+21
+00:00:51.300 --> 00:00:52.290
+There is no deny rule.
+
+22
+00:00:52.290 --> 00:00:54.420
+This is a very good use case instead
+
+23
+00:00:54.420 --> 00:00:56.130
+for something like an SCP.
+
+24
+00:00:56.130 --> 00:00:58.890
+Instead, what the config rule will be doing
+
+25
+00:00:58.890 --> 00:01:01.080
+will be to look at the compliance of your security group.
+
+26
+00:01:01.080 --> 00:01:02.550
+It will give you a notification
+
+27
+00:01:02.550 --> 00:01:04.740
+to your admins through an SNS topic
+
+28
+00:01:04.740 --> 00:01:07.740
+that, yes one of your security group has changed
+
+29
+00:01:07.740 --> 00:01:09.210
+and it's not compliant anymore
+
+30
+00:01:09.210 --> 00:01:11.160
+and you have to act upon it.
+
+31
+00:01:11.160 --> 00:01:13.170
+Now, there are some automations you can build,
+
+32
+00:01:13.170 --> 00:01:15.300
+but remember, config rules are not here
+
+33
+00:01:15.300 --> 00:01:16.800
+to prevent actions from happening.
+
+34
+00:01:16.800 --> 00:01:18.330
+They're here to give you the compliance
+
+35
+00:01:18.330 --> 00:01:20.280
+of your resources over time.
+
+36
+00:01:20.280 --> 00:01:23.322
+Now, what types of questions can be solved by AWS config?
+
+37
+00:01:23.322 --> 00:01:26.224
+For example, is there unrestricted SSH access
+
+38
+00:01:26.224 --> 00:01:27.811
+to my security group?
+
+39
+00:01:27.811 --> 00:01:32.280
+Or do my buckets have any public access in S3?
+
+40
+00:01:32.280 --> 00:01:35.970
+Or how has my ALB configuration changed over time?
+
+41
+00:01:35.970 --> 00:01:37.140
+Maybe someone did a mistake
+
+42
+00:01:37.140 --> 00:01:39.330
+and I want to backtrack that change.
+
+43
+00:01:39.330 --> 00:01:41.970
+You can receive alerts on SNS topics
+
+44
+00:01:41.970 --> 00:01:43.560
+for any kind of changes,
+
+45
+00:01:43.560 --> 00:01:46.470
+and AOS config is a per region service,
+
+46
+00:01:46.470 --> 00:01:47.430
+so you need to enable it
+
+47
+00:01:47.430 --> 00:01:49.650
+in every region where you need it to be.
+
+48
+00:01:49.650 --> 00:01:52.290
+Also, there is a possibility to aggregate all
+
+49
+00:01:52.290 --> 00:01:54.960
+the AWS config data across accounts and regions
+
+50
+00:01:54.960 --> 00:01:56.550
+into one central account,
+
+51
+00:01:56.550 --> 00:01:59.370
+which is a good use case for a security account
+
+52
+00:01:59.370 --> 00:02:02.105
+where you have login, config and so on.
+
+53
+00:02:02.105 --> 00:02:04.620
+Now, config resource, you can view the compliance
+
+54
+00:02:04.620 --> 00:02:05.490
+of a resource over time.
+
+55
+00:02:05.490 --> 00:02:07.920
+So if some rules apply to that resource
+
+56
+00:02:07.920 --> 00:02:10.620
+then you can see it's red when it's not compliant.
+
+57
+00:02:10.620 --> 00:02:11.920
+And then as soon as you apply a rule
+
+58
+00:02:11.920 --> 00:02:14.340
+it becomes green and becomes compliant.
+
+59
+00:02:14.340 --> 00:02:16.740
+You can view the resource configuration over time
+
+60
+00:02:16.740 --> 00:02:18.660
+so you can see when the changes happen
+
+61
+00:02:18.660 --> 00:02:20.460
+and what changes happen.
+
+62
+00:02:20.460 --> 00:02:24.090
+And finally, in case you have collateral API calls enabled,
+
+63
+00:02:24.090 --> 00:02:26.550
+you can view who made these changes,
+
+64
+00:02:26.550 --> 00:02:29.010
+when the changes happen directly from AWS config,
+
+65
+00:02:29.010 --> 00:02:30.840
+which is very handy.
+
+66
+00:02:30.840 --> 00:02:33.390
+So a bit more details on config rules themselves.
+
+67
+00:02:33.390 --> 00:02:36.660
+So we can first use AWS managed config rules
+
+68
+00:02:36.660 --> 00:02:39.090
+Over 75 managed rules we can use.
+
+69
+00:02:39.090 --> 00:02:40.920
+So it gives us a lot to play with,
+
+70
+00:02:40.920 --> 00:02:42.420
+but we can also if you wanted to,
+
+71
+00:02:42.420 --> 00:02:44.940
+create our own custom configuration rules
+
+72
+00:02:44.940 --> 00:02:46.650
+in this way we would need to create
+
+73
+00:02:46.650 --> 00:02:50.310
+a Lambda function to perform it and link it with config.
+
+74
+00:02:50.310 --> 00:02:52.620
+So for example, we can create a Lambda function
+
+75
+00:02:52.620 --> 00:02:56.370
+that checks if EBS disc is of type gp2
+
+76
+00:02:56.370 --> 00:02:59.430
+or if any two instance is of type t2.micro.
+
+77
+00:02:59.430 --> 00:03:00.263
+So this could be helpful.
+
+78
+00:03:00.263 --> 00:03:02.370
+For example, if you have a development environment
+
+79
+00:03:02.370 --> 00:03:04.290
+and you wanted to limit your cost.
+
+80
+00:03:04.290 --> 00:03:05.880
+So you would create a Lambda function
+
+81
+00:03:05.880 --> 00:03:09.330
+and then create the custom config rule associated with it.
+
+82
+00:03:09.330 --> 00:03:11.520
+Then you can evaluate or trigger the rule
+
+83
+00:03:11.520 --> 00:03:13.920
+for every config change in AWS.
+
+84
+00:03:13.920 --> 00:03:17.137
+For example, any time an EBS disc is created
+
+85
+00:03:17.137 --> 00:03:18.810
+then do this rule.
+
+86
+00:03:18.810 --> 00:03:22.380
+Or if you wanted to just at a regular time interval.
+
+87
+00:03:22.380 --> 00:03:26.040
+So for example, every one day, scan all my EBS discs
+
+88
+00:03:26.040 --> 00:03:27.930
+and make sure that they are compliant.
+
+89
+00:03:27.930 --> 00:03:29.310
+It's up to you.
+
+90
+00:03:29.310 --> 00:03:31.530
+You can also trigger Amazon EventBridge
+
+91
+00:03:31.530 --> 00:03:33.524
+in case a rule is noncompliant.
+
+92
+00:03:33.524 --> 00:03:34.988
+So thanks to EventBridge,
+
+93
+00:03:34.988 --> 00:03:38.363
+you can catch any noncompliance and you can trigger any kind
+
+94
+00:03:38.363 --> 00:03:41.910
+of destination that is a real destination of EventBridge
+
+95
+00:03:41.910 --> 00:03:45.060
+which allows you a lot of different integrations.
+
+96
+00:03:45.060 --> 00:03:47.550
+But config rules also has a deeper integration
+
+97
+00:03:47.550 --> 00:03:51.921
+with SSM automations, such as if a rule is not compliant.
+
+98
+00:03:51.921 --> 00:03:53.820
+If a resource is not compliant,
+
+99
+00:03:53.820 --> 00:03:56.070
+then you can trigger an auto remediation
+
+100
+00:03:56.070 --> 00:03:58.650
+by triggering an SSM automation.
+
+101
+00:03:58.650 --> 00:04:01.440
+So with SSM automation, you can do a bit more
+
+102
+00:04:01.440 --> 00:04:03.240
+than what you could do with the Lambda function
+
+103
+00:04:03.240 --> 00:04:06.720
+for example, you can change right away security group rules
+
+104
+00:04:06.720 --> 00:04:10.890
+or you can stop instances with non-approved tags and so on.
+
+105
+00:04:10.890 --> 00:04:13.170
+So the actions can be directly written
+
+106
+00:04:13.170 --> 00:04:16.290
+in an automation document in SSM.
+
+107
+00:04:16.290 --> 00:04:19.020
+Okay, so that's it for AWS config.
+
+108
+00:04:19.020 --> 00:04:22.020
+I hope you liked it, and I will see you in the next lecture.
+

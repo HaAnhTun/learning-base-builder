@@ -1,0 +1,462 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.193
+Let's spend a few minutes going over how to design slash commands that actually work well in
+
+2
+00:00:05.193 --> 00:00:06.943
+practice, not just technically.
+
+3
+00:00:07.000 --> 00:00:13.000
+We'll cover the core design principle of narrow scope, how to write an effective command prompt,
+
+4
+00:00:13.000 --> 00:00:17.000
+when to use freeform arguments versus a structured template,
+
+5
+00:00:17.000 --> 00:00:23.000
+and how teams and enterprises distribute commands so everyone has access.
+
+6
+00:00:23.000 --> 00:00:27.000
+Every command you build forces the same set of decisions,
+
+7
+00:00:27.000 --> 00:00:31.000
+how much it should do, what to call it, and how it reaches your teammates.
+
+8
+00:00:31.000 --> 00:00:35.000
+Narrow scope command means a command designed to do exactly one thing,
+
+9
+00:00:35.000 --> 00:00:39.000
+the single responsibility principle applied to slash commands.
+
+10
+00:00:39.000 --> 00:00:44.000
+Verb-noun convention is the naming pattern you'll see in the best command libraries,
+
+11
+00:00:44.000 --> 00:00:48.000
+slash review-pr, slash run-tests, slash explain-file.
+
+12
+00:00:48.000 --> 00:00:52.000
+The verb states the action and the noun states the target.
+
+13
+00:00:52.000 --> 00:00:58.000
+Someone new to the team can read the keyword and know what the command does before they ever open the file.
+
+14
+00:00:58.000 --> 00:01:02.000
+Managed settings is the organization-enforced tier you already met,
+
+15
+00:01:02.000 --> 00:01:06.000
+the one with the highest precedence that nobody overrides locally.
+
+16
+00:01:06.000 --> 00:01:13.000
+It carries commands too, so admins push them to every user in an organization automatically.
+
+17
+00:01:13.000 --> 00:01:18.000
+Each of these connects to a concrete decision you'll make when building a command library.
+
+18
+00:01:18.000 --> 00:01:22.000
+The number one design rule for slash commands is narrow scope.
+
+19
+00:01:22.000 --> 00:01:29.000
+A command that does one thing is predictable, easy to maintain, and composes well with other commands.
+
+20
+00:01:29.000 --> 00:01:35.000
+A command that does many things, say, it reviews the pull request, runs the test suite,
+
+21
+00:01:35.000 --> 00:01:41.000
+and suggests a deployment strategy all in one go is a problem waiting to happen.
+
+22
+00:01:41.000 --> 00:01:44.000
+The instruction template becomes a multi-paragraph tangle.
+
+23
+00:01:44.000 --> 00:01:48.000
+Claude has conflicting signals about what to prioritize.
+
+24
+00:01:48.000 --> 00:01:51.000
+Users don't know what output to expect.
+
+25
+00:01:51.000 --> 00:01:56.000
+And when something goes wrong, it's hard to tell which part of the template caused it.
+
+26
+00:01:56.000 --> 00:02:01.000
+Build small, focused commands. Compose them when you need to cover more ground.
+
+27
+00:02:01.000 --> 00:02:04.000
+Every command file is a system prompt.
+
+28
+00:02:04.000 --> 00:02:09.000
+Four elements make a system prompt effective when it's used as a reusable command.
+
+29
+00:02:09.000 --> 00:02:13.000
+First, role. Tell Claude what perspective it's operating from.
+
+30
+00:02:13.000 --> 00:02:16.000
+You are a senior engineer reviewing for security issues.
+
+31
+00:02:16.000 --> 00:02:23.000
+Second, task. Describe exactly what to do. Review the diff passed as args.
+
+32
+00:02:23.000 --> 00:02:28.000
+Third, output format. Specify how the response should be structured.
+
+33
+00:02:28.000 --> 00:02:34.000
+Return findings as a bulleted list, grouped by severity. Critical, high, low.
+
+34
+00:02:34.000 --> 00:02:40.000
+Fourth, constraints. What to exclude, what tone to use. Any scope limits.
+
+35
+00:02:40.000 --> 00:02:45.000
+Missing any of these leads to output that varies unpredictably across runs,
+
+36
+00:02:45.000 --> 00:02:49.000
+which defeats the entire point of having a reusable command.
+
+37
+00:02:49.000 --> 00:02:53.000
+The choice between freeform args and a structured template
+
+38
+00:02:53.000 --> 00:02:56.000
+comes down to how much shape the input needs.
+
+39
+00:02:56.000 --> 00:03:00.000
+Freeform works perfectly when a single piece of text is all you need.
+
+40
+00:03:00.000 --> 00:03:05.000
+Slash explainfileapp.py passes one file name.
+
+41
+00:03:05.000 --> 00:03:08.000
+Clean, low friction, no setup.
+
+42
+00:03:08.000 --> 00:03:12.000
+A structured template is better when input has multiple fields,
+
+43
+00:03:12.000 --> 00:03:15.000
+or when getting the shape wrong would cause errors.
+
+44
+00:03:15.000 --> 00:03:20.000
+In that case, write the template to explicitly prompt for each piece.
+
+45
+00:03:20.000 --> 00:03:25.000
+Provide your PR number, reviewer role, and primary focus area.
+
+46
+00:03:25.000 --> 00:03:28.000
+Users follow the template rather than guessing.
+
+47
+00:03:28.000 --> 00:03:32.000
+The overhead of structure pays off when the command is complex enough
+
+48
+00:03:32.000 --> 00:03:37.000
+that incorrect input would produce meaningless or misleading output.
+
+49
+00:03:37.000 --> 00:03:39.000
+Naming conventions matter more than they seem.
+
+50
+00:03:39.000 --> 00:03:43.000
+The verb-noun pattern, slash review-pr, slash run-tests,
+
+51
+00:03:43.000 --> 00:03:47.000
+slash explainfile, slash generate-changelog,
+
+52
+00:03:47.000 --> 00:03:50.000
+is the standard because it's self-documenting.
+
+53
+00:03:50.000 --> 00:03:54.000
+Anyone reading the command list can infer what each command does
+
+54
+00:03:54.000 --> 00:03:56.000
+without opening a single file.
+
+55
+00:03:56.000 --> 00:04:01.000
+Contrast that with slash-pr, slash-code, or something worse like slash-do-it.
+
+56
+00:04:01.000 --> 00:04:03.000
+Those names tell you nothing.
+
+57
+00:04:03.000 --> 00:04:06.000
+You have to read the file to understand what the command does,
+
+58
+00:04:06.000 --> 00:04:09.000
+and even then, you might not be sure.
+
+59
+00:04:09.000 --> 00:04:12.000
+A consistent naming convention across a team's command library
+
+60
+00:04:12.000 --> 00:04:14.000
+creates a shared vocabulary.
+
+61
+00:04:14.000 --> 00:04:17.000
+New teammates can guess the right keyword
+
+62
+00:04:17.000 --> 00:04:19.000
+before they've even read the documentation,
+
+63
+00:04:19.000 --> 00:04:22.000
+and that's exactly the outcome you want.
+
+64
+00:04:22.000 --> 00:04:27.000
+Team distribution for project-scoped commands is essentially free.
+
+65
+00:04:27.000 --> 00:04:31.000
+You commit .clod slash commands to version control as part of the project,
+
+66
+00:04:31.000 --> 00:04:35.000
+and from that point forward, every developer who clones or pulls the repo
+
+67
+00:04:35.000 --> 00:04:37.000
+has the full command library.
+
+68
+00:04:37.000 --> 00:04:39.000
+Updates work the same way.
+
+69
+00:04:39.000 --> 00:04:41.000
+Improve a command, commit,
+
+70
+00:04:41.000 --> 00:04:44.000
+and the update propagates via normal pull and merge.
+
+71
+00:04:44.000 --> 00:04:49.000
+There's no separate sharing mechanism, no configuration management layer,
+
+72
+00:04:49.000 --> 00:04:52.000
+no documentation to update about where the files live.
+
+73
+00:04:52.000 --> 00:04:55.000
+The commands travel with the codebase.
+
+74
+00:04:55.000 --> 00:04:59.000
+This is one of the most underappreciated properties of the project-level scope.
+
+75
+00:04:59.000 --> 00:05:01.000
+The distribution channel already exists.
+
+76
+00:05:01.000 --> 00:05:03.000
+You're just using it.
+
+77
+00:05:03.000 --> 00:05:06.000
+For organizations running clod code at scale,
+
+78
+00:05:06.000 --> 00:05:10.000
+managed settings provide a centralized distribution mechanism.
+
+79
+00:05:10.000 --> 00:05:13.000
+Administrators configure commands at the organization level,
+
+80
+00:05:13.000 --> 00:05:18.000
+and those commands are pushed automatically to every user in the organization.
+
+81
+00:05:18.000 --> 00:05:20.000
+Users don't need to do anything.
+
+82
+00:05:20.000 --> 00:05:23.000
+They can't accidentally delete org-level commands
+
+83
+00:05:23.000 --> 00:05:25.000
+or override them with personal files.
+
+84
+00:05:25.000 --> 00:05:29.000
+This matters most for commands that enforce compliance workflows,
+
+85
+00:05:30.000 --> 00:05:33.000
+or organization-wide automation standards.
+
+86
+00:05:33.000 --> 00:05:37.000
+When you want to guarantee that every developer in a 1,000-person org
+
+87
+00:05:37.000 --> 00:05:41.000
+has access to the same slash review for compliance command,
+
+88
+00:05:41.000 --> 00:05:43.000
+managed settings is how you do it
+
+89
+00:05:43.000 --> 00:05:47.000
+without relying on every team to maintain their own copy.
+
+90
+00:05:47.000 --> 00:05:52.000
+Two anti-patterns come up constantly when teams start building command libraries.
+
+91
+00:05:52.000 --> 00:05:55.000
+The first is the overly broad command.
+
+92
+00:05:55.000 --> 00:05:57.000
+Someone builds slash do-everything
+
+93
+00:05:57.000 --> 00:06:01.000
+that reviews, refactors, tests, and deploys in one file.
+
+94
+00:06:01.000 --> 00:06:04.000
+It works occasionally and fails confusingly.
+
+95
+00:06:04.000 --> 00:06:06.000
+Narrow the scope.
+
+96
+00:06:06.000 --> 00:06:12.000
+The second anti-pattern is duplicating clod.md instructions inside command files.
+
+97
+00:06:12.000 --> 00:06:17.000
+clod.md already provides standing context at the session level.
+
+98
+00:06:17.000 --> 00:06:19.000
+If your command file copies those instructions,
+
+99
+00:06:19.000 --> 00:06:21.000
+you've created maintenance debt.
+
+100
+00:06:21.000 --> 00:06:25.000
+Update clod.md later and forget to update the command,
+
+101
+00:06:25.000 --> 00:06:27.000
+and now they're out of sync.
+
+102
+00:06:27.000 --> 00:06:32.000
+Commands should extend and build on what clod.md establishes, not repeat it.
+
+103
+00:06:32.000 --> 00:06:36.000
+These two patterns, overbroad scope and instruction duplication,
+
+104
+00:06:36.000 --> 00:06:40.000
+are the most common ways command libraries become unreliable.
+
+105
+00:06:41.000 --> 00:06:44.000
+Effective slash commands keep a narrow scope,
+
+106
+00:06:44.000 --> 00:06:46.000
+use verb-noun naming,
+
+107
+00:06:46.000 --> 00:06:50.000
+and reach the team through version control or managed settings.
+
+108
+00:06:50.000 --> 00:06:55.000
+Freeform arguments works when a single piece of text is all you need,
+
+109
+00:06:55.000 --> 00:06:57.000
+and a structured template earns its keep
+
+110
+00:06:57.000 --> 00:07:01.000
+when the input has shape and getting it wrong would cost you.
+
+111
+00:07:01.000 --> 00:07:04.000
+Avoid the command that tries to do everything
+
+112
+00:07:04.000 --> 00:07:08.000
+and avoid copying clod.md instructions into a command file
+
+113
+00:07:08.000 --> 00:07:11.000
+where they'll quietly drift apart.
+
+114
+00:07:11.000 --> 00:07:12.000
+That's it for this lesson.
+
+115
+00:07:12.000 --> 00:07:14.000
+I'll see you in the next one.
+

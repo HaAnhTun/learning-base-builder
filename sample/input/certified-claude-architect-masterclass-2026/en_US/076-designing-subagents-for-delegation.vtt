@@ -1,0 +1,474 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.759
+If you're spawning subagents and getting back results you can't use,
+
+2
+00:00:03.759 --> 00:00:07.360
+the problem is almost always in the design, not the execution.
+
+3
+00:00:08.000 --> 00:00:12.319
+In this lesson, we'll look at the three design questions every subagent needs.
+
+4
+00:00:12.319 --> 00:00:14.159
+Context window allocation.
+
+5
+00:00:14.159 --> 00:00:17.200
+The built-in subagents you get out of the box.
+
+6
+00:00:17.200 --> 00:00:18.959
+Structured output design.
+
+7
+00:00:18.959 --> 00:00:19.920
+Error reporting.
+
+8
+00:00:19.920 --> 00:00:23.360
+And the anti-patterns that make delegation counterproductive.
+
+9
+00:00:24.479 --> 00:00:28.959
+Most disappointing subagent results trace back to a design decision, not a bug.
+
+10
+00:00:29.600 --> 00:00:34.959
+The three design questions are what task, what context, and what output format.
+
+11
+00:00:34.959 --> 00:00:40.240
+And every effective subagent gets all of them answered before anything is spawned.
+
+12
+00:00:40.240 --> 00:00:44.000
+Structured output means the subagent returns parsable,
+
+13
+00:00:44.000 --> 00:00:48.080
+well-formed results, rather than a natural language summary.
+
+14
+00:00:48.080 --> 00:00:51.599
+Because the parent needs to process results, not interpret them.
+
+15
+00:00:52.240 --> 00:00:56.240
+Delegation overhead is the real cost of spawning and managing a subagent.
+
+16
+00:00:56.799 --> 00:01:01.520
+Context loading, coordination, latency, and cost all count.
+
+17
+00:01:01.520 --> 00:01:04.879
+And for a simple task that overhead can exceed the benefit.
+
+18
+00:01:05.519 --> 00:01:09.519
+Knowing where that line sits is the design skill this lesson builds.
+
+19
+00:01:10.720 --> 00:01:15.040
+Before spawning any subagent, answer three questions. What task?
+
+20
+00:01:15.040 --> 00:01:17.519
+Precisely what should this subagent do?
+
+21
+00:01:17.519 --> 00:01:21.279
+And what does done actually look like? What context?
+
+22
+00:01:21.279 --> 00:01:24.800
+Exactly what information does the subagent need to complete that task?
+
+23
+00:01:25.440 --> 00:01:26.879
+Not what might be useful.
+
+24
+00:01:27.599 --> 00:01:29.279
+Not everything the parent knows.
+
+25
+00:01:29.839 --> 00:01:32.639
+Exactly what this specific task requires.
+
+26
+00:01:32.639 --> 00:01:34.480
+And what output format?
+
+27
+00:01:34.480 --> 00:01:38.639
+How should the results be structured so the parent can actually use them?
+
+28
+00:01:38.639 --> 00:01:44.239
+If you skip any of the three, you've built an underspecified subagent. It might run.
+
+29
+00:01:44.239 --> 00:01:45.680
+It'll return something.
+
+30
+00:01:45.680 --> 00:01:50.080
+But the results will be inconsistent, hard to process, or simply wrong
+
+31
+00:01:50.080 --> 00:01:52.800
+because the design was incomplete to begin with.
+
+32
+00:01:52.800 --> 00:01:56.400
+These three questions are the minimum viable design checklist.
+
+33
+00:01:57.599 --> 00:02:01.919
+Context window space in a subagent is a finite resource.
+
+34
+00:02:01.919 --> 00:02:03.760
+The same as anywhere else.
+
+35
+00:02:03.760 --> 00:02:08.720
+The difference is that the subagent's context is entirely provided by the parent.
+
+36
+00:02:08.720 --> 00:02:11.839
+There's no background knowledge being drawn from a shared session.
+
+37
+00:02:12.479 --> 00:02:14.880
+What you pass is what the subagent has.
+
+38
+00:02:15.440 --> 00:02:19.360
+More context isn't better if it's not relevant to the task.
+
+39
+00:02:20.000 --> 00:02:23.839
+Overstuffing the context window with everything the parent knows
+
+40
+00:02:23.839 --> 00:02:29.199
+crowds out the task-relevant content and makes the subagent less focused.
+
+41
+00:02:29.199 --> 00:02:31.839
+The parent holds the full context.
+
+42
+00:02:31.839 --> 00:02:36.000
+The subagent needs a focused, purposeful slice of it.
+
+43
+00:02:36.000 --> 00:02:41.919
+Disciplined context allocation keeps the subagent efficient, keeps costs lower,
+
+44
+00:02:41.919 --> 00:02:47.360
+and produces better results because the subagent isn't filtering through irrelevant noise.
+
+45
+00:02:48.160 --> 00:02:54.320
+Before you hand-build every subagent, know that Clawed Code ships with a few ready-made ones.
+
+46
+00:02:54.320 --> 00:02:56.639
+Explore is built to investigate.
+
+47
+00:02:56.639 --> 00:03:02.080
+It reads through the codebase and reports back what it found without making edits,
+
+48
+00:03:02.080 --> 00:03:05.199
+which is exactly what you want during the research phase.
+
+49
+00:03:05.199 --> 00:03:10.800
+Plan is a read-only research agent that gathers codebase context in plan mode.
+
+50
+00:03:10.800 --> 00:03:12.800
+It doesn't draft the approach itself.
+
+51
+00:03:12.800 --> 00:03:16.800
+It hands its findings back, and the main conversation presents the plan.
+
+52
+00:03:17.759 --> 00:03:22.399
+General purpose handles open-ended tasks that don't fit a narrower role.
+
+53
+00:03:23.039 --> 00:03:26.800
+What ties them together is that delegation is description-driven.
+
+54
+00:03:26.800 --> 00:03:31.839
+You describe the task clearly, and that description routes the work to the right subagent.
+
+55
+00:03:32.399 --> 00:03:34.240
+One more knob worth knowing.
+
+56
+00:03:34.240 --> 00:03:37.440
+You can route each subagent to its own model.
+
+57
+00:03:37.440 --> 00:03:42.800
+Matching model capability to task cost is how you keep a multi-agent workflow
+
+58
+00:03:42.800 --> 00:03:44.479
+both effective and affordable.
+
+59
+00:03:45.279 --> 00:03:49.279
+Structured output is a design requirement, not a nice-to-have.
+
+60
+00:03:49.279 --> 00:03:54.559
+When you define a subagent's task, you also define exactly what it should return.
+
+61
+00:03:55.199 --> 00:04:01.759
+That means specifying a schema, JSON fields, YAML structure, or named output sections.
+
+62
+00:04:01.759 --> 00:04:06.639
+The subagent should return a success or failure indicator as part of that output,
+
+63
+00:04:06.639 --> 00:04:09.279
+so the parent can check it programmatically.
+
+64
+00:04:09.279 --> 00:04:13.679
+Results should be machine-parsable, not natural language descriptions.
+
+65
+00:04:14.559 --> 00:04:18.000
+A summary written in prose might be readable by a human,
+
+66
+00:04:18.000 --> 00:04:21.519
+but it can't be reliably parsed by the orchestrating parent agent.
+
+67
+00:04:22.079 --> 00:04:27.760
+Specify the output format in the task description before the subagent runs.
+
+68
+00:04:27.760 --> 00:04:29.279
+Don't leave it implicit.
+
+69
+00:04:29.279 --> 00:04:34.079
+Explicit format specification is what separates a useful subagent
+
+70
+00:04:34.079 --> 00:04:36.480
+from one that returns ambiguous results.
+
+71
+00:04:37.760 --> 00:04:41.679
+Error reporting design is as important as success path design.
+
+72
+00:04:41.679 --> 00:04:45.519
+A subagent that hits a failure condition has two options.
+
+73
+00:04:45.519 --> 00:04:51.200
+Return an explicit error indicator with enough context for the parent to understand what failed,
+
+74
+00:04:51.200 --> 00:04:53.600
+or silently return an empty result.
+
+75
+00:04:54.160 --> 00:04:56.559
+Silent failures are the worst outcome.
+
+76
+00:04:56.559 --> 00:05:01.679
+The parent receives nothing useful, has no way to distinguish a successful empty result
+
+77
+00:05:01.679 --> 00:05:04.640
+from a failure, and can't take corrective action.
+
+78
+00:05:05.440 --> 00:05:07.600
+Design the error path deliberately.
+
+79
+00:05:08.239 --> 00:05:11.600
+What should the subagent return when it fails?
+
+80
+00:05:11.600 --> 00:05:15.600
+What information does the parent need to diagnose or retry?
+
+81
+00:05:15.600 --> 00:05:20.239
+Build error reporting into the output schema, just like any other output field.
+
+82
+00:05:20.959 --> 00:05:26.320
+The parent's workflow depends on being able to distinguish success from failure reliably.
+
+83
+00:05:27.440 --> 00:05:32.079
+The first anti-pattern is spawning a subagent for every subtask.
+
+84
+00:05:32.079 --> 00:05:33.119
+It feels thorough.
+
+85
+00:05:33.119 --> 00:05:34.959
+It's actually counterproductive.
+
+86
+00:05:34.959 --> 00:05:36.880
+Each spawn adds latency.
+
+87
+00:05:36.880 --> 00:05:39.920
+Each spawn carries coordination complexity.
+
+88
+00:05:39.920 --> 00:05:45.440
+Each subagent the orchestrator manages adds to the overhead of running the workflow.
+
+89
+00:05:45.440 --> 00:05:48.239
+If you're delegating trivial tasks to subagents,
+
+90
+00:05:48.239 --> 00:05:51.679
+you're spending more time on spawning and result processing
+
+91
+00:05:51.679 --> 00:05:54.559
+than the work itself would have taken in line.
+
+92
+00:05:54.559 --> 00:05:57.519
+There's one more inline signal worth naming.
+
+93
+00:05:57.519 --> 00:06:02.480
+If you can't define what the subagent should hand back without the parent's in-flight state,
+
+94
+00:06:02.480 --> 00:06:04.079
+that work belongs in line too.
+
+95
+00:06:04.720 --> 00:06:08.720
+Reserve subagents for work that genuinely benefits from isolation,
+
+96
+00:06:08.799 --> 00:06:11.920
+parallelism, or a different permission set.
+
+97
+00:06:11.920 --> 00:06:15.920
+If you can't articulate why a task needs its own session, it probably doesn't.
+
+98
+00:06:17.119 --> 00:06:22.160
+The second anti-pattern is spawning a subagent without defining its output format.
+
+99
+00:06:22.160 --> 00:06:27.040
+When the output format isn't specified, the subagent returns whatever feels natural.
+
+100
+00:06:27.600 --> 00:06:29.920
+That usually means a natural language summary.
+
+101
+00:06:30.480 --> 00:06:35.040
+Natural language summaries can't be reliably parsed by the parent agent.
+
+102
+00:06:35.040 --> 00:06:37.920
+They produce inconsistent results across runs.
+
+103
+00:06:37.920 --> 00:06:41.279
+They force the parent to interpret rather than process,
+
+104
+00:06:41.279 --> 00:06:44.559
+which introduces errors and ambiguity into the workflow.
+
+105
+00:06:45.119 --> 00:06:46.559
+The fix is simple.
+
+106
+00:06:46.559 --> 00:06:51.200
+Define the output format in the task description before the subagent runs.
+
+107
+00:06:51.839 --> 00:06:53.200
+Make it explicit.
+
+108
+00:06:53.200 --> 00:06:58.399
+Specify the exact schema, the fields, the types, the success indicator.
+
+109
+00:06:58.399 --> 00:07:01.920
+A well-specified output format transforms the subagent
+
+110
+00:07:01.920 --> 00:07:05.839
+from a black box into a predictable, composable component.
+
+111
+00:07:06.399 --> 00:07:12.000
+You can spawn a whole fleet of subagents in parallel and still end up with nothing usable
+
+112
+00:07:12.000 --> 00:07:17.519
+because prose paragraphs are things the parent has to interpret rather than process.
+
+113
+00:07:18.079 --> 00:07:22.880
+Deciding the task, the context, and the return format before you spawn
+
+114
+00:07:22.880 --> 00:07:25.760
+is what makes results composable instead.
+
+115
+00:07:26.320 --> 00:07:29.359
+Just remember, a subagent that fails silently
+
+116
+00:07:29.359 --> 00:07:31.679
+costs you more than one that never ran at all.
+
+117
+00:07:32.320 --> 00:07:33.600
+That's it for this lesson.
+
+118
+00:07:33.600 --> 00:07:36.480
+I'll see you in the next one. Bye for now.
+

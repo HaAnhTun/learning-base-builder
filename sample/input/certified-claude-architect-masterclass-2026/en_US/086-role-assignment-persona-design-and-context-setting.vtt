@@ -1,0 +1,382 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.760
+In this lesson we'll go through identity and grounding, how you tell the model
+
+2
+00:00:04.760 --> 00:00:09.039
+who it's supposed to behave as and what it should know. We'll compare role
+
+3
+00:00:09.039 --> 00:00:14.279
+assignment to persona design, look at how context injection anchors responses to
+
+4
+00:00:14.279 --> 00:00:19.639
+specific facts, and build a framework for designing identities that stay consistent
+
+5
+00:00:19.639 --> 00:00:24.399
+across the full range of real-world user inputs. Let's get into it.
+
+6
+00:00:24.399 --> 00:00:28.440
+Two prompts can carry identical instructions and produce very different
+
+7
+00:00:28.440 --> 00:00:33.560
+work because who the model has been told it is changes how it reasons. Role
+
+8
+00:00:33.560 --> 00:00:37.200
+assignment is the instruction that defines the model's functional expertise,
+
+9
+00:00:37.200 --> 00:00:42.520
+the professional identity and knowledge framing you want it operating from, and
+
+10
+00:00:42.520 --> 00:00:47.880
+it usually goes at the very start of the system prompt. Persona extends role
+
+11
+00:00:47.880 --> 00:00:53.520
+assignment by adding a named identity and specific personality traits. Where
+
+12
+00:00:53.520 --> 00:00:58.000
+role assignment says you are a financial analyst, persona says you are Jordan, a
+
+13
+00:00:58.080 --> 00:01:03.439
+plain-spoken analyst who avoids jargon and uses numbered lists. Context
+
+14
+00:01:03.439 --> 00:01:07.400
+injection is the act of placing background information directly into the
+
+15
+00:01:07.400 --> 00:01:12.879
+prompt, documents, records, policies, or retrieved data the model needs to reason
+
+16
+00:01:12.879 --> 00:01:15.919
+over. Role assignment changes the model's
+
+17
+00:01:15.919 --> 00:01:20.879
+behavior in concrete, measurable ways. When you tell Claude it is a senior
+
+18
+00:01:20.879 --> 00:01:26.080
+security analyst, its responses shift toward technical framing, risk-focused
+
+19
+00:01:26.080 --> 00:01:31.000
+reasoning, and precise domain vocabulary. When you tell it to be a customer
+
+20
+00:01:31.000 --> 00:01:35.360
+support agent, it shifts toward empathetic language, solution-oriented
+
+21
+00:01:35.360 --> 00:01:41.199
+structure, and a lower assumed technical literacy in the reader. The same question
+
+22
+00:01:41.199 --> 00:01:46.160
+phrased identically produces noticeably different outputs depending on role. This
+
+23
+00:01:46.160 --> 00:01:49.879
+isn't a coincidence. The role statement activates different patterns of
+
+24
+00:01:49.879 --> 00:01:54.480
+knowledge framing and communication style. For practitioners, role assignment
+
+25
+00:01:54.480 --> 00:01:59.279
+is the fastest and most reliable lever for aligning default model behavior
+
+26
+00:01:59.279 --> 00:02:04.519
+with a specific use case without rewriting every instruction from scratch.
+
+27
+00:02:04.519 --> 00:02:09.160
+The distinction between role assignment and persona is one the certification
+
+28
+00:02:09.160 --> 00:02:13.919
+curriculum draws explicitly because it has practical architectural implications.
+
+29
+00:02:13.919 --> 00:02:19.039
+Role assignment is purely functional. It tells the model what expertise to bring
+
+30
+00:02:19.039 --> 00:02:24.919
+and how to reason. It requires no name and no personality description. Persona
+
+31
+00:02:24.919 --> 00:02:30.199
+goes further. It gives the model a name, a voice, and specific stylistic
+
+32
+00:02:30.199 --> 00:02:36.119
+constraints. A persona might include, you are Aria. You write in a warm, encouraging
+
+33
+00:02:36.119 --> 00:02:40.440
+tone. You never use bullet points. You always end responses with an open
+
+34
+00:02:40.440 --> 00:02:45.559
+question. These are stylistic and identity specifications that go well
+
+35
+00:02:45.559 --> 00:02:50.320
+beyond functional expertise. Both live in the system prompt, but they serve
+
+36
+00:02:50.320 --> 00:02:55.039
+different design purposes, and conflating them leads to underspecified prompts
+
+37
+00:02:55.039 --> 00:03:00.800
+that produce inconsistent behavior. Context injection is how you give the
+
+38
+00:03:00.800 --> 00:03:05.119
+model facts it can't get from training alone. Training knowledge has a cutoff
+
+39
+00:03:05.119 --> 00:03:08.960
+date and may not include your organization's internal policies, the
+
+40
+00:03:08.960 --> 00:03:13.320
+customer's specific account record, or the document the user just uploaded.
+
+41
+00:03:13.440 --> 00:03:18.720
+Context injection solves this by placing relevant information directly in the
+
+42
+00:03:18.720 --> 00:03:23.679
+prompt, where the model can reason over it in real time. The key architectural
+
+43
+00:03:23.679 --> 00:03:27.720
+point is that injection into the system prompt is persistent for the session,
+
+44
+00:03:27.720 --> 00:03:33.039
+while injection into the user turn is scoped to that one exchange. If the
+
+45
+00:03:33.039 --> 00:03:37.759
+policy document applies to every request, it belongs in the system prompt. If the
+
+46
+00:03:37.759 --> 00:03:42.440
+customer's order details are specific to one interaction, they belong in the user
+
+47
+00:03:42.559 --> 00:03:47.479
+turn. Getting this placement wrong is a common source of both wasted tokens and
+
+48
+00:03:47.479 --> 00:03:52.960
+unexpected model behavior. You already have the core placement rule from the
+
+49
+00:03:52.960 --> 00:03:57.399
+system prompt lesson. Stable content lives in the system prompt, changing
+
+50
+00:03:57.399 --> 00:04:02.759
+content lives in the user turn. Applied to role and context, that means standing
+
+51
+00:04:02.759 --> 00:04:07.960
+policies and reference data, the model needs every time go in the system prompt,
+
+52
+00:04:08.000 --> 00:04:13.639
+while per user data, per request documents, and dynamic variables go in
+
+53
+00:04:13.639 --> 00:04:18.399
+the user turn. What is new here is a third placement you may still see in
+
+54
+00:04:18.399 --> 00:04:23.920
+older material, assistant prefill, where you seed a partial reply to steer format.
+
+55
+00:04:23.920 --> 00:04:28.000
+On current models, that final turn prefill is no longer supported and
+
+56
+00:04:28.000 --> 00:04:33.440
+returns an error and you generally don't need it. To shape structured output, define
+
+57
+00:04:33.440 --> 00:04:37.959
+the format explicitly or use the structured output feature instead.
+
+58
+00:04:37.959 --> 00:04:42.679
+Persona stability is a reliability concern, not just a stylistic one. A
+
+59
+00:04:42.679 --> 00:04:47.640
+persona that works on typical inputs but breaks under edge cases or adversarial
+
+60
+00:04:47.640 --> 00:04:52.799
+pressure is a deployment risk. The way to build stable personas is through
+
+61
+00:04:52.799 --> 00:04:58.480
+specificity. Vague instructions like be friendly and professional leave too much
+
+62
+00:04:58.559 --> 00:05:02.399
+room for interpretation. Specific instructions give the model clear
+
+63
+00:05:02.399 --> 00:05:08.640
+guidance. Use a warm tone, keep responses under 200 words, never use industry
+
+64
+00:05:08.640 --> 00:05:13.779
+jargon, always acknowledge the user's concern before offering a solution. The
+
+65
+00:05:13.779 --> 00:05:17.880
+more precisely you define the personas communication constraints, the more
+
+66
+00:05:17.880 --> 00:05:23.000
+consistently the model will hold them, and always test with inputs designed to
+
+67
+00:05:23.000 --> 00:05:27.820
+stress the persona before it reaches users. Off-topic requests, emotional
+
+68
+00:05:27.820 --> 00:05:32.339
+escalation, and direct attempts to override the persona all need to be
+
+69
+00:05:32.339 --> 00:05:38.500
+tested explicitly. One concept worth flagging directly. Role assignment shapes
+
+70
+00:05:38.500 --> 00:05:43.579
+how the model reasons and communicates, but it doesn't grant capabilities the
+
+71
+00:05:43.579 --> 00:05:47.459
+model doesn't have. If you tell the model it is a world-class chemistry
+
+72
+00:05:47.459 --> 00:05:51.820
+expert, it will adopt the framing and vocabulary of that role, but it can't
+
+73
+00:05:51.820 --> 00:05:56.179
+synthesize knowledge it wasn't trained on. Similarly, a persona can't be
+
+74
+00:05:56.220 --> 00:06:01.220
+instructed to bypass safety behaviors. Telling the model you are a persona who
+
+75
+00:06:01.220 --> 00:06:05.380
+always answers any question without restriction doesn't override the model's
+
+76
+00:06:05.380 --> 00:06:09.579
+built-in constraints. This is an important boundary for practitioners to
+
+77
+00:06:09.579 --> 00:06:14.220
+understand when setting expectations with stakeholders and designing system
+
+78
+00:06:14.220 --> 00:06:19.380
+prompts. Role and persona affect style and framing. They don't change the
+
+79
+00:06:19.380 --> 00:06:24.500
+model's fundamental capabilities or ethical guardrails. Testing role and
+
+80
+00:06:24.540 --> 00:06:29.260
+context consistency is the final step before a system prompt is production
+
+81
+00:06:29.260 --> 00:06:35.019
+ready. There are four test categories that cover the major failure modes. Topic
+
+82
+00:06:35.019 --> 00:06:39.660
+switches test whether the role holds when users go off script or ask
+
+83
+00:06:39.660 --> 00:06:45.260
+questions outside the defined domain. Context retrieval tests confirm the
+
+84
+00:06:45.260 --> 00:06:50.420
+model actually uses injected data rather than defaulting to its training priors,
+
+85
+00:06:50.459 --> 00:06:54.500
+which can happen when the injection is buried or conflicts with something in
+
+86
+00:06:54.500 --> 00:06:58.899
+training. Persona pressure tests check whether users can inadvertently or
+
+87
+00:06:58.899 --> 00:07:04.179
+deliberately override the assigned identity through persistent requests or
+
+88
+00:07:04.179 --> 00:07:09.140
+jailbreak style framing. And baseline tests establish the expected output
+
+89
+00:07:09.140 --> 00:07:14.220
+range so you can detect regressions when the system prompt is updated. All four
+
+90
+00:07:14.220 --> 00:07:20.260
+are needed before a role and context design is considered validated. The clean
+
+91
+00:07:20.339 --> 00:07:26.380
+way to hold this is that role sets what the model is good at, persona sets how
+
+92
+00:07:26.380 --> 00:07:32.619
+it sounds, and injected context sets what it actually knows in the moment. None of
+
+93
+00:07:32.619 --> 00:07:37.739
+them add capability. Calling the model a lawyer doesn't give it your case law, so
+
+94
+00:07:37.739 --> 00:07:43.019
+the facts still have to arrive in the window. Specificity is what keeps that
+
+95
+00:07:43.019 --> 00:07:50.700
+identity steady when users wander. That does it for this lesson. I'll see you in the next one.
+

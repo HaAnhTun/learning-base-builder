@@ -1,0 +1,914 @@
+WEBVTT
+
+1
+00:00:00.090 --> 00:00:02.370
+<v Stephane>Okay, so a quick lecture on SQS.</v>
+
+2
+00:00:02.370 --> 00:00:04.410
+So as we know, SQS is serverless.
+
+3
+00:00:04.410 --> 00:00:05.280
+It's a managed queue,
+
+4
+00:00:05.280 --> 00:00:08.100
+and it's fully integrated with IAM for security.
+
+5
+00:00:08.100 --> 00:00:10.200
+And the beauty is that it has extreme scale
+
+6
+00:00:10.200 --> 00:00:11.550
+for SQS Standard.
+
+7
+00:00:11.550 --> 00:00:13.710
+You don't need to provision anything.
+
+8
+00:00:13.710 --> 00:00:18.000
+The main purpose to SQS is to decouple between your services
+
+9
+00:00:18.000 --> 00:00:20.040
+to be able to scale them independently
+
+10
+00:00:20.040 --> 00:00:22.650
+and perform some work asynchronously.
+
+11
+00:00:22.650 --> 00:00:24.480
+SQS does not handle big messages.
+
+12
+00:00:24.480 --> 00:00:27.480
+The max message size is 1,024 kilobytes.
+
+13
+00:00:27.480 --> 00:00:29.100
+So in case you want to send
+
+14
+00:00:29.100 --> 00:00:32.070
+maybe a 10-megabyte file through SQS,
+
+15
+00:00:32.070 --> 00:00:35.640
+you would instead upload that file into Amazon S3
+
+16
+00:00:35.640 --> 00:00:38.940
+and then retrieve the S3 key for your object
+
+17
+00:00:38.940 --> 00:00:41.790
+and send that through SQS instead.
+
+18
+00:00:41.790 --> 00:00:44.850
+And then your consumer would retrieve the key
+
+19
+00:00:44.850 --> 00:00:47.160
+and then retrieve the message from S3,
+
+20
+00:00:47.160 --> 00:00:49.200
+and this would work just fine.
+
+21
+00:00:49.200 --> 00:00:51.480
+So all the messages from SQS queues
+
+22
+00:00:51.480 --> 00:00:53.880
+can be read from EC2 instances,
+
+23
+00:00:53.880 --> 00:00:54.930
+and they could be managed
+
+24
+00:00:54.930 --> 00:00:56.670
+by an Auto Scaling group,
+
+25
+00:00:56.670 --> 00:01:01.200
+or it could be an AWS Lambda function using an event mapper.
+
+26
+00:01:01.200 --> 00:01:04.020
+Another common architecture with SQS is to use it
+
+27
+00:01:04.020 --> 00:01:06.420
+as a write buffer for DynamoDB.
+
+28
+00:01:06.420 --> 00:01:09.420
+So instead of directly writing to DynamoDB
+
+29
+00:01:09.420 --> 00:01:11.460
+and maybe getting some throttling issue,
+
+30
+00:01:11.460 --> 00:01:13.620
+you would first write to SQS,
+
+31
+00:01:13.620 --> 00:01:16.380
+and it could scale seamlessly, so you're fine.
+
+32
+00:01:16.380 --> 00:01:18.990
+And then you would have an application dedicated
+
+33
+00:01:18.990 --> 00:01:21.540
+to take these writes from SQS
+
+34
+00:01:21.540 --> 00:01:24.120
+and write them into DynamoDB.
+
+35
+00:01:24.120 --> 00:01:27.030
+Finally, there's SQS FIFO for First In and First Out.
+
+36
+00:01:27.030 --> 00:01:29.490
+It means that the messages are received
+
+37
+00:01:29.490 --> 00:01:31.860
+and read in the order they were sent.
+
+38
+00:01:31.860 --> 00:01:33.150
+And then because there is
+
+39
+00:01:33.150 --> 00:01:35.400
+this ordering constraint with FIFO,
+
+40
+00:01:35.400 --> 00:01:38.790
+then you get 300 messages per second without batching
+
+41
+00:01:38.790 --> 00:01:41.400
+or up to 3,000 messages per second with batching,
+
+42
+00:01:41.400 --> 00:01:43.650
+so there is limited scale here.
+
+43
+00:01:43.650 --> 00:01:47.220
+Now let's talk about dead-letter queues in SQS.
+
+44
+00:01:47.220 --> 00:01:49.140
+The idea is that let's get into the scenario
+
+45
+00:01:49.140 --> 00:01:51.780
+where a consumer fails to process a message
+
+46
+00:01:51.780 --> 00:01:54.540
+within the Visibility Timeout period.
+
+47
+00:01:54.540 --> 00:01:56.010
+Then we know that the message
+
+48
+00:01:56.010 --> 00:01:58.260
+automatically goes back into the queue.
+
+49
+00:01:58.260 --> 00:01:59.520
+So the consumer reads the message.
+
+50
+00:01:59.520 --> 00:02:00.720
+Maybe there's a failure.
+
+51
+00:02:00.720 --> 00:02:02.220
+Maybe we don't have enough time.
+
+52
+00:02:02.220 --> 00:02:04.500
+The message goes back into the queue.
+
+53
+00:02:04.500 --> 00:02:07.440
+Now if that thing happens very often,
+
+54
+00:02:07.440 --> 00:02:08.370
+that can be a problem.
+
+55
+00:02:08.370 --> 00:02:10.080
+For example, we read again the message,
+
+56
+00:02:10.080 --> 00:02:11.700
+maybe there's something wrong with the message.
+
+57
+00:02:11.700 --> 00:02:13.440
+Maybe a consumer doesn't understand the message
+
+58
+00:02:13.440 --> 00:02:15.180
+or can't process the message.
+
+59
+00:02:15.180 --> 00:02:17.220
+Then the message will go back into the queue,
+
+60
+00:02:17.220 --> 00:02:18.150
+and it will happen again.
+
+61
+00:02:18.150 --> 00:02:20.040
+We'll read the message again from SQS,
+
+62
+00:02:20.040 --> 00:02:22.740
+and it will go again back into the queue.
+
+63
+00:02:22.740 --> 00:02:26.430
+So we can set a threshold to how many times this can happen.
+
+64
+00:02:26.430 --> 00:02:28.680
+And this failure loop can be a big problem,
+
+65
+00:02:28.680 --> 00:02:32.520
+but we can set a MaximumReceives threshold.
+
+66
+00:02:32.520 --> 00:02:34.950
+And if that threshold is exceeded,
+
+67
+00:02:34.950 --> 00:02:36.727
+then we can tell SQS to say,
+
+68
+00:02:36.727 --> 00:02:38.640
+"Well, this message looks a bit odd.
+
+69
+00:02:38.640 --> 00:02:41.100
+It looks like it's being processed too many times
+
+70
+00:02:41.100 --> 00:02:42.660
+and not successfully.
+
+71
+00:02:42.660 --> 00:02:46.770
+Therefore, send this into a dead-letter queue."
+
+72
+00:02:46.770 --> 00:02:49.359
+And the dead-letter queue will contain that message
+
+73
+00:02:49.359 --> 00:02:50.850
+for later processing,
+
+74
+00:02:50.850 --> 00:02:53.460
+and so the message will be removed from the first queue
+
+75
+00:02:53.460 --> 00:02:55.320
+and sent into the second one.
+
+76
+00:02:55.320 --> 00:02:57.330
+Why do we have dead-letter queues?
+
+77
+00:02:57.330 --> 00:03:00.660
+Well, dead-letter queues are very useful for debugging,
+
+78
+00:03:00.660 --> 00:03:03.510
+and in case a message goes in a dead-letter queue,
+
+79
+00:03:03.510 --> 00:03:05.337
+because it is an SQS, you have to process it,
+
+80
+00:03:05.337 --> 00:03:06.600
+but at least it gives you time
+
+81
+00:03:06.600 --> 00:03:08.910
+to understand what is happening.
+
+82
+00:03:08.910 --> 00:03:09.743
+A few things to notice
+
+83
+00:03:09.743 --> 00:03:11.820
+that the dead-letter queue of FIFO queue
+
+84
+00:03:11.820 --> 00:03:14.190
+must also be a FIFO queue,
+
+85
+00:03:14.190 --> 00:03:16.830
+and the dead-letter queue of the Standard queue
+
+86
+00:03:16.830 --> 00:03:19.590
+must also be a Standard queue.
+
+87
+00:03:19.590 --> 00:03:21.390
+Finally, because we have a dead-letter queue,
+
+88
+00:03:21.390 --> 00:03:24.660
+you need to make sure that the messages are processed
+
+89
+00:03:24.660 --> 00:03:26.700
+before they expire from the queue.
+
+90
+00:03:26.700 --> 00:03:28.380
+So it's a good idea to set a long time,
+
+91
+00:03:28.380 --> 00:03:30.570
+for example, 14 days of retention,
+
+92
+00:03:30.570 --> 00:03:32.343
+from within the dead-letter queue.
+
+93
+00:03:33.180 --> 00:03:34.140
+And the next feature
+
+94
+00:03:34.140 --> 00:03:36.450
+for management of your dead-letter queues
+
+95
+00:03:36.450 --> 00:03:39.150
+are the Redrive to Source feature.
+
+96
+00:03:39.150 --> 00:03:41.640
+So it's a feature to help you consume messages
+
+97
+00:03:41.640 --> 00:03:43.410
+in the dead-letter queue
+
+98
+00:03:43.410 --> 00:03:45.300
+to understand what is wrong with them.
+
+99
+00:03:45.300 --> 00:03:47.010
+So you have your messages now.
+
+100
+00:03:47.010 --> 00:03:48.720
+You know they haven't been processed
+
+101
+00:03:48.720 --> 00:03:49.950
+in the source queue,
+
+102
+00:03:49.950 --> 00:03:52.440
+and therefore, they are in the dead-letter queue,
+
+103
+00:03:52.440 --> 00:03:54.810
+and you're going to do a manual inspection
+
+104
+00:03:54.810 --> 00:03:57.180
+and debugging of these messages.
+
+105
+00:03:57.180 --> 00:03:59.700
+And then you're going to fix your consumer code,
+
+106
+00:03:59.700 --> 00:04:02.460
+understand why the message wasn't processed
+
+107
+00:04:02.460 --> 00:04:05.100
+in case the message was correct,
+
+108
+00:04:05.100 --> 00:04:07.410
+and then what you can do is redrive
+
+109
+00:04:07.410 --> 00:04:09.780
+that message from the dead-letter queue
+
+110
+00:04:09.780 --> 00:04:12.960
+into the source SQS queue.
+
+111
+00:04:12.960 --> 00:04:14.730
+And what's going to happen with this
+
+112
+00:04:14.730 --> 00:04:18.360
+is that the consumer can now reprocess that message
+
+113
+00:04:18.360 --> 00:04:19.680
+without even knowing
+
+114
+00:04:19.680 --> 00:04:22.050
+that the message went into the dead-letter queue,
+
+115
+00:04:22.050 --> 00:04:24.660
+and then the message processing has happened.
+
+116
+00:04:24.660 --> 00:04:26.100
+And that's a cool feature.
+
+117
+00:04:26.100 --> 00:04:27.990
+In terms of idempotency,
+
+118
+00:04:27.990 --> 00:04:29.970
+because messages can be processed twice
+
+119
+00:04:29.970 --> 00:04:31.710
+by consumers in case there is a failure,
+
+120
+00:04:31.710 --> 00:04:33.210
+a timeout, or something like this,
+
+121
+00:04:33.210 --> 00:04:37.770
+you need to make sure that your consumers are idempotent.
+
+122
+00:04:37.770 --> 00:04:39.180
+And what does idempotent mean?
+
+123
+00:04:39.180 --> 00:04:41.820
+That means that if you process the same message twice,
+
+124
+00:04:41.820 --> 00:04:43.770
+if you do the same action twice,
+
+125
+00:04:43.770 --> 00:04:46.890
+then the effect will not be duplicated.
+
+126
+00:04:46.890 --> 00:04:48.690
+So we'll show you an example right now.
+
+127
+00:04:48.690 --> 00:04:50.970
+We are pulling messages from SQS,
+
+128
+00:04:50.970 --> 00:04:52.410
+and we're doing long polling
+
+129
+00:04:52.410 --> 00:04:56.490
+in order to minimize cost and minimize latency.
+
+130
+00:04:56.490 --> 00:05:00.570
+And our EC2 consumer is writing into DynamoDB.
+
+131
+00:05:00.570 --> 00:05:02.040
+After writing into DynamoDB,
+
+132
+00:05:02.040 --> 00:05:05.300
+our EC2 consumer will delete the message from SQS
+
+133
+00:05:05.300 --> 00:05:08.190
+so that it's not processed by another consumer.
+
+134
+00:05:08.190 --> 00:05:10.980
+But in case something goes wrong,
+
+135
+00:05:10.980 --> 00:05:14.490
+then your EC2 consumer will do two writes into DynamoDB
+
+136
+00:05:14.490 --> 00:05:16.770
+because it will read the same message twice.
+
+137
+00:05:16.770 --> 00:05:19.170
+So if you're inserting into DynamoDB
+
+138
+00:05:19.170 --> 00:05:21.510
+a new row anytime you read from SQS,
+
+139
+00:05:21.510 --> 00:05:22.680
+it's not an idempotent
+
+140
+00:05:22.680 --> 00:05:25.050
+because if you read twice the same message,
+
+141
+00:05:25.050 --> 00:05:28.590
+then you will insert two rows into DynamoDB.
+
+142
+00:05:28.590 --> 00:05:29.703
+But if you're doing upsert
+
+143
+00:05:29.703 --> 00:05:32.880
+into DynamoDB using a primary key, for example,
+
+144
+00:05:32.880 --> 00:05:35.970
+then in case the message already exists in DynamoDB,
+
+145
+00:05:35.970 --> 00:05:38.490
+it's just going to be overwritten or updated,
+
+146
+00:05:38.490 --> 00:05:40.590
+and therefore, this is an idempotent request
+
+147
+00:05:40.590 --> 00:05:44.100
+because there will only be one row at the end in DynamoDB,
+
+148
+00:05:44.100 --> 00:05:46.590
+even if you read that message twice.
+
+149
+00:05:46.590 --> 00:05:49.500
+So just remember, idempotency is very important
+
+150
+00:05:49.500 --> 00:05:51.240
+when writing an EC2 consumer
+
+151
+00:05:51.240 --> 00:05:54.390
+or any kind of consumer on top of SQS.
+
+152
+00:05:54.390 --> 00:05:57.900
+Okay, now we also see that Lambda can read from SQS
+
+153
+00:05:57.900 --> 00:05:59.910
+and using an event source mapping.
+
+154
+00:05:59.910 --> 00:06:03.150
+And so the event source mapper will pull from SQS
+
+155
+00:06:03.150 --> 00:06:03.983
+and return a batch
+
+156
+00:06:03.983 --> 00:06:06.210
+and then invoke a Lambda function with that batch.
+
+157
+00:06:06.210 --> 00:06:07.950
+And so the way the event mapper works
+
+158
+00:06:07.950 --> 00:06:10.140
+is that it, by default, uses long polling,
+
+159
+00:06:10.140 --> 00:06:12.000
+so it's optimized in that regards.
+
+160
+00:06:12.000 --> 00:06:13.410
+We specify a batch size,
+
+161
+00:06:13.410 --> 00:06:15.780
+so between one to 10 messages.
+
+162
+00:06:15.780 --> 00:06:16.920
+If we do one messages,
+
+163
+00:06:16.920 --> 00:06:20.430
+then we are reading as fast as we can message by message.
+
+164
+00:06:20.430 --> 00:06:23.130
+If we're doing 10, we are going to be more efficient
+
+165
+00:06:23.130 --> 00:06:25.380
+and then we have to configure it.
+
+166
+00:06:25.380 --> 00:06:26.940
+So this is very simple.
+
+167
+00:06:26.940 --> 00:06:28.207
+The event mapper says,
+
+168
+00:06:28.207 --> 00:06:30.540
+"Which SQS queue we are reading from,
+
+169
+00:06:30.540 --> 00:06:32.760
+and what is the batch size going to be?"
+
+170
+00:06:32.760 --> 00:06:35.010
+Okay, the recommended value, though,
+
+171
+00:06:35.010 --> 00:06:36.270
+for the Queue Visibility Timeout
+
+172
+00:06:36.270 --> 00:06:39.570
+is to be 6x the timeout of your Lambda function.
+
+173
+00:06:39.570 --> 00:06:42.390
+And that is from recommendation from the documentation.
+
+174
+00:06:42.390 --> 00:06:43.350
+The idea is that
+
+175
+00:06:43.350 --> 00:06:45.750
+if you are reading the same message multiple times,
+
+176
+00:06:45.750 --> 00:06:46.800
+you want to make sure
+
+177
+00:06:47.855 --> 00:06:50.190
+it doesn't time out in your Lambda function,.
+
+178
+00:06:50.190 --> 00:06:52.800
+Okay, to use a dead-letter queue,
+
+179
+00:06:52.800 --> 00:06:56.400
+you can set it up at the SQS queue level, not in Lambda.
+
+180
+00:06:56.400 --> 00:06:58.230
+Remember, the DLQ for Lambda
+
+181
+00:06:58.230 --> 00:07:01.020
+is only when you have asynchronous invocation.
+
+182
+00:07:01.020 --> 00:07:02.370
+So in case you want messages
+
+183
+00:07:02.370 --> 00:07:05.970
+that you can't process to be removed from your queue,
+
+184
+00:07:05.970 --> 00:07:08.790
+then you need to set up a DLQ on the SQS queue itself,
+
+185
+00:07:08.790 --> 00:07:09.870
+not the Lambda function.
+
+186
+00:07:09.870 --> 00:07:11.040
+This will not work.
+
+187
+00:07:11.040 --> 00:07:12.930
+Or we've seen there's a newer feature
+
+188
+00:07:12.930 --> 00:07:14.970
+on Lambda called Lambda Destinations,
+
+189
+00:07:14.970 --> 00:07:16.860
+in which case, using Lambda Destinations,
+
+190
+00:07:16.860 --> 00:07:18.900
+we can have the Lambda function itself
+
+191
+00:07:18.900 --> 00:07:20.100
+throw away these events
+
+192
+00:07:20.100 --> 00:07:22.620
+that don't work for us into a destination,
+
+193
+00:07:22.620 --> 00:07:24.570
+and the destination can be an SNS topic
+
+194
+00:07:24.570 --> 00:07:26.790
+or an SQS queue, for example.
+
+195
+00:07:26.790 --> 00:07:29.970
+Okay, one last Solution Architecture with SQS.
+
+196
+00:07:29.970 --> 00:07:30.960
+We have our clients,
+
+197
+00:07:30.960 --> 00:07:32.880
+and he wants to do a lot of work,
+
+198
+00:07:32.880 --> 00:07:34.590
+but we're going to decouple things.
+
+199
+00:07:34.590 --> 00:07:36.000
+So we're going to put these things
+
+200
+00:07:36.000 --> 00:07:38.310
+into an SQS request queue,
+
+201
+00:07:38.310 --> 00:07:40.410
+and there's going to be a work processor
+
+202
+00:07:40.410 --> 00:07:42.450
+reading from that queue and doing the work.
+
+203
+00:07:42.450 --> 00:07:43.290
+When it's done,
+
+204
+00:07:43.290 --> 00:07:46.800
+it's going to send a message to an SQS response queue,
+
+205
+00:07:46.800 --> 00:07:49.710
+and the clients will be reading from that queue.
+
+206
+00:07:49.710 --> 00:07:51.540
+Why would we have such architecture?
+
+207
+00:07:51.540 --> 00:07:52.650
+Well, we get full decoupling,
+
+208
+00:07:52.650 --> 00:07:54.990
+so we can scale the left-hand side
+
+209
+00:07:54.990 --> 00:07:56.940
+and the right-hand side independently.
+
+210
+00:07:56.940 --> 00:07:58.080
+There's fault tolerance,
+
+211
+00:07:58.080 --> 00:08:00.690
+so in case something fails in our work processor,
+
+212
+00:08:00.690 --> 00:08:02.880
+another work processor will pick it up.
+
+213
+00:08:02.880 --> 00:08:04.170
+And then we have load balancing,
+
+214
+00:08:04.170 --> 00:08:05.910
+so we're able to scale horizontally
+
+215
+00:08:05.910 --> 00:08:07.800
+in the way we are handling requests.
+
+216
+00:08:07.800 --> 00:08:09.210
+And on top of this,
+
+217
+00:08:09.210 --> 00:08:10.650
+SQS itself scales really well,
+
+218
+00:08:10.650 --> 00:08:12.000
+so this is good.
+
+219
+00:08:12.000 --> 00:08:13.560
+Just an idea of architecture,
+
+220
+00:08:13.560 --> 00:08:17.970
+but again, SQS is really use it as you want.
+
+221
+00:08:17.970 --> 00:08:20.070
+There's so many different architectures at SQS.
+
+222
+00:08:20.070 --> 00:08:21.510
+It's really up to finding the question,
+
+223
+00:08:21.510 --> 00:08:23.430
+but anytime you see some decoupling
+
+224
+00:08:23.430 --> 00:08:25.620
+and making sure that the work can be processed
+
+225
+00:08:25.620 --> 00:08:26.460
+at least once,
+
+226
+00:08:26.460 --> 00:08:28.830
+then SQS is going to be a great answer.
+
+227
+00:08:28.830 --> 00:08:30.090
+All right, that's it for this lecture.
+
+228
+00:08:30.090 --> 00:08:31.840
+I will see you in the next lecture.
+

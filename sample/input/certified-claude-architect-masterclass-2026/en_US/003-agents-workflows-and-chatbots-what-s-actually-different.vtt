@@ -1,0 +1,278 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.800
+When you're designing AI systems, one of the first questions you'll hit is this,
+
+2
+00:00:04.800 --> 00:00:09.600
+what actually makes something agentic? In this lesson, we'll compare agents,
+
+3
+00:00:09.600 --> 00:00:16.719
+workflows, and chatbots, figure out why an LLM by itself isn't an agent, and explore how tool
+
+4
+00:00:16.719 --> 00:00:23.280
+use closes that gap. By the end of this lesson, you'll know how to tell these architectures apart
+
+5
+00:00:23.280 --> 00:00:29.680
+and when each one makes sense in your work. The word agentic gets attached to almost
+
+6
+00:00:29.680 --> 00:00:33.520
+anything with a language model inside it, so let's draw the lines precisely.
+
+7
+00:00:34.080 --> 00:00:38.720
+An agentic system is one where the language model autonomously pursues a goal.
+
+8
+00:00:38.720 --> 00:00:45.360
+It perceives context, selects actions, invokes tools, and iterates until it's done. A deterministic
+
+9
+00:00:45.360 --> 00:00:50.880
+workflow is different. The developer writes the control flow at design time, and the model just
+
+10
+00:00:50.880 --> 00:00:57.119
+fills in content along the way. An autonomous agent goes further still. It operates without
+
+11
+00:00:57.119 --> 00:01:02.400
+step-by-step human direction, making its own planning decisions to hit a high-level goal.
+
+12
+00:01:02.400 --> 00:01:07.440
+Autonomy exists on a spectrum, from fully supervised to fully autonomous,
+
+13
+00:01:07.440 --> 00:01:10.319
+and most real systems sit somewhere in the middle.
+
+14
+00:01:11.519 --> 00:01:17.040
+A conversational chatbot looks powerful, but its architecture is actually quite narrow.
+
+15
+00:01:17.120 --> 00:01:22.559
+It receives your message and generates a reply. That's the complete loop. There's no mechanism for
+
+16
+00:01:22.559 --> 00:01:28.239
+the chatbot to open a file, call an API, or remember anything outside the current context
+
+17
+00:01:28.239 --> 00:01:34.480
+window. This isn't a criticism. Chatbots are the right tool for a huge range of conversational
+
+18
+00:01:34.480 --> 00:01:40.319
+tasks, but they are fundamentally stateless text generators. The moment you want the system to take
+
+19
+00:01:40.319 --> 00:01:45.599
+an action in the world, you've left chatbot territory. You need tool use, and you need
+
+20
+00:01:45.599 --> 00:01:52.000
+something deciding when and how to use those tools. The comparison that trips people up most
+
+21
+00:01:52.000 --> 00:01:58.319
+is workflow versus agent. In a deterministic workflow, a developer writes every step, every
+
+22
+00:01:58.319 --> 00:02:05.199
+branch, every loop before the system runs. The LLM might be involved at several points, generating
+
+23
+00:02:05.199 --> 00:02:11.759
+summaries or filling in structured outputs, but it never decides what happens next. That's fixed.
+
+24
+00:02:11.759 --> 00:02:18.320
+An agentic system flips this. The control flow emerges at inference time. The model looks at
+
+25
+00:02:18.320 --> 00:02:24.320
+its current context, decides which tool to call, observes the result, and then decides what to do
+
+26
+00:02:24.320 --> 00:02:30.800
+next. That runtime decision making is the defining characteristic. It's also what makes agents harder
+
+27
+00:02:30.800 --> 00:02:37.600
+to audit and higher risk. Here's a question worth sitting with. If LLMs are so capable,
+
+28
+00:02:37.600 --> 00:02:43.759
+why aren't they agents by default? The answer is that a language model's only output is tokens.
+
+29
+00:02:43.759 --> 00:02:50.479
+It generates text. It has no native ability to read a file, execute code, query a database,
+
+30
+00:02:50.479 --> 00:02:55.199
+or observe anything that happens outside the current inference call. There's no persistent
+
+31
+00:02:55.199 --> 00:03:01.600
+memory, no side effects, no feedback loop. We call this the action environment gap. The model can
+
+32
+00:03:01.600 --> 00:03:07.039
+describe what it would do, but it can't actually do it. Closing that gap requires a runtime layer
+
+33
+00:03:07.039 --> 00:03:12.559
+that takes the model's structured output, executes the requested action, and feeds the result back
+
+34
+00:03:12.559 --> 00:03:19.759
+into context as an observation. So how do we actually close that gap? The answer is a building
+
+35
+00:03:19.759 --> 00:03:26.080
+block Anthropic calls the augmented LLM. Take a base language model and enhance it with retrieval,
+
+36
+00:03:26.080 --> 00:03:31.520
+tools, and memory. That combination is the foundation every agentic system is built from.
+
+37
+00:03:32.160 --> 00:03:37.440
+What makes it powerful is that the model uses these capabilities actively. It generates its
+
+38
+00:03:37.440 --> 00:03:42.479
+own search queries when it needs information. It selects the right tool for the job,
+
+39
+00:03:42.479 --> 00:03:48.479
+and it decides what's worth remembering across steps. The model isn't a passive text generator
+
+40
+00:03:48.479 --> 00:03:54.559
+anymore. It's directing its own access to information and actions. Once you see the augmented
+
+41
+00:03:54.559 --> 00:04:00.559
+LLM as the base unit, everything else in agent design is about how you wire these units together
+
+42
+00:04:00.559 --> 00:04:06.320
+and control what they're allowed to do. We can break the agentic loop into four pillars.
+
+43
+00:04:06.320 --> 00:04:12.720
+Perception. The model reads its context, which includes messages, injected data, and results
+
+44
+00:04:12.720 --> 00:04:18.720
+from previous tool calls. Selection. It decides which action or tool to invoke given the current
+
+45
+00:04:18.720 --> 00:04:26.000
+goal state. Execution. The runtime calls that tool and captures whatever it returns. And iteration.
+
+46
+00:04:26.000 --> 00:04:31.440
+The result is fed back into context as an observation, and the model plans its next step.
+
+47
+00:04:32.079 --> 00:04:36.959
+This loop continues until a termination condition is met. Either the goal is achieved,
+
+48
+00:04:36.959 --> 00:04:43.279
+a limit is hit, or an error requires escalation. Understanding this loop is fundamental to
+
+49
+00:04:43.279 --> 00:04:50.160
+designing, debugging, and auditing agentic systems. Claude's tool system is the practical
+
+50
+00:04:50.160 --> 00:04:55.839
+implementation of everything we just described. You define tools using a schema, a name,
+
+51
+00:04:55.839 --> 00:05:02.239
+a description in natural language, and a parameter specification. When Claude is generating a response
+
+52
+00:05:02.239 --> 00:05:08.480
+and determines a tool is needed, it emits a structured tool call output rather than plain
+
+53
+00:05:08.480 --> 00:05:14.799
+text. The runtime intercepts that, executes the actual function or API call, and returns the
+
+54
+00:05:14.799 --> 00:05:21.040
+result to Claude as an observation in the next context window. One thing that surprises
+
+55
+00:05:21.040 --> 00:05:26.720
+practitioners, the description field is the most important part of the schema. Claude selects tools
+
+56
+00:05:26.720 --> 00:05:33.600
+based on how well the description matches the task. A vague description means unreliable tool
+
+57
+00:05:33.600 --> 00:05:40.000
+selection. So when should you actually build an agentic system? Less often than you'd think.
+
+58
+00:05:40.000 --> 00:05:45.920
+If the steps to complete a task can be written out in advance, a deterministic workflow is usually
+
+59
+00:05:45.920 --> 00:05:52.160
+the better choice. It's predictable, auditable, and easier to test. Prompt chaining is a good
+
+60
+00:05:52.160 --> 00:05:58.640
+example. Each model call feeds the next, which looks agentic from the outside, but the developer
+
+61
+00:05:58.640 --> 00:06:05.679
+fixed that sequence at design time. Agents shine when the path to the goal can't be prescripted,
+
+62
+00:06:05.679 --> 00:06:11.119
+when the system needs to adapt based on intermediate results. But higher autonomy
+
+63
+00:06:11.119 --> 00:06:17.119
+means higher risk. Actions have real-world consequences, and mistakes can propagate
+
+64
+00:06:17.119 --> 00:06:23.279
+across several steps before anyone notices. Minimal footprint and human in the loop checkpoints are the
+
+65
+00:06:23.279 --> 00:06:30.079
+standard answer to that. The word agentic gets stretched to cover anything with a model inside
+
+66
+00:06:30.079 --> 00:06:36.720
+it. What actually separates the categories is who decides the next step and when. A developer
+
+67
+00:06:36.720 --> 00:06:42.320
+fixing the sequence at design time gives you a workflow. A model choosing at inference time
+
+68
+00:06:42.320 --> 00:06:47.600
+gives you an agent. That's why one is easy to audit and the other is challenging.
+
+69
+00:06:48.480 --> 00:06:51.440
+That wraps up this lesson. I'll see you in the next one.
+

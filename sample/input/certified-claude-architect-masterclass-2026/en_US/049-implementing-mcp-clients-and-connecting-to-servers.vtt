@@ -1,0 +1,726 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.400
+So how does an AI application actually talk to MCP tool servers?
+
+2
+00:00:04.400 --> 00:00:06.039
+Well, not directly.
+
+3
+00:00:06.039 --> 00:00:08.319
+It goes through an MCP client,
+
+4
+00:00:08.319 --> 00:00:11.079
+the software layer that manages connections,
+
+5
+00:00:11.079 --> 00:00:12.960
+runs the capability handshake,
+
+6
+00:00:12.960 --> 00:00:17.059
+invokes tools, and routes requests across multiple servers.
+
+7
+00:00:17.059 --> 00:00:19.120
+Let's walk through each piece of that,
+
+8
+00:00:19.120 --> 00:00:22.360
+from the first handshake to multi-server routing.
+
+9
+00:00:22.360 --> 00:00:25.479
+An MCP client is the mediator between
+
+10
+00:00:25.479 --> 00:00:28.600
+the language model and every tool server in your system.
+
+11
+00:00:28.600 --> 00:00:30.719
+When the model decides it needs a tool,
+
+12
+00:00:30.719 --> 00:00:32.880
+it doesn't reach out to the server directly.
+
+13
+00:00:32.880 --> 00:00:34.220
+It asks the client.
+
+14
+00:00:34.220 --> 00:00:36.840
+The client knows which servers are connected,
+
+15
+00:00:36.840 --> 00:00:39.040
+what tools each one exposes,
+
+16
+00:00:39.040 --> 00:00:41.159
+and how to route the request.
+
+17
+00:00:41.159 --> 00:00:44.360
+In practice, the client is often embedded inside
+
+18
+00:00:44.360 --> 00:00:47.880
+an agent framework or an application like Cloud Desktop.
+
+19
+00:00:47.880 --> 00:00:52.020
+The key point is that the client is software, not the end user.
+
+20
+00:00:52.020 --> 00:00:54.759
+It's responsible for the full communication layer,
+
+21
+00:00:54.759 --> 00:00:56.639
+which means opening connections,
+
+22
+00:00:56.680 --> 00:00:57.919
+keeping them alive,
+
+23
+00:00:57.919 --> 00:01:01.200
+and tearing them down cleanly when work is done.
+
+24
+00:01:01.200 --> 00:01:04.239
+The transport is how that connection gets made.
+
+25
+00:01:04.239 --> 00:01:06.919
+ST to IO transport spawns the server
+
+26
+00:01:06.919 --> 00:01:08.639
+as a child process locally,
+
+27
+00:01:08.639 --> 00:01:11.720
+and streamable HTTP reaches a remote server.
+
+28
+00:01:12.660 --> 00:01:16.459
+So what does an MCP client actually do at runtime?
+
+29
+00:01:16.459 --> 00:01:19.860
+It manages the connection lifecycle from start to finish.
+
+30
+00:01:19.860 --> 00:01:22.620
+It opens a transport channel to each server,
+
+31
+00:01:22.620 --> 00:01:24.680
+sends an initialized request
+
+32
+00:01:24.720 --> 00:01:26.720
+to kick off the protocol handshake,
+
+33
+00:01:26.720 --> 00:01:30.000
+then keeps the connection alive while the agent is running.
+
+34
+00:01:30.000 --> 00:01:33.519
+When the session ends, it closes the transport cleanly.
+
+35
+00:01:33.519 --> 00:01:34.760
+Between open and close,
+
+36
+00:01:34.760 --> 00:01:37.559
+it also caches the list of tools and resources
+
+37
+00:01:37.559 --> 00:01:40.120
+each server reported during negotiation.
+
+38
+00:01:40.120 --> 00:01:42.400
+So it can make fast routing decisions later
+
+39
+00:01:42.400 --> 00:01:44.040
+without re-querying.
+
+40
+00:01:44.040 --> 00:01:46.580
+That mediation role is what separates MCP
+
+41
+00:01:46.580 --> 00:01:48.440
+from raw API calls.
+
+42
+00:01:48.440 --> 00:01:50.680
+The client handles all the coordination
+
+43
+00:01:50.680 --> 00:01:52.940
+so your application code doesn't have to.
+
+44
+00:01:53.900 --> 00:01:58.099
+In Python, the MCP SDK gives you a high-level client class
+
+45
+00:01:58.099 --> 00:02:00.419
+that works with both transport types.
+
+46
+00:02:00.419 --> 00:02:04.379
+For a local server, you create ST to IO server parameters,
+
+47
+00:02:04.379 --> 00:02:06.080
+pointing at the server script,
+
+48
+00:02:06.080 --> 00:02:08.740
+pass it to the client, and call initialize.
+
+49
+00:02:10.160 --> 00:02:13.300
+The initialized call does the protocol handshake.
+
+50
+00:02:13.300 --> 00:02:16.500
+It sends your client's supported protocol version,
+
+51
+00:02:16.500 --> 00:02:19.740
+receives the server's version and full capability list,
+
+52
+00:02:19.740 --> 00:02:22.779
+and sends back an initialized notification
+
+53
+00:02:23.619 --> 00:02:25.179
+to confirm everything is aligned.
+
+54
+00:02:25.179 --> 00:02:28.779
+After that single call, your client is fully ready.
+
+55
+00:02:28.779 --> 00:02:32.460
+The SDK handles all the low-level JSON framing
+
+56
+00:02:32.460 --> 00:02:34.580
+and message serialization,
+
+57
+00:02:34.580 --> 00:02:37.580
+so you're working with clean Python objects
+
+58
+00:02:37.580 --> 00:02:39.619
+rather than raw byte streams.
+
+59
+00:02:39.619 --> 00:02:43.300
+That abstraction keeps your application logic simple
+
+60
+00:02:43.300 --> 00:02:45.220
+even as the underlying protocol
+
+61
+00:02:45.220 --> 00:02:47.139
+handles complex negotiation.
+
+62
+00:02:48.100 --> 00:02:50.720
+Every connection goes through three phases,
+
+63
+00:02:50.720 --> 00:02:53.479
+connect, negotiate, and close.
+
+64
+00:02:53.479 --> 00:02:56.039
+In the connect phase, the transport opens
+
+65
+00:02:56.039 --> 00:02:58.919
+and the client sends the initialized request
+
+66
+00:02:58.919 --> 00:03:00.639
+with its protocol version.
+
+67
+00:03:00.639 --> 00:03:03.380
+In the negotiate phase, the server replies
+
+68
+00:03:03.380 --> 00:03:06.600
+with its version and its full capability list,
+
+69
+00:03:06.600 --> 00:03:08.539
+covering which tools it has,
+
+70
+00:03:08.539 --> 00:03:11.380
+which resources, and which prompts.
+
+71
+00:03:11.380 --> 00:03:12.880
+The client confirms receipt
+
+72
+00:03:12.880 --> 00:03:15.240
+with an initialized notification.
+
+73
+00:03:15.240 --> 00:03:18.919
+In the close phase, there's no protocol shutdown message.
+
+74
+00:03:18.919 --> 00:03:22.320
+Termination happens at the transport layer instead.
+
+75
+00:03:22.320 --> 00:03:26.520
+With STDIO, the client closes the server's standard input,
+
+76
+00:03:26.520 --> 00:03:30.360
+which triggers a shutdown signal to the child process.
+
+77
+00:03:30.360 --> 00:03:34.619
+With streamable HTTP, you simply close the connection.
+
+78
+00:03:34.619 --> 00:03:37.559
+Getting this right matters because closing abruptly
+
+79
+00:03:37.559 --> 00:03:40.320
+can leave server processes hanging,
+
+80
+00:03:40.320 --> 00:03:42.839
+especially with STDIO transport,
+
+81
+00:03:42.839 --> 00:03:45.619
+where the server runs as a child process.
+
+82
+00:03:46.619 --> 00:03:50.479
+Right after the handshake, the client runs a discovery pass.
+
+83
+00:03:50.479 --> 00:03:53.500
+It calls list tools to get tool names,
+
+84
+00:03:53.500 --> 00:03:55.699
+input schemas, and descriptions.
+
+85
+00:03:55.699 --> 00:03:58.960
+It can also call list resources for data resources
+
+86
+00:03:58.960 --> 00:04:02.740
+and list prompts for reusable prompt templates.
+
+87
+00:04:02.740 --> 00:04:05.660
+These results get cached for the rest of the session.
+
+88
+00:04:05.660 --> 00:04:07.759
+Discovery is important because the model
+
+89
+00:04:07.759 --> 00:04:11.160
+uses tool descriptions to decide which tool to call.
+
+90
+00:04:11.160 --> 00:04:13.139
+If the description is vague or missing,
+
+91
+00:04:13.139 --> 00:04:15.660
+the model will make poor routing decisions.
+
+92
+00:04:15.660 --> 00:04:18.500
+It's also where you catch mismatches early.
+
+93
+00:04:18.500 --> 00:04:21.179
+If the server doesn't expose the tool you expected,
+
+94
+00:04:21.179 --> 00:04:22.380
+you know immediately,
+
+95
+00:04:22.380 --> 00:04:24.600
+rather than getting a runtime error later.
+
+96
+00:04:25.579 --> 00:04:28.540
+Discovery isn't always a one-and-done step.
+
+97
+00:04:28.540 --> 00:04:31.760
+A server's set of tools and resources can change
+
+98
+00:04:31.760 --> 00:04:33.540
+while a session is still running.
+
+99
+00:04:33.540 --> 00:04:35.100
+And if the client keeps working
+
+100
+00:04:35.100 --> 00:04:37.019
+from its original cached list,
+
+101
+00:04:37.019 --> 00:04:38.779
+it'll miss new capabilities
+
+102
+00:04:38.779 --> 00:04:41.579
+or keep calling ones that went away.
+
+103
+00:04:41.579 --> 00:04:45.220
+MCP handles this with list-changed notifications,
+
+104
+00:04:45.220 --> 00:04:47.220
+but there's a catch worth knowing.
+
+105
+00:04:47.220 --> 00:04:48.880
+It's capability-gated.
+
+106
+00:04:48.880 --> 00:04:50.160
+During initialization,
+
+107
+00:04:50.160 --> 00:04:53.420
+a server declares a list-changed capability.
+
+108
+00:04:53.420 --> 00:04:56.600
+Only then does it promise to send a notification
+
+109
+00:04:56.600 --> 00:04:59.540
+whenever its tool or resource list changes.
+
+110
+00:04:59.540 --> 00:05:01.700
+When the client receives that notification,
+
+111
+00:05:01.700 --> 00:05:05.820
+it simply reruns list tools or list resources
+
+112
+00:05:05.820 --> 00:05:08.019
+to refresh what it has cached.
+
+113
+00:05:08.019 --> 00:05:10.700
+If a server never declares that capability,
+
+114
+00:05:10.700 --> 00:05:12.700
+the client won't get any updates,
+
+115
+00:05:12.700 --> 00:05:15.980
+and its catalog can go stale without anyone noticing.
+
+116
+00:05:15.980 --> 00:05:17.779
+So don't assume freshness.
+
+117
+00:05:17.779 --> 00:05:20.420
+Confirm the capability is actually there.
+
+118
+00:05:21.420 --> 00:05:25.619
+The choice between STDIO and streamable HTTP transport
+
+119
+00:05:25.619 --> 00:05:27.779
+comes down to deployment context.
+
+120
+00:05:27.779 --> 00:05:31.059
+STDIO spawns the server as a sub-process
+
+121
+00:05:31.059 --> 00:05:32.279
+on the same machine
+
+122
+00:05:32.279 --> 00:05:35.420
+and communicates over stand-in and stand-out
+
+123
+00:05:35.420 --> 00:05:38.619
+with no network needed, very simple to set up,
+
+124
+00:05:38.660 --> 00:05:42.420
+and a great fit for local tools and developer workstations.
+
+125
+00:05:42.420 --> 00:05:46.339
+Streamable HTTP runs the server as an HTTP service
+
+126
+00:05:46.339 --> 00:05:49.660
+and supports both standard request-response cycles
+
+127
+00:05:49.660 --> 00:05:52.140
+and streaming via server-sent events.
+
+128
+00:05:52.140 --> 00:05:55.700
+It's designed for remote servers, shared infrastructure,
+
+129
+00:05:55.700 --> 00:05:56.859
+and production deployments,
+
+130
+00:05:56.859 --> 00:06:00.059
+where multiple clients connect simultaneously.
+
+131
+00:06:00.059 --> 00:06:01.739
+The Architect Foundations exam
+
+132
+00:06:01.739 --> 00:06:04.540
+regularly asks you to match a transport type
+
+133
+00:06:04.540 --> 00:06:06.100
+to a described scenario.
+
+134
+00:06:06.100 --> 00:06:08.660
+So keep that local versus remote distinction
+
+135
+00:06:08.660 --> 00:06:10.899
+sharp in your mind going into the test.
+
+136
+00:06:11.859 --> 00:06:15.420
+Invoking a tool is straightforward once you're connected.
+
+137
+00:06:15.420 --> 00:06:18.059
+You call callTool with the tool's name
+
+138
+00:06:18.059 --> 00:06:19.940
+and a dictionary of arguments.
+
+139
+00:06:19.940 --> 00:06:22.980
+The client serializes the arguments to JSON,
+
+140
+00:06:22.980 --> 00:06:25.140
+sends the request to the correct server,
+
+141
+00:06:25.140 --> 00:06:28.859
+and returns a structured result object with content blocks,
+
+142
+00:06:28.859 --> 00:06:32.100
+text, images, or resource references.
+
+143
+00:06:32.100 --> 00:06:35.220
+Now, error handling has two distinct paths,
+
+144
+00:06:35.260 --> 00:06:37.660
+and mixing them up is a common bug.
+
+145
+00:06:37.660 --> 00:06:40.260
+When the tool itself runs but fails,
+
+146
+00:06:40.260 --> 00:06:43.779
+the result comes back with an isError flag set to true,
+
+147
+00:06:43.779 --> 00:06:45.220
+so you check that flag
+
+148
+00:06:45.220 --> 00:06:47.779
+before forwarding the content to the model.
+
+149
+00:06:47.779 --> 00:06:50.899
+But protocol-level problems like an unknown tool name,
+
+150
+00:06:50.899 --> 00:06:53.459
+bad arguments, or a closed connection
+
+151
+00:06:53.459 --> 00:06:56.859
+raise an mcpErrorException instead.
+
+152
+00:06:56.859 --> 00:06:59.660
+Those you catch with a try accept block.
+
+153
+00:06:59.660 --> 00:07:03.220
+So handle both, check isError for tool failures,
+
+154
+00:07:03.220 --> 00:07:05.660
+and catch exceptions for protocol errors.
+
+155
+00:07:06.619 --> 00:07:09.540
+One of the most powerful MCP client features
+
+156
+00:07:09.540 --> 00:07:11.500
+is multi-server support.
+
+157
+00:07:11.500 --> 00:07:14.019
+A single client instance can hold open connections
+
+158
+00:07:14.019 --> 00:07:16.260
+to several servers at once.
+
+159
+00:07:16.260 --> 00:07:19.179
+Each server gets a unique name when you register it,
+
+160
+00:07:19.179 --> 00:07:21.220
+and the client uses that name
+
+161
+00:07:21.220 --> 00:07:24.940
+plus the tool's name to route calls correctly.
+
+162
+00:07:24.940 --> 00:07:28.380
+If two servers happen to expose a tool with the same name,
+
+163
+00:07:28.380 --> 00:07:31.299
+namespace prefixes prevent collisions.
+
+164
+00:07:31.299 --> 00:07:34.339
+This is how large agent systems work in practice.
+
+165
+00:07:34.339 --> 00:07:36.859
+One server might handle file operations,
+
+166
+00:07:36.859 --> 00:07:38.700
+another handles web search,
+
+167
+00:07:38.700 --> 00:07:40.660
+another handles database queries,
+
+168
+00:07:40.660 --> 00:07:44.100
+and the client orchestrates all of them transparently.
+
+169
+00:07:44.100 --> 00:07:45.820
+The model just picks a tool,
+
+170
+00:07:45.820 --> 00:07:48.299
+the client figures out which server to call.
+
+171
+00:07:49.619 --> 00:07:51.420
+The failure you'll actually hit
+
+172
+00:07:51.420 --> 00:07:53.220
+is an agent that sounds confident
+
+173
+00:07:53.220 --> 00:07:57.459
+while every tool call behind it is coming back empty.
+
+174
+00:07:57.459 --> 00:08:01.059
+An error result still arrives as a normal response,
+
+175
+00:08:01.820 --> 00:08:04.260
+so nothing looks broken until a user notices.
+
+176
+00:08:04.260 --> 00:08:07.220
+That's why the client checks the error flag on results
+
+177
+00:08:07.220 --> 00:08:10.100
+and catches protocol exceptions separately.
+
+178
+00:08:10.100 --> 00:08:14.059
+It's also why a cached catalog needs a refresh story
+
+179
+00:08:14.059 --> 00:08:16.540
+after a server restarts.
+
+180
+00:08:16.540 --> 00:08:17.940
+That's it for this lesson.
+
+181
+00:08:17.940 --> 00:08:19.380
+I'll see you in the next one.
+

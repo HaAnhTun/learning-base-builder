@@ -1,0 +1,346 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.119
+Welcome back. When you build a multi-agent system, the way you wire the agents together
+
+2
+00:00:05.119 --> 00:00:10.479
+shapes almost everything downstream. How work is coordinated, how failures are handled,
+
+3
+00:00:10.479 --> 00:00:16.399
+and whether you can audit what happened. Coming up in this video, we'll cover three core patterns,
+
+4
+00:00:16.399 --> 00:00:22.479
+where each wins and breaks, how to pick between them, and the evaluator optimizer loop,
+
+5
+00:00:22.479 --> 00:00:26.079
+and two anti-patterns that you need to watch out for. Let's dig in.
+
+6
+00:00:27.040 --> 00:00:30.639
+Pick the wrong wiring and you will feel it for the life of the system,
+
+7
+00:00:30.639 --> 00:00:36.560
+because topology is notoriously hard to change once agents depend on it. There are three shapes
+
+8
+00:00:36.560 --> 00:00:42.319
+worth knowing. Hub and spoke puts a central orchestrator in charge, routing every task
+
+9
+00:00:42.319 --> 00:00:48.080
+and every message out to peripheral agents. The spokes never talk to each other. A pipeline
+
+10
+00:00:48.080 --> 00:00:53.840
+arranges agents in a line, where each one takes the previous agent's output and hands its own
+
+11
+00:00:53.840 --> 00:00:59.360
+result forward, a chain of specialized transformations. Peer-to-peer is the opposite
+
+12
+00:00:59.360 --> 00:01:05.760
+of hub and spoke. Agents talk directly, with no coordinator in the middle and no single node
+
+13
+00:01:05.760 --> 00:01:11.360
+controlling communication. Different structures, different strengths, and very different ways of
+
+14
+00:01:11.360 --> 00:01:17.919
+failing. Hub and spoke puts one orchestrator in charge of coordination. Work goes from the hub
+
+15
+00:01:17.919 --> 00:01:23.519
+out to a specialist, results come back to the hub, and spokes never communicate with each other.
+
+16
+00:01:24.080 --> 00:01:29.360
+That structure buys you centralized control, which means a single place to enforce policy,
+
+17
+00:01:29.360 --> 00:01:35.040
+track state, and audit every decision the system made. When something goes wrong, you know where
+
+18
+00:01:35.040 --> 00:01:41.680
+to look. Failure handling stays simple, because the hub owns recovery for all of its spokes.
+
+19
+00:01:41.680 --> 00:01:46.000
+If your workflow needs a clear delegation structure and a complete audit trail,
+
+20
+00:01:46.000 --> 00:01:51.199
+this topology gives you both by construction rather than by discipline, and that is a
+
+21
+00:01:51.199 --> 00:01:57.519
+meaningful difference when a system grows. Everything that makes hub and spoke attractive
+
+22
+00:01:57.519 --> 00:02:03.599
+is also where it breaks. The hub is a single point of failure. If it goes down or becomes
+
+23
+00:02:03.599 --> 00:02:09.440
+unreachable, the whole system halts, because nothing else can coordinate the work. As you
+
+24
+00:02:09.440 --> 00:02:14.800
+add spokes, the hub turns into a throughput bottleneck. Every message passes through it,
+
+25
+00:02:14.800 --> 00:02:20.720
+so its capacity sets the ceiling for the entire system, and the hub takes on context bloat over
+
+26
+00:02:20.720 --> 00:02:27.600
+time, since it has to track state for every spoke currently working. None of these are bugs.
+
+27
+00:02:27.600 --> 00:02:32.880
+They are the direct cost of centralizing control, and you are trading resilience away
+
+28
+00:02:32.880 --> 00:02:37.839
+to get simplicity. That trade is often correct. It should just be deliberate.
+
+29
+00:02:39.039 --> 00:02:44.960
+A pipeline arranges agents in a strict sequence. The first processes input and passes output to
+
+30
+00:02:44.960 --> 00:02:51.119
+the second, the second passes to the third, and so on down the chain. Every stage carries
+
+31
+00:02:51.119 --> 00:02:57.440
+a narrow responsibility, which makes stages modular. You can swap, test, or replace one
+
+32
+00:02:57.440 --> 00:03:02.960
+without touching the rest. Each stage emits a clean artifact that becomes the next stage's
+
+33
+00:03:02.960 --> 00:03:10.240
+full input. The costs come from the same linearity. Total latency is the sum of every stage,
+
+34
+00:03:10.240 --> 00:03:15.679
+because nothing overlaps. And a failed middle stage blocks everything downstream,
+
+35
+00:03:15.679 --> 00:03:21.360
+since those stages have no input to work on. The deeper the chain, the more surface a single
+
+36
+00:03:21.360 --> 00:03:28.639
+failure has. Handle errors at every boundary, not just at the end. Peer-to-peer removes the
+
+37
+00:03:28.639 --> 00:03:34.000
+coordinator completely. Agents talk directly to each other, and that buys two real advantages.
+
+38
+00:03:34.559 --> 00:03:40.160
+Latency drops, because messages no longer detour through a central node. And the system gets more
+
+39
+00:03:40.160 --> 00:03:46.000
+resilient, because there is no single point whose failure stops everything. One agent going down
+
+40
+00:03:46.000 --> 00:03:52.559
+leaves the others working. The costs are equally real. With no central log and no central state,
+
+41
+00:03:52.559 --> 00:03:58.639
+auditing gets hard. Tracing a single decision means inspecting every agent that participated
+
+42
+00:03:58.639 --> 00:04:04.960
+rather than reading one coordinator's history. Emergent behavior becomes a genuine concern too,
+
+43
+00:04:04.960 --> 00:04:11.039
+since complex interactions between agents are harder to predict, test, and control when nothing
+
+44
+00:04:11.039 --> 00:04:17.440
+is managing overall execution. Putting peer-to-peer and hub-and-spoke side by side
+
+45
+00:04:17.440 --> 00:04:22.720
+makes the trade-off concrete, because they sit at opposite ends of the same spectrum.
+
+46
+00:04:22.720 --> 00:04:28.720
+Peer-to-peer has no single point of failure, so any agent can drop without halting the system.
+
+47
+00:04:28.720 --> 00:04:34.320
+And it has no routing bottleneck, so throughput scales with the number of agents rather than with
+
+48
+00:04:34.320 --> 00:04:40.239
+one coordinator's capacity. What it gives up is central state. Coordination is distributed,
+
+49
+00:04:40.239 --> 00:04:45.440
+which makes the system harder to reason about and much harder to audit. Hub-and-spoke makes
+
+50
+00:04:45.440 --> 00:04:51.600
+the opposite bet. One node owns state, recovery, and the decision log, and you pay for that with
+
+51
+00:04:51.600 --> 00:04:57.839
+a throughput ceiling and a component that takes everything down with it. Here is the part that
+
+52
+00:04:57.839 --> 00:05:04.079
+turns all of this into a decision. Before picking a topology, map the task's data flow because the
+
+53
+00:05:04.079 --> 00:05:10.480
+structure usually chooses for you. Ask whether there is a natural hierarchy, one agent whose job
+
+54
+00:05:10.480 --> 00:05:17.839
+is to decompose goals and delegate to specialists. If so, that is hub-and-spoke. Ask whether ordering
+
+55
+00:05:17.920 --> 00:05:24.399
+is forced by the data itself, each step genuinely needing the previous step's output. If so, that is
+
+56
+00:05:24.399 --> 00:05:30.239
+a pipeline. Ask whether the agents are loosely coupled, with no shared state and no required
+
+57
+00:05:30.239 --> 00:05:36.720
+ordering. If so, peer-to-peer fits. Then check auditability, because it overrides all three.
+
+58
+00:05:36.720 --> 00:05:42.079
+If you need a complete decision log, peer-to-peer is off the table, regardless of how well it fits
+
+59
+00:05:42.079 --> 00:05:50.239
+otherwise. The evaluator optimizer is a two-agent loop worth knowing as its own pattern. A generator
+
+60
+00:05:50.239 --> 00:05:56.880
+produces an initial result, which might be a draft, a plan, or an answer. An evaluator critiques that
+
+61
+00:05:56.880 --> 00:06:03.119
+result against a rubric and hands-back structured feedback. The generator revises, and the loop runs
+
+62
+00:06:03.119 --> 00:06:09.839
+again. This continues until the output clears a quality threshold or hits a maximum iteration
+
+63
+00:06:09.839 --> 00:06:16.239
+count. That iteration cap isn't optional. Without it, the loop has no guaranteed stopping point,
+
+64
+00:06:16.239 --> 00:06:22.559
+and can run indefinitely, burning tokens on diminishing refinements. Explicit convergence
+
+65
+00:06:22.559 --> 00:06:28.559
+criteria, meaning a concrete definition of good enough, and an explicit termination condition
+
+66
+00:06:28.559 --> 00:06:35.920
+are both required parts of any real implementation. Two anti-patterns come up often enough to name.
+
+67
+00:06:35.920 --> 00:06:42.399
+The first is a hub without hierarchy, meaning hub and spoke forced onto a task that has none.
+
+68
+00:06:42.959 --> 00:06:48.720
+Every message routes through a coordinator with no actual coordination to do, so you have bought
+
+69
+00:06:48.720 --> 00:06:54.880
+a bottleneck and added latency without gaining any control. The agents could have talked directly.
+
+70
+00:06:54.880 --> 00:07:00.720
+The second is P2P without an audit trail, reaching for peer-to-peer when a complete decision log is
+
+71
+00:07:00.720 --> 00:07:07.519
+required. Distributed state makes that log impossible to reconstruct afterward, and instrumentation
+
+72
+00:07:07.519 --> 00:07:14.079
+only partly compensates. If compliance, debugging, or accountability need it, peer-to-peer can't meet
+
+73
+00:07:14.079 --> 00:07:19.839
+the requirement by design. Neither announces itself early. They surface once the system is
+
+74
+00:07:19.839 --> 00:07:26.959
+already in production. Real systems combine these patterns because a complex task rarely has one
+
+75
+00:07:26.959 --> 00:07:33.760
+uniform shape. A hub and spoke orchestrator can delegate into an internal pipeline for the parts
+
+76
+00:07:33.760 --> 00:07:40.239
+that genuinely need ordered transforms. A pipeline stage can spawn peer-to-peer agents for a batch of
+
+77
+00:07:40.239 --> 00:07:46.959
+loosely coupled subtasks. Hybrids are legitimate designs, not compromises. What they add is
+
+78
+00:07:46.959 --> 00:07:53.760
+coordination complexity at every seam between patterns, and each seam needs an explicit handoff.
+
+79
+00:07:53.760 --> 00:07:59.519
+What does the output look like leaving one pattern? What happens when the transition fails,
+
+80
+00:07:59.519 --> 00:08:05.839
+and how does state move across? The discipline that keeps hybrids workable is naming which
+
+81
+00:08:05.839 --> 00:08:12.160
+subsystem each pattern serves before you design the boundaries between them. Routing everything
+
+82
+00:08:12.160 --> 00:08:18.720
+through a coordinator isn't the same as coordinating. When the task has no real hierarchy, that hub is
+
+83
+00:08:18.720 --> 00:08:25.679
+just a bottleneck wearing a manager's badge. The data flow already tells you the shape. Ask whether
+
+84
+00:08:25.679 --> 00:08:31.519
+ordering is forced, whether the agents are loosely coupled, and whether you'll need a decision log
+
+85
+00:08:31.519 --> 00:08:38.239
+later. Read that honestly and the wiring will pick itself for you. That closes out this lesson.
+
+86
+00:08:38.239 --> 00:08:39.599
+I'll see you in the next one.
+

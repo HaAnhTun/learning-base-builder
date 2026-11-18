@@ -1,0 +1,218 @@
+WEBVTT
+
+1
+00:00:00.240 --> 00:00:02.514
+<v Instructor>Okay, so now let's talk about DocumentDB.</v>
+
+2
+00:00:02.514 --> 00:00:03.870
+So we know Aurora.
+
+3
+00:00:03.870 --> 00:00:06.570
+And Aurora, I call it an AWS implementation
+
+4
+00:00:06.570 --> 00:00:07.854
+of PostgreSQL, or MySQL
+
+5
+00:00:07.854 --> 00:00:09.990
+because it has the same API,
+
+6
+00:00:09.990 --> 00:00:10.935
+but it's built on AWS,
+
+7
+00:00:10.935 --> 00:00:14.340
+and it has some nice benefits to be cloud native.
+
+8
+00:00:14.340 --> 00:00:19.260
+Now, DocumentDB is the same as Aurora, but for MongoDB.
+
+9
+00:00:19.260 --> 00:00:21.480
+So MongoDB is a NoSQL database,
+
+10
+00:00:21.480 --> 00:00:25.170
+and it's used to store query and index JSON data.
+
+11
+00:00:25.170 --> 00:00:27.090
+So thanks to DocumentDB, well, we have
+
+12
+00:00:27.090 --> 00:00:29.127
+this similar deployment concept as Aurora.
+
+13
+00:00:29.127 --> 00:00:31.620
+It's going to be fully managed, highly available,
+
+14
+00:00:31.620 --> 00:00:33.123
+with replication across 3 AZ,
+
+15
+00:00:33.960 --> 00:00:36.120
+and the DocumentDB storage layer
+
+16
+00:00:36.120 --> 00:00:38.730
+will just like Aurora grow automatically
+
+17
+00:00:38.730 --> 00:00:40.890
+in increments of 10 gigabytes.
+
+18
+00:00:40.890 --> 00:00:43.440
+Finally, DocumentDB is going to be scaling
+
+19
+00:00:43.440 --> 00:00:46.050
+to or close with millions of requests per second.
+
+20
+00:00:46.050 --> 00:00:48.330
+So it makes it a much nicer
+
+21
+00:00:48.330 --> 00:00:50.310
+cloud native alternative to MongoDB,
+
+22
+00:00:50.310 --> 00:00:53.040
+if you're using MongoDB on AWS.
+
+23
+00:00:53.040 --> 00:00:55.170
+So you pay for what you use in DocumentDB
+
+24
+00:00:55.170 --> 00:00:56.970
+and there is no upfront costs,
+
+25
+00:00:56.970 --> 00:00:59.760
+but you need to understand the architecture of DocumentDB,
+
+26
+00:00:59.760 --> 00:01:01.620
+which is very similar to Aurora,
+
+27
+00:01:01.620 --> 00:01:03.150
+in order to understand its pricing.
+
+28
+00:01:03.150 --> 00:01:04.860
+So we have database storage,
+
+29
+00:01:04.860 --> 00:01:07.230
+and then we have on-demand instances,
+
+30
+00:01:07.230 --> 00:01:08.430
+we have primary instances
+
+31
+00:01:08.430 --> 00:01:11.790
+and then replica instances, that's our app.
+
+32
+00:01:11.790 --> 00:01:13.797
+So you're going to pay for these on-demand instances,
+
+33
+00:01:13.797 --> 00:01:18.030
+you're going to pay per second with a minimum of 10 minutes.
+
+34
+00:01:18.030 --> 00:01:20.190
+Then these instances are going to do a read
+
+35
+00:01:20.190 --> 00:01:22.617
+and write operations against your database storage.
+
+36
+00:01:22.617 --> 00:01:25.560
+So you're going to pay for the database IO
+
+37
+00:01:25.560 --> 00:01:28.770
+and it's going to be counted per million iOS.
+
+38
+00:01:28.770 --> 00:01:30.660
+Then of course, the data is being stored
+
+39
+00:01:30.660 --> 00:01:31.747
+on your database storage, and therefore,
+
+40
+00:01:31.747 --> 00:01:34.950
+you're going to pay for the database storage itself
+
+41
+00:01:34.950 --> 00:01:36.870
+in gigabytes per month.
+
+42
+00:01:36.870 --> 00:01:40.470
+And finally, if you do backups of DocumentDB,
+
+43
+00:01:40.470 --> 00:01:42.120
+then these backups are going to be backed
+
+44
+00:01:42.120 --> 00:01:43.640
+internally into Amazon S3,
+
+45
+00:01:43.640 --> 00:01:45.870
+and so therefore you will also have a cost
+
+46
+00:01:45.870 --> 00:01:48.840
+per gigabyte per month for these backups.
+
+47
+00:01:48.840 --> 00:01:50.790
+So DocumentDB is all provision.
+
+48
+00:01:50.790 --> 00:01:53.850
+There is no on demand tier of DocumentDB.
+
+49
+00:01:53.850 --> 00:01:55.530
+This is a misconception.
+
+50
+00:01:55.530 --> 00:01:57.120
+So you pay for your instances,
+
+51
+00:01:57.120 --> 00:02:00.330
+your iOS, your storage and your backup.
+
+52
+00:02:00.330 --> 00:02:01.260
+That's it for this lecture.
+
+53
+00:02:01.260 --> 00:02:02.460
+I hope you liked it.
+
+54
+00:02:02.460 --> 00:02:04.503
+And I will see you in the next lecture.
+

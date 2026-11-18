@@ -1,0 +1,138 @@
+WEBVTT
+
+1
+00:00:00.780 --> 00:00:02.070
+<v Instructor>So now let's have a quick chat</v>
+
+2
+00:00:02.070 --> 00:00:05.160
+about regional NAT gateways or RNATs.
+
+3
+00:00:05.160 --> 00:00:09.060
+So it's a new type of NAT gateway that is highly available
+
+4
+00:00:09.060 --> 00:00:11.370
+and associated directly with your VPC.
+
+5
+00:00:11.370 --> 00:00:13.890
+So before, the NAT gateway had to be created
+
+6
+00:00:13.890 --> 00:00:15.600
+within each public subnets,
+
+7
+00:00:15.600 --> 00:00:18.630
+but now you just create it at the VPC level,
+
+8
+00:00:18.630 --> 00:00:21.120
+and then you link it to the Internet gateway.
+
+9
+00:00:21.120 --> 00:00:21.953
+How?
+
+10
+00:00:21.953 --> 00:00:23.100
+With the route table.
+
+11
+00:00:23.100 --> 00:00:25.590
+So you create the NAT gateway, it's in your VPC,
+
+12
+00:00:25.590 --> 00:00:28.320
+and you tell it that anything that goes to the Internet
+
+13
+00:00:28.320 --> 00:00:31.020
+should go to your Internet gateway.
+
+14
+00:00:31.020 --> 00:00:32.730
+The added benefit is
+
+15
+00:00:32.730 --> 00:00:36.720
+that now you don't need to deploy a NAT gateway per AZ,
+
+16
+00:00:36.720 --> 00:00:40.050
+automatically, this is shared across all the AZs.
+
+17
+00:00:40.050 --> 00:00:43.320
+You also don't need to maintain public subnets in your VPC
+
+18
+00:00:43.320 --> 00:00:45.900
+to host the regional NAT gateway.
+
+19
+00:00:45.900 --> 00:00:48.240
+So no risk for anyone to create resources
+
+20
+00:00:48.240 --> 00:00:49.230
+in the public subnet
+
+21
+00:00:49.230 --> 00:00:51.630
+that you didn't want to use in the first place.
+
+22
+00:00:51.630 --> 00:00:54.270
+Then, you link your private subnet directly
+
+23
+00:00:54.270 --> 00:00:57.180
+into your NAT gateway using a route table,
+
+24
+00:00:57.180 --> 00:00:58.260
+and you're good to go.
+
+25
+00:00:58.260 --> 00:01:01.260
+Your private subnet instances will have access
+
+26
+00:01:01.260 --> 00:01:03.780
+to the Internet through this NAT gateway.
+
+27
+00:01:03.780 --> 00:01:07.110
+And automatically, if you add another AZ,
+
+28
+00:01:07.110 --> 00:01:09.480
+another private subnet in another AZ,
+
+29
+00:01:09.480 --> 00:01:10.950
+then it will be detected
+
+30
+00:01:10.950 --> 00:01:13.470
+and the NAT gateway will scale for you.
+
+31
+00:01:13.470 --> 00:01:15.870
+So this simplifies solution architecture
+
+32
+00:01:15.870 --> 00:01:18.840
+by having one central NAT gateway per VPC
+
+33
+00:01:18.840 --> 00:01:22.890
+instead of creating a NAT gateway instance per AZ.
+
+34
+00:01:22.890 --> 00:01:26.103
+I hope you liked it and I will see you in the next lecture.
+

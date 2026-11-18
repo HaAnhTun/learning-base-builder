@@ -1,0 +1,366 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.640
+Multi-turn conversation design is what separates a single prompt from an actual dialogue with the model,
+
+2
+00:00:06.640 --> 00:00:10.560
+and the choice between them shapes the entire interaction.
+
+3
+00:00:10.560 --> 00:00:17.040
+In this video, we'll cover when a dialogue beats a single prompt, how to design classification turns,
+
+4
+00:00:17.040 --> 00:00:19.680
+breaking complex tasks into turn sequences,
+
+5
+00:00:19.968 --> 00:00:22.528
+and the iterative refinement pattern.
+
+6
+00:00:22.528 --> 00:00:27.248
+Some tasks fall apart the moment you try to cram them into one message,
+
+7
+00:00:27.248 --> 00:00:31.288
+and recognizing those tasks early saves a lot of rework.
+
+8
+00:00:31.288 --> 00:00:35.488
+A multi-turn dialogue is a conversation across two or more exchanges
+
+9
+00:00:35.488 --> 00:00:39.888
+where each turn builds on the prior response. It's the architecture you
+
+10
+00:00:39.936 --> 00:00:45.616
+reach for when the task is too complex or ambiguous for a single call to handle well.
+
+11
+00:00:59.904 --> 00:01:05.584
+exchanges that breaks a complex task into discrete steps, where each turn handles one
+
+12
+00:01:05.584 --> 00:01:09.224
+part and passes context forward to the next.
+
+13
+00:01:09.224 --> 00:01:15.024
+Together, these ideas describe the core toolkit for designing effective multi-turn interactions.
+
+14
+00:01:15.024 --> 00:01:19.864
+Multi-turn dialogue outperforms a single prompt in four particular steps.
+
+15
+00:01:19.872 --> 00:01:26.832
+First, when the task is ambiguous and any assumption the model makes could lead to wrong output,
+
+16
+00:01:26.832 --> 00:01:28.472
+that then needs rework.
+
+17
+00:01:28.472 --> 00:01:34.872
+Second, when the desired final output depends on intermediate results the model produces along the way.
+
+18
+00:01:34.872 --> 00:01:39.872
+Third, when a human needs to review and approve one step before the next begins, because
+
+19
+00:01:39.840 --> 00:01:42.940
+Because that review step breaks the flow of a single call.
+
+20
+00:01:42.940 --> 00:01:48.540
+Fourth, when the task is long enough that fitting everything into one call creates context window
+
+21
+00:01:48.540 --> 00:01:52.780
+pressure and risks degraded quality near the end.
+
+22
+00:01:52.780 --> 00:01:58.660
+When any one of these conditions exists, dialogue is the stronger architectural choice.
+
+23
+00:01:58.660 --> 00:02:03.540
+The comparison between a single call and a single call is a very simple and simple
+
+24
+00:01:59.808 --> 00:02:03.768
+single long prompt and a multi-turn dialogue is worth making explicit.
+
+25
+00:02:03.768 --> 00:02:08.928
+A single long prompt gives the model everything at once, which works well for well-defined
+
+26
+00:02:08.928 --> 00:02:12.088
+tasks where the inputs are complete and clear.
+
+27
+00:02:12.088 --> 00:02:17.148
+The problem is that single prompts fail badly, when inputs are ambiguous, when outputs are
+
+28
+00:02:17.148 --> 00:02:22.148
+interdependent across steps, or when inputs are ambiguous, or when inputs are ambiguous,
+
+29
+00:02:19.776 --> 00:02:24.256
+win the task benefits from a human review midway through.
+
+30
+00:02:24.256 --> 00:02:27.856
+Multi-turn dialogue addresses all of those failure modes.
+
+31
+00:02:27.856 --> 00:02:30.656
+Each turn can be smaller and more focused.
+
+32
+00:02:30.656 --> 00:02:33.176
+You can course correct after each step.
+
+33
+00:02:33.176 --> 00:02:37.856
+You can inject clarifications before a wrong assumption compounds.
+
+34
+00:02:37.856 --> 00:02:39.736
+That flexibility is the real advantage
+
+35
+00:02:39.744 --> 00:02:42.384
+dialogue over a monolithic prompt.
+
+36
+00:02:42.384 --> 00:02:45.984
+A good clarification turn is disciplined.
+
+37
+00:02:45.984 --> 00:02:50.664
+It starts by acknowledging what the model understood from the user's input.
+
+38
+00:02:50.664 --> 00:02:54.784
+So the user knows their message was processed correctly.
+
+39
+00:02:54.784 --> 00:02:59.624
+Then it identifies the single ambiguity that is most likely to produce wrong
+
+40
+00:02:59.712 --> 00:03:05.412
+output, and asks exactly one targeted question about that ambiguity. It ends by setting
+
+41
+00:03:05.412 --> 00:03:11.272
+an expectation for what comes next, once the question is answered. Asking one question
+
+42
+00:03:11.272 --> 00:03:16.472
+rather than a list is critical. A clarification turn with three or four questions feels like
+
+43
+00:03:16.472 --> 00:03:19.672
+an intake form rather than a conversation.
+
+44
+00:03:19.680 --> 00:03:25.200
+users start to feel interrogated rather than helped. Pick the ambiguity that matters most
+
+45
+00:03:25.200 --> 00:03:28.080
+and ask about only that one.
+
+46
+00:03:28.080 --> 00:03:33.000
+The pitfalls in clarification turn design are predictable. Asking too many questions
+
+47
+00:03:33.000 --> 00:03:38.600
+at once is the most common failure. Three or four open questions in a single turn create
+
+48
+00:03:38.600 --> 00:03:39.680
+a form-filling experience.
+
+49
+00:03:39.648 --> 00:03:45.948
+experience, not a dialogue. Clarifying things the model could reasonably infer from context,
+
+50
+00:03:45.948 --> 00:03:51.628
+wastes a turn, and signals poor judgment to the user. Skipping acknowledgement of what
+
+51
+00:03:51.628 --> 00:03:57.508
+was understood and jumping straight to a question makes users feel ignored. And open-ended
+
+52
+00:03:57.508 --> 00:03:59.628
+fishing questions like "Can you tell me where you're going?"
+
+53
+00:03:59.616 --> 00:04:06.736
+me more. Generate rambling responses rather than the specific detail the model actually needs.
+
+54
+00:04:06.736 --> 00:04:13.056
+Good clarification turns our short, specific, and respectful of the user's time. Each of these
+
+55
+00:04:13.056 --> 00:04:19.456
+pitfalls shares the same root, which is failing to treat the clarification as a purposeful,
+
+56
+00:04:19.584 --> 00:04:24.584
+targeted exchange rather than a data gathering exercise.
+
+57
+00:04:24.584 --> 00:04:31.064
+Breaking a complex task into a turn sequence starts with identifying the output dependencies.
+
+58
+00:04:31.064 --> 00:04:35.584
+Ask what each step needs from the prior step before it can proceed.
+
+59
+00:04:35.584 --> 00:04:39.564
+That dependency map becomes your turn structure. one clear goal.
+
+60
+00:04:39.552 --> 00:04:44.792
+per turn, rather than bundling multiple objectives into a single message.
+
+61
+00:04:44.792 --> 00:04:49.312
+When you send a turn, use the model's prior output as explicit input.
+
+62
+00:04:49.312 --> 00:04:55.152
+"Or reference it, rather than assuming the model remembers the relevant detail."
+
+63
+00:04:55.152 --> 00:04:58.992
+Keep each turn's instructions short and limited to the current step only.
+
+64
+00:04:59.520 --> 00:05:04.840
+That focus makes each turn easier to evaluate and makes it straightforward to steer when
+
+65
+00:05:04.840 --> 00:05:10.240
+a step goes wrong, rather than unwinding a long compounded error.
+
+66
+00:05:10.240 --> 00:05:16.720
+Iterative Refinement is one of the most reliable turn sequence patterns for producing polished output.
+
+67
+00:05:16.720 --> 00:05:19.420
+The first turn produces a draft based on the initial
+
+68
+00:05:19.488 --> 00:05:26.488
+specification. The second turn delivers targeted feedback on specific aspects of the draft.
+
+69
+00:05:26.488 --> 00:05:32.028
+Not a general "make this better" instruction, but concrete direction. Like, the opening
+
+70
+00:05:32.028 --> 00:05:37.308
+paragraph is too abstract, rewrite it to lead with the main finding. The third turn
+
+71
+00:05:37.308 --> 00:05:39.308
+applies revisions and can
+
+72
+00:05:39.456 --> 00:05:42.496
+firms that the changes were made as requested.
+
+73
+00:05:42.496 --> 00:05:47.296
+Subsequent turns addressed remaining issues one category at a time.
+
+74
+00:05:47.296 --> 00:05:53.296
+This works because small, targeted changes are easier to verify than large rewrites,
+
+75
+00:05:53.296 --> 00:05:58.576
+and each cycle brings the output closer to the target without losing what was already working.
+
+76
+00:05:59.424 --> 00:06:04.424
+State signaling between turns keeps the model oriented in a long workflow.
+
+77
+00:06:04.424 --> 00:06:11.190
+Opening a turn by summarizing the progress made in prior turns resets the model's working context to
+
+78
+00:06:11.190 --> 00:06:13.356
+the right point in the workflow.
+
+79
+00:06:13.424 --> 00:06:19.424
+Referencing the relevant part of the model's prior response before asking the next question makes
+
+80
+00:06:19.392 --> 00:06:25.632
+the handoff explicit. Naming the current step in the workflow, for example, we are now revising
+
+81
+00:06:25.632 --> 00:06:32.192
+the introduction, removes any ambiguity about what phase the conversation is in. These signals
+
+82
+00:06:32.192 --> 00:06:36.832
+are small additions to each message, but they prevent the kind of drift that happens when
+
+83
+00:06:36.832 --> 00:06:39.312
+model loses track of where it is in the future.
+
+84
+00:06:39.360 --> 00:06:43.920
+multi-step workflow and starts treating each turn as if it were the first.
+
+85
+00:06:43.920 --> 00:06:51.360
+Think of a multi-turn interaction as a series of turns that each carry a single job in order.
+
+86
+00:06:51.360 --> 00:06:57.040
+Hold it that way in your mind and clarifying with the model stops feeling like an interruption.
+
+87
+00:06:57.040 --> 00:06:59.200
+It becomes the turn that removes ambiguity.
+
+88
+00:06:59.328 --> 00:07:06.328
+The structure holds as long as you pass prior output forward explicitly, instead of assuming
+
+89
+00:07:06.328 --> 00:07:09.488
+the model still knows why it wrote that.
+
+90
+00:07:09.488 --> 00:07:11.128
+That brings this one to a close.
+
+91
+00:07:11.128 --> 00:07:12.448
+I'll see you in the next lesson.
+

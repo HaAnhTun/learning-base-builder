@@ -1,0 +1,262 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.840
+Let me walk you through the Claude.md patterns that teams actually reach for across front-end,
+
+2
+00:00:05.840 --> 00:00:12.239
+back-end, and full-stack projects. For this video, we'll cover what goes into each one,
+
+3
+00:00:12.239 --> 00:00:17.360
+a security pattern, a test pattern, and the anti-pattern that quietly undermines all of them.
+
+4
+00:00:18.000 --> 00:00:22.719
+These are the shapes you'll meet in most files you inherit and work with every day.
+
+5
+00:00:23.840 --> 00:00:28.479
+Teams that use Claude code will rarely write a Claude.md from scratch.
+
+6
+00:00:28.559 --> 00:00:35.119
+They reach for a pattern that already fits their kind of project. A Claude.md pattern is a reusable
+
+7
+00:00:35.119 --> 00:00:40.880
+set of directives suited to a specific team context. Front-end patterns encode component
+
+8
+00:00:40.880 --> 00:00:47.200
+naming and state management rules. Back-end patterns encode API design and database conventions.
+
+9
+00:00:47.200 --> 00:00:52.159
+Each pattern is different because each context is different. The directive versus narrative
+
+10
+00:00:52.159 --> 00:00:58.720
+distinction matters here too. A directive tells Claude code what to do. A narrative explains
+
+11
+00:00:58.720 --> 00:01:05.440
+background and rationale. Claude.md should be directives, not narrative. And tool duplication
+
+12
+00:01:05.440 --> 00:01:11.839
+is the anti-pattern of encoding rules that a linter or formatter already enforces. It wastes
+
+13
+00:01:11.839 --> 00:01:17.839
+context tokens and creates conflicting sources of truth. Together, they shape how you read any
+
+14
+00:01:17.839 --> 00:01:25.040
+Claude.md you inherit. The front-end pattern covers four rule categories. Component naming,
+
+15
+00:01:25.040 --> 00:01:31.519
+Pascal case for component definitions, the casing convention for file names, and co-location rules
+
+16
+00:01:31.519 --> 00:01:39.360
+for tests and styles. CSS methodology, whether the project uses CSS modules, Tailwind utility classes,
+
+17
+00:01:39.360 --> 00:01:44.800
+or styled components. The choice is meaningful because it affects how Claude code should
+
+18
+00:01:44.800 --> 00:01:50.080
+generate any component with styles. State management, which library is approved, whether
+
+19
+00:01:50.080 --> 00:01:56.160
+global state is permitted in certain layers, what patterns are off limits, and accessibility standards,
+
+20
+00:01:56.160 --> 00:02:02.000
+required ARIA attributes, keyboard navigation requirements for interactive elements. None of
+
+21
+00:02:02.000 --> 00:02:08.559
+these apply to back-end code. That's exactly why a subdirectory Claude.md in the front-end folder
+
+22
+00:02:08.559 --> 00:02:14.320
+is the right home for them. The back-end pattern covers the API and data layers.
+
+23
+00:02:14.320 --> 00:02:21.360
+API design rules encode this project's specific conventions, the rest design choices, how the team
+
+24
+00:02:21.360 --> 00:02:27.360
+version's endpoints, what the standard error response format looks like. Database query rules
+
+25
+00:02:27.360 --> 00:02:34.800
+encode the ORM versus raw SQL policy, any query optimization requirements, and whether direct
+
+26
+00:02:34.800 --> 00:02:41.679
+database access is permitted outside certain layers. Error handling rules specify which error
+
+27
+00:02:41.679 --> 00:02:48.720
+types are expected to surface, how they're logged, and what format error responses take in the API.
+
+28
+00:02:48.720 --> 00:02:54.559
+These are all decisions specific to this service. Claude code can't infer them from general back-end
+
+29
+00:02:54.559 --> 00:03:01.600
+knowledge. They have to be encoded. Full stack and monorepo projects need cross-cutting rules that
+
+30
+00:03:01.600 --> 00:03:07.679
+span multiple packages. The full stack pattern typically includes four categories. Shared type
+
+31
+00:03:07.679 --> 00:03:13.839
+conventions, where TypeScript interfaces shared across front-end and back-end live, and the import
+
+32
+00:03:13.839 --> 00:03:20.160
+rules for consuming them. Monorepo structure rules, which packages own which concerns, and what the
+
+33
+00:03:20.160 --> 00:03:25.759
+import restrictions are across package boundaries. Service boundary rules, what each service is
+
+34
+00:03:25.759 --> 00:03:32.240
+responsible for, what data crosses service lines, and what's explicitly forbidden to cross. And
+
+35
+00:03:32.240 --> 00:03:38.000
+shared naming conventions that apply consistently everywhere in the monorepo. These rules prevent
+
+36
+00:03:38.000 --> 00:03:43.360
+the drift that develops naturally when multiple packages evolve independently without shared
+
+37
+00:03:43.360 --> 00:03:50.160
+guardrails in place. Security directives are among the highest value lines in any claude.md.
+
+38
+00:03:50.720 --> 00:03:56.399
+Four rules appear in nearly every security pattern. No hard-coded credentials. All secrets
+
+39
+00:03:56.399 --> 00:04:03.279
+are passed via environment variables or a secrets manager, never written in line in code..env usage
+
+40
+00:04:03.279 --> 00:04:09.759
+policy, which env files exist in this project, which ones are committed to version control, and
+
+41
+00:04:09.759 --> 00:04:15.759
+which are never committed. Secrets management approach, which vault or service handles secrets,
+
+42
+00:04:15.759 --> 00:04:21.040
+and how claude code should reference them in generated code. And authentication patterns,
+
+43
+00:04:21.040 --> 00:04:26.239
+approved libraries, forbidden patterns, and session handling rules. Security directives
+
+44
+00:04:26.239 --> 00:04:30.399
+should be explicit, prominent, and placed early in the file so they're hard to miss.
+
+45
+00:04:31.679 --> 00:04:36.320
+The test pattern addresses four areas where inconsistency causes real problems.
+
+46
+00:04:36.880 --> 00:04:42.880
+Test file naming, where test files live relative to source, whether they use a dot test or dot
+
+47
+00:04:42.880 --> 00:04:49.040
+spec suffix, and any module co-location requirements. Coverage thresholds, the minimum
+
+48
+00:04:49.040 --> 00:04:55.920
+percentages enforced in CI and any per-module targets the team has agreed to. Fixture organization,
+
+49
+00:04:55.920 --> 00:05:00.959
+where shared fixtures live in the project and how they're imported across different test files.
+
+50
+00:05:00.959 --> 00:05:06.399
+And mock policies, which external dependencies are always mocked, which should be tested with
+
+51
+00:05:06.399 --> 00:05:12.320
+real implementations, and any rules around third-party service mocks. Test configuration
+
+52
+00:05:12.320 --> 00:05:16.959
+rules prevent a test suite from growing inconsistently as the code base scales.
+
+53
+00:05:18.160 --> 00:05:23.839
+The most common claude.md failure mode is writing it as a narrative document instead of a set of
+
+54
+00:05:23.839 --> 00:05:30.480
+directives. A narrative claude.md has long paragraphs explaining context and rationale.
+
+55
+00:05:31.119 --> 00:05:37.600
+Rules are buried inside prose. It reads like a design doc or a wiki page. Under context pressure,
+
+56
+00:05:37.600 --> 00:05:43.119
+claude code is more likely to miss rules that aren't clearly delineated. The directive pattern
+
+57
+00:05:43.119 --> 00:05:49.279
+is the opposite. Bullet points one rule per line, clear headers, scannable in seconds. You can
+
+58
+00:05:49.279 --> 00:05:55.359
+verify it by reading through in under a minute and confirming each directive is present and explicit.
+
+59
+00:05:55.359 --> 00:06:01.359
+When you sit down to write claude.md, start with bullets. Add prose only when an instruction
+
+60
+00:06:01.359 --> 00:06:08.320
+genuinely can't be understood without background context. Are you documenting a project or
+
+61
+00:06:08.320 --> 00:06:14.160
+instructing a model? Onboarding prose explains why the architecture ended up the way it did.
+
+62
+00:06:14.720 --> 00:06:21.200
+A directive tells claude code what to do on the next edit, and only the second one changes
+
+63
+00:06:21.200 --> 00:06:28.399
+behavior. That's why these patterns read as terse lists rather than paragraphs. Borrow a proven shape
+
+64
+00:06:28.399 --> 00:06:32.880
+and you skip the hours of trial and error someone else already spent figuring it out.
+
+65
+00:06:33.600 --> 00:06:36.559
+That brings this one to a close. I'll see you in the next one.
+

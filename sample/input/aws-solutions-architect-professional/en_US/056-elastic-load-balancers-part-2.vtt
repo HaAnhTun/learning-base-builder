@@ -1,0 +1,770 @@
+WEBVTT
+
+1
+00:00:00.500 --> 00:00:03.150
+<v Instructor>Now let's talk about Cross-Zone Balancing.</v>
+
+2
+00:00:03.150 --> 00:00:06.050
+So let's take an example of a very imbalance situation
+
+3
+00:00:06.050 --> 00:00:08.120
+but it will illustrate the point.
+
+4
+00:00:08.120 --> 00:00:10.130
+So we have two Availability Zones
+
+5
+00:00:10.130 --> 00:00:11.840
+and the first one has a load balancer
+
+6
+00:00:11.840 --> 00:00:13.167
+with two EC2 instances
+
+7
+00:00:13.167 --> 00:00:15.530
+and the second one also has a load balancer.
+
+8
+00:00:15.530 --> 00:00:18.050
+So, a load balancer instance, obviously,
+
+9
+00:00:18.050 --> 00:00:19.760
+with eight EC2 instances.
+
+10
+00:00:19.760 --> 00:00:22.680
+The load balancers instances are part of the same,
+
+11
+00:00:22.680 --> 00:00:25.090
+more general load balancer.
+
+12
+00:00:25.090 --> 00:00:28.960
+So, the client is accessing these load balancers.
+
+13
+00:00:28.960 --> 00:00:32.290
+And so with Cross-Zone Load Balancing,
+
+14
+00:00:32.290 --> 00:00:35.520
+each load balancer instance will distribute evenly
+
+15
+00:00:35.520 --> 00:00:39.290
+across all registered instances in all Availability Zones.
+
+16
+00:00:39.290 --> 00:00:42.430
+So the client itself is sending 50%
+
+17
+00:00:42.430 --> 00:00:45.700
+of the traffic to the first ALB instance
+
+18
+00:00:45.700 --> 00:00:49.080
+and 50% of traffic to the other ALB instance.
+
+19
+00:00:49.080 --> 00:00:52.590
+But each ALB is going to redirect that traffic
+
+20
+00:00:52.590 --> 00:00:55.310
+across all 10 EC2 instances
+
+21
+00:00:55.310 --> 00:00:58.440
+regardless of which Availability Zones they're in.
+
+22
+00:00:58.440 --> 00:01:01.150
+This is why it's called, Cross-Zone Load Balancing.
+
+23
+00:01:01.150 --> 00:01:03.380
+So, if we take a look at the first,
+
+24
+00:01:03.380 --> 00:01:05.483
+at the second ALB, sorry, instance
+
+25
+00:01:05.483 --> 00:01:09.990
+it's going to send 10% of the traffic it receives, okay,
+
+26
+00:01:09.990 --> 00:01:12.700
+to all these instances
+
+27
+00:01:12.700 --> 00:01:14.120
+because we have 10 instances,
+
+28
+00:01:14.120 --> 00:01:16.900
+so each of them gets 10% of the traffic.
+
+29
+00:01:16.900 --> 00:01:20.500
+And same story with this first ALB instance
+
+30
+00:01:20.500 --> 00:01:23.870
+it's going to send also 10% traffic to all these instances.
+
+31
+00:01:23.870 --> 00:01:26.640
+So in this example, with Cross-Zone Balancing,
+
+32
+00:01:26.640 --> 00:01:29.150
+we are distributing the traffic evenly
+
+33
+00:01:29.150 --> 00:01:31.200
+across all EC2 instances.
+
+34
+00:01:31.200 --> 00:01:33.140
+And that may be something you want to have
+
+35
+00:01:33.140 --> 00:01:34.310
+or not, who knows,
+
+36
+00:01:34.310 --> 00:01:37.730
+but at least this behavior is available to you.
+
+37
+00:01:37.730 --> 00:01:39.470
+The second behavior that's available to you
+
+38
+00:01:39.470 --> 00:01:42.460
+is to not have Cross-Zone Balancing.
+
+39
+00:01:42.460 --> 00:01:44.830
+So we take the same example,
+
+40
+00:01:44.830 --> 00:01:46.930
+but without Cross-Zone Balancing
+
+41
+00:01:46.930 --> 00:01:47.838
+the requests,
+
+42
+00:01:47.838 --> 00:01:49.060
+the requests, sorry,
+
+43
+00:01:49.060 --> 00:01:51.680
+are distributed in the instances of the node
+
+44
+00:01:51.680 --> 00:01:53.950
+of the Elastic Load Balancer.
+
+45
+00:01:53.950 --> 00:01:55.450
+So this example, what we have
+
+46
+00:01:55.450 --> 00:01:58.460
+is that the clients sends 50% of the traffic
+
+47
+00:01:58.460 --> 00:02:01.560
+to the first AZ and the 50% of traffic to the second AZ.
+
+48
+00:02:01.560 --> 00:02:06.043
+Okay. But the first ALB instance is going to
+
+49
+00:02:06.043 --> 00:02:09.800
+send the traffic to only the EC2 instances in its region.
+
+50
+00:02:09.800 --> 00:02:12.530
+So that means that each EC2 instance in this,
+
+51
+00:02:12.530 --> 00:02:13.830
+sorry, Availability Zone
+
+52
+00:02:13.830 --> 00:02:16.380
+is going to get 25% of the traffic overall.
+
+53
+00:02:16.380 --> 00:02:18.100
+Okay. So half and half.
+
+54
+00:02:18.100 --> 00:02:19.700
+And the one on the right hand side
+
+55
+00:02:19.700 --> 00:02:21.800
+will again divide up the traffic it receives
+
+56
+00:02:21.800 --> 00:02:23.560
+into the EC2 instances.
+
+57
+00:02:23.560 --> 00:02:24.710
+The averages are within its AZ.
+
+58
+00:02:24.710 --> 00:02:26.174
+So AZ2.
+
+59
+00:02:26.174 --> 00:02:29.700
+So as we can see here without Cross Load Balancing
+
+60
+00:02:29.700 --> 00:02:32.180
+the traffic is contained within each AZ.
+
+61
+00:02:32.180 --> 00:02:36.290
+But if there are an imbalanced number of EC2 instances
+
+62
+00:02:36.290 --> 00:02:39.380
+in each AZ, then some EC2 instances
+
+63
+00:02:39.380 --> 00:02:42.730
+of a specific AZ will receive more traffic than others.
+
+64
+00:02:42.730 --> 00:02:44.730
+It's just an option to know about.
+
+65
+00:02:44.730 --> 00:02:46.070
+There's no right or wrong answer.
+
+66
+00:02:46.070 --> 00:02:48.760
+It depends on the use case, obviously.
+
+67
+00:02:48.760 --> 00:02:51.200
+So let's talk about Cross-Zone Load Balancing
+
+68
+00:02:51.200 --> 00:02:52.340
+for each load balancer.
+
+69
+00:02:52.340 --> 00:02:54.980
+So for the CLB, it's disabled by default
+
+70
+00:02:54.980 --> 00:02:58.840
+and you have no charges for inter AZ data, if enabled.
+
+71
+00:02:58.840 --> 00:03:00.450
+For the Application Load Balancer,
+
+72
+00:03:00.450 --> 00:03:02.520
+it's always on, it cannot be disabled
+
+73
+00:03:02.520 --> 00:03:03.750
+and you have no charges
+
+74
+00:03:03.750 --> 00:03:05.760
+for inter AZ data as well.
+
+75
+00:03:05.760 --> 00:03:06.830
+For the Network Load Balancer
+
+76
+00:03:06.830 --> 00:03:07.920
+is disabled by default
+
+77
+00:03:07.920 --> 00:03:11.550
+are you going to pay charges if you do enable this feature.
+
+78
+00:03:11.550 --> 00:03:13.470
+And finally for the Gateway Load Balancer
+
+79
+00:03:13.470 --> 00:03:14.550
+it's disabled by default
+
+80
+00:03:14.550 --> 00:03:17.260
+and you are going to pay charges for inter AZ data
+
+81
+00:03:17.260 --> 00:03:19.950
+if you enable this feature.
+
+82
+00:03:19.950 --> 00:03:21.530
+Let's talk about Sticky Sessions,
+
+83
+00:03:21.530 --> 00:03:23.230
+also called, Session Affinity,
+
+84
+00:03:23.230 --> 00:03:26.000
+for your Elastic Load Balancer.
+
+85
+00:03:26.000 --> 00:03:27.470
+So it's possible to implement what's called
+
+86
+00:03:27.470 --> 00:03:29.250
+stickiness or sticky sessions.
+
+87
+00:03:29.250 --> 00:03:32.280
+And the idea is that the client doing two requests
+
+88
+00:03:32.280 --> 00:03:36.290
+to the load balancer will have the same instance
+
+89
+00:03:36.290 --> 00:03:38.410
+in the backend to respond to the requests.
+
+90
+00:03:38.410 --> 00:03:39.450
+So the idea is that for example,
+
+91
+00:03:39.450 --> 00:03:42.000
+you have a ALB with two EC2 instances
+
+92
+00:03:42.000 --> 00:03:43.430
+and you have three clients,
+
+93
+00:03:43.430 --> 00:03:45.160
+if the client one makes a request
+
+94
+00:03:45.160 --> 00:03:47.430
+and it goes to the first EC2 instance,
+
+95
+00:03:47.430 --> 00:03:49.890
+that means that when it does a second request
+
+96
+00:03:49.890 --> 00:03:50.723
+to the load balancer,
+
+97
+00:03:50.723 --> 00:03:53.200
+it will go to the same instance.
+
+98
+00:03:53.200 --> 00:03:54.760
+Which is a different behavior
+
+99
+00:03:54.760 --> 00:03:57.010
+where usually the Application Load Balancer
+
+100
+00:03:57.010 --> 00:03:59.780
+will do a spread of all the requests
+
+101
+00:03:59.780 --> 00:04:02.090
+across all the EC2 instances.
+
+102
+00:04:02.090 --> 00:04:03.280
+Now for client two,
+
+103
+00:04:03.280 --> 00:04:05.820
+if it goes to the ALB and talks to the second instance,
+
+104
+00:04:05.820 --> 00:04:07.610
+then all the requests will go there.
+
+105
+00:04:07.610 --> 00:04:09.640
+And same for client three, okay.
+
+106
+00:04:09.640 --> 00:04:11.420
+So this is a behavior that can be enabled
+
+107
+00:04:11.420 --> 00:04:13.100
+for the Classic Load Balancer
+
+108
+00:04:13.100 --> 00:04:15.340
+and the Application Load Balancer.
+
+109
+00:04:15.340 --> 00:04:16.190
+And how it works,
+
+110
+00:04:16.190 --> 00:04:19.450
+well there is a cookie that is sent as part of the request
+
+111
+00:04:19.450 --> 00:04:21.710
+from the clients to the load balancer
+
+112
+00:04:21.710 --> 00:04:23.090
+and has stickiness
+
+113
+00:04:23.090 --> 00:04:24.640
+and it has an expiration date.
+
+114
+00:04:24.640 --> 00:04:26.280
+That means that when the cookie expires,
+
+115
+00:04:26.280 --> 00:04:28.020
+then the clients may be redirected
+
+116
+00:04:28.020 --> 00:04:30.270
+to another EC2 instance.
+
+117
+00:04:30.270 --> 00:04:31.200
+The use case for this
+
+118
+00:04:31.200 --> 00:04:32.770
+is to make sure that the user
+
+119
+00:04:32.770 --> 00:04:34.386
+is connected to the same backend instance,
+
+120
+00:04:34.386 --> 00:04:37.470
+in order not to lose his session data.
+
+121
+00:04:37.470 --> 00:04:39.290
+Which can take some important information
+
+122
+00:04:39.290 --> 00:04:42.060
+such as the login of the user, for example.
+
+123
+00:04:42.060 --> 00:04:43.420
+But if you enable stickiness,
+
+124
+00:04:43.420 --> 00:04:45.220
+it may bring imbalance to the load
+
+125
+00:04:45.220 --> 00:04:46.630
+over the backend, EC2 instances.
+
+126
+00:04:46.630 --> 00:04:47.957
+In case some instances,
+
+127
+00:04:47.957 --> 00:04:50.740
+I have a very, very sticky user.
+
+128
+00:04:50.740 --> 00:04:52.060
+Now let's have a look at
+
+129
+00:04:52.060 --> 00:04:54.340
+Routing Algorithms for your requests.
+
+130
+00:04:54.340 --> 00:04:57.260
+So, there is one called the Least Outstanding Request
+
+131
+00:04:57.260 --> 00:04:59.830
+which is at the next instance to receive the request
+
+132
+00:04:59.830 --> 00:05:02.930
+is the instance that has the lowest number of pending
+
+133
+00:05:02.930 --> 00:05:04.390
+or unfinished requests.
+
+134
+00:05:04.390 --> 00:05:06.430
+So basically the instance that is
+
+135
+00:05:06.430 --> 00:05:08.030
+the less currently busy
+
+136
+00:05:08.030 --> 00:05:10.880
+is the instance that will receive the next request.
+
+137
+00:05:10.880 --> 00:05:11.740
+Which makes sense, right?
+
+138
+00:05:11.740 --> 00:05:13.150
+Because you want to make sure that
+
+139
+00:05:13.150 --> 00:05:14.823
+if an instance has less requests than another,
+
+140
+00:05:14.823 --> 00:05:17.740
+then maybe has more capacity to receive these requests.
+
+141
+00:05:17.740 --> 00:05:19.823
+So it's available for the ALB and the CLB.
+
+142
+00:05:19.823 --> 00:05:22.650
+And so the idea is that the first request will go
+
+143
+00:05:22.650 --> 00:05:24.070
+maybe to the first instance.
+
+144
+00:05:24.070 --> 00:05:25.700
+The second request to the second.
+
+145
+00:05:25.700 --> 00:05:27.952
+And then the third request has to go to the third
+
+146
+00:05:27.952 --> 00:05:30.080
+because the third instance right now,
+
+147
+00:05:30.080 --> 00:05:31.500
+doesn't have any requests.
+
+148
+00:05:31.500 --> 00:05:33.880
+So it has the Least Outstanding Requests.
+
+149
+00:05:33.880 --> 00:05:35.020
+So this is how it works.
+
+150
+00:05:35.020 --> 00:05:37.660
+And then the fourth one may go again
+
+151
+00:05:37.660 --> 00:05:38.960
+to the third instance.
+
+152
+00:05:38.960 --> 00:05:41.770
+If the third instance has the Least Outstanding Requests
+
+153
+00:05:41.770 --> 00:05:45.310
+maybe the third request was very, very quick to finish
+
+154
+00:05:45.310 --> 00:05:47.160
+and so the fourth one went again
+
+155
+00:05:47.160 --> 00:05:50.670
+to the third instance and so on. Okay.
+
+156
+00:05:50.670 --> 00:05:53.250
+Now, for the Round Robin, this is a bit different.
+
+157
+00:05:53.250 --> 00:05:56.000
+So the Round Robin is that the targets will have
+
+158
+00:05:56.000 --> 00:05:58.390
+one after the other, the next requests,
+
+159
+00:05:58.390 --> 00:06:01.260
+regardless of how many outstanding requests are available
+
+160
+00:06:01.260 --> 00:06:02.093
+on your instance.
+
+161
+00:06:02.093 --> 00:06:04.270
+And so this works for ALB and CLB.
+
+162
+00:06:04.270 --> 00:06:05.950
+The idea is that number one will go to number one,
+
+163
+00:06:05.950 --> 00:06:06.870
+number two will go to number two,
+
+164
+00:06:06.870 --> 00:06:08.320
+and number three go to number one.
+
+165
+00:06:08.320 --> 00:06:09.410
+And then number four,
+
+166
+00:06:09.410 --> 00:06:11.420
+will again go through the same cycle.
+
+167
+00:06:11.420 --> 00:06:14.370
+So number one and so on.
+
+168
+00:06:14.370 --> 00:06:15.203
+Then for the NLB
+
+169
+00:06:15.203 --> 00:06:18.010
+there is the Flow Hash Request Routing.
+
+170
+00:06:18.010 --> 00:06:20.330
+Which a target is selected based on
+
+171
+00:06:20.330 --> 00:06:22.210
+a hashing of the protocol,
+
+172
+00:06:22.210 --> 00:06:23.920
+source/destination IP address,
+
+173
+00:06:23.920 --> 00:06:25.340
+source/destination port,
+
+174
+00:06:25.340 --> 00:06:27.210
+and TCP sequence number.
+
+175
+00:06:27.210 --> 00:06:29.920
+That means that each TCP or UDP connection
+
+176
+00:06:29.920 --> 00:06:31.070
+is going to be routed
+
+177
+00:06:31.070 --> 00:06:33.510
+for a single target for the life of the connection
+
+178
+00:06:33.510 --> 00:06:35.070
+which is sort of equivalent
+
+179
+00:06:35.070 --> 00:06:39.040
+for the sticky sessions on the Network Load Balancer.
+
+180
+00:06:39.040 --> 00:06:40.490
+So very, very simply
+
+181
+00:06:40.490 --> 00:06:43.460
+whenever a user makes a request in EC2 instance
+
+182
+00:06:43.460 --> 00:06:44.950
+all the information I just said below
+
+183
+00:06:44.950 --> 00:06:46.520
+is going to be hashed,
+
+184
+00:06:46.520 --> 00:06:48.340
+through a Flow Hash Algorithm.
+
+185
+00:06:48.340 --> 00:06:50.010
+And then thanks to this hash number
+
+186
+00:06:50.010 --> 00:06:52.080
+is going to route the same requests
+
+187
+00:06:52.080 --> 00:06:54.710
+from the same user to the same EC2 instance
+
+188
+00:06:54.710 --> 00:06:57.340
+as long as the TCP connection is open, okay.
+
+189
+00:06:57.340 --> 00:07:00.800
+And this is a specificity of your NLB.
+
+190
+00:07:00.800 --> 00:07:02.000
+So that's it for this lecture.
+
+191
+00:07:02.000 --> 00:07:02.833
+I hope you liked it,
+
+192
+00:07:02.833 --> 00:07:04.720
+and I will see you in the next lecture.
+

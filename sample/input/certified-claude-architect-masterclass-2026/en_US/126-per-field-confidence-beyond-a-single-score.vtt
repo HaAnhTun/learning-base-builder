@@ -1,0 +1,302 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.519
+In this lesson we're looking at per field confidence scores. When a model
+
+2
+00:00:04.519 --> 00:00:09.560
+extracts structured data it can emit a separate score for every field it fills
+
+3
+00:00:09.560 --> 00:00:14.840
+in. We'll cover why that matters, how to elicit those scores through schema
+
+4
+00:00:14.840 --> 00:00:20.479
+design, and how routing policy uses them to send only uncertain fields back to
+
+5
+00:00:20.479 --> 00:00:25.639
+the human reviewer. Let's get into it. A record comes back from extraction
+
+6
+00:00:25.639 --> 00:00:29.680
+carrying one confidence number for the whole thing and that number is doing
+
+7
+00:00:29.680 --> 00:00:34.759
+more hiding than reporting. Field level confidence is the alternative, a score
+
+8
+00:00:34.759 --> 00:00:39.599
+the model emits for each individual extracted value rather than one number
+
+9
+00:00:39.599 --> 00:00:45.080
+for the whole record. That granularity is what makes targeted routing possible. The
+
+10
+00:00:45.080 --> 00:00:49.840
+routing threshold is the cutoff those scores get compared against. Fields at or
+
+11
+00:00:49.840 --> 00:00:55.240
+above it are auto accepted and flow downstream and fields below it get queued
+
+12
+00:00:55.240 --> 00:00:59.680
+for a human reviewer. Calibration is the check that decides whether any of those
+
+13
+00:00:59.680 --> 00:01:03.919
+numbers deserve your trust by measuring reported confidence against real
+
+14
+00:01:03.919 --> 00:01:09.120
+accuracy on labeled data. The problem with a single record level
+
+15
+00:01:09.120 --> 00:01:14.080
+confidence score is that it hides where the model is actually struggling. Imagine
+
+16
+00:01:14.080 --> 00:01:20.239
+a record that scores 0.85 overall. That sounds solid but what if the date field
+
+17
+00:01:20.239 --> 00:01:25.599
+inside that record is sitting at 0.4? The aggregate number masked the weak
+
+18
+00:01:25.599 --> 00:01:30.720
+spot entirely. A human reviewer who gets the whole record still has to wade
+
+19
+00:01:30.720 --> 00:01:35.080
+through every high confidence field to find the one that actually needed
+
+20
+00:01:35.080 --> 00:01:39.879
+attention. That wasted effort scales badly in a high volume extraction
+
+21
+00:01:39.879 --> 00:01:45.080
+pipeline. Per field scores fix this by surfacing exactly where the uncertainty
+
+22
+00:01:45.080 --> 00:01:50.080
+lives so downstream routing can act precisely on the problem field rather
+
+23
+00:01:50.080 --> 00:01:56.040
+than re-inspecting the entire record. The contrast between record level and field
+
+24
+00:01:56.040 --> 00:02:00.519
+level scoring decides how much work reaches your reviewers. With a record
+
+25
+00:02:00.519 --> 00:02:05.800
+level score one number covers the full extraction and per record routing sends
+
+26
+00:02:05.800 --> 00:02:10.160
+the entire record to human review whenever any single field falls below
+
+27
+00:02:10.160 --> 00:02:14.960
+the threshold. That hands reviewers a lot of work they didn't need to do. Field
+
+28
+00:02:15.000 --> 00:02:19.679
+level scoring changes the routing unit from the record to the individual value.
+
+29
+00:02:19.679 --> 00:02:25.240
+Each field carries its own score so per field routing acts on each value
+
+30
+00:02:25.240 --> 00:02:31.559
+independently. A customer name at 0.95 passes straight through. An invoice date
+
+31
+00:02:31.559 --> 00:02:37.720
+at 0.38 goes to a reviewer. Per field routing is more efficient but it needs
+
+32
+00:02:37.720 --> 00:02:42.559
+downstream systems that can accept partially reviewed records. Per record
+
+33
+00:02:42.559 --> 00:02:46.800
+routing is simpler and easier to audit which is why some compliance heavy
+
+34
+00:02:46.800 --> 00:02:52.639
+environments still prefer it even at the cost of higher reviewer workload. Here's
+
+35
+00:02:52.639 --> 00:02:56.600
+the thing to understand before you build any of this. There is no native
+
+36
+00:02:56.600 --> 00:03:00.679
+confidence field inside the model. CLAW doesn't hand you a calibrated
+
+37
+00:03:00.679 --> 00:03:05.919
+probability from its internal state. What you get is a verbalized self-report. A
+
+38
+00:03:05.919 --> 00:03:10.440
+number the model generates because you asked it to. So getting per field
+
+39
+00:03:10.479 --> 00:03:14.919
+confidence comes down to prompt and schema design. You define a structured
+
+40
+00:03:14.919 --> 00:03:19.360
+output where each field has a value key and a confidence key where the model
+
+41
+00:03:19.360 --> 00:03:25.320
+writes its own estimate on a 0 to 1 scale. A self-reported score is just the
+
+42
+00:03:25.320 --> 00:03:30.080
+model's opinion of itself and that opinion can be badly wrong. The number
+
+43
+00:03:30.080 --> 00:03:34.919
+means nothing until you check it against a labeled held out set. That calibration
+
+44
+00:03:34.919 --> 00:03:39.479
+is what turns a self-report into something you can route on. Choose which
+
+45
+00:03:39.520 --> 00:03:45.119
+high-stakes fields get a confident sibling based on downstream risk. Once
+
+46
+00:03:45.119 --> 00:03:48.880
+the model returns scores for each field your routing logic reads them against a
+
+47
+00:03:48.880 --> 00:03:54.600
+threshold. Fields that score at or above the cutoff are auto accepted and move
+
+48
+00:03:54.600 --> 00:03:59.919
+downstream without any human involvement. Fields that fall below the cutoff are
+
+49
+00:03:59.919 --> 00:04:04.440
+flagged and queued for a reviewer. In some systems there is also a borderline
+
+50
+00:04:04.440 --> 00:04:08.800
+zone near the threshold where a secondary check applies or where a
+
+51
+00:04:08.839 --> 00:04:14.960
+tighter threshold kicks in for specific field types. The exact policy depends on
+
+52
+00:04:14.960 --> 00:04:19.079
+the business stakes and the reviewer capacity available but the mechanism is
+
+53
+00:04:19.079 --> 00:04:24.760
+the same. You compare the score to a threshold and route accordingly. In
+
+54
+00:04:24.760 --> 00:04:29.000
+production you will almost never see a record where every field is high
+
+55
+00:04:29.000 --> 00:04:33.679
+confidence or every field is low confidence. The typical case is mixed. A
+
+56
+00:04:33.920 --> 00:04:40.720
+record might have a customer name at 0.95, a total amount at 0.88, and an
+
+57
+00:04:40.720 --> 00:04:47.239
+invoice date at 0.38. The name and amount flow straight through. The date goes to
+
+58
+00:04:47.239 --> 00:04:51.399
+the review queue. This selective escalation is the real value of per
+
+59
+00:04:51.399 --> 00:04:56.320
+field scoring. Reviewers handle only the uncertain portion of the work rather
+
+60
+00:04:56.320 --> 00:05:01.200
+than re-examining entire records that are mostly correct. That keeps throughput
+
+61
+00:05:01.399 --> 00:05:06.200
+high while still catching the fields that actually need attention. There is a
+
+62
+00:05:06.200 --> 00:05:10.040
+failure mode that trips up a lot of teams when they first deploy per field
+
+63
+00:05:10.040 --> 00:05:15.040
+confidence scoring. They take the model's confidence scores at face value and set
+
+64
+00:05:15.040 --> 00:05:19.440
+thresholds on those numbers without ever checking whether the scores are accurate.
+
+65
+00:05:19.440 --> 00:05:25.279
+A model might confidently report 0.9 on a field type where it is actually only
+
+66
+00:05:25.279 --> 00:05:31.040
+correct 60% of the time. If routing trusts that 0.9 and auto accepts the
+
+67
+00:05:31.040 --> 00:05:36.200
+field, errors flow straight into production. Calibration is how you catch
+
+68
+00:05:36.200 --> 00:05:41.320
+that mismatch. It measures reported scores against real accuracy on labeled
+
+69
+00:05:41.320 --> 00:05:46.320
+data and it is what makes those numbers safe to route on before they drive real
+
+70
+00:05:46.320 --> 00:05:52.440
+decisions. A score for the whole record and a score for each field are not the
+
+71
+00:05:52.440 --> 00:05:57.959
+same instrument. The record score says things look broadly okay while a field
+
+72
+00:05:58.079 --> 00:06:03.279
+score says the customer name is fine but the invoice date is unsure. That
+
+73
+00:06:03.279 --> 00:06:08.480
+difference decides whether a reviewer gets a whole record or one value. Just
+
+74
+00:06:08.480 --> 00:06:12.799
+remember a self-reported number is only trustworthy once you've checked it
+
+75
+00:06:12.799 --> 00:06:19.920
+against labeled data. That brings this one to a close. I'll see you in the next lesson.
+

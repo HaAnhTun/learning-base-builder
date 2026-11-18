@@ -1,0 +1,346 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.799
+Tool failures don't always mean the operation is impossible.
+
+2
+00:00:03.799 --> 00:00:08.600
+Sometimes a service is temporarily overloaded, or a retry will succeed.
+
+3
+00:00:08.600 --> 00:00:12.899
+Sometimes a batch job finishes half its items before hitting an error.
+
+4
+00:00:12.899 --> 00:00:17.899
+In this video, we'll work through retry-safe patterns, partial success responses,
+
+5
+00:00:17.899 --> 00:00:21.399
+and circuit breakers for unreliable downstream services.
+
+6
+00:00:21.399 --> 00:00:23.299
+Let's get into it.
+
+7
+00:00:23.299 --> 00:00:27.299
+A retry sounds harmless until it charges a customer twice.
+
+8
+00:00:27.299 --> 00:00:33.799
+Partial success describes the outcome when a batch tool completes some operations and fails on others.
+
+9
+00:00:33.799 --> 00:00:38.000
+The response has to say which items succeeded and which didn't,
+
+10
+00:00:38.000 --> 00:00:40.799
+so Claude can reason about what to do next.
+
+11
+00:00:40.799 --> 00:00:47.099
+Idempotency is the property that calling a tool twice with the same input is safe.
+
+12
+00:00:47.099 --> 00:00:54.200
+It's the foundation of retry logic, because without it, retrying a call can create duplicate side effects.
+
+13
+00:00:54.200 --> 00:01:00.900
+And the circuit breaker is a pattern that cuts off calls to a failing downstream service after repeated failures,
+
+14
+00:01:00.900 --> 00:01:07.300
+preventing the kind of cascading errors that fill a context window with noise.
+
+15
+00:01:07.300 --> 00:01:12.300
+Before you retry, you need to know whether retrying actually makes sense.
+
+16
+00:01:12.300 --> 00:01:17.900
+Transient errors like timeouts and rate limit responses are the clearest candidates.
+
+17
+00:01:17.900 --> 00:01:20.900
+The service was busy or temporarily unavailable,
+
+18
+00:01:21.000 --> 00:01:25.199
+and waiting a short moment before trying again is the right call.
+
+19
+00:01:25.199 --> 00:01:27.300
+User errors are the opposite.
+
+20
+00:01:27.300 --> 00:01:33.099
+If the input was invalid, sending the exact same request again won't fix anything.
+
+21
+00:01:33.099 --> 00:01:38.000
+Claude should surface the problem to the user and ask for a correction instead.
+
+22
+00:01:38.000 --> 00:01:44.900
+System errors without a suggested action fall somewhere in between and need judgment before retrying.
+
+23
+00:01:44.900 --> 00:01:52.699
+Your error codes should make the category explicit, so Claude doesn't have to infer it from message text alone.
+
+24
+00:01:52.699 --> 00:01:56.500
+Idempotency is the key property that makes retry safe.
+
+25
+00:01:56.500 --> 00:02:02.400
+An idempotent tool returns the same result whether you call it once or ten times with the same input.
+
+26
+00:02:02.400 --> 00:02:05.599
+A lookup or a read is idempotent by nature.
+
+27
+00:02:05.599 --> 00:02:10.699
+A write that creates a new record isn't, unless you build idempotency indeliberately.
+
+28
+00:02:10.699 --> 00:02:17.300
+The standard pattern is for the caller to generate a unique idempotency key and include it with the request.
+
+29
+00:02:17.300 --> 00:02:24.600
+The tool stores the key, and if it sees the same key again, returns the original response instead of executing again.
+
+30
+00:02:24.600 --> 00:02:27.399
+Payment APIs use this pattern extensively.
+
+31
+00:02:27.399 --> 00:02:32.199
+It's worth adopting in any tool that creates or modifies state.
+
+32
+00:02:32.199 --> 00:02:35.600
+Designing for safe retry starts at the tool interface level.
+
+33
+00:02:35.600 --> 00:02:42.300
+The most direct approach is accepting a caller-provided idempotency key with every state-changing request.
+
+34
+00:02:42.300 --> 00:02:48.800
+The tool stores the key alongside the result and returns the cached result for any duplicate call.
+
+35
+00:02:48.800 --> 00:02:51.100
+Conditional writes are another option.
+
+36
+00:02:51.100 --> 00:02:57.600
+The tool checks current state before applying a change and skips the write if it's already been applied.
+
+37
+00:02:57.600 --> 00:03:05.300
+Either approach turns a non-idempotent operation into one Claude can safely retry on transient failures.
+
+38
+00:03:05.300 --> 00:03:09.100
+The cost is a bit of storage and a lookup on each call.
+
+39
+00:03:09.100 --> 00:03:16.061
+The benefit is that Claude never creates a duplicate charge, email, or record because of a network
+
+40
+00:03:16.061 --> 00:03:19.328
+hiccup between the tool call and the response.
+
+41
+00:03:19.399 --> 00:03:23.699
+Three retry failure modes come up frequently enough to call out by name.
+
+42
+00:03:23.699 --> 00:03:29.799
+Duplicate side effects happen when a non-idempotent tool gets retried and creates two records,
+
+43
+00:03:29.799 --> 00:03:32.135
+charges, or messages instead of one.
+
+44
+00:03:32.199 --> 00:03:38.399
+This is the most expensive failure mode because real-world consequences like double charges are hard to reverse.
+
+45
+00:03:38.399 --> 00:03:44.466
+Infinite retry loops happen when there's no back-off delay or retry limit, so Claude keeps hammering
+
+46
+00:03:44.466 --> 00:03:47.439
+a failing service until the context window fills.
+
+47
+00:03:47.500 --> 00:03:53.966
+And stale state failures happen when a retry reapplies steps that already completed during a partial
+
+48
+00:03:53.966 --> 00:03:57.135
+run, leaving the system in an inconsistent state.
+
+49
+00:03:57.199 --> 00:04:00.100
+Each of these is avoidable with the right design choices.
+
+50
+00:04:00.100 --> 00:04:02.600
+Idempotency keys prevent duplicates.
+
+51
+00:04:02.600 --> 00:04:05.100
+Back-off and limits prevent loops.
+
+52
+00:04:05.100 --> 00:04:09.800
+And partial success responses prevent rerunning completed steps.
+
+53
+00:04:09.800 --> 00:04:14.800
+Partial success is the case where a batch tool completes some items and fails on others.
+
+54
+00:04:14.800 --> 00:04:20.000
+The wrong response is to return a generic error that hides what succeeded.
+
+55
+00:04:20.000 --> 00:04:25.000
+The right response uses a partial success status and splits the result into two lists.
+
+56
+00:04:25.000 --> 00:04:33.000
+A succeeded list with the IDs or keys that completed, and a failed list with per-item error codes and context.
+
+57
+00:04:33.000 --> 00:04:40.500
+When Claude receives this structure, it can decide what to retry, what to skip, and what to surface to the user.
+
+58
+00:04:40.500 --> 00:04:46.577
+Without it, Claude either has to guess or rerun the entire batch, which risks duplicating the
+
+59
+00:04:46.577 --> 00:04:48.734
+operations that already finished.
+
+60
+00:04:48.799 --> 00:04:56.200
+Surfacing partial success explicitly is what the Architect Foundation's exam tests in this area.
+
+61
+00:04:56.200 --> 00:05:02.700
+The circuit breaker pattern manages the relationship between your tool and an unreliable downstream service.
+
+62
+00:05:02.700 --> 00:05:04.299
+It has three states.
+
+63
+00:05:04.299 --> 00:05:08.899
+In the closed state, calls pass through normally and failures are counted.
+
+64
+00:05:08.899 --> 00:05:14.331
+Once failures exceed a threshold, the breaker opens and calls are blocked immediately without
+
+65
+00:05:14.331 --> 00:05:16.141
+hitting the downstream service.
+
+66
+00:05:16.200 --> 00:05:21.700
+After a configured interval, the breaker moves to half open and allows a single probe call through.
+
+67
+00:05:21.700 --> 00:05:26.500
+If the probe succeeds, the breaker closes and normal traffic resumes.
+
+68
+00:05:26.500 --> 00:05:30.200
+If it fails, the breaker stays open and the interval resets.
+
+69
+00:05:30.200 --> 00:05:35.890
+This pattern prevents Claude from filling its context with errors while waiting for a service that
+
+70
+00:05:35.890 --> 00:05:37.341
+won't recover on its own.
+
+71
+00:05:37.399 --> 00:05:43.899
+You should add a circuit breaker when a downstream tool has intermittent outages that aren't predictable.
+
+72
+00:05:44.000 --> 00:05:48.100
+The configuration has three parameters you need to set deliberately.
+
+73
+00:05:48.100 --> 00:05:52.899
+The failure threshold is how many consecutive failures trigger the open state.
+
+74
+00:05:52.899 --> 00:05:57.000
+Set it too low and the breaker trips on normal variance.
+
+75
+00:05:57.000 --> 00:06:00.799
+Set it too high and you waste calls on a broken service.
+
+76
+00:06:00.799 --> 00:06:05.799
+The recovery probe interval is how long to wait before testing the service again.
+
+77
+00:06:05.799 --> 00:06:09.899
+And the fallback defines what to return while the circuit is open.
+
+78
+00:06:09.899 --> 00:06:15.899
+A cached result, a simplified response, or a clean error that tells Claude to escalate.
+
+79
+00:06:15.899 --> 00:06:22.100
+Without a fallback, the circuit breaker just converts tool failures into blocked calls.
+
+80
+00:06:22.100 --> 00:06:28.399
+The types of failures that nobody forgets are things like a retry that charged a customer twice
+
+81
+00:06:28.399 --> 00:06:34.200
+or the batch that resent every email because the response only said error.
+
+82
+00:06:34.200 --> 00:06:37.000
+Reliability lives on the tool side.
+
+83
+00:06:37.000 --> 00:06:41.500
+An idempotency key makes a repeat call harmless.
+
+84
+00:06:41.500 --> 00:06:46.000
+A succeeded and failed split tells Claude exactly what's left.
+
+85
+00:06:46.000 --> 00:06:50.000
+And a breaker keeps it from hammering a service that's already down.
+
+86
+00:06:50.000 --> 00:06:53.000
+That's a wrap on this one. I'll see you in the next lesson.
+

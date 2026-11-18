@@ -1,0 +1,314 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.840
+Welcome. JSON format can be exceptionally useful. When your application needs JSON,
+
+2
+00:00:05.840 --> 00:00:12.159
+it can actually parse. Hoping the model formats it correctly is not a solid plan. Structured
+
+3
+00:00:12.159 --> 00:00:18.479
+outputs removes that hope. It guarantees Cloud Returns JSON that matches a schema you define.
+
+4
+00:00:19.120 --> 00:00:24.079
+This lesson covers the API shape, why the guarantee holds, and when you should use it.
+
+5
+00:00:25.120 --> 00:00:28.479
+Before we go further, let's pin down three terms that drive this lesson.
+
+6
+00:00:29.120 --> 00:00:34.240
+Structured outputs is the feature that forces Cloud's text response to match a JSON schema
+
+7
+00:00:34.240 --> 00:00:39.759
+you supply. You switch it on through a format setting on the request, and from that point,
+
+8
+00:00:39.759 --> 00:00:45.360
+the response is guaranteed to fit your shape. A JSON schema is the declarative specification
+
+9
+00:00:45.360 --> 00:00:51.040
+you hand over. It names the fields you want, the type of each one, and any allowed values,
+
+10
+00:00:51.040 --> 00:00:56.400
+so it describes the exact structure you expect back. Constrained decoding is the mechanism
+
+11
+00:00:56.400 --> 00:01:02.159
+underneath the guarantee. As Cloud generates the response one token at a time, it is only
+
+12
+00:01:02.159 --> 00:01:07.919
+ever allowed to pick tokens that keep the output valid against your schema. Those three ideas,
+
+13
+00:01:07.919 --> 00:01:12.800
+the feature, the schema, and the decoding mechanism, are the whole foundation for everything
+
+14
+00:01:12.800 --> 00:01:19.360
+else here. Let's look at how you turn this on. On the request, there is an output configuration,
+
+15
+00:01:19.360 --> 00:01:25.360
+and inside it, a format field. You set that format's type to JSON schema, and you attach
+
+16
+00:01:25.360 --> 00:01:31.199
+your schema object under the schema key. That is the entire switch. Once it is set,
+
+17
+00:01:31.199 --> 00:01:36.959
+Cloud returns a normal text response, except that response is JSON matching the schema you provided.
+
+18
+00:01:37.519 --> 00:01:43.040
+Notice what isn't here. There is no separate mode flag, and no post hoc validation step where you
+
+19
+00:01:43.040 --> 00:01:48.239
+parse the result and check it in your own code. The schema you pass in becomes the contract for
+
+20
+00:01:48.239 --> 00:01:53.760
+the response. You describe the shape once on the request, and the model is bound to it.
+
+21
+00:01:53.760 --> 00:01:57.360
+That single format setting is the whole surface area you need to learn.
+
+22
+00:01:58.639 --> 00:02:04.319
+Now, why is the JSON actually guaranteed? The guarantee comes from constrained decoding,
+
+23
+00:02:04.319 --> 00:02:09.839
+which happens during generation, not from checking the output afterward. As the model produces the
+
+24
+00:02:09.839 --> 00:02:15.279
+response token by token, each step it can only emit a token that keeps the output valid against
+
+25
+00:02:15.279 --> 00:02:21.360
+your schema. A field name not in the schema can't be generated. A wrong type can't be generated.
+
+26
+00:02:21.360 --> 00:02:26.800
+A required field can't be silently dropped. This is fundamentally different from asking for JSON
+
+27
+00:02:26.800 --> 00:02:31.839
+and then validating it, so the routine schema drift loop of retrying and repairing malformed
+
+28
+00:02:31.839 --> 00:02:38.320
+output is gone. But the guarantee holds in the normal case, not unconditionally. Two documented
+
+29
+00:02:38.320 --> 00:02:44.320
+exceptions remain, a safety refusal and a max tokens cutoff that truncates the response.
+
+30
+00:02:44.320 --> 00:02:48.559
+So keep one lightweight check. Look at the stop reason before you trust the payload.
+
+31
+00:02:49.520 --> 00:02:54.320
+It helps to contrast this with how people used to do it. The older pattern was to ask the model
+
+32
+00:02:54.320 --> 00:03:00.160
+for JSON in the prompt, then parse and validate that JSON in your own code. When a field was
+
+33
+00:03:00.160 --> 00:03:05.679
+missing, or a type was wrong, or the shape drifted, you caught it downstream and either retried the
+
+34
+00:03:05.679 --> 00:03:11.520
+call or tried to repair the output. The structure was never actually guaranteed. You were inspecting
+
+35
+00:03:11.520 --> 00:03:17.520
+after the fact and hoping. Structured outputs inverts that. You declare the schema up front,
+
+36
+00:03:17.679 --> 00:03:22.160
+and the model is constrained to match it while it generates. In the normal case,
+
+37
+00:03:22.160 --> 00:03:28.080
+the response conforms, so the routine schema drift retry and repair scaffolding just disappears.
+
+38
+00:03:28.720 --> 00:03:34.960
+The one thing you keep is a stop reason check, because a refusal or a max tokens truncation
+
+39
+00:03:34.960 --> 00:03:37.759
+can still hand back a payload that doesn't match your shape.
+
+40
+00:03:38.880 --> 00:03:43.520
+So where does this fit in real work? Data extraction is the obvious one.
+
+41
+00:03:43.520 --> 00:03:47.919
+When you are pulling named fields out of a document, an email, or a transcript,
+
+42
+00:03:47.919 --> 00:03:53.199
+you define the object you want and get exactly that object back, ready for your pipeline to
+
+43
+00:03:53.199 --> 00:03:59.759
+consume. Classification is another strong fit. You put the label into an enum of allowed categories,
+
+44
+00:03:59.759 --> 00:04:04.639
+and the returned value is always one of those categories, so your routing logic never has to
+
+45
+00:04:04.639 --> 00:04:10.000
+defend against an unexpected free text answer. And more generally, any time the model's output
+
+46
+00:04:10.000 --> 00:04:16.160
+flows straight into another system, a database, a queue, or a downstream service, a guaranteed
+
+47
+00:04:16.160 --> 00:04:21.679
+shape removes an entire class of runtime failures. The common thread is that something after the
+
+48
+00:04:21.679 --> 00:04:26.399
+model depends on the structure, and structured outputs is what makes that dependency safe.
+
+49
+00:04:27.679 --> 00:04:32.640
+It is worth being clear that the schema does more than validate. It actively tells the model
+
+50
+00:04:32.640 --> 00:04:38.640
+what to produce. Required fields define what the response always contains, so a consumer downstream
+
+51
+00:04:38.640 --> 00:04:44.079
+can rely on those keys being present. Types keep numbers as numbers and strings as strings,
+
+52
+00:04:44.079 --> 00:04:50.079
+which stops the quiet parsing failures that come from a value showing up in the wrong form. Enums
+
+53
+00:04:50.079 --> 00:04:56.160
+restrict a field to a fixed set of valid options, which is what makes classification reliable.
+
+54
+00:04:56.160 --> 00:05:01.519
+And field descriptions guide how the model fills each value, which matters when a document is
+
+55
+00:05:01.519 --> 00:05:07.519
+ambiguous and there is more than one plausible answer. So a clear, well-designed schema drives
+
+56
+00:05:07.519 --> 00:05:13.119
+two things at once. It guarantees the shape, and it improves how well the model chooses the content
+
+57
+00:05:13.119 --> 00:05:19.359
+that goes inside that shape. One more shift worth naming. Before structured outputs, getting
+
+58
+00:05:19.359 --> 00:05:25.040
+reliable JSON out of Claude meant prompt engineering for it, and then validating the result yourself
+
+59
+00:05:25.040 --> 00:05:30.959
+in code. There was no API-level guarantee. You asked nicely for the shape, and you wrote checks
+
+60
+00:05:30.959 --> 00:05:37.279
+to catch it when the model drifted. Structured outputs replaces that manual pattern. Syntax and
+
+61
+00:05:37.279 --> 00:05:42.640
+schema conformance are now handled by a single mechanism, so you describe the shape once and the
+
+62
+00:05:42.640 --> 00:05:50.000
+model is bound to it. One caveat worth flagging. Support is both model-dependent and platform-dependent.
+
+63
+00:05:50.000 --> 00:05:55.279
+It runs on a specific set of current models, and behavior can differ across the Claude API,
+
+64
+00:05:55.279 --> 00:06:00.959
+Bedrock, and Vertex, so check the docs for the model you are calling. The practical result is
+
+65
+00:06:00.959 --> 00:06:07.040
+a simpler mental model. You define the schema, and you get matching JSON. Two things to keep in
+
+66
+00:06:07.040 --> 00:06:13.279
+mind, so you use this well. First, design the schema carefully. The guarantee is about shape,
+
+67
+00:06:13.279 --> 00:06:18.320
+not judgment. If a field description is vague, the model can still choose a wrong value, and that
+
+68
+00:06:18.320 --> 00:06:23.679
+wrong value will sit inside a perfectly valid object. Structured outputs makes the container
+
+69
+00:06:23.679 --> 00:06:30.079
+correct. It doesn't make a poorly specified field smart. Second, check model support. This feature
+
+70
+00:06:30.079 --> 00:06:34.480
+is available on the current Claude models, but before you build a system that leans on the
+
+71
+00:06:34.480 --> 00:06:40.239
+guarantee, confirm that the specific model you are calling supports it. Get those two things right,
+
+72
+00:06:40.239 --> 00:06:46.000
+a well-written schema and a supported model, and you get reliable structured JSON you can build on
+
+73
+00:06:46.000 --> 00:06:53.600
+without a validation layer behind it. Let's recap. Structured outputs guarantees Claude returns JSON
+
+74
+00:06:53.600 --> 00:06:59.279
+matching a schema that you have defined. You can turn it on through the output config format,
+
+75
+00:06:59.279 --> 00:07:03.519
+and constrained decoding makes the response conform during generation.
+
+76
+00:07:04.160 --> 00:07:08.880
+That is why it replaces the old approach of asking for JSON and validating it afterwards.
+
+77
+00:07:09.440 --> 00:07:14.000
+Reach for it on extraction, classification, and output that feeds another system.
+
+78
+00:07:14.720 --> 00:07:17.279
+That wraps up this lesson. I'll see you in the next one.
+

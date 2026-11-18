@@ -1,0 +1,218 @@
+WEBVTT
+
+1
+00:00:00.090 --> 00:00:02.800
+<v Narrator>Next, let's talk about Kinesis video streams</v>
+
+2
+00:00:02.800 --> 00:00:05.090
+and it's integration with recognition.
+
+3
+00:00:05.090 --> 00:00:07.950
+So, you are going to get one Kinesis video stream
+
+4
+00:00:07.950 --> 00:00:08.950
+per streaming device
+
+5
+00:00:08.950 --> 00:00:11.000
+and these devices are called producers.
+
+6
+00:00:11.000 --> 00:00:12.480
+So, a streaming device can be anything.
+
+7
+00:00:12.480 --> 00:00:15.210
+It can be a security camera, a body worn camera,
+
+8
+00:00:15.210 --> 00:00:17.360
+a smart phone or you can use something
+
+9
+00:00:17.360 --> 00:00:19.630
+called a Kineses Video Streams Producer Library
+
+10
+00:00:19.630 --> 00:00:21.000
+to produce video streams.
+
+11
+00:00:21.000 --> 00:00:22.859
+But the idea is that you would create one video stream
+
+12
+00:00:22.859 --> 00:00:24.750
+for each streaming device.
+
+13
+00:00:24.750 --> 00:00:27.707
+So, if you are an IoT company and you're selling cameras
+
+14
+00:00:27.707 --> 00:00:29.660
+if you have 1,000 cameras,
+
+15
+00:00:29.660 --> 00:00:31.660
+you need 1,000 video streams.
+
+16
+00:00:31.660 --> 00:00:33.840
+The underlying data is going to be stored in S3
+
+17
+00:00:33.840 --> 00:00:35.410
+but we don't have access to it.
+
+18
+00:00:35.410 --> 00:00:39.080
+And you cannot output the stream data directly into S3.
+
+19
+00:00:39.080 --> 00:00:41.190
+You will need to consume the video stream
+
+20
+00:00:41.190 --> 00:00:44.510
+and build a custom solution to send the data into S3.
+
+21
+00:00:44.510 --> 00:00:47.150
+This is something that the exam will try to trick you on.
+
+22
+00:00:47.150 --> 00:00:49.190
+In terms of consumers for the video stream
+
+23
+00:00:49.190 --> 00:00:51.530
+it can be consumed by EC2 instances
+
+24
+00:00:51.530 --> 00:00:53.630
+if you wanted to do some real time analysis
+
+25
+00:00:53.630 --> 00:00:56.730
+or in batch or even send this to Amazonas 3.
+
+26
+00:00:56.730 --> 00:01:00.480
+You can leverage the Kinesis Video Stream Parser Library
+
+27
+00:01:00.480 --> 00:01:03.150
+to read this Kinesis Video Streams
+
+28
+00:01:03.150 --> 00:01:06.710
+or you can have an integration with AWS Rekognition
+
+29
+00:01:06.710 --> 00:01:09.840
+to do some facial detection in your videos.
+
+30
+00:01:09.840 --> 00:01:12.370
+And this is the architecture I want to show you right now.
+
+31
+00:01:12.370 --> 00:01:14.293
+So we are going to get video producers
+
+32
+00:01:14.293 --> 00:01:18.340
+and they will send data into a Kinesis Video Stream.
+
+33
+00:01:18.340 --> 00:01:21.410
+As I said, you can have a fleet of EC2 instances
+
+34
+00:01:21.410 --> 00:01:24.370
+to read that video stream and do whatever you want with it.
+
+35
+00:01:24.370 --> 00:01:27.480
+Or you can have that stream go through Rekognition
+
+36
+00:01:27.480 --> 00:01:28.540
+and Rekognition can use
+
+37
+00:01:28.540 --> 00:01:31.230
+it's Internal Rekognition Face Collection
+
+38
+00:01:31.230 --> 00:01:34.500
+to send some metadata as a new stream.
+
+39
+00:01:34.500 --> 00:01:37.010
+So you're going to create a Kinesis Data Stream out
+
+40
+00:01:37.010 --> 00:01:39.890
+of Rekognition that will contain all the results
+
+41
+00:01:39.890 --> 00:01:43.380
+of the analysis of the metadata of the video stream.
+
+42
+00:01:43.380 --> 00:01:46.040
+And from Kinesis Data Streams then we know how to use it.
+
+43
+00:01:46.040 --> 00:01:48.720
+We can use EC2 with the KCL library
+
+44
+00:01:48.720 --> 00:01:50.630
+or we can use Kinesis Data Firehose
+
+45
+00:01:50.630 --> 00:01:52.380
+or Kinesis Data Analytics.
+
+46
+00:01:52.380 --> 00:01:55.410
+And this opens up a lot of different architectures.
+
+47
+00:01:55.410 --> 00:01:57.080
+So, going into exam, remember that you
+
+48
+00:01:57.080 --> 00:01:59.710
+can use Kinesis Video Streams in combination
+
+49
+00:01:59.710 --> 00:02:02.210
+with Rekognition to extract some metadata out
+
+50
+00:02:02.210 --> 00:02:05.479
+of your stream and compare that against a database
+
+51
+00:02:05.479 --> 00:02:08.320
+of face collection that's going to be internal
+
+52
+00:02:08.320 --> 00:02:09.460
+to rekognition.
+
+53
+00:02:09.460 --> 00:02:10.293
+That's it.
+
+54
+00:02:10.293 --> 00:02:11.900
+I will see you in the next lecture.
+

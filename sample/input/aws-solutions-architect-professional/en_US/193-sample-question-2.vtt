@@ -1,0 +1,316 @@
+WEBVTT
+
+00:00.150 --> 00:00.570
+Okay.
+
+00:00.570 --> 00:08.070
+So question to a company has multiple accounts and the company has integrated its on premises Active
+
+00:08.070 --> 00:15.930
+Directory ADI with Atlas so so single site on to grant 80 users leased privilege abilities to manage
+
+00:15.930 --> 00:18.000
+infrastructure across all the accounts.
+
+00:18.000 --> 00:24.690
+So there is a classic use case of S-so a solutions architect must integrate a third party monitoring
+
+00:24.690 --> 00:29.250
+solution that requires read only access across all device accounts.
+
+00:29.640 --> 00:33.600
+The monitoring solution will run in its own analyst accounts.
+
+00:33.600 --> 00:36.750
+How can it be given the required permissions?
+
+00:36.840 --> 00:42.630
+Okay, so here we have a separate account with a monitoring solution that needs read access into all
+
+00:42.630 --> 00:43.320
+the accounts.
+
+00:43.320 --> 00:46.860
+But this is special because we have an ad integrated with SSL for this.
+
+00:46.860 --> 00:49.560
+So let's have a look at the architecture on premise premises.
+
+00:49.560 --> 00:56.760
+EDI is integrated with, so SSL manages multiple accounts and then we have a separate ILS account from
+
+00:56.760 --> 01:00.660
+a third party monitoring solution that we don't have control over right now.
+
+01:00.660 --> 01:06.480
+And it looks like this account wants to access the other alias accounts with read only permissions.
+
+01:06.480 --> 01:08.010
+So let's look a look at the options.
+
+01:08.430 --> 01:16.200
+So we create a user in alias so directory and assign a read only permission sets, assign all alias
+
+01:16.200 --> 01:22.680
+accounts to be monitored to the new user and provide the third party monitoring solution with the username
+
+01:22.680 --> 01:23.640
+and password.
+
+01:23.760 --> 01:26.190
+So we have the same architecture as before.
+
+01:26.190 --> 01:33.780
+But now in so we are going to create a new user and this user is going to be used by a cloud.
+
+01:33.780 --> 01:39.030
+The new accounts, the third party monitoring solution to access all my other accounts.
+
+01:39.210 --> 01:42.330
+And to be fair, this would work.
+
+01:42.330 --> 01:49.050
+But there is one problem with the solution with so you can only have one identity source.
+
+01:49.050 --> 01:55.530
+And in this example we are already integrating our on premise Active Directory with us.
+
+01:55.530 --> 02:02.730
+So and as such we cannot create users directly within so and so here.
+
+02:02.730 --> 02:04.140
+This is what happens in the console.
+
+02:04.140 --> 02:08.820
+As you can see when you go into the CSO configuration, you need to choose where your identities are
+
+02:08.820 --> 02:10.650
+sourced and it can be either.
+
+02:10.650 --> 02:17.280
+So in which case we can create users and groups within so directly, or we can integrate with Active
+
+02:17.280 --> 02:20.790
+Directory or we can integrate with an external identity provider.
+
+02:21.180 --> 02:28.530
+But in no case, in no situation right now can you use so with the On-premise ID and its own internal
+
+02:28.530 --> 02:30.480
+database for user managements.
+
+02:30.480 --> 02:32.640
+So this is where I want to draw your attention.
+
+02:32.640 --> 02:35.130
+This is why it's super important for me to review this with you.
+
+02:35.370 --> 02:42.570
+In the sample PDF that you download from the website, it says that the option A is incorrect because
+
+02:42.570 --> 02:47.840
+credentials supplied by SSL are temporary, so the application will lose permissions and have to re
+
+02:47.850 --> 02:48.420
+log in.
+
+02:48.420 --> 02:50.520
+And that is just wrong.
+
+02:50.520 --> 02:51.750
+And I wish I didn't have to say this.
+
+02:51.750 --> 02:54.000
+I wish there were more due diligence on these answers.
+
+02:54.000 --> 02:55.260
+But this is wrong.
+
+02:55.320 --> 02:55.850
+Okay.
+
+02:55.860 --> 02:58.860
+Users created an sstl have a password.
+
+02:58.860 --> 03:03.660
+It doesn't change and it must respect a password policy that you've defined in advance and you can go
+
+03:03.660 --> 03:04.680
+ahead and try it on your own.
+
+03:04.680 --> 03:08.520
+You'll see it's very easy and you can use this username and password as many times as you want so you
+
+03:08.520 --> 03:09.510
+don't have to rely again.
+
+03:09.510 --> 03:11.190
+Okay, you won't lose permissions.
+
+03:11.190 --> 03:19.830
+So in this example, as I said, option A is wrong because you cannot have both users defined in so
+
+03:19.830 --> 03:22.410
+and in Active Directory at the same time.
+
+03:22.650 --> 03:27.630
+So only allows for one identity source would be so ID or IDP.
+
+03:27.630 --> 03:29.190
+And these questions are new.
+
+03:29.190 --> 03:29.880
+They just came out.
+
+03:29.880 --> 03:31.110
+So I'm recording videos on them.
+
+03:31.110 --> 03:35.940
+So it's very possible that Alias in the future will correct their explanation on the question.
+
+03:35.940 --> 03:40.980
+But right now I believe you have the correct explanation which is mine and not the one provided by the
+
+03:40.980 --> 03:41.940
+sample pdf.
+
+03:42.870 --> 03:47.430
+So option b create an IAM role in the organization's master accounts.
+
+03:47.520 --> 03:51.750
+Allow the account or the third party monitoring solution to assume the role.
+
+03:51.900 --> 03:57.480
+So we have the same architectures before, but now we have a role and that role is being assumed by
+
+03:57.480 --> 03:59.400
+our third party monitoring solution.
+
+03:59.610 --> 04:00.990
+So what does it give us?
+
+04:00.990 --> 04:06.210
+Well, it gives us our third party monitoring solution, a way to read into our master accounts.
+
+04:06.330 --> 04:14.070
+But in an organization, whatever the master account can do does not guarantee its access to the other
+
+04:14.070 --> 04:15.000
+address accounts.
+
+04:15.000 --> 04:20.940
+So in this case, yes, we have access to monitor one account, the master accounts, but we are not
+
+04:20.940 --> 04:23.400
+monitoring the other accounts.
+
+04:23.400 --> 04:24.750
+So this is just wrong.
+
+04:24.930 --> 04:29.520
+It would be very possible if we had a role in the other accounts as well, but we don't.
+
+04:29.520 --> 04:31.830
+So right now this is an incomplete answer.
+
+04:32.430 --> 04:39.030
+Next, invite the accounts of the third party monitoring solution to join the organization and enable
+
+04:39.030 --> 04:39.870
+all features.
+
+04:40.050 --> 04:44.820
+So we have an organization now and we need to enable all features.
+
+04:44.820 --> 04:48.180
+So what this gives us is service control policies.
+
+04:48.180 --> 04:53.460
+It gives us a way, for example, to have consolidated billing, all these kind of things, but it does
+
+04:53.460 --> 04:57.000
+not give us read only access into all the other accounts.
+
+04:57.000 --> 04:59.850
+So organization, remember, is a way for you to organize your.
+
+04:59.970 --> 05:06.450
+Helps with organizational units to apply service control policies, to consolidate billing, to share
+
+05:06.450 --> 05:09.300
+reserved instances for cost saving.
+
+05:09.300 --> 05:12.960
+But it does not give you read only access into all the other accounts.
+
+05:12.960 --> 05:14.670
+There is still very much independence.
+
+05:14.670 --> 05:17.430
+And so as such, this insert just does not work.
+
+05:17.430 --> 05:19.770
+So let's look at the options to see if it's correct.
+
+05:19.800 --> 05:25.890
+Creates an alias cloud formation template that defines a new I am role for the third party monitoring
+
+05:25.890 --> 05:26.370
+solution.
+
+05:26.370 --> 05:33.060
+With the accounts of the third party listed in the trust policy, create the email across all linked
+
+05:33.060 --> 05:34.860
+account by using a stack set.
+
+05:34.860 --> 05:35.940
+So this looks good.
+
+05:35.940 --> 05:42.030
+So we have our accounts and we're going to use cloud formation stack sets to deploy the same stack into
+
+05:42.030 --> 05:43.500
+all of the accounts.
+
+05:43.920 --> 05:46.230
+So what is the stack going to deploy?
+
+05:46.260 --> 05:51.840
+It's going to deploy a I am role and that will give us read only access within the account.
+
+05:51.840 --> 05:53.670
+And that role has a trust.
+
+05:53.670 --> 05:59.460
+And that trust allows the third party monitoring solution to assume the role thanks to the trust.
+
+05:59.460 --> 06:07.230
+So here we have managed to create a role into every single account that we wanted to monitor, and that
+
+06:07.230 --> 06:12.240
+role was deployed thanks to a cloud formation text, which shows the way to deploy a cloud formation
+
+06:12.240 --> 06:15.060
+stack across many accounts and many regions.
+
+06:15.060 --> 06:19.590
+Obviously the roles are not region specific, so we don't need to specify a region in this in this instance.
+
+06:19.590 --> 06:24.810
+But stack sets do allow you to also deploy across many regions and many accounts.
+
+06:24.810 --> 06:26.790
+So this is a great solution.
+
+06:26.790 --> 06:31.260
+This is the standard solution and recommended way in solution architecture to do these things.
+
+06:31.260 --> 06:32.700
+So this is the correct answer.
+
+06:32.700 --> 06:34.110
+And that's it for question two.
+
+06:34.260 --> 06:36.870
+I hope you liked it and I will see you in the next lecture.

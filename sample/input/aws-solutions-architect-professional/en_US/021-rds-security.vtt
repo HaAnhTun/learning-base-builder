@@ -1,0 +1,146 @@
+WEBVTT
+
+1
+00:00:00.110 --> 00:00:01.180
+<v ->So, another quick lecture,</v>
+
+2
+00:00:01.180 --> 00:00:03.140
+but this time on RDS-Security,
+
+3
+00:00:03.140 --> 00:00:04.150
+that you hopefully should know,
+
+4
+00:00:04.150 --> 00:00:06.270
+but maybe there's a thing or two that you'll learn here.
+
+5
+00:00:06.270 --> 00:00:08.590
+So you can get KMS encryption at rest
+
+6
+00:00:08.590 --> 00:00:12.040
+for your underlying EBS volume and snapshots.
+
+7
+00:00:12.040 --> 00:00:13.270
+You have the option
+
+8
+00:00:13.270 --> 00:00:16.350
+to use something called TDE, Transparent Data Encryption,
+
+9
+00:00:16.350 --> 00:00:18.800
+if you have an Oracle or SQL Server database,
+
+10
+00:00:18.800 --> 00:00:20.480
+managed by RDS.
+
+11
+00:00:20.480 --> 00:00:23.110
+And you are able to define in-flight encryption,
+
+12
+00:00:23.110 --> 00:00:26.490
+SSL encryption, for all the databases.
+
+13
+00:00:26.490 --> 00:00:28.620
+You are able to use IAM authentication
+
+14
+00:00:28.620 --> 00:00:31.810
+for MySQL, PostgreSQL and MariaDB,
+
+15
+00:00:31.810 --> 00:00:34.320
+but that's just for the authentication,
+
+16
+00:00:34.320 --> 00:00:35.860
+the authorization itself
+
+17
+00:00:35.860 --> 00:00:39.350
+still happens within RDS, not in IAM.
+
+18
+00:00:39.350 --> 00:00:41.670
+But still, it's good for user management
+
+19
+00:00:41.670 --> 00:00:43.810
+to be done through IAM.
+
+20
+00:00:43.810 --> 00:00:45.890
+You can copy an un-encrypted RDS snapshot
+
+21
+00:00:45.890 --> 00:00:46.750
+into an encrypted one,
+
+22
+00:00:46.750 --> 00:00:50.010
+this is a very common DevOps feature to do,
+
+23
+00:00:50.010 --> 00:00:52.270
+and CloudTrail cannot be used
+
+24
+00:00:52.270 --> 00:00:54.380
+to track queries made within RDS.
+
+25
+00:00:54.380 --> 00:00:56.950
+You will need to have specific monitoring tools,
+
+26
+00:00:56.950 --> 00:00:58.880
+for RDS and database security
+
+27
+00:00:58.880 --> 00:01:01.130
+to get these kind of logs, okay?
+
+28
+00:01:01.130 --> 00:01:03.040
+So just a very short lecture, to be honest.
+
+29
+00:01:03.040 --> 00:01:05.780
+We'll have a more deep dive into RDS in another section,
+
+30
+00:01:05.780 --> 00:01:07.160
+but here you need to remember
+
+31
+00:01:07.160 --> 00:01:09.050
+all the security options for RDS,
+
+32
+00:01:09.050 --> 00:01:10.740
+because the exam may trick you into thinking
+
+33
+00:01:10.740 --> 00:01:12.530
+TDE is for MySQL,
+
+34
+00:01:12.530 --> 00:01:15.220
+or IAM authentication is for Oracle, okay?
+
+35
+00:01:15.220 --> 00:01:16.053
+So that's it.
+
+36
+00:01:16.053 --> 00:01:17.680
+I will see you in the next lecture.
+

@@ -1,0 +1,346 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.500
+MCP prompt templates are the third of the three MCP primitives, alongside tools and resources.
+
+2
+00:00:06.500 --> 00:00:13.165
+They're reusable, parameterized prompt instructions stored on a server that users can select to
+
+3
+00:00:13.165 --> 00:00:15.129
+pre-populate an interaction.
+
+4
+00:00:15.199 --> 00:00:21.635
+In this lesson, we'll cover how templates are defined, how arguments work, and the scenarios where
+
+5
+00:00:21.635 --> 00:00:23.934
+server-side prompts add real value.
+
+6
+00:00:24.500 --> 00:00:31.000
+The word prompt does a lot of work in this space, so it helps to pin down what it means inside MCP.
+
+7
+00:00:31.000 --> 00:00:38.215
+An MCP prompt is one of the three MCP primitives, a reusable, parameterized template stored on a
+
+8
+00:00:38.215 --> 00:00:42.424
+server that users select to pre-populate an interaction.
+
+9
+00:00:42.500 --> 00:00:48.000
+The critical word is user-controlled because a human explicitly chooses to apply it.
+
+10
+00:00:48.000 --> 00:00:56.000
+That is what separates it from resources, which the host injects, and tools, which the model invokes on its own.
+
+11
+00:00:56.000 --> 00:01:02.500
+Prompt arguments are the named, typed parameters the client fills in before the template is rendered.
+
+12
+00:01:02.500 --> 00:01:09.274
+And prompt rendering is the server-side step of substituting those argument values into the template
+
+13
+00:01:09.274 --> 00:01:12.932
+body and returning the completed prompt to the client.
+
+14
+00:01:13.000 --> 00:01:17.000
+Every MCP prompt template definition has three components.
+
+15
+00:01:17.000 --> 00:01:23.500
+The name is the stable identifier that clients use to request the template when they call prompts slash get.
+
+16
+00:01:23.500 --> 00:01:29.303
+The arguments list declares the named parameters the template expects, along with their types and
+
+17
+00:01:29.303 --> 00:01:30.440
+any default values.
+
+18
+00:01:30.500 --> 00:01:35.893
+And the template body is the actual prompt text, with placeholders for each argument that gets
+
+19
+00:01:35.893 --> 00:01:37.442
+substituted at render time.
+
+20
+00:01:38.000 --> 00:01:44.000
+When a client calls prompts slash get with the template name and a set of filled argument values,
+
+21
+00:01:44.000 --> 00:01:49.500
+the server substitutes those values into the body and returns the fully rendered prompt.
+
+22
+00:01:49.500 --> 00:01:56.000
+The client then injects that rendered prompt into the conversation as the opening instruction context.
+
+23
+00:01:56.000 --> 00:02:01.500
+Understanding how prompts differ from the other two MCP primitives matters for the exam.
+
+24
+00:02:01.500 --> 00:02:03.500
+Prompts are user-controlled.
+
+25
+00:02:03.500 --> 00:02:09.100
+The human explicitly selects a template from a list surfaced in the host UI, and the system
+
+26
+00:02:09.100 --> 00:02:11.438
+pre-populates the interaction with it.
+
+27
+00:02:11.500 --> 00:02:14.000
+Resources are application-controlled.
+
+28
+00:02:14.000 --> 00:02:18.000
+The host decides which data objects to retrieve and inject.
+
+29
+00:02:18.000 --> 00:02:21.000
+The user doesn't necessarily know it's happening.
+
+30
+00:02:21.000 --> 00:02:23.000
+Tools are model-controlled.
+
+31
+00:02:23.000 --> 00:02:28.000
+The model decides when to invoke a tool based on what it needs to accomplish.
+
+32
+00:02:28.000 --> 00:02:33.000
+Three primitives, three control points, user, application, and model.
+
+33
+00:02:33.000 --> 00:02:39.000
+Keeping these distinctions clear is exactly what the Architect Foundation's exam tests in this area.
+
+34
+00:02:39.000 --> 00:02:45.750
+Server-side prompt templates are most valuable when task instructions are complex, long, or need to
+
+35
+00:02:45.750 --> 00:02:47.931
+be consistent across many users.
+
+36
+00:02:48.000 --> 00:02:55.500
+Multi-step analysis workflows benefit enormously from a structured template that enforces a repeatable methodology
+
+37
+00:02:55.500 --> 00:03:00.000
+instead of relying on each user to retype a long instruction set.
+
+38
+00:03:00.000 --> 00:03:03.000
+Compliance workflows are another strong use case.
+
+39
+00:03:03.000 --> 00:03:08.000
+Approved instruction sets can be stored as templates, reviewed, and versioned,
+
+40
+00:03:08.000 --> 00:03:12.000
+which means users can't accidentally modify critical wording.
+
+41
+00:03:12.000 --> 00:03:16.500
+Onboarding flows for unfamiliar processes are a third category.
+
+42
+00:03:16.500 --> 00:03:20.500
+A well-designed template walks a user through a complex task
+
+43
+00:03:20.500 --> 00:03:25.500
+without requiring them to know the right prompting strategy ahead of time.
+
+44
+00:03:25.500 --> 00:03:30.500
+Versioning is one of the operational realities of prompt template management.
+
+45
+00:03:30.500 --> 00:03:33.000
+Three strategies cover most scenarios.
+
+46
+00:03:33.000 --> 00:03:36.000
+The simplest is versioning in the name itself.
+
+47
+00:03:36.000 --> 00:03:44.500
+Append a version number like ReviewV2 so old and new templates coexist as separate entries in the server's prompt list.
+
+48
+00:03:45.000 --> 00:03:50.839
+The more flexible approach is passing version as a runtime argument and resolving the right template
+
+49
+00:03:50.839 --> 00:03:52.941
+body server-side based on the value.
+
+50
+00:03:53.000 --> 00:03:59.000
+This keeps the registration count low while still supporting multiple versions simultaneously.
+
+51
+00:03:59.000 --> 00:04:06.000
+The third strategy is using a deprecation flag in the server response to mark old templates as retired,
+
+52
+00:04:06.000 --> 00:04:13.000
+which allows clients to warn users that the template will be removed without breaking existing workflows immediately.
+
+53
+00:04:13.500 --> 00:04:19.500
+Client-side access to prompt templates follows the same discovery pattern as resources.
+
+54
+00:04:19.500 --> 00:04:26.500
+A client starts by calling prompts slash list to retrieve all available templates along with their argument schemas.
+
+55
+00:04:26.500 --> 00:04:31.500
+The host UI surfaces these to the user as a selectable list.
+
+56
+00:04:31.500 --> 00:04:35.500
+When the user picks one, the host collects the required argument values,
+
+57
+00:04:35.500 --> 00:04:38.500
+validates them against the declared types if possible,
+
+58
+00:04:38.500 --> 00:04:44.000
+and calls prompts slash get with the template name and the filled argument values.
+
+59
+00:04:44.000 --> 00:04:50.000
+The server renders the final prompt by substituting the values and returns the complete text.
+
+60
+00:04:50.000 --> 00:04:54.000
+The client then injects that rendered prompt into the conversation.
+
+61
+00:04:54.000 --> 00:04:56.500
+The server handles all the rendering complexity.
+
+62
+00:04:56.500 --> 00:05:01.000
+The client only needs to handle argument collection and injection.
+
+63
+00:05:01.000 --> 00:05:05.000
+Argument design is where prompt template quality is won or lost.
+
+64
+00:05:05.500 --> 00:05:08.500
+Templates with too many required arguments create friction.
+
+65
+00:05:08.500 --> 00:05:15.500
+Users have to fill in every field before they can get started, and the cognitive load reduces adoption.
+
+66
+00:05:15.500 --> 00:05:22.500
+The right approach is to keep required arguments minimal and provide sensible defaults for everything optional.
+
+67
+00:05:22.500 --> 00:05:28.799
+Typed arguments are worth the extra definition effort because they let clients validate input before
+
+68
+00:05:28.799 --> 00:05:30.437
+calling prompts slash get,
+
+69
+00:05:30.500 --> 00:05:33.500
+which catches errors before they reach the server.
+
+70
+00:05:34.000 --> 00:05:40.000
+Well-designed arguments make the same template applicable across many different contexts and user skill levels
+
+71
+00:05:40.000 --> 00:05:47.000
+without making the template body so generic that it loses its value as a standardized instruction.
+
+72
+00:05:47.000 --> 00:05:54.000
+One of the strongest arguments for server-side prompt templates is what they do for consistency and maintainability.
+
+73
+00:05:54.000 --> 00:05:58.000
+When every user who selects a template gets the same rendered instruction set,
+
+74
+00:05:58.000 --> 00:06:03.000
+the variance in model outputs drops significantly.
+
+75
+00:06:03.000 --> 00:06:07.500
+Compare that to a workflow where each user writes their own version of the same prompt.
+
+76
+00:06:07.500 --> 00:06:12.500
+You get different levels of detail, different structures, and different results.
+
+77
+00:06:12.500 --> 00:06:14.500
+Maintenance is equally strong.
+
+78
+00:06:14.500 --> 00:06:21.500
+Update the template body on the server once and every client picks up the change without any client-side code changes.
+
+79
+00:06:21.500 --> 00:06:26.500
+And for compliance-sensitive workflows, server-side templates can be formally reviewed,
+
+80
+00:06:26.500 --> 00:06:31.500
+approved, and versioned before they're ever surfaced to users.
+
+81
+00:06:32.000 --> 00:06:37.000
+Prompt templates move hard-won instructions off individual users and onto a server,
+
+82
+00:06:37.000 --> 00:06:40.000
+so everybody runs the same version.
+
+83
+00:06:40.000 --> 00:06:44.000
+The reason that holds is that a person picks the template on purpose.
+
+84
+00:06:44.000 --> 00:06:47.000
+The model never reaches for one mid-task.
+
+85
+00:06:47.000 --> 00:06:54.000
+That deliberate selection is exactly why a template can afford to be long, detailed, and opinionated.
+
+86
+00:06:54.000 --> 00:06:58.000
+That's it for this lesson. I'll see you in the next one.
+

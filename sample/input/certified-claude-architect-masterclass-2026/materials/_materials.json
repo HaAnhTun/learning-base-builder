@@ -1,0 +1,41 @@
+{
+  "course_id": 7150101,
+  "slug": "certified-claude-architect-masterclass-2026",
+  "title": "Claude Certified Architect (CCAR-F) - 2026 Exam Prep",
+  "url": "/course/certified-claude-architect-masterclass-2026/",
+  "host": "luvina.udemy.com",
+  "fetched_at": "2026-11-07T18:39:13+00:00",
+  "items": [
+    {
+      "lecture_id": 55957687,
+      "lecture_title": "Subdirectory CLAUDE.md Files and Scoped Instructions",
+      "chapter_index": 10,
+      "chapter_title": "D3: Claude Code - CLAUDE.md Configuration",
+      "lecture_position": 65,
+      "kind": "file",
+      "title": "claud.md generic.png",
+      "filename": "065-claud.md-generic.png",
+      "bytes": 1873307,
+      "sha256": "8916889576579c49b2faa2b1e2da4c9fde8181639886419b243edb02cb2c40a9"
+    },
+    {
+      "lecture_id": 56469619,
+      "lecture_title": "BONUS",
+      "chapter_index": 21,
+      "chapter_title": "Bonus",
+      "lecture_position": 136,
+      "kind": "description",
+      "html": "<p>www.Certmasterclass.com/udemy&nbsp; </p><p><br></p>"
+    },
+    {
+      "lecture_id": 56469619,
+      "lecture_title": "BONUS",
+      "chapter_index": 21,
+      "chapter_title": "Bonus",
+      "lecture_position": 136,
+      "kind": "link",
+      "title": "https://www.certmasterclass.com/free-study-bundle",
+      "url": "https://www.certmasterclass.com/free-study-bundle"
+    }
+  ]
+}

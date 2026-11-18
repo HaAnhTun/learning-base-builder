@@ -1,0 +1,338 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.600
+<v Instructor>Let's discuss some solution architecture</v>
+
+2
+00:00:02.600 --> 00:00:05.940
+when using SSL with a Load Balancer.
+
+3
+00:00:05.940 --> 00:00:07.920
+So we have this classic architecture
+
+4
+00:00:07.920 --> 00:00:10.000
+where we have an Auto Scaling group,
+
+5
+00:00:10.000 --> 00:00:11.550
+and maybe an Application Load Balancer
+
+6
+00:00:11.550 --> 00:00:14.180
+that has an SSL certificate loaded onto it,
+
+7
+00:00:14.180 --> 00:00:15.860
+thanks to ACM.
+
+8
+00:00:15.860 --> 00:00:18.690
+So our users are able to access our Load Balancer
+
+9
+00:00:18.690 --> 00:00:22.010
+using HTTPS, and then our Load Balancer can be set up
+
+10
+00:00:22.010 --> 00:00:25.300
+to talk to our EC2 instances using HTTP.
+
+11
+00:00:25.300 --> 00:00:27.520
+That is something very simple, scalable,
+
+12
+00:00:27.520 --> 00:00:28.420
+it works really well,
+
+13
+00:00:28.420 --> 00:00:29.810
+it's classic,
+
+14
+00:00:29.810 --> 00:00:31.560
+but sometimes you may want to set up
+
+15
+00:00:31.560 --> 00:00:35.150
+SSL directly on your web server EC2 instances.
+
+16
+00:00:35.150 --> 00:00:36.350
+Here is an example.
+
+17
+00:00:36.350 --> 00:00:39.190
+We have an NLB and we have an Auto Scaling group
+
+18
+00:00:39.190 --> 00:00:41.690
+and we just have TCP connection to the NLB
+
+19
+00:00:41.690 --> 00:00:42.850
+but we've decided
+
+20
+00:00:42.850 --> 00:00:44.360
+to perform the HTTPS
+
+21
+00:00:44.360 --> 00:00:46.620
+at the EC2 instance level
+
+22
+00:00:46.620 --> 00:00:47.670
+for various reasons
+
+23
+00:00:47.670 --> 00:00:49.160
+but this is the way it happens.
+
+24
+00:00:49.160 --> 00:00:51.360
+So you need to have an HTTPS connection happening
+
+25
+00:00:51.360 --> 00:00:54.045
+from your EC2 instances,
+
+26
+00:00:54.045 --> 00:00:54.878
+and for it to work
+
+27
+00:00:54.878 --> 00:00:57.660
+you need to retrieve these SSL certificates
+
+28
+00:00:57.660 --> 00:00:59.510
+onto these EC2 instances
+
+29
+00:00:59.510 --> 00:01:02.460
+for them to become an HTTPS web server,
+
+30
+00:01:02.460 --> 00:01:04.920
+and so for this something you can be doing for example,
+
+31
+00:01:04.920 --> 00:01:08.210
+is using user data scripts at EC2 boot time
+
+32
+00:01:08.210 --> 00:01:12.330
+to retrieve certificates from the SSM Parameter Store
+
+33
+00:01:12.330 --> 00:01:14.720
+and then load them onto your EC2 instances,
+
+34
+00:01:14.720 --> 00:01:17.320
+and obviously to retrieve these SSL certificates
+
+35
+00:01:17.320 --> 00:01:19.300
+they will need to be proper IAM role set up
+
+36
+00:01:19.300 --> 00:01:21.160
+for your EC2 instances,
+
+37
+00:01:21.160 --> 00:01:22.120
+and that would work,
+
+38
+00:01:22.120 --> 00:01:23.170
+and your EC2 instances
+
+39
+00:01:23.170 --> 00:01:26.170
+would be able to provide HTTPS back to your users,
+
+40
+00:01:26.170 --> 00:01:27.790
+and that would work really well,
+
+41
+00:01:27.790 --> 00:01:31.520
+but performing SSL encryption and decryption can use up
+
+42
+00:01:31.520 --> 00:01:35.550
+some valuable CPU resources on your EC2 instances.
+
+43
+00:01:35.550 --> 00:01:36.560
+On top of it,
+
+44
+00:01:36.560 --> 00:01:39.700
+you have to extract the SSL certificates
+
+45
+00:01:39.700 --> 00:01:41.490
+out of your SSM Parameter Store
+
+46
+00:01:41.490 --> 00:01:43.750
+and that may be some what of a risk problem
+
+47
+00:01:43.750 --> 00:01:47.570
+if someone was able to SSH into your EC2 instances.
+
+48
+00:01:47.570 --> 00:01:49.340
+So something you can do though,
+
+49
+00:01:49.340 --> 00:01:52.693
+is using CloudHSM to do SSL offloading.
+
+50
+00:01:53.640 --> 00:01:55.770
+So we have the same architecture,
+
+51
+00:01:55.770 --> 00:01:57.530
+the users talk to the NLB
+
+52
+00:01:57.530 --> 00:02:00.500
+which forwards to TCP traffic to your EC2 instances
+
+53
+00:02:00.500 --> 00:02:02.420
+which are in fact HTTPS,
+
+54
+00:02:02.420 --> 00:02:05.960
+and so for to perform the actual SSL encryption,
+
+55
+00:02:05.960 --> 00:02:10.360
+you can offload it to CloudHSM using SSL acceleration,
+
+56
+00:02:10.360 --> 00:02:12.760
+and that's supported by a NGINX, Apache Web servers
+
+57
+00:02:12.760 --> 00:02:14.493
+and IIS for windows server,
+
+58
+00:02:15.510 --> 00:02:16.850
+and the idea is that
+
+59
+00:02:16.850 --> 00:02:18.830
+the CloudHSM device in the backend
+
+60
+00:02:18.830 --> 00:02:21.160
+will be the one performing the SSL acceleration
+
+61
+00:02:21.160 --> 00:02:23.710
+or offloading for your EC2 instances,
+
+62
+00:02:23.710 --> 00:02:26.150
+and that will save up some valuable resources
+
+63
+00:02:26.150 --> 00:02:27.820
+for your EC2 instances.
+
+64
+00:02:27.820 --> 00:02:31.390
+So that's a very classic solution architecture as well.
+
+65
+00:02:31.390 --> 00:02:32.840
+Extra level of security
+
+66
+00:02:32.840 --> 00:02:35.010
+is that the SSL private key
+
+67
+00:02:35.010 --> 00:02:37.900
+will never leave the HSM device,
+
+68
+00:02:37.900 --> 00:02:39.780
+and so it's extra secure.
+
+69
+00:02:39.780 --> 00:02:41.100
+The only way to make this work
+
+70
+00:02:41.100 --> 00:02:43.100
+is to set up a cryptographic user,
+
+71
+00:02:43.100 --> 00:02:45.420
+so CU, on the CloudHSM device
+
+72
+00:02:45.420 --> 00:02:49.190
+and make sure your EC2 instances can use up that user
+
+73
+00:02:49.190 --> 00:02:50.920
+and work with that user be stored,
+
+74
+00:02:50.920 --> 00:02:52.830
+or for example you can store the user name and password
+
+75
+00:02:52.830 --> 00:02:54.690
+on the SSM Parameter Store.
+
+76
+00:02:54.690 --> 00:02:55.583
+So you're quite,
+
+77
+00:02:56.550 --> 00:02:59.480
+you can have so many ways of doing this architecture
+
+78
+00:02:59.480 --> 00:03:01.280
+but using the CloudHSM-SSL Offloading
+
+79
+00:03:01.280 --> 00:03:02.660
+is one of the most secure
+
+80
+00:03:02.660 --> 00:03:04.720
+and one of the most handy as well.
+
+81
+00:03:04.720 --> 00:03:06.070
+So this is probably something new for you,
+
+82
+00:03:06.070 --> 00:03:07.360
+and I wanted to show it to you.
+
+83
+00:03:07.360 --> 00:03:08.680
+So that's it for this lecture.
+
+84
+00:03:08.680 --> 00:03:10.430
+I will see you in the next lecture.
+

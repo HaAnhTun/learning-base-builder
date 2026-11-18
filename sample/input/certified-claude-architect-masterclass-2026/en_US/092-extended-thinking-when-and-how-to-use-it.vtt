@@ -1,0 +1,322 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.280
+Extended thinking is an API feature that lets Claude reason internally before producing a
+
+2
+00:00:05.280 --> 00:00:09.680
+visible response. We're covering how it differs from chain of thought prompting,
+
+3
+00:00:09.680 --> 00:00:15.439
+how adaptive mode and the effort setting control reasoning depth, when the cost is justified,
+
+4
+00:00:15.439 --> 00:00:18.559
+and how thinking blocks relate to the context window.
+
+5
+00:00:19.680 --> 00:00:24.799
+Start with the vocabulary. Extended thinking is an API feature that lets the model reason
+
+6
+00:00:24.799 --> 00:00:30.239
+internally before its visible response. You enable it through the thinking parameter,
+
+7
+00:00:30.239 --> 00:00:32.479
+not through instructions in the prompt text.
+
+8
+00:00:33.119 --> 00:00:37.439
+Thinking blocks are the structured internal reasoning segments that extended thinking
+
+9
+00:00:37.439 --> 00:00:42.799
+produces. They are streamed as distinct event types before the final response,
+
+10
+00:00:42.799 --> 00:00:48.400
+and don't appear in the output text. On current models, thinking runs in adaptive mode. Claude
+
+11
+00:00:48.400 --> 00:00:53.360
+decides how much to reason, and you steer that depth with an effort level rather than a fixed
+
+12
+00:00:53.360 --> 00:00:59.680
+token count. The overall cost is capped by the max token setting. Understanding these three
+
+13
+00:00:59.680 --> 00:01:03.360
+concepts is essential for answering API design questions correctly.
+
+14
+00:01:04.559 --> 00:01:08.559
+The most important distinction in this lesson is between chain of thought prompting
+
+15
+00:01:08.559 --> 00:01:13.919
+and extended thinking. Chain of thought is a prompting technique. You write an instruction
+
+16
+00:01:13.919 --> 00:01:18.720
+in the prompt text, the model generates visible reasoning as part of its response,
+
+17
+00:01:18.720 --> 00:01:25.199
+and no API parameters are involved. Extended thinking is an API feature. On current models,
+
+18
+00:01:25.199 --> 00:01:30.080
+you enable adaptive thinking and steer how deeply the model reasons with an effort level,
+
+19
+00:01:30.080 --> 00:01:34.959
+rather than dialing in a raw token budget. The model's thinking blocks are streamed
+
+20
+00:01:34.959 --> 00:01:38.720
+separately from the final response and aren't part of the output text.
+
+21
+00:01:39.440 --> 00:01:45.040
+One lives entirely in the prompt, the other is configured at the API level. Candidates who
+
+22
+00:01:45.040 --> 00:01:49.919
+conflate these two will answer API design questions incorrectly, so keeping the distinction
+
+23
+00:01:49.919 --> 00:01:56.319
+clear is worth the effort. Controlling reasoning depth is the core configuration step for extended
+
+24
+00:01:56.319 --> 00:02:02.319
+thinking. On current models, you set the thinking type to adaptive and then pick an effort level.
+
+25
+00:02:02.319 --> 00:02:09.279
+The levels run low, medium, high, x-high, and max, where high is the default and x-high and max
+
+26
+00:02:09.279 --> 00:02:14.960
+push the model to reason more deeply. In adaptive mode, Claude decides how much to reason for each
+
+27
+00:02:14.960 --> 00:02:20.800
+request, and the effort level steers that depth and the overall token spend. More reasoning can
+
+28
+00:02:20.800 --> 00:02:26.479
+improve quality on complex problems, but it also raises cost and latency, because thinking tokens
+
+29
+00:02:26.479 --> 00:02:32.000
+are billed even though they don't appear in the response. The overall cost is bounded by the max
+
+30
+00:02:32.000 --> 00:02:38.800
+token setting, which caps thinking plus output together. For most use cases, start at a moderate
+
+31
+00:02:38.880 --> 00:02:45.119
+effort level and adjust based on output quality. Extended thinking earns its cost when problems
+
+32
+00:02:45.119 --> 00:02:50.880
+have genuine internal complexity. Good candidates are multi-step reasoning tasks, where chain of
+
+33
+00:02:50.880 --> 00:02:56.080
+thought in the prompt doesn't produce sufficient quality, problems that require exploring multiple
+
+34
+00:02:56.080 --> 00:03:01.520
+solution paths before committing to one, and tasks where the quality of the final answer
+
+35
+00:03:01.520 --> 00:03:07.279
+depends heavily on thorough pre-answer reasoning. High stakes decisions, where reasoning quality
+
+36
+00:03:07.279 --> 00:03:12.639
+matters more than response speed, are also appropriate. For simple tasks with clear direct
+
+37
+00:03:12.639 --> 00:03:19.039
+answers, extended thinking adds cost without improving output quality. The question to ask
+
+38
+00:03:19.039 --> 00:03:24.080
+is whether the problem is complex enough that more thorough internal reasoning would actually change
+
+39
+00:03:24.080 --> 00:03:29.520
+the answer. If the answer is no, chain of thought or a direct prompt is probably sufficient.
+
+40
+00:03:30.720 --> 00:03:35.440
+Thinking blocks have four properties worth understanding. They are separate from the output,
+
+41
+00:03:35.440 --> 00:03:40.720
+streamed before the final response as distinct event types, and not concatenated into the answer
+
+42
+00:03:40.720 --> 00:03:46.000
+text. They count against the model's context budget, meaning large thinking budgets reduce
+
+43
+00:03:46.000 --> 00:03:51.520
+the tokens available for the prompt and the final response. They aren't prompt text. They are
+
+44
+00:03:51.520 --> 00:03:57.279
+generated internally by the model as a result of the API feature, not written by the developer.
+
+45
+00:03:57.279 --> 00:04:02.240
+And they are surfaced as structured streaming events, which means client code needs to handle
+
+46
+00:04:02.320 --> 00:04:06.880
+those event types explicitly if you want to read or display the thinking content.
+
+47
+00:04:07.600 --> 00:04:11.759
+These four properties distinguish thinking blocks from anything produced by chain of thought
+
+48
+00:04:11.759 --> 00:04:18.000
+prompting. Not every complex task justifies extended thinking. Single question problems
+
+49
+00:04:18.000 --> 00:04:23.040
+with clear answers rarely benefit from the additional token budget. Tasks requiring
+
+50
+00:04:23.040 --> 00:04:29.119
+synthesis of many constraints or large amounts of data are better candidates. Exploratory reasoning
+
+51
+00:04:29.119 --> 00:04:34.720
+tasks where the solution path isn't obvious in advance and the model needs to consider multiple
+
+52
+00:04:34.720 --> 00:04:40.480
+approaches are well suited to extended thinking. Tasks where chain of thought prompting already
+
+53
+00:04:40.480 --> 00:04:46.399
+produces high quality results probably don't need it. The practical guidance is to evaluate problem
+
+54
+00:04:46.399 --> 00:04:51.519
+complexity before committing to the overhead. If chain of thought in the prompt gives you good
+
+55
+00:04:51.519 --> 00:04:57.119
+results, that's sufficient. Extended thinking is for cases where that approach falls short,
+
+56
+00:04:57.119 --> 00:05:03.200
+and the added cost is justified by the complexity. The implementation path for chain of thought and
+
+57
+00:05:03.200 --> 00:05:08.320
+extended thinking is fundamentally different, and that difference has practical consequences.
+
+58
+00:05:08.320 --> 00:05:13.119
+Chain of thought requires only a change to the prompt text. You add an instruction,
+
+59
+00:05:13.119 --> 00:05:18.239
+nothing else in your API integration changes, and the reasoning appears in line in the response.
+
+60
+00:05:18.880 --> 00:05:23.040
+Extended thinking requires enabling adaptive thinking and setting an effort level through
+
+61
+00:05:23.040 --> 00:05:28.559
+API parameters, and it requires client-side handling of streaming event types to read the
+
+62
+00:05:28.559 --> 00:05:33.440
+thinking blocks. The response structure is different because thinking blocks arrive as
+
+63
+00:05:33.440 --> 00:05:39.760
+separate events before the final answer. That added implementation complexity is one reason to try
+
+64
+00:05:39.760 --> 00:05:45.279
+chain of thought first. If it solves the problem, you avoid the integration work that extended
+
+65
+00:05:45.279 --> 00:05:50.880
+thinking requires. Extended thinking gives you control that chain of thought prompting can't
+
+66
+00:05:50.880 --> 00:05:56.559
+match. The effort level lets you steer how much internal reasoning the model does. Chain of
+
+67
+00:05:56.559 --> 00:06:02.239
+thought gives no equivalent control, and reasoning length varies per response. Extended thinking
+
+68
+00:06:02.239 --> 00:06:07.200
+surfaces reasoning as structured streaming blocks that you can handle programmatically
+
+69
+00:06:07.200 --> 00:06:12.640
+and separately from the final output. Chain of thought embeds reasoning in the response text,
+
+70
+00:06:12.640 --> 00:06:18.239
+which is harder to parse and separate. Cost stays bounded, too, because the max tokens
+
+71
+00:06:18.239 --> 00:06:22.640
+set in-caps thinking plus output together, so you know the ceiling before the call.
+
+72
+00:06:23.279 --> 00:06:26.799
+Chain of thought reasoning length varies and is harder to bound in advance.
+
+73
+00:06:27.359 --> 00:06:32.559
+On older models, you could also set an exact per-call reasoning budget, but that manual control
+
+74
+00:06:32.559 --> 00:06:38.320
+is legacy. These differences matter most in production systems where consistency and bounded
+
+75
+00:06:38.320 --> 00:06:45.519
+cost are requirements. Extended thinking is an API feature that lets the model reason internally,
+
+76
+00:06:45.519 --> 00:06:51.200
+separate from the final response, with depth steered by an effort level. Thinking blocks
+
+77
+00:06:51.200 --> 00:06:56.959
+count against context but don't appear in the output. Use it when problem complexity exceeds
+
+78
+00:06:56.959 --> 00:07:02.079
+what chain of thought prompting can address. Chain of thought remains the simpler first choice for
+
+79
+00:07:02.079 --> 00:07:07.920
+most reasoning tasks, but this one gives you a little bit more depth. That wraps up this lesson.
+
+80
+00:07:07.920 --> 00:07:09.279
+I'll see you in the next one.
+

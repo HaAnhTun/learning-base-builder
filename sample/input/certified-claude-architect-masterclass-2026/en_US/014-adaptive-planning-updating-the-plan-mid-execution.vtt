@@ -1,0 +1,218 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.039
+When you're running agentic systems, the plan you start with often isn't the plan you finish with.
+
+2
+00:00:05.599 --> 00:00:10.079
+In this video, we'll work through adaptive planning. We'll look at the difference between
+
+3
+00:00:10.079 --> 00:00:14.640
+static and dynamic planning, the events that trigger a replanning decision,
+
+4
+00:00:14.640 --> 00:00:20.479
+and how to bound those cycles so the agent stays anchored to its original goal. Let's get into it.
+
+5
+00:00:21.600 --> 00:00:27.440
+An agent that finishes a task exactly the way it was scripted is running a static plan. Every step
+
+6
+00:00:27.440 --> 00:00:34.080
+was authored before execution began, so nothing surprises you at runtime. Change one thing,
+
+7
+00:00:34.080 --> 00:00:39.680
+let the model decide its next step from what it just saw, and you have dynamic planning.
+
+8
+00:00:39.680 --> 00:00:44.959
+That shift is where adaptability comes from, and it's also where unpredictability comes from.
+
+9
+00:00:44.959 --> 00:00:50.319
+Replanning is the narrower act inside that, revising the current plan because something
+
+10
+00:00:50.319 --> 00:00:55.840
+failed or changed. Hold those apart in your head, because most of what makes agentic systems
+
+11
+00:00:56.400 --> 00:01:02.479
+hard to reason about traces back to which one is in play at a given moment. These distinctions
+
+12
+00:01:02.479 --> 00:01:06.239
+show up constantly when you're judging whether an agent is behaving correctly.
+
+13
+00:01:07.360 --> 00:01:12.239
+The key contrast between static and dynamic planning comes down to one question.
+
+14
+00:01:12.239 --> 00:01:18.239
+When are the steps decided? With static planning, every action is locked in at design time. You know
+
+15
+00:01:18.239 --> 00:01:24.239
+what the agent will do before it runs. That's powerful for predictability and auditability.
+
+16
+00:01:24.239 --> 00:01:29.599
+With dynamic planning, the model figures out the next step at inference time based on what
+
+17
+00:01:29.599 --> 00:01:36.000
+it's seen so far. That's powerful for open-ended, adaptive tasks, but it means the sequence isn't
+
+18
+00:01:36.000 --> 00:01:42.559
+pre-audited, and it's harder to predict or verify in advance. In practice, most production systems
+
+19
+00:01:42.559 --> 00:01:48.639
+blend both. They use fixed structure where they can and dynamic decisions only where the task
+
+20
+00:01:48.639 --> 00:01:55.279
+genuinely requires it. Static and dynamic planning have genuinely different risk profiles,
+
+21
+00:01:55.279 --> 00:01:59.760
+and that's worth being explicit about. Static plans are predictable, auditable,
+
+22
+00:01:59.760 --> 00:02:05.839
+and cost-efficient. Every step is individually testable. When something fails, you can localize
+
+23
+00:02:05.839 --> 00:02:10.960
+it precisely. Dynamic planning gives you adaptability for goals that can't be fully
+
+24
+00:02:10.960 --> 00:02:16.399
+pre-specified, but because next steps aren't pre-audited, the system requires stronger
+
+25
+00:02:16.399 --> 00:02:22.479
+monitoring and fallback mechanisms to stay safe. The exam language here is important. Dynamic
+
+26
+00:02:22.479 --> 00:02:28.880
+planning increases unpredictability, and that's a known trade-off you're accepting. The engineering
+
+27
+00:02:28.880 --> 00:02:35.679
+response is to compensate with monitoring, logging, and explicit fallback paths rather than hoping the
+
+28
+00:02:35.679 --> 00:02:42.399
+model stays on track. Four categories of events force an agent to reconsider the plan it is
+
+29
+00:02:42.399 --> 00:02:48.160
+currently running. A tool call failure is the most obvious one, where the tool is unavailable
+
+30
+00:02:48.160 --> 00:02:54.399
+or returns an error, a timeout, or an empty result. Unexpected output is subtler because the tool
+
+31
+00:02:54.399 --> 00:02:59.440
+worked, but what came back contradicts the assumption the next step was built on. State
+
+32
+00:02:59.440 --> 00:03:04.479
+changes are environmental, meaning something outside the agent's control shifted while it
+
+33
+00:03:04.479 --> 00:03:10.000
+was running and made earlier steps invalid. Constraint violations are perhaps the most
+
+34
+00:03:10.000 --> 00:03:15.600
+critical because a proposed action would cross a goal boundary or safety limit the agent is
+
+35
+00:03:15.600 --> 00:03:21.919
+supposed to respect. Recognizing which category you are in is the first step to handling it correctly.
+
+36
+00:03:23.199 --> 00:03:28.240
+Not every surprise requires throwing out the current plan. The decision to replan versus
+
+37
+00:03:28.240 --> 00:03:34.399
+continue is one of the most important judgment calls in agentic design. Replanning is warranted
+
+38
+00:03:34.399 --> 00:03:39.279
+when a core assumption the plan was built on has been invalidated. It's not warranted when
+
+39
+00:03:39.279 --> 00:03:45.119
+the deviation is minor and the original path is still recoverable. The right question to ask is
+
+40
+00:03:45.119 --> 00:03:51.119
+whether the original goal is still achievable via the current plan with adjustments. Unnecessary
+
+41
+00:03:51.119 --> 00:03:57.520
+replanning wastes tokens, adds latency, and increases the chance that the agent wanders off
+
+42
+00:03:57.520 --> 00:04:01.759
+in a new direction that only partially satisfies the original requirements.
+
+43
+00:04:02.880 --> 00:04:09.119
+Once you've decided to replan, you need to bound the loop. A maximum iteration limit is a hard cap
+
+44
+00:04:09.119 --> 00:04:15.119
+on how many cycles the agent gets before it escalates or stops. Without it, an agent that
+
+45
+00:04:15.119 --> 00:04:21.839
+keeps hitting the same obstacle will loop forever. A goal constraint check validates that each revised
+
+46
+00:04:21.839 --> 00:04:28.399
+plan still satisfies the original task before execution resumes. That check is what prevents
+
+47
+00:04:28.399 --> 00:04:34.160
+goal drift, which is the subtle failure where the agent solves the immediate obstacle and quietly
+
+48
+00:04:34.160 --> 00:04:40.959
+stops serving the actual goal. Loop termination follows from both. Stop at the cap or stop when
+
+49
+00:04:40.959 --> 00:04:47.359
+the new plan clears every constraint. Preserve the original goal as a persistent artifact and
+
+50
+00:04:47.359 --> 00:04:54.959
+log each revision against it so drift is detectable after the fact. The failure I worry about here
+
+51
+00:04:54.959 --> 00:05:00.799
+isn't an agent that crashes. It's one that quietly beats the obstacle in front of it and stops
+
+52
+00:05:00.799 --> 00:05:06.239
+serving the goal that you actually gave it from the start. Revision after revision, the original
+
+53
+00:05:06.239 --> 00:05:14.000
+intent fades out of the run. A hard cap on cycles plus a constraint check before execution resumes
+
+54
+00:05:14.000 --> 00:05:19.679
+is what holds everything in place. That closes out this lesson. I'll see you in the next one.
+

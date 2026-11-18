@@ -1,0 +1,418 @@
+WEBVTT
+
+1
+00:00:00.210 --> 00:00:03.240
+<v ->Hello and welcome to the AWS Certified Solutions</v>
+
+2
+00:00:03.240 --> 00:00:06.570
+Architect Professional Course, SAP-C02.
+
+3
+00:00:06.570 --> 00:00:07.800
+My name is Stephane Maarek
+
+4
+00:00:07.800 --> 00:00:10.560
+and I will be your instructor for this course.
+
+5
+00:00:10.560 --> 00:00:13.260
+So first I want to make sure that you have
+
+6
+00:00:13.260 --> 00:00:15.420
+the right expectations for this course.
+
+7
+00:00:15.420 --> 00:00:16.980
+The first thing, very important, is that
+
+8
+00:00:16.980 --> 00:00:19.860
+this course is entirely slides based.
+
+9
+00:00:19.860 --> 00:00:23.580
+So I'm assuming that you have previous experience with AWS.
+
+10
+00:00:23.580 --> 00:00:26.190
+As such, there will be no hands on with this course
+
+11
+00:00:26.190 --> 00:00:27.570
+and you should know the basics,
+
+12
+00:00:27.570 --> 00:00:29.610
+that usually means that you've passed a certification
+
+13
+00:00:29.610 --> 00:00:31.290
+in the past on AWS.
+
+14
+00:00:31.290 --> 00:00:33.480
+This course is going to be fast paced.
+
+15
+00:00:33.480 --> 00:00:35.220
+I think that your time is valuable
+
+16
+00:00:35.220 --> 00:00:36.450
+and I don't wanna waste it,
+
+17
+00:00:36.450 --> 00:00:38.580
+but if you think that I'm going too fast,
+
+18
+00:00:38.580 --> 00:00:42.243
+please slow me down to zero point 75 x speed.
+
+19
+00:00:43.080 --> 00:00:44.730
+As I said, I assume that you've passed
+
+20
+00:00:44.730 --> 00:00:46.350
+a certification in the past,
+
+21
+00:00:46.350 --> 00:00:48.390
+and that is AWS certified Solutions
+
+22
+00:00:48.390 --> 00:00:50.760
+Architect Associate at least,
+
+23
+00:00:50.760 --> 00:00:53.610
+but if you want to maximize your chances to
+
+24
+00:00:53.610 --> 00:00:55.650
+pass the professional exam,
+
+25
+00:00:55.650 --> 00:00:57.960
+then I definitely recommend you to go through
+
+26
+00:00:57.960 --> 00:01:00.090
+Certified Developer, Certified SysOps
+
+27
+00:01:00.090 --> 00:01:02.370
+and certified DevOps first.
+
+28
+00:01:02.370 --> 00:01:04.920
+I know some of you want to go straight from
+
+29
+00:01:04.920 --> 00:01:07.350
+the Solutions Architect Associate certification
+
+30
+00:01:07.350 --> 00:01:09.600
+to the Solution Architect Professional certification,
+
+31
+00:01:09.600 --> 00:01:11.430
+but if you're new to AWS
+
+32
+00:01:11.430 --> 00:01:13.170
+and you need that hands on experience,
+
+33
+00:01:13.170 --> 00:01:15.360
+take your time, do these other courses
+
+34
+00:01:15.360 --> 00:01:16.740
+and other certifications
+
+35
+00:01:16.740 --> 00:01:19.800
+and then get back to this certification.
+
+36
+00:01:19.800 --> 00:01:22.350
+So the knowledge you need to know to pass the
+
+37
+00:01:22.350 --> 00:01:24.150
+Solution Architect Professional Exam
+
+38
+00:01:24.150 --> 00:01:26.490
+is actually extremely similar
+
+39
+00:01:26.490 --> 00:01:28.320
+to the knowledge you've acquired for
+
+40
+00:01:28.320 --> 00:01:30.660
+Certified Solutions Architect Associates.
+
+41
+00:01:30.660 --> 00:01:31.770
+But the difference is
+
+42
+00:01:31.770 --> 00:01:33.900
+that the questions are going to be more complex
+
+43
+00:01:33.900 --> 00:01:36.960
+and knowing details is going to be very important.
+
+44
+00:01:36.960 --> 00:01:38.130
+So how do you know details?
+
+45
+00:01:38.130 --> 00:01:39.720
+Well by having this hands-on experience.
+
+46
+00:01:39.720 --> 00:01:41.340
+And so this is why I recommend you,
+
+47
+00:01:41.340 --> 00:01:45.120
+in case you're still new to AWS, to not do this course.
+
+48
+00:01:45.120 --> 00:01:46.500
+So in the exam you will see that
+
+49
+00:01:46.500 --> 00:01:48.480
+multiple answers are correct,
+
+50
+00:01:48.480 --> 00:01:50.280
+but one will be the most appropriate
+
+51
+00:01:50.280 --> 00:01:53.790
+and the best design for the requirements you have.
+
+52
+00:01:53.790 --> 00:01:55.380
+So this is the difficulty around this exam.
+
+53
+00:01:55.380 --> 00:01:56.580
+It's not about the amount of
+
+54
+00:01:56.580 --> 00:01:58.110
+new knowledge you're going to have,
+
+55
+00:01:58.110 --> 00:01:58.943
+there's still going to be some new knowledge
+
+56
+00:01:58.943 --> 00:02:00.390
+that I'm going to teach you.
+
+57
+00:02:00.390 --> 00:02:03.990
+It's all about understanding how to choose the best answer
+
+58
+00:02:03.990 --> 00:02:05.700
+and there is a mix between this course and
+
+59
+00:02:05.700 --> 00:02:07.980
+also having some hands on experience that I cannot teach you
+
+60
+00:02:07.980 --> 00:02:09.510
+through this course.
+
+61
+00:02:09.510 --> 00:02:13.140
+Okay, next, the exam itself is really, really hard
+
+62
+00:02:13.140 --> 00:02:16.560
+and will test you on real AWS experience
+
+63
+00:02:16.560 --> 00:02:18.840
+and it will test you on some very subtle service features
+
+64
+00:02:18.840 --> 00:02:20.850
+that I will be teaching you in this course.
+
+65
+00:02:20.850 --> 00:02:25.440
+So as such, I have included quizzes for every single section
+
+66
+00:02:25.440 --> 00:02:27.510
+but you need to know something about these quizzes.
+
+67
+00:02:27.510 --> 00:02:30.060
+The quizzes are not scenario based and not exam like.
+
+68
+00:02:30.060 --> 00:02:31.530
+They're very actually difficult to write
+
+69
+00:02:31.530 --> 00:02:33.600
+as scenario based or exam like.
+
+70
+00:02:33.600 --> 00:02:36.930
+So the quiz's sole purpose is to help you extract
+
+71
+00:02:36.930 --> 00:02:40.080
+some important information out of what I'm teaching you.
+
+72
+00:02:40.080 --> 00:02:43.380
+And so to me that is the optimal way of teaching you
+
+73
+00:02:43.380 --> 00:02:45.180
+about some specific topics.
+
+74
+00:02:45.180 --> 00:02:50.010
+And so I would ask you to please trust how I teach, okay?
+
+75
+00:02:50.010 --> 00:02:51.720
+I think I'm trying to maximize your chances
+
+76
+00:02:51.720 --> 00:02:52.800
+to pass the exam.
+
+77
+00:02:52.800 --> 00:02:54.960
+So please trust me that the quizzes
+
+78
+00:02:54.960 --> 00:02:56.130
+are designed the right way.
+
+79
+00:02:56.130 --> 00:02:57.330
+Even though they look simple,
+
+80
+00:02:57.330 --> 00:03:00.000
+they will test you on some actual very specific features
+
+81
+00:03:00.000 --> 00:03:03.030
+and that will come in handy you when come the real exam.
+
+82
+00:03:03.030 --> 00:03:04.830
+So what about practice exams?
+
+83
+00:03:04.830 --> 00:03:07.350
+While this course does not come with any practice exam,
+
+84
+00:03:07.350 --> 00:03:10.680
+they come in a separate course that you can buy on Udemy
+
+85
+00:03:10.680 --> 00:03:12.210
+or get access to.
+
+86
+00:03:12.210 --> 00:03:14.370
+This course is solely focused on
+
+87
+00:03:14.370 --> 00:03:17.283
+getting you the knowledge needed to pass the exam.
+
+88
+00:03:18.480 --> 00:03:22.957
+This course also is on the new certification SAP-C02.
+
+89
+00:03:24.120 --> 00:03:26.220
+And if you go for other practice exams,
+
+90
+00:03:26.220 --> 00:03:28.800
+you may see outdated content in other practice exams
+
+91
+00:03:28.800 --> 00:03:31.410
+or other courses and you may say, oh, but Stephane,
+
+92
+00:03:31.410 --> 00:03:33.150
+you're missing this topic in your course.
+
+93
+00:03:33.150 --> 00:03:34.230
+Well, actually, no.
+
+94
+00:03:34.230 --> 00:03:36.150
+This course is not incomplete.
+
+95
+00:03:36.150 --> 00:03:37.650
+It's targeted towards what I've seen
+
+96
+00:03:37.650 --> 00:03:39.960
+and what I know is appearing at the exam.
+
+97
+00:03:39.960 --> 00:03:41.910
+And as such, this is what I cover.
+
+98
+00:03:41.910 --> 00:03:43.590
+Now, if you go through the actual exam,
+
+99
+00:03:43.590 --> 00:03:44.820
+and you have some feedback for me
+
+100
+00:03:44.820 --> 00:03:46.620
+around stuff that I do not cover,
+
+101
+00:03:46.620 --> 00:03:48.810
+please reach out and I'll be more than happy
+
+102
+00:03:48.810 --> 00:03:51.180
+to incorporate that into the course.
+
+103
+00:03:51.180 --> 00:03:52.290
+So that's it.
+
+104
+00:03:52.290 --> 00:03:55.533
+Let's get started and I will see you in the next lecture.
+

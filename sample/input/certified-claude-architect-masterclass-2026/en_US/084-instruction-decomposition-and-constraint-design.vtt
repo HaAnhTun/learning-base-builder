@@ -1,0 +1,294 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.840
+Let's walk through instruction decomposition and constraint design, breaking complex instructions
+
+2
+00:00:05.840 --> 00:00:11.680
+into ordered steps, defining scope, encoding format and length and tone constraints,
+
+3
+00:00:11.680 --> 00:00:17.200
+knowing when to split one instruction into more, and testing whether an instruction is specific
+
+4
+00:00:17.200 --> 00:00:22.639
+enough to be reliable. These are mechanics we're covering in this lesson. Let's jump into it.
+
+5
+00:00:23.600 --> 00:00:28.959
+A prompt that asks for everything at once usually delivers mediocre work on all of it.
+
+6
+00:00:28.959 --> 00:00:34.720
+Instruction decomposition is the fix. You break a complex task into a sequence of simpler,
+
+7
+00:00:34.720 --> 00:00:40.400
+ordered sub-instructions, each with a single clear goal, which reduces ambiguity and makes
+
+8
+00:00:40.400 --> 00:00:46.400
+the output much easier to verify at every stage. Scope definition is the practice of explicitly
+
+9
+00:00:46.400 --> 00:00:52.639
+naming what to include, what to exclude, and what to assume. It closes the most common
+
+10
+00:00:52.639 --> 00:00:56.639
+interpretation gaps without forcing you to specify every detail of the output.
+
+11
+00:00:57.279 --> 00:01:01.520
+Constraint encoding is the translation of quality requirements into specific
+
+12
+00:01:01.520 --> 00:01:06.800
+instruction parameters, and each parameter closes a different category of interpretation gap.
+
+13
+00:01:08.080 --> 00:01:12.720
+Why does decomposition matter? When a single instruction contains multiple goals,
+
+14
+00:01:12.720 --> 00:01:19.279
+the model has to balance them simultaneously. That competition reduces the quality of every
+
+15
+00:01:19.279 --> 00:01:25.839
+individual outcome. A task split into clear sequential steps consistently produces better
+
+16
+00:01:25.839 --> 00:01:31.440
+results than the same task crammed into one large prompt, and it's also much easier to
+
+17
+00:01:31.440 --> 00:01:36.800
+manage and review. Each step can be checked independently before the next one runs.
+
+18
+00:01:37.360 --> 00:01:42.400
+If a step produces unexpected output, you know exactly where the problem occurred
+
+19
+00:01:42.400 --> 00:01:49.040
+and can fix it there. That precision is impossible when everything happens in a single call.
+
+20
+00:01:49.040 --> 00:01:56.400
+Decomposition converts one large, hard-to-debug prompt into a series of smaller, verifiable steps.
+
+21
+00:01:57.519 --> 00:02:03.120
+Ordered decomposition means assigning each phase of a task its own instruction, with a clear
+
+22
+00:02:03.120 --> 00:02:09.360
+sequence between them. For a three-phase task, step 1 might extract the relevant information
+
+23
+00:02:09.360 --> 00:02:16.320
+from the source. Step 2 summarizes the extracted content according to a specific format. Step 3
+
+24
+00:02:16.320 --> 00:02:24.000
+reviews the summary for gaps or inconsistencies. Each step has one goal, one expected output type,
+
+25
+00:02:24.000 --> 00:02:30.479
+and one criterion you can use to verify it. When phase 1 completes and you check the extraction,
+
+26
+00:02:30.479 --> 00:02:37.759
+you know the input to phase 2 is sound before you run it. That sequencing is what makes complex tasks
+
+27
+00:02:37.759 --> 00:02:44.559
+tractable. You're solving three simple problems in order, not one complicated problem all at once.
+
+28
+00:02:45.440 --> 00:02:50.880
+Scope definition is one of the most underused tools in instruction writing. Most interpretation
+
+29
+00:02:50.880 --> 00:02:56.800
+gaps come from things that weren't said, rather than things that were said badly. Scope definition
+
+30
+00:02:56.800 --> 00:03:03.360
+addresses that directly, by forcing you to name the edges of the task explicitly. What should the
+
+31
+00:03:03.360 --> 00:03:09.360
+output include? List those elements by name. What should it exclude? State that directly, rather
+
+32
+00:03:09.679 --> 00:03:14.880
+than hoping the model infers it. What can the model treat as already established context?
+
+33
+00:03:15.440 --> 00:03:21.199
+Name those assumptions so the model doesn't hedge or re-explain background you've already covered.
+
+34
+00:03:21.199 --> 00:03:27.279
+And where does the task end? A clear stopping point prevents the model from continuing past
+
+35
+00:03:27.279 --> 00:03:33.759
+the intended output. Defining all four of those boundaries turns an open-ended task into a closed
+
+36
+00:03:33.759 --> 00:03:40.160
+one. The comparison between a single complex instruction and a decomposed one is worth making
+
+37
+00:03:40.160 --> 00:03:47.039
+concrete. Consider a contract analysis task. A single instruction might say, analyze this contract,
+
+38
+00:03:47.039 --> 00:03:53.279
+identify the key risks, summarize each party's obligations, and flag any clauses that conflict
+
+39
+00:03:53.279 --> 00:03:59.199
+with standard practice. That's four distinct goals in one call. The model will attempt all four,
+
+40
+00:03:59.199 --> 00:04:04.160
+but each one gets reduced attention, and the outputs are harder to check individually.
+
+41
+00:04:04.160 --> 00:04:10.559
+Decomposed, the same task becomes three separate calls. List every obligation per party, assess
+
+42
+00:04:10.559 --> 00:04:17.279
+each obligation as standard or unusual, then summarize only the unusual ones. Each step has
+
+43
+00:04:17.279 --> 00:04:23.600
+one goal. The output of each step feeds into the next. Every step is verifiable on its own.
+
+44
+00:04:24.559 --> 00:04:29.600
+Constraints are parameters that narrow the output space without changing what the core task is
+
+45
+00:04:29.600 --> 00:04:36.480
+asking for. There are four primary types. Format specifies the structure of the output, bullet list,
+
+46
+00:04:36.480 --> 00:04:43.679
+numbered steps, table, or prose paragraph. Length specifies the quantity, word count, sentence count,
+
+47
+00:04:43.679 --> 00:04:51.679
+or a natural boundary like in two paragraphs. Tone specifies the register, formal, informal,
+
+48
+00:04:52.000 --> 00:05:00.160
+technical, plain language, or a specific stylistic target. Perspective specifies the point of view,
+
+49
+00:05:00.160 --> 00:05:06.640
+first person, third person, or a named role or persona. Each type closes a different category
+
+50
+00:05:06.640 --> 00:05:12.959
+of interpretation gap. Applying all four to a single instruction isn't over-engineering.
+
+51
+00:05:12.959 --> 00:05:17.760
+It's closing the four most common sources of output variance in one pass.
+
+52
+00:05:18.320 --> 00:05:24.480
+Not every task needs decomposition, but certain signals tell you when splitting is the right move.
+
+53
+00:05:24.480 --> 00:05:29.440
+If the task has distinct phases that produce different kinds of output, those phases should
+
+54
+00:05:29.440 --> 00:05:35.760
+be separate instructions. If you need to verify one phase before the next phase can run correctly,
+
+55
+00:05:35.760 --> 00:05:42.320
+decompose. If the instruction requires more than two or three constraints to be even roughly precise,
+
+56
+00:05:43.200 --> 00:05:48.799
+that's a sign the task is doing too much in one call. And if past attempts with a single prompt
+
+57
+00:05:48.799 --> 00:05:54.559
+consistently missed part of the task, that's the clearest signal of all. When you find yourself
+
+58
+00:05:54.559 --> 00:06:00.239
+stacking constraint after constraint to keep a single instruction from going wrong, splitting
+
+59
+00:06:00.239 --> 00:06:05.040
+is almost always faster and more reliable than trying to make one large prompt airtight.
+
+60
+00:06:06.320 --> 00:06:11.679
+Testing for specificity means asking structured questions about your instruction before you run it.
+
+61
+00:06:12.320 --> 00:06:18.399
+The interpretation test asks, could a reasonable person read this in more than one way? If yes,
+
+62
+00:06:18.399 --> 00:06:24.239
+find the ambiguity and close it. The gap test asks, what would the model have to assume to
+
+63
+00:06:24.239 --> 00:06:30.239
+complete this? List those assumptions explicitly, then decide which ones to resolve in the instruction
+
+64
+00:06:30.239 --> 00:06:36.239
+and which ones are safe to leave implicit. The output preview asks you to mentally trace through
+
+65
+00:06:36.239 --> 00:06:41.279
+what a plausible response looks like. If two different outputs both seem like reasonable
+
+66
+00:06:41.279 --> 00:06:46.720
+answers to your instruction, that's the signal you need another constraint. The scope check asks
+
+67
+00:06:46.720 --> 00:06:52.079
+whether the instruction has a clear stopping point. If it could go on indefinitely, add a boundary.
+
+68
+00:06:53.839 --> 00:06:58.720
+Picture a complex instruction as a pile of decisions you're handing over all at once.
+
+69
+00:06:59.359 --> 00:07:06.079
+Decomposition splits that pile into an order you can inspect, and constraints on format, length,
+
+70
+00:07:06.079 --> 00:07:11.760
+tone, and perspective shrink whatever's left, and you get back what you expect. The whole
+
+71
+00:07:11.760 --> 00:07:16.959
+arrangement holds together only if each step produces an output you can actually check,
+
+72
+00:07:16.959 --> 00:07:20.799
+because an unverifiable step just pushes the guesswork downstream.
+
+73
+00:07:21.519 --> 00:07:24.399
+That does it for this lesson. I'll see you in the next one.
+

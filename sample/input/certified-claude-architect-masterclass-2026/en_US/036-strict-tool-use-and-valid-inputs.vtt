@@ -1,0 +1,258 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:07.119
+Hello. Forcing a model to call a tool only gets you halfway. The call still has to carry the right
+
+2
+00:00:07.119 --> 00:00:13.760
+inputs, in the right types, with nothing missing. In this lesson, we'll go through strict tool use,
+
+3
+00:00:13.760 --> 00:00:19.280
+a single setting that guarantees the model's tool inputs match the schema you defined.
+
+4
+00:00:19.280 --> 00:00:23.200
+Let's get into it. Let's start with the pain it removes.
+
+5
+00:00:23.200 --> 00:00:27.040
+Without strict mode, the model can hand your function the wrong shape of data.
+
+6
+00:00:27.520 --> 00:00:31.360
+Say your schema expects a number of passengers. You might get back the word
+
+7
+00:00:31.360 --> 00:00:36.639
+two spelled out as a string. Or you might get a two wrapped in quotes, which is a string,
+
+8
+00:00:37.200 --> 00:00:42.159
+not the integer your code wants. Worse, the model might leave out a field you marked as
+
+9
+00:00:42.159 --> 00:00:46.400
+required entirely. Every one of those breaks the function you're trying to call.
+
+10
+00:00:46.400 --> 00:00:50.959
+And the usual fix is ugly. You write code that inspects the tool call,
+
+11
+00:00:50.959 --> 00:00:55.680
+checks whether the types are right, and if they're not, you re-prompt the model and hope
+
+12
+00:00:55.680 --> 00:01:01.599
+the second try is cleaner. That validate and retry dance is exactly what strict mode is designed
+
+13
+00:01:01.599 --> 00:01:09.599
+to end. So, what does strict actually promise you? Three things. First, a valid name. The
+
+14
+00:01:09.599 --> 00:01:15.120
+tool name the model returns is always a real tool from your request. It can't invent one that
+
+15
+00:01:15.120 --> 00:01:21.839
+doesn't exist. Second, no type mismatch. Every argument matches the type your schema declared.
+
+16
+00:01:21.839 --> 00:01:25.760
+If you said integer, you get an integer. Never a string standing in for one.
+
+17
+00:01:26.400 --> 00:01:32.879
+Third, no missing fields. Every required field is present. Nothing your function depends on
+
+18
+00:01:32.879 --> 00:01:39.199
+quietly goes missing. Put those together and you have a hard guarantee. The tool call conforms to
+
+19
+00:01:39.199 --> 00:01:44.800
+your input schema every time by construction. You're not hoping the model got it right.
+
+20
+00:01:44.800 --> 00:01:48.319
+The system makes it impossible for the call to come out any other way.
+
+21
+00:01:49.279 --> 00:01:55.040
+Now, let's look under the hood because the how is genuinely clever. You enable it by adding one
+
+22
+00:01:55.040 --> 00:02:00.959
+property to your tool. You set strict to true right alongside the name, the description, and
+
+23
+00:02:00.959 --> 00:02:07.760
+the input schema. Every object in your schema also needs additional properties set to false,
+
+24
+00:02:07.760 --> 00:02:13.759
+and leaving that out gets you a 400 from the API. When you do that, the API takes your schema and
+
+25
+00:02:14.080 --> 00:02:20.080
+compiles it into a grammar. That grammar then constrains the model's token sampling as it writes
+
+26
+00:02:20.080 --> 00:02:26.479
+the tool call. At every step, the model can only produce tokens that keep the output valid against
+
+27
+00:02:26.479 --> 00:02:31.600
+your schema. Anything that would violate it simply can't be sampled. It's called constrained
+
+28
+00:02:31.600 --> 00:02:38.399
+decoding, and it happens live as the model generates, not as a check afterward. Here's my
+
+29
+00:02:38.399 --> 00:02:43.440
+favorite part. What you get to stop writing. Because the guarantee holds by construction,
+
+30
+00:02:43.440 --> 00:02:49.119
+you get no validation layer. That's the code that used to inspect every tool call and confirm the
+
+31
+00:02:49.119 --> 00:02:55.279
+types and fields were correct. Gone. You also get no retry loop, the logic that re-prompted the
+
+32
+00:02:55.279 --> 00:03:02.160
+model whenever a call came back malformed. Also gone. What's left gives you type safe calls.
+
+33
+00:03:02.160 --> 00:03:07.039
+Your functions receive correctly typed arguments every single time, which means they behave
+
+34
+00:03:07.039 --> 00:03:12.960
+predictably even when you're running at real production scale. Less code, fewer failure paths,
+
+35
+00:03:12.960 --> 00:03:18.559
+more confidence. That's a genuinely good trade, and it's the practical reason Teams turns strict
+
+36
+00:03:18.559 --> 00:03:24.880
+on for agent work. Now I want to draw a clear line between two features that sound similar,
+
+37
+00:03:24.880 --> 00:03:30.240
+because students mix them up constantly. Strict tool use constrains the tool inputs.
+
+38
+00:03:30.240 --> 00:03:35.360
+It makes sure the arguments going into your functions conform to your input schema. It's
+
+39
+00:03:35.360 --> 00:03:40.880
+about what flows into the tools. Structured outputs, on the other hand, constrains the text
+
+40
+00:03:40.880 --> 00:03:47.119
+response itself. It shapes the model's final answer to a schema you provide. It's about the shape of
+
+41
+00:03:47.119 --> 00:03:54.080
+what comes back to the user or the calling code. Same underlying idea, valid by construction,
+
+42
+00:03:54.080 --> 00:04:00.639
+pointed at two different targets. One governs the tool call inputs, the other governs the response.
+
+43
+00:04:00.639 --> 00:04:04.639
+Keep that distinction sharp and you'll always know which one you actually need.
+
+44
+00:04:05.839 --> 00:04:11.679
+Here's what ties them together under the surface. Strict tool use compiles your schemas into
+
+45
+00:04:11.679 --> 00:04:17.040
+grammars using the very same pipeline that structured outputs uses. It's not a separate
+
+46
+00:04:17.040 --> 00:04:24.000
+system bolted on, it's the same machinery aimed at tool inputs. Because of that shared foundation,
+
+47
+00:04:24.000 --> 00:04:30.239
+both features accept the same supported subset of JSON schema. That matters in practice. A
+
+48
+00:04:30.239 --> 00:04:35.279
+handful of the more advanced schema keywords aren't allowed, so you keep your schemas within
+
+49
+00:04:35.279 --> 00:04:41.119
+the supported subset. And there's a performance nicety. Those compiled schemas get cached for up
+
+50
+00:04:41.119 --> 00:04:48.000
+to 24 hours since their last use. So if you call the same tool repeatedly, you skip the recompilation
+
+51
+00:04:48.000 --> 00:04:55.679
+cost after the first time. Same pipeline, same schema rules, same cache. One more thing worth
+
+52
+00:04:55.679 --> 00:05:01.359
+calling out because it connects straight back to how you steer tool selection. Strict combines
+
+53
+00:05:01.359 --> 00:05:07.119
+cleanly with the tool choice settings we looked at earlier. Set tool choice to any and you guarantee
+
+54
+00:05:07.119 --> 00:05:12.559
+that some tool gets called. Then set strict to true on that tool and you guarantee the inputs
+
+55
+00:05:12.559 --> 00:05:17.760
+to it are valid. Stack those two together and you've closed the loop. You're certain a call
+
+56
+00:05:17.760 --> 00:05:23.119
+happens and you're certain the call is well formed. There's no gap left where the model could either
+
+57
+00:05:23.200 --> 00:05:28.480
+skip the tool or feed it garbage. For anyone building agent workflows that have to run
+
+58
+00:05:28.480 --> 00:05:34.480
+unattended, that combination is a genuinely strong foundation to build on. Reliable trigger,
+
+59
+00:05:34.480 --> 00:05:41.040
+reliable payload. Strict tool use gives you a different way to think about tool inputs.
+
+60
+00:05:41.040 --> 00:05:46.079
+Conformance stops being something you check after the fact and becomes something that's true
+
+61
+00:05:46.079 --> 00:05:53.200
+by construction. What makes this work is the decoding itself because the model can't emit a
+
+62
+00:05:53.200 --> 00:05:59.359
+token that would break your schema. So the real payoff isn't fewer malformed calls. It's the
+
+63
+00:05:59.359 --> 00:06:04.160
+validation layer and the retry loops that you don't have to write at all because the process
+
+64
+00:06:04.160 --> 00:06:08.640
+is guaranteed. That's where we'll leave this one. I'll see you in the next lesson.
+

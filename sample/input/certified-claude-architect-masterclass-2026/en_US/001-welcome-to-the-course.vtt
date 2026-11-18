@@ -1,0 +1,474 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.440
+Welcome to the Claude Certified Architect Foundations course.
+
+2
+00:00:03.440 --> 00:00:04.559
+I'm glad you're here.
+
+3
+00:00:04.559 --> 00:00:07.480
+Before we start, I want to cover what the exam is,
+
+4
+00:00:07.480 --> 00:00:10.880
+who it's for, and how to get the most out of this course.
+
+5
+00:00:10.880 --> 00:00:13.760
+The exam is 60 questions in two hours,
+
+6
+00:00:13.760 --> 00:00:17.059
+and you need a scaled score of 720 out of 1,000.
+
+7
+00:00:17.059 --> 00:00:20.200
+It's a proctored exam online or at a test center,
+
+8
+00:00:20.200 --> 00:00:24.040
+and the fee is $125 at the time of this recording.
+
+9
+00:00:24.040 --> 00:00:26.159
+The content spans five domains.
+
+10
+00:00:26.159 --> 00:00:28.319
+Agentic architectures and orchestration
+
+11
+00:00:28.319 --> 00:00:32.240
+is the heaviest at 27%, then Claude code configuration
+
+12
+00:00:32.240 --> 00:00:34.680
+and prompt engineering at 20% each,
+
+13
+00:00:34.680 --> 00:00:37.880
+tool design and MCP integration at 18%,
+
+14
+00:00:37.880 --> 00:00:40.159
+and context management and reliability
+
+15
+00:00:40.159 --> 00:00:44.759
+at 15%, which in my opinion, is the most important domain.
+
+16
+00:00:44.759 --> 00:00:46.659
+Anthropic recommends around six months
+
+17
+00:00:46.659 --> 00:00:50.360
+of hands-on work with the Claude APIs, the agent SDK,
+
+18
+00:00:50.360 --> 00:00:54.560
+Claude code, and MCP before you sit for this exam.
+
+19
+00:00:54.680 --> 00:00:56.360
+One more thing before the lessons start
+
+20
+00:00:56.360 --> 00:00:59.080
+because it changes how you move through the course.
+
+21
+00:00:59.080 --> 00:01:02.560
+This program comes with a custom study pack.
+
+22
+00:01:02.560 --> 00:01:04.400
+It's far more than a simple handout.
+
+23
+00:01:04.400 --> 00:01:06.800
+There's a study companion that condenses the whole course
+
+24
+00:01:06.800 --> 00:01:09.900
+into one document, a 30-day study plan
+
+25
+00:01:09.900 --> 00:01:12.599
+that names the exact lectures to watch each day
+
+26
+00:01:12.599 --> 00:01:14.680
+to be certified in a month,
+
+27
+00:01:14.680 --> 00:01:18.480
+and three free mini-exam assessments at 30 questions each,
+
+28
+00:01:18.480 --> 00:01:21.400
+all with full question and answer explanations.
+
+29
+00:01:21.400 --> 00:01:24.879
+It also has a key terms glossary, printable flashcards,
+
+30
+00:01:24.879 --> 00:01:28.500
+and every slide deck from this course for you to use.
+
+31
+00:01:28.500 --> 00:01:31.559
+It doesn't cost a thing and it stays up to date.
+
+32
+00:01:31.559 --> 00:01:33.519
+The last video in this course
+
+33
+00:01:33.519 --> 00:01:35.400
+shows you exactly how to get it.
+
+34
+00:01:35.400 --> 00:01:38.400
+It's free and it takes less than a minute to download.
+
+35
+00:01:38.400 --> 00:01:40.360
+I'd go get it before starting the lessons
+
+36
+00:01:40.360 --> 00:01:42.800
+because the study pack is what turns this course
+
+37
+00:01:42.800 --> 00:01:47.239
+into a concrete path to success on exam day.
+
+38
+00:01:47.239 --> 00:01:49.199
+In fact, let's quickly walk through
+
+39
+00:01:49.199 --> 00:01:51.080
+how to download the resources.
+
+40
+00:01:51.760 --> 00:01:54.480
+First, scroll all the way to the last lesson of the course
+
+41
+00:01:54.480 --> 00:01:56.800
+and click on the Resources button.
+
+42
+00:01:56.800 --> 00:01:58.480
+You'll need to scroll down a little bit more,
+
+43
+00:01:58.480 --> 00:02:00.680
+then click the provided link.
+
+44
+00:02:00.680 --> 00:02:03.160
+Once on the site, enter your information,
+
+45
+00:02:03.160 --> 00:02:05.800
+then verify your account and it will redirect you
+
+46
+00:02:05.800 --> 00:02:08.080
+to all the available resources.
+
+47
+00:02:08.080 --> 00:02:10.520
+Look, people have different learning styles.
+
+48
+00:02:10.520 --> 00:02:13.600
+Some really like using the slide decks and the study plan,
+
+49
+00:02:13.600 --> 00:02:15.440
+along with the other resources.
+
+50
+00:02:15.440 --> 00:02:18.380
+If that's you, pause here and go get them.
+
+51
+00:02:18.380 --> 00:02:20.880
+If you're the type that doesn't need all that extra stuff,
+
+52
+00:02:21.639 --> 00:02:22.479
+don't worry about it.
+
+53
+00:02:22.479 --> 00:02:24.240
+Thousands of students have passed
+
+54
+00:02:24.240 --> 00:02:26.520
+using only the video materials.
+
+55
+00:02:26.520 --> 00:02:28.320
+That's actually how I like to learn.
+
+56
+00:02:29.460 --> 00:02:30.960
+Now that you know about the study pack,
+
+57
+00:02:30.960 --> 00:02:33.119
+we should talk about who this course is for
+
+58
+00:02:33.119 --> 00:02:36.500
+because I'd rather you find out now than three lessons in.
+
+59
+00:02:36.500 --> 00:02:39.539
+This course assumes you already use Cloud for real work.
+
+60
+00:02:39.539 --> 00:02:43.080
+I don't cover setup and I don't walk through configuration.
+
+61
+00:02:43.080 --> 00:02:45.880
+I also don't run code on screen.
+
+62
+00:02:45.880 --> 00:02:47.160
+When I mention an example,
+
+63
+00:02:47.160 --> 00:02:50.000
+I'm assuming you could go rebuild it on your own
+
+64
+00:02:50.000 --> 00:02:52.759
+in your environment without me talking you through it.
+
+65
+00:02:52.759 --> 00:02:56.119
+If that isn't where you are yet, that's completely fine.
+
+66
+00:02:56.119 --> 00:02:58.440
+But this isn't your starting point.
+
+67
+00:02:58.440 --> 00:03:00.399
+Go find a more foundational course
+
+68
+00:03:00.399 --> 00:03:02.600
+and get some hands-on hours first.
+
+69
+00:03:02.600 --> 00:03:04.520
+This course will be here when you're ready
+
+70
+00:03:04.520 --> 00:03:07.220
+and you'll get far more out of it after doing that.
+
+71
+00:03:08.779 --> 00:03:10.600
+Here's something that surprises people.
+
+72
+00:03:10.600 --> 00:03:14.360
+This credential is valid for 12 months and then it expires.
+
+73
+00:03:14.360 --> 00:03:15.479
+That isn't a catch.
+
+74
+00:03:15.479 --> 00:03:18.679
+It's an honest response to a moving target.
+
+75
+00:03:18.679 --> 00:03:21.440
+Cloud changes fast and a credential that stayed valid
+
+76
+00:03:21.440 --> 00:03:23.380
+for five years would end up certifying
+
+77
+00:03:23.380 --> 00:03:25.320
+that you knew a version of old Cloud
+
+78
+00:03:25.320 --> 00:03:27.520
+that isn't valid anymore.
+
+79
+00:03:27.520 --> 00:03:30.059
+So Anthropic keeps it current instead.
+
+80
+00:03:30.059 --> 00:03:31.720
+When your renewal window opens,
+
+81
+00:03:31.720 --> 00:03:35.000
+you renew what changed since you last certified.
+
+82
+00:03:35.000 --> 00:03:37.759
+And it's completely free and non-proctored.
+
+83
+00:03:37.759 --> 00:03:41.279
+The assessment is on the Anthropic Partner Academy website.
+
+84
+00:03:41.279 --> 00:03:43.960
+There's no fee when you renew on time.
+
+85
+00:03:43.960 --> 00:03:46.039
+What that buys you is a current tense statement
+
+86
+00:03:46.039 --> 00:03:48.520
+that you know today's Cloud.
+
+87
+00:03:49.240 --> 00:03:50.279
+And that you're an expert in Cloud
+
+88
+00:03:50.279 --> 00:03:52.539
+as it stands in the current tense.
+
+89
+00:03:53.880 --> 00:03:55.500
+There are two ways through this course,
+
+90
+00:03:55.500 --> 00:03:57.279
+depending on where you are.
+
+91
+00:03:57.279 --> 00:03:58.940
+If you're preparing for the first time,
+
+92
+00:03:58.940 --> 00:04:00.360
+watch the lessons in order.
+
+93
+00:04:00.360 --> 00:04:01.559
+They build on each other.
+
+94
+00:04:01.559 --> 00:04:05.419
+So resist the urge to skip ahead on your first pass.
+
+95
+00:04:05.419 --> 00:04:07.740
+Then work through the practice exams
+
+96
+00:04:07.740 --> 00:04:09.059
+until you're scoring comfortably
+
+97
+00:04:09.059 --> 00:04:11.740
+above that passing line of 720.
+
+98
+00:04:11.740 --> 00:04:13.160
+If you're coming back to renew,
+
+99
+00:04:13.160 --> 00:04:15.059
+you don't need to rewatch everything.
+
+100
+00:04:15.059 --> 00:04:16.600
+Start with what changed.
+
+101
+00:04:16.600 --> 00:04:19.559
+Watch the updated lessons and run fresh practice questions
+
+102
+00:04:19.559 --> 00:04:21.959
+to confirm your judgment still tracks.
+
+103
+00:04:21.959 --> 00:04:25.480
+Either way, the practice exams are your calibration tool.
+
+104
+00:04:25.480 --> 00:04:27.559
+And there are plenty of them right here,
+
+105
+00:04:27.559 --> 00:04:29.399
+all in one platform.
+
+106
+00:04:29.399 --> 00:04:31.519
+Your access includes every update.
+
+107
+00:04:31.519 --> 00:04:34.480
+So what you come back to is always current.
+
+108
+00:04:36.079 --> 00:04:37.399
+One last piece of advice,
+
+109
+00:04:37.399 --> 00:04:40.320
+and it's the one that pays off every renewal cycle.
+
+110
+00:04:40.320 --> 00:04:42.880
+Learn the patterns, not the signatures.
+
+111
+00:04:42.880 --> 00:04:46.320
+Names change, parameters change, and limits change.
+
+112
+00:04:47.040 --> 00:04:49.320
+The reasoning behind a good design decision is durable.
+
+113
+00:04:49.320 --> 00:04:52.959
+And that reasoning is what the exam is actually testing.
+
+114
+00:04:52.959 --> 00:04:55.059
+When something is stable, I'll tell you.
+
+115
+00:04:55.059 --> 00:04:57.880
+And when something is volatile, I'll tell you that too.
+
+116
+00:04:57.880 --> 00:05:00.859
+So you know where your study time is worth spending.
+
+117
+00:05:00.859 --> 00:05:02.679
+All right, that's enough talk.
+
+118
+00:05:02.679 --> 00:05:04.040
+Let's get into the content.
+

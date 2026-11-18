@@ -1,0 +1,158 @@
+WEBVTT
+
+1
+00:00:00.140 --> 00:00:02.170
+<v Instructor>So now let's talk about AWS Glue.</v>
+
+2
+00:00:02.170 --> 00:00:03.760
+So it's a managed ETL service
+
+3
+00:00:03.760 --> 00:00:06.000
+for doing extract, transform and load.
+
+4
+00:00:06.000 --> 00:00:07.610
+It's very helpful when you want to prepare
+
+5
+00:00:07.610 --> 00:00:10.440
+and transform data ahead of doing analytics.
+
+6
+00:00:10.440 --> 00:00:12.430
+It's a fully serverless service
+
+7
+00:00:12.430 --> 00:00:13.690
+and the way it works is, for example,
+
+8
+00:00:13.690 --> 00:00:15.510
+you have Glue ETL here
+
+9
+00:00:15.510 --> 00:00:17.060
+and you have data in an Amazon S3 bucket
+
+10
+00:00:17.060 --> 00:00:19.820
+that you can extract or an Amazon RDS database
+
+11
+00:00:19.820 --> 00:00:21.310
+that you can extract as well,
+
+12
+00:00:21.310 --> 00:00:24.220
+and then you would transform it within Glue ETL,
+
+13
+00:00:24.220 --> 00:00:26.840
+and finally load it where your target is.
+
+14
+00:00:26.840 --> 00:00:29.630
+For example, it could be a Redshift data warehouse.
+
+15
+00:00:29.630 --> 00:00:31.610
+So this is the Glue ETL service
+
+16
+00:00:31.610 --> 00:00:34.640
+and then you have the Glue Data Catalog service.
+
+17
+00:00:34.640 --> 00:00:38.210
+So the Glue Data Catalog is a catalog of data sets
+
+18
+00:00:38.210 --> 00:00:41.400
+and they will just have a crawler out there
+
+19
+00:00:41.400 --> 00:00:43.530
+that will look into all your data sources possible,
+
+20
+00:00:43.530 --> 00:00:47.490
+so it could be Amazon S3, Amazon RDS, Amazon DynamoDB,
+
+21
+00:00:47.490 --> 00:00:49.620
+or any JDBC compatible database,
+
+22
+00:00:49.620 --> 00:00:52.920
+and the crawler is going to look at these databases,
+
+23
+00:00:52.920 --> 00:00:55.220
+find all the tables and write the metadata
+
+24
+00:00:55.220 --> 00:00:59.740
+back into the AWS Data Catalog on AWS Glue.
+
+25
+00:00:59.740 --> 00:01:01.350
+So we'll have met our databases,
+
+26
+00:01:01.350 --> 00:01:04.380
+so a bunch of table metadata. Why?
+
+27
+00:01:04.380 --> 00:01:06.970
+Well, because once we have the data catalog
+
+28
+00:01:06.970 --> 00:01:10.130
+set in place, then the Glue Jobs ETL
+
+29
+00:01:10.130 --> 00:01:12.990
+can find these tables, know how to connect to them,
+
+30
+00:01:12.990 --> 00:01:15.020
+find the columns, find the rows and so on,
+
+31
+00:01:15.020 --> 00:01:17.820
+and then, for example, other services of AWS
+
+32
+00:01:17.820 --> 00:01:20.100
+also rely on the Glue Data Catalog.
+
+33
+00:01:20.100 --> 00:01:22.400
+For example, Amazon Athena is using
+
+34
+00:01:22.400 --> 00:01:24.920
+the Glue Data Catalog to do data discovery,
+
+35
+00:01:24.920 --> 00:01:29.670
+Amazon Redshift Spectrum as well, and Amazon EMR.
+
+36
+00:01:29.670 --> 00:01:30.503
+So that's it for Glue.
+
+37
+00:01:30.503 --> 00:01:31.980
+You just need to know it at a high level.
+
+38
+00:01:31.980 --> 00:01:33.150
+Hopefully that's enough
+
+39
+00:01:33.150 --> 00:01:35.100
+and I will see you in the next lecture.
+

@@ -1,0 +1,142 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.100
+<v Instructor>Now let's talk about AWS managed logs.</v>
+
+2
+00:00:02.100 --> 00:00:04.110
+So this is the kind of logs that can be produced
+
+3
+00:00:04.110 --> 00:00:06.351
+by the AWS services that can be helpful
+
+4
+00:00:06.351 --> 00:00:08.490
+for your solution architecture.
+
+5
+00:00:08.490 --> 00:00:10.800
+The first one is the load balancer access logs
+
+6
+00:00:10.800 --> 00:00:13.452
+to get details of all the requests meant
+
+7
+00:00:13.452 --> 00:00:15.360
+to your load balancers.
+
+8
+00:00:15.360 --> 00:00:18.030
+And so it's for the ALB, the NLB and the CLB.
+
+9
+00:00:18.030 --> 00:00:20.730
+And you can export these lugs into S3.
+
+10
+00:00:20.730 --> 00:00:22.440
+CloudTrail Logs which are the logs
+
+11
+00:00:22.440 --> 00:00:24.750
+of all the API calls met within your accounts,
+
+12
+00:00:24.750 --> 00:00:27.870
+and this can be exported to S3 and CloudWatch Logs.
+
+13
+00:00:27.870 --> 00:00:30.360
+VPC Flow Logs, which is going to give you information
+
+14
+00:00:30.360 --> 00:00:33.390
+about all the IP traffic going to and from
+
+15
+00:00:33.390 --> 00:00:35.670
+your network interfaces, in your VPC.
+
+16
+00:00:35.670 --> 00:00:38.130
+And this can be sent to S3, to CloudWatch Logs
+
+17
+00:00:38.130 --> 00:00:40.260
+and to Kinesis Data Firehose.
+
+18
+00:00:40.260 --> 00:00:43.650
+You have Route 53 Access Logs and these can be sent
+
+19
+00:00:43.650 --> 00:00:45.630
+and streamed directly into CloudWatch Logs
+
+20
+00:00:45.630 --> 00:00:47.820
+and they will log information about all the queries
+
+21
+00:00:47.820 --> 00:00:50.580
+that Route 53 is receiving.
+
+22
+00:00:50.580 --> 00:00:51.690
+S3 Access Logs where
+
+23
+00:00:51.690 --> 00:00:53.790
+you can send this to another S3 bucket
+
+24
+00:00:53.790 --> 00:00:55.290
+which is giving you some information
+
+25
+00:00:55.290 --> 00:00:57.810
+about all these access logins that happens
+
+26
+00:00:57.810 --> 00:01:00.900
+for the request made within your bucket.
+
+27
+00:01:00.900 --> 00:01:03.090
+CloudFront Access Logs to S3
+
+28
+00:01:03.090 --> 00:01:04.710
+which is going to give you detailed information
+
+29
+00:01:04.710 --> 00:01:07.650
+about every user request that CloudFront will receive.
+
+30
+00:01:07.650 --> 00:01:11.700
+And finally, all the config information can be exported
+
+31
+00:01:11.700 --> 00:01:15.360
+into S3, so you can get all your configuration exported
+
+32
+00:01:15.360 --> 00:01:18.180
+as a backup and do some analysis on them.
+
+33
+00:01:18.180 --> 00:01:19.620
+Okay, so that's it for all you need to know
+
+34
+00:01:19.620 --> 00:01:21.720
+just a very small informational lecture.
+
+35
+00:01:21.720 --> 00:01:24.623
+I hope you liked it and I will see you in the next lecture.
+

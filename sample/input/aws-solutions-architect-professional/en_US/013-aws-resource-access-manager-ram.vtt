@@ -1,0 +1,526 @@
+WEBVTT
+
+1
+00:00:00.090 --> 00:00:00.923
+<v Instructor>So let's talk</v>
+
+2
+00:00:00.923 --> 00:00:03.660
+about AWS Resource Access Manager, or RAM.
+
+3
+00:00:03.660 --> 00:00:06.120
+So you're going to share AWS resources that you own
+
+4
+00:00:06.120 --> 00:00:07.890
+with other AWS accounts.
+
+5
+00:00:07.890 --> 00:00:10.650
+And with this you can do it from any account,
+
+6
+00:00:10.650 --> 00:00:13.140
+or just accounts within your organization.
+
+7
+00:00:13.140 --> 00:00:16.140
+This is allowing you to avoid the resource duplication.
+
+8
+00:00:16.140 --> 00:00:17.910
+So what can you share with RAM?
+
+9
+00:00:17.910 --> 00:00:20.130
+You can share VPC Subnets, for example,
+
+10
+00:00:20.130 --> 00:00:22.710
+which is very helpful and one of the best use case for RAM,
+
+11
+00:00:22.710 --> 00:00:24.510
+which allows you to have all the resources
+
+12
+00:00:24.510 --> 00:00:26.400
+launched within the same subnets.
+
+13
+00:00:26.400 --> 00:00:28.410
+And all these subnets
+
+14
+00:00:28.410 --> 00:00:30.990
+then must be from the same AWS organizations.
+
+15
+00:00:30.990 --> 00:00:33.180
+You cannot share the default security groups
+
+16
+00:00:33.180 --> 00:00:35.220
+and the default VPC.
+
+17
+00:00:35.220 --> 00:00:37.320
+The participants can manage their own resources
+
+18
+00:00:37.320 --> 00:00:40.050
+within the subnets, but the participants cannot view,
+
+19
+00:00:40.050 --> 00:00:41.700
+modify, or delete resources
+
+20
+00:00:41.700 --> 00:00:44.190
+that belong to other participants or the owner.
+
+21
+00:00:44.190 --> 00:00:46.320
+So they only share the networking, really.
+
+22
+00:00:46.320 --> 00:00:48.630
+You can also share a transit gateway
+
+23
+00:00:48.630 --> 00:00:52.920
+or Route 53 Resolver Rules and a DNS Firewall Rule Groups,
+
+24
+00:00:52.920 --> 00:00:54.240
+and so on.
+
+25
+00:00:54.240 --> 00:00:56.460
+Or license manager configurations.
+
+26
+00:00:56.460 --> 00:00:58.320
+There's other stuff you can share. I'm just gonna do a list.
+
+27
+00:00:58.320 --> 00:01:01.650
+So Aura DB Clusters, ACM Private Authority,
+
+28
+00:01:01.650 --> 00:01:03.960
+Certificate Authority, CodeBuild Projects,
+
+29
+00:01:03.960 --> 00:01:06.660
+EC2 Dedicated Hosts, Capacity Reservations,
+
+30
+00:01:06.660 --> 00:01:09.060
+Glue Catalog, Database, and Table,
+
+31
+00:01:09.060 --> 00:01:11.160
+Network Firewall Policies, Resource Groups,
+
+32
+00:01:11.160 --> 00:01:13.317
+System Manager, System Incidents, Outpost,
+
+33
+00:01:13.317 --> 00:01:15.030
+and the list goes on and on and on,
+
+34
+00:01:15.030 --> 00:01:16.620
+and it will not update it, okay?
+
+35
+00:01:16.620 --> 00:01:18.360
+But one of the most important use case
+
+36
+00:01:18.360 --> 00:01:21.150
+from an exam perspective for Resource Access Manager
+
+37
+00:01:21.150 --> 00:01:22.590
+is for the VPC.
+
+38
+00:01:22.590 --> 00:01:26.970
+So in this example, we have a VPC and there's a VPC owner
+
+39
+00:01:26.970 --> 00:01:28.080
+and it has a private subnet,
+
+40
+00:01:28.080 --> 00:01:29.790
+but this VPC is going to be shared
+
+41
+00:01:29.790 --> 00:01:31.560
+with account one and account two.
+
+42
+00:01:31.560 --> 00:01:33.480
+So each account is going to be responsible
+
+43
+00:01:33.480 --> 00:01:35.280
+for its own resources, okay?
+
+44
+00:01:35.280 --> 00:01:36.630
+They cannot view and modify
+
+45
+00:01:36.630 --> 00:01:38.940
+or delete other resources in other accounts.
+
+46
+00:01:38.940 --> 00:01:41.490
+So for example, if I deploy an EC2 instance
+
+47
+00:01:41.490 --> 00:01:42.900
+and ALB in account one,
+
+48
+00:01:42.900 --> 00:01:45.480
+then an account two will have an EC2 instance.
+
+49
+00:01:45.480 --> 00:01:47.250
+They can communicate with one another,
+
+50
+00:01:47.250 --> 00:01:48.780
+but they cannot view each other, okay,
+
+51
+00:01:48.780 --> 00:01:50.490
+because they are in separate accounts.
+
+52
+00:01:50.490 --> 00:01:51.660
+And then your database
+
+53
+00:01:51.660 --> 00:01:54.960
+may sit in a private subnet of the VPC owner.
+
+54
+00:01:54.960 --> 00:01:55.860
+And so network is shared.
+
+55
+00:01:55.860 --> 00:01:58.440
+That means that all these things can talk to each other
+
+56
+00:01:58.440 --> 00:02:00.840
+and these applications can access each other
+
+57
+00:02:00.840 --> 00:02:01.980
+using private IPs.
+
+58
+00:02:01.980 --> 00:02:06.000
+So this avoid the needs, for example, to do a VPC peering.
+
+59
+00:02:06.000 --> 00:02:09.210
+Now security group can also be referenced across accounts
+
+60
+00:02:09.210 --> 00:02:11.910
+for maximum security, which is very helpful.
+
+61
+00:02:11.910 --> 00:02:13.680
+Now, the use cases for this
+
+62
+00:02:13.680 --> 00:02:17.070
+is that applications within the same trust boundaries
+
+63
+00:02:17.070 --> 00:02:18.750
+can be deployed within the same VPC
+
+64
+00:02:18.750 --> 00:02:21.030
+and they will simplify your network.
+
+65
+00:02:21.030 --> 00:02:21.990
+And if you have applications
+
+66
+00:02:21.990 --> 00:02:25.800
+with a high degree of interconnectivity, yet, again,
+
+67
+00:02:25.800 --> 00:02:29.820
+you will have a much simplified network set up
+
+68
+00:02:29.820 --> 00:02:31.080
+because you only have one VPC.
+
+69
+00:02:31.080 --> 00:02:33.720
+And so by default, any application deployed within it
+
+70
+00:02:33.720 --> 00:02:36.060
+can talk with each other.
+
+71
+00:02:36.060 --> 00:02:38.460
+Another example of what can be shared
+
+72
+00:02:38.460 --> 00:02:42.000
+by Resource Access Manager is a managed prefix list.
+
+73
+00:02:42.000 --> 00:02:43.590
+So what is a managed prefix list?
+
+74
+00:02:43.590 --> 00:02:47.970
+Well, it is a set of one or more CIDR blocks,
+
+75
+00:02:47.970 --> 00:02:49.620
+and it makes it easier to maintain
+
+76
+00:02:49.620 --> 00:02:52.200
+and configure security group rules and route tables.
+
+77
+00:02:52.200 --> 00:02:53.670
+So here's an example.
+
+78
+00:02:53.670 --> 00:02:55.650
+Account A has a prefix list,
+
+79
+00:02:55.650 --> 00:02:59.610
+and in it you have the CIDR 1, CIDR 2, CIDR 3.
+
+80
+00:02:59.610 --> 00:03:01.080
+And these are set of rules, for example,
+
+81
+00:03:01.080 --> 00:03:04.890
+that represent your internal network of your company.
+
+82
+00:03:04.890 --> 00:03:07.230
+And say you want to apply these rules,
+
+83
+00:03:07.230 --> 00:03:10.080
+these prefixes, to many different security groups.
+
+84
+00:03:10.080 --> 00:03:13.140
+So instead of having them all in all security groups,
+
+85
+00:03:13.140 --> 00:03:15.360
+what you do is that you create a prefix list
+
+86
+00:03:15.360 --> 00:03:17.040
+and then that prefix list can be referenced
+
+87
+00:03:17.040 --> 00:03:18.540
+by a security group.
+
+88
+00:03:18.540 --> 00:03:20.490
+So on top of it, this can be shared.
+
+89
+00:03:20.490 --> 00:03:23.820
+So if they're shared using RAM to another account,
+
+90
+00:03:23.820 --> 00:03:26.070
+then a security group inbound rules
+
+91
+00:03:26.070 --> 00:03:28.080
+can look as simple as this.
+
+92
+00:03:28.080 --> 00:03:31.290
+Where you say, well, SSH is allowed on port 22
+
+93
+00:03:31.290 --> 00:03:34.080
+from the source Prefix List A.
+
+94
+00:03:34.080 --> 00:03:36.600
+And so that if you are using, for example,
+
+95
+00:03:36.600 --> 00:03:39.300
+your own customer managed prefix list,
+
+96
+00:03:39.300 --> 00:03:41.490
+then you define the CIDRs
+
+97
+00:03:41.490 --> 00:03:44.070
+and then you can share it with other accounts' organizations
+
+98
+00:03:44.070 --> 00:03:45.660
+and then you can modify them.
+
+99
+00:03:45.660 --> 00:03:47.880
+And if you modify your prefix list,
+
+100
+00:03:47.880 --> 00:03:50.520
+automatically all the security groups
+
+101
+00:03:50.520 --> 00:03:52.560
+that were leveraging that prefix list,
+
+102
+00:03:52.560 --> 00:03:53.940
+or all the route tables
+
+103
+00:03:53.940 --> 00:03:55.590
+that were leveraging that prefix list,
+
+104
+00:03:55.590 --> 00:03:57.720
+are going to be updated at the same time,
+
+105
+00:03:57.720 --> 00:04:01.290
+which gives you a central management of your prefixes,
+
+106
+00:04:01.290 --> 00:04:02.520
+and so on.
+
+107
+00:04:02.520 --> 00:04:05.280
+You also have a second kind of prefix list,
+
+108
+00:04:05.280 --> 00:04:08.430
+which is the AWS-Managed Prefix List.
+
+109
+00:04:08.430 --> 00:04:11.580
+So this time the CIDRs are defined by AWS
+
+110
+00:04:11.580 --> 00:04:14.940
+for their own services, and you cannot create, modify,
+
+111
+00:04:14.940 --> 00:04:16.410
+share, or delete them,
+
+112
+00:04:16.410 --> 00:04:20.250
+but I wanted you to know about them in this slide anyway.
+
+113
+00:04:20.250 --> 00:04:23.130
+Something else you can share with Resource Access Manager
+
+114
+00:04:23.130 --> 00:04:25.980
+is the Route 53 Outbound Resolver.
+
+115
+00:04:25.980 --> 00:04:26.813
+So this allows you
+
+116
+00:04:26.813 --> 00:04:28.931
+to scale your following rules to your DNS
+
+117
+00:04:28.931 --> 00:04:30.441
+in case you have a hybrid setup,
+
+118
+00:04:30.441 --> 00:04:33.117
+and you have multiple accounts and multiple VPC.
+
+119
+00:04:33.117 --> 00:04:34.739
+So the idea is that in your main account,
+
+120
+00:04:34.739 --> 00:04:38.130
+you will define the resolver rule for Route 53.
+
+121
+00:04:38.130 --> 00:04:40.350
+So you have your forwarding rules
+
+122
+00:04:40.350 --> 00:04:44.250
+that have the domain names that you want and the target IPs,
+
+123
+00:04:44.250 --> 00:04:46.830
+and then you would share those with other accounts
+
+124
+00:04:46.830 --> 00:04:49.860
+so that after you share it, the other account accepts it,
+
+125
+00:04:49.860 --> 00:04:52.560
+then they can be associated with other VPC,
+
+126
+00:04:52.560 --> 00:04:54.630
+and any other VPC that have these rules
+
+127
+00:04:54.630 --> 00:04:57.570
+can then resolve the domain names you've specified.
+
+128
+00:04:57.570 --> 00:04:58.403
+So this allows you
+
+129
+00:04:58.403 --> 00:05:03.060
+to have a centrally managed resolver rules for your DNS.
+
+130
+00:05:03.060 --> 00:05:05.760
+Okay, so that's it for Resource Access Manager.
+
+131
+00:05:05.760 --> 00:05:08.760
+I hope you liked it, and I will see you in the next lecture.
+

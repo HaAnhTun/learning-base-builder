@@ -1,0 +1,638 @@
+WEBVTT
+
+1
+00:00:00.960 --> 00:00:03.300
+<v ->Next, we're getting into DDoS attacks.</v>
+
+2
+00:00:03.300 --> 00:00:06.900
+So DDoS stands for Distributed Denial of Service.
+
+3
+00:00:06.900 --> 00:00:08.880
+It's a way to basically shut down an instance
+
+4
+00:00:08.880 --> 00:00:11.640
+by making it sure it cannot accept any new traffic
+
+5
+00:00:11.640 --> 00:00:14.190
+effectively making it useless
+
+6
+00:00:14.190 --> 00:00:16.890
+and so your users cannot access your application anymore.
+
+7
+00:00:16.890 --> 00:00:19.080
+So the way it works that you have an attacker
+
+8
+00:00:19.080 --> 00:00:20.487
+and you have the application server,
+
+9
+00:00:20.487 --> 00:00:22.740
+and the attacker through some various techniques,
+
+10
+00:00:22.740 --> 00:00:24.150
+that we'll not get into,
+
+11
+00:00:24.150 --> 00:00:26.670
+will be able to have a bunch of computers
+
+12
+00:00:26.670 --> 00:00:28.110
+that are going to be masters
+
+13
+00:00:28.110 --> 00:00:29.580
+and they're going to create bots
+
+14
+00:00:29.580 --> 00:00:31.320
+and the bots will be a lot of them
+
+15
+00:00:31.320 --> 00:00:34.740
+and all the bots are going to get into requesting
+
+16
+00:00:34.740 --> 00:00:37.890
+stuff from our application server in very bad ways,
+
+17
+00:00:37.890 --> 00:00:39.090
+non-conventional ways,
+
+18
+00:00:39.090 --> 00:00:41.190
+and so the application server is overwhelmed,
+
+19
+00:00:41.190 --> 00:00:42.960
+it doesn't know how to respond to this request.
+
+20
+00:00:42.960 --> 00:00:44.640
+It's going to try as best as it can,
+
+21
+00:00:44.640 --> 00:00:45.930
+but it's gonna be very soon overwhelmed
+
+22
+00:00:45.930 --> 00:00:47.610
+and then it will be just done
+
+23
+00:00:47.610 --> 00:00:49.200
+and so there will be a denial of service.
+
+24
+00:00:49.200 --> 00:00:50.580
+And so your normal users
+
+25
+00:00:50.580 --> 00:00:52.980
+cannot access your application server
+
+26
+00:00:52.980 --> 00:00:56.430
+because it does not respond anymore to normal requests.
+
+27
+00:00:56.430 --> 00:00:59.280
+It's very dangerous, but it's very common on the internet.
+
+28
+00:00:59.280 --> 00:01:00.570
+And so there are different types of attacks
+
+29
+00:01:00.570 --> 00:01:01.410
+on your infrastructure.
+
+30
+00:01:01.410 --> 00:01:04.440
+There is DDoS and so it's when your service isn't available
+
+31
+00:01:04.440 --> 00:01:07.200
+because it's receiving too many requests at a high level.
+
+32
+00:01:07.200 --> 00:01:08.040
+So there's different ones.
+
+33
+00:01:08.040 --> 00:01:11.010
+There's SYN Flood, which is a layer four type of attack
+
+34
+00:01:11.010 --> 00:01:13.950
+when there's too many TCP connection requests happening.
+
+35
+00:01:13.950 --> 00:01:16.800
+There's UDP Reflection where other servers
+
+36
+00:01:16.800 --> 00:01:20.100
+can send a big UDP request to our server.
+
+37
+00:01:20.100 --> 00:01:23.070
+DNS flood attack, where we overwhelm a DNS
+
+38
+00:01:23.070 --> 00:01:25.740
+so that users cannot query our DNS service
+
+39
+00:01:25.740 --> 00:01:28.410
+and then can't find our website, which is bad.
+
+40
+00:01:28.410 --> 00:01:31.650
+Then the Slow Loris attack, where a lot of HTTP connections,
+
+41
+00:01:31.650 --> 00:01:34.320
+so it's layer seven, are opened and maintained
+
+42
+00:01:34.320 --> 00:01:36.330
+and our server is trying to maintain all of them.
+
+43
+00:01:36.330 --> 00:01:40.530
+The threads are being overwhelmed and the server is useless.
+
+44
+00:01:40.530 --> 00:01:42.240
+Then there's application level attacks
+
+45
+00:01:42.240 --> 00:01:43.740
+which is more complex, more specific
+
+46
+00:01:43.740 --> 00:01:47.400
+and you need to understand how the target application works
+
+47
+00:01:47.400 --> 00:01:49.920
+to make it an application level attack.
+
+48
+00:01:49.920 --> 00:01:51.870
+And so before it was network based attack,
+
+49
+00:01:51.870 --> 00:01:53.130
+now it's application level.
+
+50
+00:01:53.130 --> 00:01:56.340
+And so you have some things such as case bursting strategy
+
+51
+00:01:56.340 --> 00:01:59.160
+to overload the backend database with a request
+
+52
+00:01:59.160 --> 00:02:00.480
+to invalidate the cache
+
+53
+00:02:00.480 --> 00:02:01.890
+or you request too many things
+
+54
+00:02:01.890 --> 00:02:03.990
+or you send too many big packets.
+
+55
+00:02:03.990 --> 00:02:05.370
+It just depends on your application
+
+56
+00:02:05.370 --> 00:02:07.440
+and the kind of security holes
+
+57
+00:02:07.440 --> 00:02:09.240
+your developers may have introduced
+
+58
+00:02:09.240 --> 00:02:10.920
+while programming your application.
+
+59
+00:02:10.920 --> 00:02:13.890
+Okay, so how do we get protected from DDoS
+
+60
+00:02:13.890 --> 00:02:16.650
+and these application level attacks on AWS?
+
+61
+00:02:16.650 --> 00:02:20.520
+Well, first for DDoS, there is AWS Shield Standard,
+
+62
+00:02:20.520 --> 00:02:22.500
+and it's to protect against DDoS attacks
+
+63
+00:02:22.500 --> 00:02:24.210
+for your websites, applications,
+
+64
+00:02:24.210 --> 00:02:26.430
+for all customers at no additional cost.
+
+65
+00:02:26.430 --> 00:02:29.490
+So by using AWS, you are somewhat protected,
+
+66
+00:02:29.490 --> 00:02:31.950
+thanks to Shield Standard enabled by default
+
+67
+00:02:31.950 --> 00:02:33.750
+against some DDoS attacks.
+
+68
+00:02:33.750 --> 00:02:35.430
+Then you have Shield Advanced,
+
+69
+00:02:35.430 --> 00:02:37.980
+which gives you 24/7 premium DDoS protection
+
+70
+00:02:37.980 --> 00:02:39.150
+and we'll see in details
+
+71
+00:02:39.150 --> 00:02:41.010
+what that means in the next slide.
+
+72
+00:02:41.010 --> 00:02:43.350
+You have WAF or Web Application Firewall,
+
+73
+00:02:43.350 --> 00:02:45.720
+and this is not specifically for DDoS
+
+74
+00:02:45.720 --> 00:02:49.230
+but it can help you filter specific requests based on rules.
+
+75
+00:02:49.230 --> 00:02:51.450
+So for example, you can say if the request
+
+76
+00:02:51.450 --> 00:02:55.320
+is more than five megabytes, then drop it right away
+
+77
+00:02:55.320 --> 00:02:57.120
+because it looks like a bad request.
+
+78
+00:02:57.120 --> 00:03:00.510
+So WAF is more against application level protections
+
+79
+00:03:00.510 --> 00:03:01.830
+but it can still help you
+
+80
+00:03:01.830 --> 00:03:03.780
+filter some specific requests based on rules
+
+81
+00:03:03.780 --> 00:03:06.390
+and helps you survive a DDoS attack.
+
+82
+00:03:06.390 --> 00:03:08.310
+We have CloudFront and Route 53
+
+83
+00:03:08.310 --> 00:03:10.290
+which by default have Shield enabled
+
+84
+00:03:10.290 --> 00:03:12.030
+and they will give you availability protection
+
+85
+00:03:12.030 --> 00:03:13.380
+by using a global edge network.
+
+86
+00:03:13.380 --> 00:03:17.370
+So attacking CloudFront and Route 53 is a lot of work.
+
+87
+00:03:17.370 --> 00:03:21.090
+And combined with Shield, it provides DDoS attack mitigation
+
+88
+00:03:21.090 --> 00:03:22.800
+directly at the edge of your network.
+
+89
+00:03:22.800 --> 00:03:24.870
+So the traffic never really makes it
+
+90
+00:03:24.870 --> 00:03:28.890
+through to your core application in one region.
+
+91
+00:03:28.890 --> 00:03:31.080
+And finally, in case the traffic
+
+92
+00:03:31.080 --> 00:03:33.030
+does reach your applications,
+
+93
+00:03:33.030 --> 00:03:34.740
+then a very good way to protect yourself
+
+94
+00:03:34.740 --> 00:03:36.090
+is to be ready to scale.
+
+95
+00:03:36.090 --> 00:03:38.070
+So you need to leverage AWS Auto Scaling,
+
+96
+00:03:38.070 --> 00:03:40.500
+such as if some of your servers are overwhelmed
+
+97
+00:03:40.500 --> 00:03:43.950
+that means your at least CPU is skyrocketing close to 100%,
+
+98
+00:03:43.950 --> 00:03:45.420
+then Auto Scaling will kick in
+
+99
+00:03:45.420 --> 00:03:46.710
+and create more instances
+
+100
+00:03:46.710 --> 00:03:49.350
+and so it's going to become more expensive for your attacker
+
+101
+00:03:49.350 --> 00:03:50.790
+to attack these new instances.
+
+102
+00:03:50.790 --> 00:03:52.110
+Obviously it's gonna be more expensive for you
+
+103
+00:03:52.110 --> 00:03:53.760
+but you're having some kind of protection
+
+104
+00:03:53.760 --> 00:03:54.960
+against these attacks.
+
+105
+00:03:54.960 --> 00:03:57.330
+And then finally, it's a very good idea
+
+106
+00:03:57.330 --> 00:03:59.100
+to separate static resources
+
+107
+00:03:59.100 --> 00:04:01.170
+and distribute them through S3 in CloudFront
+
+108
+00:04:01.170 --> 00:04:03.300
+which is visually very very safe
+
+109
+00:04:03.300 --> 00:04:06.840
+and stable from a DDoS, from dynamic request
+
+110
+00:04:06.840 --> 00:04:08.880
+which are going to be usually smaller requests
+
+111
+00:04:08.880 --> 00:04:09.713
+and that you can handle
+
+112
+00:04:09.713 --> 00:04:12.480
+for your REST API on EC2 and ALB.
+
+113
+00:04:12.480 --> 00:04:14.730
+If you're more interested into DDoS protection as a whole,
+
+114
+00:04:14.730 --> 00:04:17.550
+I'd recommend this white paper right here.
+
+115
+00:04:17.550 --> 00:04:19.770
+Okay, so as a sample architecture
+
+116
+00:04:19.770 --> 00:04:21.570
+to protect yourself against DDoS,
+
+117
+00:04:21.570 --> 00:04:24.300
+you have the DNS service Route 53
+
+118
+00:04:24.300 --> 00:04:26.760
+that is protected by Shield by default.
+
+119
+00:04:26.760 --> 00:04:29.160
+Then you have your application distributed by CloudFront
+
+120
+00:04:29.160 --> 00:04:30.900
+where Shield is again enabled by default
+
+121
+00:04:30.900 --> 00:04:33.300
+and you can set up a Web Application Firewall
+
+122
+00:04:33.300 --> 00:04:36.030
+on your CloudFront distribution to protect yourself.
+
+123
+00:04:36.030 --> 00:04:38.370
+Finally, if the traffic does make it through,
+
+124
+00:04:38.370 --> 00:04:40.710
+then on your load balancer you also have Shield.
+
+125
+00:04:40.710 --> 00:04:43.110
+And then if your application makes you through
+
+126
+00:04:43.110 --> 00:04:44.520
+to your Auto Scaling group,
+
+127
+00:04:44.520 --> 00:04:46.290
+then it's able to scale over there
+
+128
+00:04:46.290 --> 00:04:47.370
+and make sure it can handle
+
+129
+00:04:47.370 --> 00:04:50.700
+the extra bits of traffic from the DDoS attack.
+
+130
+00:04:50.700 --> 00:04:52.170
+Now let's get into Shield.
+
+131
+00:04:52.170 --> 00:04:55.350
+So Shield has two level of service.
+
+132
+00:04:55.350 --> 00:04:56.640
+Shield Standard is free
+
+133
+00:04:56.640 --> 00:04:59.580
+and it's activated for every customer and ON by default.
+
+134
+00:04:59.580 --> 00:05:00.960
+And it will provide you protection
+
+135
+00:05:00.960 --> 00:05:04.440
+from SYN attacks, UDP Floods, Reflection attacks
+
+136
+00:05:04.440 --> 00:05:07.440
+and other layer three or four type of attacks.
+
+137
+00:05:07.440 --> 00:05:08.610
+Very very good.
+
+138
+00:05:08.610 --> 00:05:11.880
+Shield Advanced is for more enterprise customers.
+
+139
+00:05:11.880 --> 00:05:14.040
+It's an optional DDoS mitigation service.
+
+140
+00:05:14.040 --> 00:05:17.610
+It's going to cost you $3,000 per month per organization
+
+141
+00:05:17.610 --> 00:05:18.750
+and you're going to be protected
+
+142
+00:05:18.750 --> 00:05:20.790
+against more sophisticated attacks
+
+143
+00:05:20.790 --> 00:05:23.828
+on your EC2 instance, ELB, CloudFront,
+
+144
+00:05:23.828 --> 00:05:27.150
+AWS Global Accelerator and Route 53.
+
+145
+00:05:27.150 --> 00:05:29.520
+On top of it, if you do experience a DDoS,
+
+146
+00:05:29.520 --> 00:05:31.140
+then you have 24/7 access
+
+147
+00:05:31.140 --> 00:05:34.260
+to the AWS DDoS response team, the DRP.
+
+148
+00:05:34.260 --> 00:05:36.840
+And on top of it, if you incur higher fees
+
+149
+00:05:36.840 --> 00:05:39.360
+because you are scaled up with Auto Scaling
+
+150
+00:05:39.360 --> 00:05:41.070
+because you have more requests going into your network,
+
+151
+00:05:41.070 --> 00:05:42.300
+more bandwidth,
+
+152
+00:05:42.300 --> 00:05:45.540
+then you are protected against these higher fees,
+
+153
+00:05:45.540 --> 00:05:47.310
+thanks to the Shield Advanced
+
+154
+00:05:47.310 --> 00:05:49.020
+sort of insurance that you took.
+
+155
+00:05:49.020 --> 00:05:50.010
+So it's very important
+
+156
+00:05:50.010 --> 00:05:51.960
+for you to understand the difference between these two
+
+157
+00:05:51.960 --> 00:05:54.510
+and understand which one to use in the exam.
+
+158
+00:05:54.510 --> 00:05:56.100
+So that's it for this lecture.
+
+159
+00:05:56.100 --> 00:05:59.050
+I hope you liked it and I will see you in the next lecture.
+

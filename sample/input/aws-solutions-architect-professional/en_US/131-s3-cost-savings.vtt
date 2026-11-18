@@ -1,0 +1,402 @@
+WEBVTT
+
+1
+00:00:00.030 --> 00:00:01.410
+<v Instructor>Okay, so now let's talk about</v>
+
+2
+00:00:01.410 --> 00:00:02.850
+cost savings in S3.
+
+3
+00:00:02.850 --> 00:00:05.790
+And for this, we'll get started with S3 storage classes.
+
+4
+00:00:05.790 --> 00:00:06.990
+Now, in the next lecture,
+
+5
+00:00:06.990 --> 00:00:09.207
+I've included a full lecture detailing exactly
+
+6
+00:00:09.207 --> 00:00:12.900
+what each storage class does, in case you don't know,
+
+7
+00:00:12.900 --> 00:00:14.850
+but in case you know, I wanna make this lecture very short
+
+8
+00:00:14.850 --> 00:00:16.890
+for you in order not to bore you.
+
+9
+00:00:16.890 --> 00:00:20.430
+So, the first class is S3 Standard-General Purpose.
+
+10
+00:00:20.430 --> 00:00:22.590
+Then we have S3 Standard-Infrequent Access.
+
+11
+00:00:22.590 --> 00:00:24.180
+This is when our objects are going
+
+12
+00:00:24.180 --> 00:00:25.680
+to be infrequently accessed,
+
+13
+00:00:25.680 --> 00:00:27.390
+and so we want to have some cost saving
+
+14
+00:00:27.390 --> 00:00:28.770
+by having them being cheaper,
+
+15
+00:00:28.770 --> 00:00:30.630
+but we're going to pay a little bit more every time
+
+16
+00:00:30.630 --> 00:00:32.270
+we're trying to access these objects.
+
+17
+00:00:32.270 --> 00:00:35.174
+Then we're getting S3 One Zone-Infrequent Access.
+
+18
+00:00:35.174 --> 00:00:37.440
+This is where objects are gonna be cheaper as well
+
+19
+00:00:37.440 --> 00:00:41.670
+to store in S3, but this time if you lose a full AZ,
+
+20
+00:00:41.670 --> 00:00:43.710
+then you will lose access to your objects.
+
+21
+00:00:43.710 --> 00:00:46.680
+So you need to make sure that these objects are recoverable
+
+22
+00:00:46.680 --> 00:00:48.090
+or can be recreated.
+
+23
+00:00:48.090 --> 00:00:51.690
+For example, thumbnails from S3 images can be a very good
+
+24
+00:00:51.690 --> 00:00:54.193
+use case for One Zone IA.
+
+25
+00:00:54.193 --> 00:00:56.820
+Intelligent Tiering, which is going to be smart enough
+
+26
+00:00:56.820 --> 00:01:00.360
+to move objects in between the tiers in order to give you
+
+27
+00:01:00.360 --> 00:01:02.370
+the maximum amount of cost saving.
+
+28
+00:01:02.370 --> 00:01:04.680
+And you have to pay for that monitoring.
+
+29
+00:01:04.680 --> 00:01:07.080
+So you have to pay for each object that is being monitored.
+
+30
+00:01:07.080 --> 00:01:09.330
+But all in all together, you have less management
+
+31
+00:01:09.330 --> 00:01:12.240
+on your part and you should save some money.
+
+32
+00:01:12.240 --> 00:01:15.300
+Then we have Amazon S3 Glacier Instant Retrieval,
+
+33
+00:01:15.300 --> 00:01:17.130
+which is a Glacier tier, which allows you
+
+34
+00:01:17.130 --> 00:01:18.998
+to retrieve your files very, very quickly.
+
+35
+00:01:18.998 --> 00:01:22.440
+We have Flexible Retrieval where you have more flexibility
+
+36
+00:01:22.440 --> 00:01:24.540
+into how you want to retrieve your file.
+
+37
+00:01:24.540 --> 00:01:26.430
+And then Deep Archive for files are going
+
+38
+00:01:26.430 --> 00:01:28.440
+to be giving you the most cost saving,
+
+39
+00:01:28.440 --> 00:01:32.160
+but that will take a long time to be retrieved
+
+40
+00:01:32.160 --> 00:01:35.550
+and to move between all these storage classes,
+
+41
+00:01:35.550 --> 00:01:38.010
+you can use either manual actions
+
+42
+00:01:38.010 --> 00:01:41.040
+or you can define an S3 Lifecycle configuration
+
+43
+00:01:41.040 --> 00:01:42.900
+that will automatically transition your objects
+
+44
+00:01:42.900 --> 00:01:45.690
+to a different tier after a certain amount of time.
+
+45
+00:01:45.690 --> 00:01:48.930
+So the first cost saving is going to be using
+
+46
+00:01:48.930 --> 00:01:50.250
+S3 Lifecycle Rules.
+
+47
+00:01:50.250 --> 00:01:52.770
+Then we can automatically transition objects between tiers
+
+48
+00:01:52.770 --> 00:01:54.180
+or even delete objects,
+
+49
+00:01:54.180 --> 00:01:56.517
+and that will obviously save us some money.
+
+50
+00:01:56.517 --> 00:01:59.610
+In terms of object storage, if we're able to compress
+
+51
+00:01:59.610 --> 00:02:02.460
+our objects before sending it into S3,
+
+52
+00:02:02.460 --> 00:02:05.100
+then we're obviously going to save in storage space
+
+53
+00:02:05.100 --> 00:02:07.140
+and therefore we'll pay less money.
+
+54
+00:02:07.140 --> 00:02:09.150
+Finally, there's a feature I haven't mentioned yet,
+
+55
+00:02:09.150 --> 00:02:10.830
+but it is good to mention it right now,
+
+56
+00:02:10.830 --> 00:02:13.320
+which is S3 Requester Pays.
+
+57
+00:02:13.320 --> 00:02:15.630
+With Requester Pays, you're making sure that the person
+
+58
+00:02:15.630 --> 00:02:18.150
+requesting for the object is going to have to pay
+
+59
+00:02:18.150 --> 00:02:19.470
+and not you.
+
+60
+00:02:19.470 --> 00:02:23.850
+So in general, bucket owners pay for all Amazon S3 storage,
+
+61
+00:02:23.850 --> 00:02:25.740
+their storage, and data transfer costs
+
+62
+00:02:25.740 --> 00:02:27.480
+associated with their buckets.
+
+63
+00:02:27.480 --> 00:02:29.274
+But when you enable Requester Pays,
+
+64
+00:02:29.274 --> 00:02:32.700
+only the requester will pay for the cost of the request
+
+65
+00:02:32.700 --> 00:02:35.220
+and the data download from the bucket.
+
+66
+00:02:35.220 --> 00:02:37.950
+So you still have the cost of storing the data
+
+67
+00:02:37.950 --> 00:02:40.920
+in your bucket, but all the transfer cost to download
+
+68
+00:02:40.920 --> 00:02:42.870
+the data from the bucket is going to be
+
+69
+00:02:42.870 --> 00:02:45.000
+at the charge of the requester.
+
+70
+00:02:45.000 --> 00:02:47.220
+So if you have an object that's, for example,
+
+71
+00:02:47.220 --> 00:02:49.080
+a large data set, and you need to share it
+
+72
+00:02:49.080 --> 00:02:50.430
+with like thousands of accounts,
+
+73
+00:02:50.430 --> 00:02:52.800
+and obviously, you don't want to bear all the network costs
+
+74
+00:02:52.800 --> 00:02:55.500
+for this, you can enable S3 Requester Pays,
+
+75
+00:02:55.500 --> 00:02:57.660
+and then each account that will request the data
+
+76
+00:02:57.660 --> 00:03:00.810
+from your bucket will have to pay the data transfer
+
+77
+00:03:00.810 --> 00:03:01.993
+and not you.
+
+78
+00:03:01.993 --> 00:03:04.770
+And for this feature to work, you need to make sure
+
+79
+00:03:04.770 --> 00:03:06.990
+you set up an S3 bucket policy
+
+80
+00:03:06.990 --> 00:03:10.140
+that obligates S3 Requester Pays to work.
+
+81
+00:03:10.140 --> 00:03:13.290
+And so the users have to be authenticated with IM
+
+82
+00:03:13.290 --> 00:03:16.710
+before they are able to request a data from your bucket.
+
+83
+00:03:16.710 --> 00:03:18.210
+But now there's a trick, right?
+
+84
+00:03:18.210 --> 00:03:22.140
+Because if you allow your users to access your S3 bucket
+
+85
+00:03:22.140 --> 00:03:25.050
+by using an assumed cross account IAM role,
+
+86
+00:03:25.050 --> 00:03:27.900
+then the owner of the account of that role is going
+
+87
+00:03:27.900 --> 00:03:29.640
+to be the one paying for the request.
+
+88
+00:03:29.640 --> 00:03:32.010
+So if you create a role in your account
+
+89
+00:03:32.010 --> 00:03:34.380
+and you give other accounts access to that role,
+
+90
+00:03:34.380 --> 00:03:36.570
+and then that role queries your S3 buckets,
+
+91
+00:03:36.570 --> 00:03:38.190
+then you're going to pay for the request
+
+92
+00:03:38.190 --> 00:03:41.310
+because the request comes from within your accounts.
+
+93
+00:03:41.310 --> 00:03:44.370
+So if you want to make sure that other accounts are paying
+
+94
+00:03:44.370 --> 00:03:47.190
+for the request, you do not need to use IAM role.
+
+95
+00:03:47.190 --> 00:03:49.044
+You need to create an S3 bucket policy
+
+96
+00:03:49.044 --> 00:03:51.930
+and make sure other users are authenticated using
+
+97
+00:03:51.930 --> 00:03:56.070
+an IAM role or IAM user that corresponds to their accounts.
+
+98
+00:03:56.070 --> 00:03:56.903
+And that's it.
+
+99
+00:03:56.903 --> 00:03:58.830
+That's all you need know about S3 cost savings.
+
+100
+00:03:58.830 --> 00:04:00.580
+I will see you in the next lecture.
+

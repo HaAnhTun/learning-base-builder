@@ -1,0 +1,758 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.890
+<v Instructor>Okay, so now let's talk about Aurora,</v>
+
+2
+00:00:01.890 --> 00:00:03.810
+which is going to be a big focus on the exam
+
+3
+00:00:03.810 --> 00:00:04.890
+from an architectural point-of-view.
+
+4
+00:00:04.890 --> 00:00:06.060
+Again, to understand the difference
+
+5
+00:00:06.060 --> 00:00:09.840
+between Aurora RDS and DynamoDB, for example.
+
+6
+00:00:09.840 --> 00:00:14.820
+So Aurora is only for PostgreSQL and MySQL-compatible APIs,
+
+7
+00:00:14.820 --> 00:00:17.610
+and the really cool thing about Aurora is the storage.
+
+8
+00:00:17.610 --> 00:00:21.690
+So it automatically grows by increments of 10 gigabytes
+
+9
+00:00:21.690 --> 00:00:23.580
+up to 256 terabytes.
+
+10
+00:00:23.580 --> 00:00:26.580
+So storage is something you don't have to think about
+
+11
+00:00:26.580 --> 00:00:29.760
+when using Aurora, it's one less constraints on your end.
+
+12
+00:00:29.760 --> 00:00:33.300
+There's six copies of data being made across different AZ,
+
+13
+00:00:33.300 --> 00:00:36.960
+and Aurora by default is going to be a multi-AZ database.
+
+14
+00:00:36.960 --> 00:00:37.920
+In terms of read replicas,
+
+15
+00:00:37.920 --> 00:00:40.680
+you can create up to 15 read replicas
+
+16
+00:00:40.680 --> 00:00:43.320
+and you're going to get a reader endpoint to access them all
+
+17
+00:00:43.320 --> 00:00:44.400
+so you don't need to remember
+
+18
+00:00:44.400 --> 00:00:45.990
+where all your read replicas are.
+
+19
+00:00:45.990 --> 00:00:48.570
+You can just use them from a reader endpoint.
+
+20
+00:00:48.570 --> 00:00:50.640
+You can do cross region read replica,
+
+21
+00:00:50.640 --> 00:00:52.080
+in which case you need to know
+
+22
+00:00:52.080 --> 00:00:54.750
+that the entire database is going to be copied,
+
+23
+00:00:54.750 --> 00:00:56.250
+not just select tables.
+
+24
+00:00:56.250 --> 00:00:58.620
+So this is different from DynamoDB.
+
+25
+00:00:58.620 --> 00:01:00.780
+So if you need to replicate just a single table
+
+26
+00:01:00.780 --> 00:01:03.780
+that you need to create a specific database for that.
+
+27
+00:01:03.780 --> 00:01:05.290
+With Cross-region Replica,
+
+28
+00:01:05.290 --> 00:01:08.160
+it is the entire database that's being copied.
+
+29
+00:01:08.160 --> 00:01:13.160
+And you can have the capability to load or export data
+
+30
+00:01:13.200 --> 00:01:15.630
+directly from or to S3.
+
+31
+00:01:15.630 --> 00:01:18.210
+The idea is that you don't need to use a client application
+
+32
+00:01:18.210 --> 00:01:19.830
+to read the data from Aurora
+
+33
+00:01:19.830 --> 00:01:22.410
+and then add it into S3, or vice versa.
+
+34
+00:01:22.410 --> 00:01:25.230
+It goes directly from Aurora into S3,
+
+35
+00:01:25.230 --> 00:01:29.670
+hence saving you a lot of resources and network costs.
+
+36
+00:01:29.670 --> 00:01:31.860
+There's backup, snapshots, and resource feature,
+
+37
+00:01:31.860 --> 00:01:34.320
+which are the exact same as RDS.
+
+38
+00:01:34.320 --> 00:01:36.810
+Okay, now let's have a look at how Aurora works
+
+39
+00:01:36.810 --> 00:01:38.460
+from an architectural standpoint.
+
+40
+00:01:38.460 --> 00:01:41.523
+So you get six copies of your data across 3 AZ,
+
+41
+00:01:42.916 --> 00:01:45.600
+and four out of the six copies need are needed for writes,
+
+42
+00:01:45.600 --> 00:01:48.690
+and three out of the six copies are needed for reads.
+
+43
+00:01:48.690 --> 00:01:51.060
+There's self-healing with peer-to-peer replication,
+
+44
+00:01:51.060 --> 00:01:52.020
+so you don't need to worry about it.
+
+45
+00:01:52.020 --> 00:01:55.290
+This is Amazon's Web Services engineering behind this
+
+46
+00:01:55.290 --> 00:01:56.670
+that made it possible,
+
+47
+00:01:56.670 --> 00:01:58.950
+and the storage of your database is going to be striped
+
+48
+00:01:58.950 --> 00:02:00.600
+across hundreds of volume,
+
+49
+00:02:00.600 --> 00:02:02.640
+so there's no single point of failure.
+
+50
+00:02:02.640 --> 00:02:03.840
+So here's the idea.
+
+51
+00:02:03.840 --> 00:02:05.130
+We have a shared storage volume
+
+52
+00:02:05.130 --> 00:02:06.974
+that is replicated, self-healing, and auto expanding,
+
+53
+00:02:06.974 --> 00:02:10.650
+and so as as you start inserting data
+
+54
+00:02:10.650 --> 00:02:11.913
+into your Aurora database,
+
+55
+00:02:11.913 --> 00:02:15.270
+it's going to be replicated across six blocks
+
+56
+00:02:15.270 --> 00:02:16.770
+in three different AZ.
+
+57
+00:02:16.770 --> 00:02:18.810
+So here's the blue, here's the orange,
+
+58
+00:02:18.810 --> 00:02:20.700
+and here's your entire database.
+
+59
+00:02:20.700 --> 00:02:23.040
+Then you're gonna get different Aurora there.
+
+60
+00:02:23.040 --> 00:02:24.561
+So in case you have a master,
+
+61
+00:02:24.561 --> 00:02:27.018
+you need to know that the failover for the master happens
+
+62
+00:02:27.018 --> 00:02:29.100
+in less than 30 seconds,
+
+63
+00:02:29.100 --> 00:02:29.970
+so this is quite helpful,
+
+64
+00:02:29.970 --> 00:02:32.299
+and the master is the only database in Aurora
+
+65
+00:02:32.299 --> 00:02:35.400
+that's able to write to the storage.
+
+66
+00:02:35.400 --> 00:02:37.140
+And then you can use the master
+
+67
+00:02:37.140 --> 00:02:39.833
+plus up to 15 Aurora Read Replicas to serve the reads.
+
+68
+00:02:39.833 --> 00:02:43.650
+So you can add as many as the, for example,
+
+69
+00:02:43.650 --> 00:02:47.010
+six or five read replicas in this example
+
+70
+00:02:47.010 --> 00:02:49.200
+to help you enhance the read volume.
+
+71
+00:02:49.200 --> 00:02:50.175
+So the idea here is
+
+72
+00:02:50.175 --> 00:02:53.550
+that you can really have the RDS capability
+
+73
+00:02:53.550 --> 00:02:55.980
+while making sure it's going to be a bit more cloud native,
+
+74
+00:02:55.980 --> 00:02:57.930
+a bit more fast for failovers,
+
+75
+00:02:57.930 --> 00:03:00.450
+in case there's an issue with the master.
+
+76
+00:03:00.450 --> 00:03:02.591
+Now finally, as I said, there is support
+
+77
+00:03:02.591 --> 00:03:05.520
+for cross-region replication for your read replica.
+
+78
+00:03:05.520 --> 00:03:07.596
+So this could be a way for you
+
+79
+00:03:07.596 --> 00:03:09.060
+to create a disaster recovery strategy,
+
+80
+00:03:09.060 --> 00:03:12.630
+and then you would promote that replica into its own region
+
+81
+00:03:12.630 --> 00:03:16.710
+in case there is a global outage in your region itself.
+
+82
+00:03:16.710 --> 00:03:18.780
+Okay, so for your DB cluster,
+
+83
+00:03:18.780 --> 00:03:21.900
+we have this shared storage that has autoexpanding,
+
+84
+00:03:21.900 --> 00:03:23.490
+and we have a writer endpoint.
+
+85
+00:03:23.490 --> 00:03:24.750
+This is going to point directly
+
+86
+00:03:24.750 --> 00:03:27.270
+into the master Aurora database,
+
+87
+00:03:27.270 --> 00:03:29.970
+and then the client, if it talks to the write endpoint,
+
+88
+00:03:29.970 --> 00:03:31.830
+will be redirected to that master,
+
+89
+00:03:31.830 --> 00:03:33.810
+and then we have a bunch of read replicas
+
+90
+00:03:33.810 --> 00:03:35.850
+and they could be autoscaling as well,
+
+91
+00:03:35.850 --> 00:03:36.690
+so it's possible for you
+
+92
+00:03:36.690 --> 00:03:39.420
+to add and remove read replicas over time.
+
+93
+00:03:39.420 --> 00:03:42.120
+And the reader endpoint is going to be used
+
+94
+00:03:42.120 --> 00:03:44.220
+for doing a connection load balancing.
+
+95
+00:03:44.220 --> 00:03:46.380
+And so the client should use the reader endpoint
+
+96
+00:03:46.380 --> 00:03:47.790
+to make sure it's gonna be reading
+
+97
+00:03:47.790 --> 00:03:51.090
+from one of the read replicas in Aurora.
+
+98
+00:03:51.090 --> 00:03:53.010
+Okay, next, let's talk about Aurora endpoints.
+
+99
+00:03:53.010 --> 00:03:55.650
+So an endpoint is the combination of a host address
+
+100
+00:03:55.650 --> 00:03:58.140
+and a port, and you have multiple types of endpoints.
+
+101
+00:03:58.140 --> 00:04:00.570
+You have a cluster endpoint that's a writer endpoint,
+
+102
+00:04:00.570 --> 00:04:02.190
+which allows you to connect
+
+103
+00:04:02.190 --> 00:04:05.040
+to the primary DB instance in your Aurora cluster,
+
+104
+00:04:05.040 --> 00:04:07.170
+that is going to be used for all the right operations.
+
+105
+00:04:07.170 --> 00:04:11.130
+So inserts, update deletes, as well as maybe some queries.
+
+106
+00:04:11.130 --> 00:04:12.180
+Then we have the reader endpoint.
+
+107
+00:04:12.180 --> 00:04:14.370
+And the reader endpoint is going to provide load balancing
+
+108
+00:04:14.370 --> 00:04:15.990
+for read-only connections
+
+109
+00:04:15.990 --> 00:04:19.380
+to all the Aurora replicas in your Aurora cluster.
+
+110
+00:04:19.380 --> 00:04:21.090
+So it's going to be used only for read operations,
+
+111
+00:04:21.090 --> 00:04:22.230
+so queries.
+
+112
+00:04:22.230 --> 00:04:24.510
+And then you can define custom endpoints
+
+113
+00:04:24.510 --> 00:04:27.120
+and these endpoints are a set of database instances
+
+114
+00:04:27.120 --> 00:04:29.160
+that you choose in the Aurora cluster,
+
+115
+00:04:29.160 --> 00:04:31.140
+and they're very helpful when you want to connect
+
+116
+00:04:31.140 --> 00:04:33.600
+to different of database instances
+
+117
+00:04:33.600 --> 00:04:35.640
+with different capacities and configurations,
+
+118
+00:04:35.640 --> 00:04:38.670
+for example, a different DB parameter group.
+
+119
+00:04:38.670 --> 00:04:40.440
+And finally, you have an instance endpoint,
+
+120
+00:04:40.440 --> 00:04:41.760
+which is the endpoint to connect
+
+121
+00:04:41.760 --> 00:04:44.700
+to a specific database instance in the Aurora cluster,
+
+122
+00:04:44.700 --> 00:04:45.533
+which is used
+
+123
+00:04:45.533 --> 00:04:48.030
+when you want to diagnoses a specific DB instance
+
+124
+00:04:48.030 --> 00:04:51.123
+or fine tune one specific DB instance.
+
+125
+00:04:52.260 --> 00:04:53.610
+So for custom endpoints, how they work.
+
+126
+00:04:53.610 --> 00:04:56.670
+So here is represented the writer endpoint
+
+127
+00:04:56.670 --> 00:04:58.860
+as well as the reader endpoints, okay.
+
+128
+00:04:58.860 --> 00:05:02.430
+But say you want to define a subset of Aurora instances
+
+129
+00:05:02.430 --> 00:05:03.630
+as a custom endpoint,
+
+130
+00:05:03.630 --> 00:05:05.760
+in which case you can define a custom endpoint.
+
+131
+00:05:05.760 --> 00:05:08.970
+And as you can see, this endpoint is connected
+
+132
+00:05:08.970 --> 00:05:12.826
+to db.r5.2 x large instances of Amazon Aurora
+
+133
+00:05:12.826 --> 00:05:13.890
+and I have two.
+
+134
+00:05:13.890 --> 00:05:15.660
+So there are more powerful instances,
+
+135
+00:05:15.660 --> 00:05:18.090
+and therefore maybe I wanna use this custom endpoint
+
+136
+00:05:18.090 --> 00:05:21.390
+to run analytical queries on specific replicas.
+
+137
+00:05:21.390 --> 00:05:25.377
+So this would be one of the use cases of this feature.
+
+138
+00:05:25.377 --> 00:05:27.870
+Now the reader endpoint is generally not used
+
+139
+00:05:27.870 --> 00:05:29.451
+once you define custom endpoints because well,
+
+140
+00:05:29.451 --> 00:05:30.960
+you would define custom endpoints
+
+141
+00:05:30.960 --> 00:05:32.673
+for all your database instances.
+
+142
+00:05:34.560 --> 00:05:36.210
+Next, you have Aurora logs,
+
+143
+00:05:36.210 --> 00:05:39.030
+so you can monitor the following logs with Aurora logs.
+
+144
+00:05:39.030 --> 00:05:41.867
+You can define and monitor error logs, slow query logs,
+
+145
+00:05:41.867 --> 00:05:45.180
+general log, and the audit log.
+
+146
+00:05:45.180 --> 00:05:46.710
+So all these log files are created
+
+147
+00:05:46.710 --> 00:05:49.080
+within Aurora and then they can either be downloaded
+
+148
+00:05:49.080 --> 00:05:50.733
+or published to CloudWatch logs.
+
+149
+00:05:51.740 --> 00:05:53.806
+So you will find them as a stream in CloudWatch logs
+
+150
+00:05:53.806 --> 00:05:54.930
+or download them directly on your computer
+
+151
+00:05:54.930 --> 00:05:56.700
+for offline analysis.
+
+152
+00:05:56.700 --> 00:05:58.770
+So if you had to troubleshoot the RDS
+
+153
+00:05:58.770 --> 00:06:01.170
+and the Aurora performance, how would you do it?
+
+154
+00:06:01.170 --> 00:06:03.600
+Well, you can use the performance insights tool.
+
+155
+00:06:03.600 --> 00:06:06.600
+This is going to give you issues in your database happening.
+
+156
+00:06:06.600 --> 00:06:09.750
+So waits, SQL statements, host and users.
+
+157
+00:06:09.750 --> 00:06:10.920
+To make it more simple,
+
+158
+00:06:10.920 --> 00:06:12.660
+for example, if you use performance insights
+
+159
+00:06:12.660 --> 00:06:14.610
+for SQL statements, that means you're going
+
+160
+00:06:14.610 --> 00:06:17.340
+to see right now the SQL queries are going
+
+161
+00:06:17.340 --> 00:06:19.290
+to put some load on your database
+
+162
+00:06:19.290 --> 00:06:21.540
+and you can have a look at them in real time
+
+163
+00:06:21.540 --> 00:06:22.890
+or for users, the users,
+
+164
+00:06:22.890 --> 00:06:24.510
+they're actually doing the most load
+
+165
+00:06:24.510 --> 00:06:25.650
+on your database as well.
+
+166
+00:06:25.650 --> 00:06:26.483
+To see, for example,
+
+167
+00:06:26.483 --> 00:06:29.190
+if a application is misbehaving.
+
+168
+00:06:29.190 --> 00:06:30.023
+The host is going
+
+169
+00:06:30.023 --> 00:06:31.410
+to give you information around
+
+170
+00:06:31.410 --> 00:06:34.200
+which servers are using your database the most,
+
+171
+00:06:34.200 --> 00:06:36.210
+and the waits give you the amount
+
+172
+00:06:36.210 --> 00:06:39.000
+of time your database spent on computations
+
+173
+00:06:39.000 --> 00:06:40.440
+or on networking and sort of thing,
+
+174
+00:06:40.440 --> 00:06:43.590
+so it's lower level type of information.
+
+175
+00:06:43.590 --> 00:06:45.330
+CloudWatch metrics give you basic information
+
+176
+00:06:45.330 --> 00:06:47.400
+around the CPU usage, the memory usage
+
+177
+00:06:47.400 --> 00:06:49.770
+as well, the swap memory usage,.
+
+178
+00:06:49.770 --> 00:06:51.570
+and enhance monitoring can be enabled
+
+179
+00:06:51.570 --> 00:06:53.520
+for your RDS database as well.
+
+180
+00:06:53.520 --> 00:06:55.200
+So you get a lot more information.
+
+181
+00:06:55.200 --> 00:06:56.820
+You get per second metric.
+
+182
+00:06:56.820 --> 00:06:59.490
+You get host level information such as, for example,
+
+183
+00:06:59.490 --> 00:07:02.060
+the top 100 processes running on your database.
+
+184
+00:07:02.060 --> 00:07:03.900
+So this is really when you wanna go deep
+
+185
+00:07:03.900 --> 00:07:06.960
+into the process level stuff on your database.
+
+186
+00:07:06.960 --> 00:07:09.690
+And, of course, if you had to troubleshoot performance,
+
+187
+00:07:09.690 --> 00:07:12.570
+you can also look at the slow query logs.
+
+188
+00:07:12.570 --> 00:07:14.340
+Okay, so that's it for this lecture.
+
+189
+00:07:14.340 --> 00:07:17.290
+I hope you liked it and I will see you in the next lecture.
+

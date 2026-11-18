@@ -1,0 +1,258 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.599
+A tool returns nothing. That single result can mean two completely different things and an agent
+
+2
+00:00:05.599 --> 00:00:11.119
+has no way to tell the difference. This is a silent bug and it's one of the hardest failures
+
+3
+00:00:11.119 --> 00:00:16.319
+to catch in production. For the next few minutes we'll look at how it happens and what it can cost
+
+4
+00:00:16.319 --> 00:00:22.079
+you. Let's get into it. Picture a search that comes back with nothing. The agent can't see
+
+5
+00:00:22.079 --> 00:00:27.680
+whether the data source was checked and came up empty or whether the tool never reached it at all.
+
+6
+00:00:27.760 --> 00:00:32.880
+An access failure is when a tool call doesn't successfully reach the underlying data source.
+
+7
+00:00:32.880 --> 00:00:39.360
+Connection refused. Credentials rejected. Request timed out. The tool never got to search. An empty
+
+8
+00:00:39.360 --> 00:00:44.799
+result is the opposite. The tool reached the data source just fine and confirmed there is
+
+9
+00:00:44.799 --> 00:00:50.720
+nothing matching your query. That is a legitimate answer. The silent false negative is what happens
+
+10
+00:00:50.720 --> 00:00:56.799
+when an agent reports nothing exists because a tool failed silently rather than because the
+
+11
+00:00:56.799 --> 00:01:01.840
+data is genuinely absent. Keep those distinct in your mental model and the rest of this lesson
+
+12
+00:01:01.840 --> 00:01:08.000
+follows naturally. Let me give you a concrete picture of how this bug happens. Imagine a search
+
+13
+00:01:08.000 --> 00:01:14.000
+tool that queries a vector index for relevant documents. At some point during an agent session
+
+14
+00:01:14.000 --> 00:01:20.480
+the index service goes offline. The tool still runs. It sends a query but instead of getting
+
+15
+00:01:20.480 --> 00:01:25.760
+search results it gets a connection error internally and it returns an empty list to the
+
+16
+00:01:25.760 --> 00:01:31.760
+agent with no error flag attached. The agent reads that empty list. It has been instructed
+
+17
+00:01:31.760 --> 00:01:37.839
+to trust tool results so it concludes that no documents exist and moves forward confidently
+
+18
+00:01:37.839 --> 00:01:44.400
+with that conclusion. The silent bug is now alive in the session. The failure and a successful empty
+
+19
+00:01:44.400 --> 00:01:50.639
+search look identical from the agent's perspective. That is the core problem we're solving in this
+
+20
+00:01:50.639 --> 00:01:57.519
+lesson. The distinction between these two outcomes is the most important idea in this lesson. An
+
+21
+00:01:57.519 --> 00:02:02.480
+access failure means the tool couldn't reach the data source. The empty response reflects a
+
+22
+00:02:02.480 --> 00:02:09.199
+connection problem not a content gap. Retrying the call is appropriate and the agent shouldn't draw
+
+23
+00:02:09.199 --> 00:02:15.520
+any conclusions about what exists or doesn't exist in the data store. An empty result means the tool
+
+24
+00:02:15.520 --> 00:02:21.039
+successfully reached the data source and confirmed there is nothing matching the query. That is a
+
+25
+00:02:21.039 --> 00:02:27.839
+valid answer. Retrying is wasteful. The absence is meaningful information. The problem is that
+
+26
+00:02:27.839 --> 00:02:33.600
+without explicit signaling both outcomes look like an empty list to the agent. It can't tell
+
+27
+00:02:33.600 --> 00:02:40.639
+them apart on its own. You have to build that distinction into the tool response. Why do agents
+
+28
+00:02:40.720 --> 00:02:46.160
+default to treating an empty result as nothing exists? Because that is what the prompt and the
+
+29
+00:02:46.160 --> 00:02:52.240
+model's pattern matching push them toward. An empty list is a data signal. The model is trained to
+
+30
+00:02:52.240 --> 00:02:58.240
+treat data signals as ground truth. When a tool returns an empty list the implicit message is
+
+31
+00:02:58.240 --> 00:03:04.880
+I searched and found nothing. There is no error flag, no exception, no branch pointing to a failure
+
+32
+00:03:04.880 --> 00:03:11.759
+path. So the agent proceeds confidently. It has no mechanism to ask wait did this tool actually
+
+33
+00:03:11.759 --> 00:03:17.440
+connect? Without explicit support for that question built into the tool response the model can't
+
+34
+00:03:17.440 --> 00:03:22.399
+distinguish ambiguous nothing from confirmed nothing unless the tool response is designed
+
+35
+00:03:22.399 --> 00:03:28.559
+to make that distinction visible. That design choice is the entire fix. Access failures come
+
+36
+00:03:28.559 --> 00:03:34.639
+in four main categories and each one produces an empty or incomplete response that looks like a
+
+37
+00:03:34.639 --> 00:03:40.160
+successful query from the outside. Connection errors happen when the network or service endpoint
+
+38
+00:03:40.160 --> 00:03:46.880
+is completely unreachable. The tool never connects and returns nothing. Auth failures happen when
+
+39
+00:03:46.880 --> 00:03:52.639
+credentials are missing, expired, or revoked. The data store rejects the request before any search
+
+40
+00:03:52.639 --> 00:03:59.600
+logic runs at all. Query timeouts happen when the data source is technically reachable but responds
+
+41
+00:03:59.600 --> 00:04:06.000
+too slowly. The tool gives up and returns empty and partial results are the trickiest. The data
+
+42
+00:04:06.000 --> 00:04:12.880
+source returns some records but silently truncates the rest due to an internal limit or error. All
+
+43
+00:04:12.880 --> 00:04:18.480
+four of these categories need to be caught at the wrapper layer and labeled explicitly before the
+
+44
+00:04:18.480 --> 00:04:24.720
+agent sees the response. Let's talk about the phrase the agent says when this goes wrong. I
+
+45
+00:04:24.720 --> 00:04:31.200
+couldn't find anything. That sentence implies a successful search with no matches. The user hears
+
+46
+00:04:31.200 --> 00:04:37.760
+that and concludes the information doesn't exist. They make decisions based on that conclusion. If
+
+47
+00:04:37.760 --> 00:04:42.959
+the real cause was an access failure, those decisions are built on a false premise. The
+
+48
+00:04:42.959 --> 00:04:49.200
+correct response to an access failure is something like I was unable to check or the search tool
+
+49
+00:04:49.200 --> 00:04:55.200
+didn't complete successfully. Those phrases are truthful and they put the user on notice that the
+
+50
+00:04:55.200 --> 00:05:01.679
+absence of information isn't a confirmed fact. The distinction isn't pedantic. It is the difference
+
+51
+00:05:01.679 --> 00:05:07.760
+between a trustworthy agent and one that silently misleads users at exactly the moments they're
+
+52
+00:05:07.760 --> 00:05:14.399
+relying on it most. The production cost of getting this wrong is high and it is delayed. When an
+
+53
+00:05:14.399 --> 00:05:20.160
+agent returns a confident false negative, no exception is raised. The logs look clean. The
+
+54
+00:05:20.160 --> 00:05:26.160
+tool ran. The agent responded. Everything appears to have worked correctly, but the user walked away
+
+55
+00:05:26.160 --> 00:05:31.600
+with incorrect information and whatever decision they made based on that information is now in the
+
+56
+00:05:31.600 --> 00:05:37.679
+world. When you try to trace back a bad decision days or weeks later, you're looking for a silent
+
+57
+00:05:37.679 --> 00:05:44.079
+failure in an agent session that left no error trace. That is extremely hard to debug and the
+
+58
+00:05:44.079 --> 00:05:50.000
+compounding effect is worse. Users stop trusting the system after a few experiences like this,
+
+59
+00:05:50.000 --> 00:05:56.239
+even when they can't name exactly what went wrong. Silent false negatives erode trust faster than any
+
+60
+00:05:56.239 --> 00:06:04.079
+visible error message. An empty tool result is an unanswered question, not an answer. The tool
+
+61
+00:06:04.079 --> 00:06:09.839
+either confirmed nothing's there or never reached the source and those two carry opposite meanings.
+
+62
+00:06:10.480 --> 00:06:16.959
+That matters because your user hears I found nothing either way and acts on it. Just remember
+
+63
+00:06:16.959 --> 00:06:22.399
+no exception fires here, so the bad decision is already in the world before anyone notices it.
+
+64
+00:06:23.119 --> 00:06:26.320
+That's it for this lesson. I'll see you in the next one.
+

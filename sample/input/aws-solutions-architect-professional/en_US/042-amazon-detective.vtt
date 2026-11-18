@@ -1,0 +1,122 @@
+WEBVTT
+
+1
+00:00:00.320 --> 00:00:01.940
+<v Instructor>Okay, so very short lecture</v>
+
+2
+00:00:01.940 --> 00:00:03.510
+on Amazon Detective.
+
+3
+00:00:03.510 --> 00:00:05.880
+So, when you have all these services
+
+4
+00:00:05.880 --> 00:00:08.670
+such as GuardDuty, Macie, and Security Hub
+
+5
+00:00:08.670 --> 00:00:11.040
+that are used to identify potential security issues
+
+6
+00:00:11.040 --> 00:00:14.580
+or findings, you need to find how these happen
+
+7
+00:00:14.580 --> 00:00:15.770
+and get to the root cause.
+
+8
+00:00:15.770 --> 00:00:18.630
+And so, sometimes the deeper analysis to isolate
+
+9
+00:00:18.630 --> 00:00:20.930
+the root cause can be long and complicated.
+
+10
+00:00:20.930 --> 00:00:23.130
+It's a complex process to analyze data
+
+11
+00:00:23.130 --> 00:00:25.480
+from different places and link it together.
+
+12
+00:00:25.480 --> 00:00:26.400
+It could be quite long
+
+13
+00:00:26.400 --> 00:00:28.440
+and when you're dealing with security,
+
+14
+00:00:28.440 --> 00:00:30.700
+you want to get to the root cause as quickly as possible
+
+15
+00:00:30.700 --> 00:00:33.980
+because there may be a security hole in your architecture.
+
+16
+00:00:33.980 --> 00:00:36.340
+And so, this is the purpose of Amazon Detective.
+
+17
+00:00:36.340 --> 00:00:37.660
+The name is quite explicit.
+
+18
+00:00:37.660 --> 00:00:40.070
+Detective is going to analyze, investigate,
+
+19
+00:00:40.070 --> 00:00:43.010
+and quickly identify the root cause of security issues
+
+20
+00:00:43.010 --> 00:00:46.470
+or suspicious activities using machine learning
+
+21
+00:00:46.470 --> 00:00:48.720
+and graphs in the backend to really allow you
+
+22
+00:00:48.720 --> 00:00:52.450
+to quickly get down to where the issue is coming from.
+
+23
+00:00:52.450 --> 00:00:54.540
+And to do so, it's going to automatically collect
+
+24
+00:00:54.540 --> 00:00:57.190
+and process events from your VPC Flow Logs,
+
+25
+00:00:57.190 --> 00:00:59.450
+your CloudTrail trails, and GuardDuty
+
+26
+00:00:59.450 --> 00:01:01.450
+to create this unified view.
+
+27
+00:01:01.450 --> 00:01:03.500
+And it will, in turn, give you visualizations
+
+28
+00:01:03.500 --> 00:01:06.520
+with details and context, so you can get to the root cause.
+
+29
+00:01:06.520 --> 00:01:07.353
+So that's it.
+
+30
+00:01:07.353 --> 00:01:09.863
+I hope you liked it and I will see you in the next lecture.
+

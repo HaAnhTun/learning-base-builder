@@ -1,0 +1,150 @@
+WEBVTT
+
+1
+00:00:00.210 --> 00:00:02.340
+<v Instructor>So let's take a look at the inner workings</v>
+
+2
+00:00:02.340 --> 00:00:06.120
+of the EC2 Instance Connect service and feature
+
+3
+00:00:06.120 --> 00:00:10.800
+that uses the SendSSHPublicKey API.
+
+4
+00:00:10.800 --> 00:00:13.890
+So we have an EC2 instance and its own security group.
+
+5
+00:00:13.890 --> 00:00:15.150
+And on the inbound rules,
+
+6
+00:00:15.150 --> 00:00:19.470
+we're going to allow SSH on port 22 from a particular source
+
+7
+00:00:19.470 --> 00:00:23.580
+and that source contains the prefixes, the IP ranges
+
+8
+00:00:23.580 --> 00:00:26.220
+that works for the EC2 Instance Connect service.
+
+9
+00:00:26.220 --> 00:00:28.410
+So that's how you get it from this URL.
+
+10
+00:00:28.410 --> 00:00:30.690
+But the idea is that we open up port 22
+
+11
+00:00:30.690 --> 00:00:34.470
+so that we can actually SSH into the instance.
+
+12
+00:00:34.470 --> 00:00:38.760
+Now, a user will access the EC2 Instance Connect API
+
+13
+00:00:38.760 --> 00:00:39.660
+and then what is going to happen
+
+14
+00:00:39.660 --> 00:00:43.083
+is that whenever we initiate an EC2 Instance Connect,
+
+15
+00:00:43.950 --> 00:00:47.550
+behind the scene, it's going to upload push
+
+16
+00:00:47.550 --> 00:00:48.810
+as a one-time thing
+
+17
+00:00:48.810 --> 00:00:52.710
+and SSH public key onto the EC2 instance.
+
+18
+00:00:52.710 --> 00:00:54.810
+That key is valid for 60 seconds
+
+19
+00:00:54.810 --> 00:00:57.900
+and that is the SendSSHPublicKey API.
+
+20
+00:00:57.900 --> 00:01:01.350
+So this API allows the EC2 Instance Connect service,
+
+21
+00:01:01.350 --> 00:01:04.290
+but really you could use it as well yourself,
+
+22
+00:01:04.290 --> 00:01:09.000
+to upload a specified SSH key on the EC2 instance.
+
+23
+00:01:09.000 --> 00:01:11.010
+That means that for 60 seconds,
+
+24
+00:01:11.010 --> 00:01:12.870
+you have the opportunity to connect
+
+25
+00:01:12.870 --> 00:01:17.250
+using the private corresponding key into your EC2 instance.
+
+26
+00:01:17.250 --> 00:01:20.670
+And this is how the EC2 Instance Connect service works.
+
+27
+00:01:20.670 --> 00:01:24.270
+It's by uploading very shortly an SSH public key
+
+28
+00:01:24.270 --> 00:01:25.830
+that allows you privately
+
+29
+00:01:25.830 --> 00:01:28.500
+to connect to it within 60 seconds.
+
+30
+00:01:28.500 --> 00:01:30.210
+So just something you need to know.
+
+31
+00:01:30.210 --> 00:01:32.400
+And any connection then,
+
+32
+00:01:32.400 --> 00:01:36.840
+because it's going to be using this SendSSHPublicKey API
+
+33
+00:01:36.840 --> 00:01:39.720
+and also if you use the EC2 Instance Connect API,
+
+34
+00:01:39.720 --> 00:01:41.280
+it will be logged in CloudTrail
+
+35
+00:01:41.280 --> 00:01:43.830
+so you have full audit and visibility.
+
+36
+00:01:43.830 --> 00:01:45.420
+Okay, that's it, I hope you liked it
+
+37
+00:01:45.420 --> 00:01:47.370
+and I will see you in the next lecture.
+

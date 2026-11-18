@@ -1,0 +1,322 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.000
+Welcome back. Schema design is what this lesson is all about. The decisions that determine whether
+
+2
+00:00:06.000 --> 00:00:11.039
+your extraction pipeline holds up under real inputs, how to choose between required and
+
+3
+00:00:11.039 --> 00:00:16.639
+optional fields, how to write field descriptions that guide Claude's extraction decisions,
+
+4
+00:00:16.639 --> 00:00:21.840
+strategies for handling missing data, nested schema patterns for complex documents, and how
+
+5
+00:00:21.840 --> 00:00:27.920
+to test schema design before they hit production. Let's jump into it. Let's get the language right
+
+6
+00:00:27.920 --> 00:00:34.959
+first. Required versus optional fields is the foundational decision. Required fields, the model
+
+7
+00:00:34.959 --> 00:00:40.799
+always populates regardless of input content. Optional fields allow null or omission when data
+
+8
+00:00:40.799 --> 00:00:46.159
+is genuinely absent, and getting this distinction right determines what downstream code can safely
+
+9
+00:00:46.159 --> 00:00:51.599
+assume about your output. Enum constraints restrict a field to a defined set of valid
+
+10
+00:00:51.599 --> 00:00:58.240
+string values, which matters any time a field drives routing logic or classification, and free
+
+11
+00:00:58.240 --> 00:01:04.000
+text variation would break something. Nested schemas are structures where a field's value is
+
+12
+00:01:04.000 --> 00:01:10.319
+itself an object or array with its own type and property definitions. They are the right tool for
+
+13
+00:01:10.319 --> 00:01:15.760
+documents with hierarchical relationships, but they need to be designed as carefully as top-level
+
+14
+00:01:15.760 --> 00:01:21.839
+fields. The required versus optional decision is probably the most consequential field-level
+
+15
+00:01:21.839 --> 00:01:26.800
+design choice you make. If you mark a field required when the input doesn't always contain
+
+16
+00:01:26.800 --> 00:01:31.680
+extractable data for it, the model will be pressured to produce something, and that something
+
+17
+00:01:31.680 --> 00:01:38.080
+is often a hallucinated value that looks plausible but is wrong. If you mark too few fields required,
+
+18
+00:01:38.080 --> 00:01:43.680
+you push all the validation burden to downstream code, which then has to handle unexpected structural
+
+19
+00:01:43.680 --> 00:01:49.599
+variation at runtime. The right approach is to mark a field required only when the underlying
+
+20
+00:01:49.599 --> 00:01:56.319
+data actually guarantees a value is present every time. Optional fields explicitly communicate to
+
+21
+00:01:56.319 --> 00:02:02.720
+both the model and the downstream system that absence is a valid expected result, not an error
+
+22
+00:02:02.720 --> 00:02:08.639
+condition. Field descriptions are the primary lever you have for guiding Clod's extraction
+
+23
+00:02:08.639 --> 00:02:14.559
+decisions within a schema. A description that simply names the field, like the company name,
+
+24
+00:02:14.559 --> 00:02:18.800
+gives the model almost nothing to work with when the document mentions a parent company,
+
+25
+00:02:18.800 --> 00:02:24.160
+a subsidiary, and a brand name in different places. An effective description specifies
+
+26
+00:02:24.160 --> 00:02:29.839
+what the field means in the context of the specific document type being processed. It
+
+27
+00:02:29.839 --> 00:02:35.279
+defines the expected format, names boundary cases by describing what counts as a match and what
+
+28
+00:02:35.279 --> 00:02:41.119
+doesn't, and indicates priority when multiple candidates exist. A well-written description
+
+29
+00:02:41.119 --> 00:02:46.559
+resolves ambiguity before it becomes a wrong field value. The model reads the description
+
+30
+00:02:46.559 --> 00:02:52.000
+as guidance during generation, so the precision of your language there directly affects extraction
+
+31
+00:02:52.000 --> 00:02:59.360
+accuracy. Handling missing data is a schema design decision, not just an implementation detail. The
+
+32
+00:02:59.360 --> 00:03:06.240
+null or omit strategy returns null or removes the field entirely when the data is genuinely absent.
+
+33
+00:03:06.240 --> 00:03:11.279
+This makes absence explicit and distinguishable from a populated field, which is useful when
+
+34
+00:03:11.279 --> 00:03:17.520
+downstream logic branches on whether a field has a value. It does require downstream code to handle
+
+35
+00:03:17.520 --> 00:03:23.759
+none or missing keys without throwing an error. The default value strategy returns a sentinel like
+
+36
+00:03:23.759 --> 00:03:29.919
+unknown or an empty string when data is absent, which produces a uniform output shape at the cost
+
+37
+00:03:29.919 --> 00:03:36.639
+of making it harder to distinguish value was extracted from nothing was found. Neither strategy
+
+38
+00:03:36.639 --> 00:03:42.399
+is universally correct. The right choice depends on how the downstream system handles absent data
+
+39
+00:03:42.399 --> 00:03:46.320
+and whether the distinction between absent and populated needs to be preserved.
+
+40
+00:03:47.279 --> 00:03:54.000
+Three field description patterns reliably undermine schema reliability. Too vague. A description like
+
+41
+00:03:54.000 --> 00:03:59.039
+the name gives the model no basis for choosing when the document contains multiple names.
+
+42
+00:03:59.039 --> 00:04:02.960
+The model is forced to make a judgment call that should have been a schema decision.
+
+43
+00:04:02.960 --> 00:04:08.960
+No format specification, omitting the expected format for dates, identifiers, or status codes
+
+44
+00:04:08.960 --> 00:04:14.639
+leads to inconsistent values that look correct but break parsers. Two different date formats in
+
+45
+00:04:14.800 --> 00:04:20.480
+the same field across requests, for example, is a schema design failure, not a model failure.
+
+46
+00:04:21.200 --> 00:04:26.880
+No boundary cases. Failing to define what counts as a match forces the model to reason from context
+
+47
+00:04:26.880 --> 00:04:33.279
+alone about edge situations the schema author could have anticipated. Each of these anti-patterns
+
+48
+00:04:33.279 --> 00:04:39.440
+creates variation that compounds in high volume production pipelines. Knee-stud schemas let you
+
+49
+00:04:39.440 --> 00:04:44.480
+represent document structures with natural hierarchy. An invoice has line items, each with
+
+50
+00:04:44.480 --> 00:04:50.320
+their own price, quantity, and description. A contract has parties, each with a name, role,
+
+51
+00:04:50.320 --> 00:04:55.920
+and address. Object nesting is the right structure for any entity with its own coherent set of
+
+52
+00:04:55.920 --> 00:05:01.119
+properties. Array of objects nesting handles repeating structures where the number of
+
+53
+00:05:01.119 --> 00:05:07.119
+instances varies. The key discipline in nested schema design is to define required and optional
+
+54
+00:05:07.119 --> 00:05:12.320
+fields for each nested object independently, just as you would for a top-level schema.
+
+55
+00:05:12.880 --> 00:05:18.000
+The other discipline is knowing when to stop. Unnecessary depth makes schemas hard to maintain
+
+56
+00:05:18.000 --> 00:05:23.440
+and test, and the model's ability to correctly populate deeply nested structures degrades as
+
+57
+00:05:23.440 --> 00:05:28.799
+complexity increases. Nested schemas reflect document structure, but only as deep as the
+
+58
+00:05:28.799 --> 00:05:35.040
+extraction task actually needs. Schema quality is the most controllable factor in extraction
+
+59
+00:05:35.040 --> 00:05:40.720
+reliability, and it deserves to be treated as such. Clear field descriptions reduce ambiguous
+
+60
+00:05:40.720 --> 00:05:46.559
+extractions when input phrasing varies across documents. Appropriate required versus optional
+
+61
+00:05:46.559 --> 00:05:51.760
+settings prevent the model from hallucinating values for fields with no supporting content.
+
+62
+00:05:52.399 --> 00:05:58.160
+Enum constraints eliminate the free text variation in classification fields that silently breaks
+
+63
+00:05:58.160 --> 00:06:03.760
+downstream routing. Well-scoped nesting prevents the model from conflating separate entities
+
+64
+00:06:03.760 --> 00:06:09.279
+or collapsing a nested structure into the wrong parent. Every schema design decision either
+
+65
+00:06:09.279 --> 00:06:15.279
+increases or decreases the model's ability to produce consistent, correct output across varied
+
+66
+00:06:15.279 --> 00:06:20.720
+inputs. Poor schema design doesn't cause visible errors at design time. It shifts the failure
+
+67
+00:06:20.720 --> 00:06:26.720
+burden to downstream code that wasn't built to absorb it. Testing a schema before deploying
+
+68
+00:06:26.720 --> 00:06:32.000
+it to production isn't optional if reliability matters. A missing field test runs the schema
+
+69
+00:06:32.000 --> 00:06:38.239
+against input that lacks the field entirely and confirms the output is null or omitted rather than
+
+70
+00:06:38.239 --> 00:06:44.559
+a hallucinated value. An ambiguous input test uses documents where two values could plausibly match a
+
+71
+00:06:44.559 --> 00:06:50.320
+field, verifying that the field description guides selection to the intended one. A type boundary
+
+72
+00:06:50.320 --> 00:06:56.079
+test uses values at the edges of expected types to verify the schema handles them correctly.
+
+73
+00:06:56.559 --> 00:07:03.119
+Very long strings, empty strings, zero, and negative numbers. Each of these tests targets a specific
+
+74
+00:07:03.119 --> 00:07:07.839
+failure mode that only appears under conditions that may not occur in your initial development
+
+75
+00:07:07.839 --> 00:07:13.519
+set. Building a small edge case test library for each schema pays back quickly in production
+
+76
+00:07:13.519 --> 00:07:19.920
+stability. Schema design is an active part of extraction quality. Required and optional fields
+
+77
+00:07:20.000 --> 00:07:26.559
+set downstream expectations. Descriptions define context, format, and boundary conditions. Null and
+
+78
+00:07:26.559 --> 00:07:33.600
+default strategies make absence explicit. Good schemas hold up across varied real-world inputs,
+
+79
+00:07:33.600 --> 00:07:40.079
+not just clean examples. From here, we'll look at using tool definitions to extract structured data
+
+80
+00:07:40.079 --> 00:07:44.480
+where schema enforcement happens at the argument level. I'll see you in the next lesson.
+

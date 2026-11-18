@@ -1,0 +1,510 @@
+WEBVTT
+
+1
+00:00:00.390 --> 00:00:03.690
+<v Instructor>Welcome to this section on Amazon S3.</v>
+
+2
+00:00:03.690 --> 00:00:05.400
+So this section is very important
+
+3
+00:00:05.400 --> 00:00:10.400
+because Amazon S3 is one of the main building blocks of AWS.
+
+4
+00:00:10.470 --> 00:00:11.790
+And the way it's advertised
+
+5
+00:00:11.790 --> 00:00:15.120
+is that it's infinitely scaling storage.
+
+6
+00:00:15.120 --> 00:00:16.620
+So as a matter of fact,
+
+7
+00:00:16.620 --> 00:00:19.830
+a lot of the web relies on Amazon S3.
+
+8
+00:00:19.830 --> 00:00:23.490
+For example, many websites use Amazon S3 as a backbone,
+
+9
+00:00:23.490 --> 00:00:27.210
+and many AWS services will also use Amazon S3
+
+10
+00:00:27.210 --> 00:00:28.980
+for integrations as well.
+
+11
+00:00:28.980 --> 00:00:30.630
+So in this section,
+
+12
+00:00:30.630 --> 00:00:32.790
+we'll have a step-by-step approach to Amazon S3
+
+13
+00:00:32.790 --> 00:00:34.980
+to learn the main features.
+
+14
+00:00:34.980 --> 00:00:37.350
+So there are so many use cases for Amazon S3
+
+15
+00:00:37.350 --> 00:00:39.660
+because at its core, it is storage.
+
+16
+00:00:39.660 --> 00:00:42.900
+So Amazon S3 is used for backup and storage.
+
+17
+00:00:42.900 --> 00:00:44.580
+It could be for your files,
+
+18
+00:00:44.580 --> 00:00:46.890
+it could be for your disk and so on.
+
+19
+00:00:46.890 --> 00:00:48.240
+For disaster recovery purposes,
+
+20
+00:00:48.240 --> 00:00:50.730
+for example, you'll move your data to another region.
+
+21
+00:00:50.730 --> 00:00:51.870
+In case a region goes down,
+
+22
+00:00:51.870 --> 00:00:54.300
+then your data is backed up somewhere else.
+
+23
+00:00:54.300 --> 00:00:55.650
+It's for archival purposes.
+
+24
+00:00:55.650 --> 00:00:57.930
+So you can archive files in Amazon S3
+
+25
+00:00:57.930 --> 00:01:01.710
+and retrieve it at a later stage for much, much cheaper.
+
+26
+00:01:01.710 --> 00:01:03.720
+For hybrid cloud storage,
+
+27
+00:01:03.720 --> 00:01:05.880
+so in case you have storage on premises,
+
+28
+00:01:05.880 --> 00:01:07.650
+but you won't expand it into the cloud,
+
+29
+00:01:07.650 --> 00:01:09.690
+you can use Amazon S3 for this.
+
+30
+00:01:09.690 --> 00:01:13.603
+To host applications, to host media such as video files,
+
+31
+00:01:13.603 --> 00:01:15.600
+images, and so on,
+
+32
+00:01:15.600 --> 00:01:18.180
+to have a data lake to store a lot of data
+
+33
+00:01:18.180 --> 00:01:21.150
+and to perform big data analytics,
+
+34
+00:01:21.150 --> 00:01:23.280
+for delivering software updates
+
+35
+00:01:23.280 --> 00:01:26.010
+for hosting static websites, and so on.
+
+36
+00:01:26.010 --> 00:01:28.530
+And two use cases is that the NASDAQ
+
+37
+00:01:28.530 --> 00:01:32.400
+stores seven years of data into the S3 Glacier service,
+
+38
+00:01:32.400 --> 00:01:35.296
+which is like the archival service of Amazon S3.
+
+39
+00:01:35.296 --> 00:01:37.530
+And Sysco runs analytics
+
+40
+00:01:37.530 --> 00:01:41.043
+on its data and gains business insights from Amazon S3.
+
+41
+00:01:42.060 --> 00:01:43.380
+So now, let's talk about the bucket.
+
+42
+00:01:43.380 --> 00:01:46.500
+So Amazon S3 allows people to store objects
+
+43
+00:01:46.500 --> 00:01:48.060
+or files into buckets.
+
+44
+00:01:48.060 --> 00:01:49.830
+They're directories within the cloud.
+
+45
+00:01:49.830 --> 00:01:52.650
+And the buckets are defined at the region level.
+
+46
+00:01:52.650 --> 00:01:57.030
+So you say you create a buckets for a specific AWS region.
+
+47
+00:01:57.030 --> 00:01:59.160
+Even though S3 has a global interface
+
+48
+00:01:59.160 --> 00:02:01.440
+in which you'll be able to see all the buckets
+
+49
+00:02:01.440 --> 00:02:02.820
+from all the regions,
+
+50
+00:02:02.820 --> 00:02:06.840
+the buckets themselves are assigned to a specific region.
+
+51
+00:02:06.840 --> 00:02:09.210
+Now, for the naming, there is something that you should know
+
+52
+00:02:09.210 --> 00:02:11.280
+that is quite recent and new.
+
+53
+00:02:11.280 --> 00:02:14.100
+So it used to be that Amazon S3
+
+54
+00:02:14.100 --> 00:02:17.370
+needed to have buckets with a globally unique name.
+
+55
+00:02:17.370 --> 00:02:20.460
+That means that the name for your S3 bucket belong to you
+
+56
+00:02:20.460 --> 00:02:22.830
+and no one else could use it across the world,
+
+57
+00:02:22.830 --> 00:02:25.560
+across all the regions, across all the accounts.
+
+58
+00:02:25.560 --> 00:02:27.840
+But now, there is a new feature
+
+59
+00:02:27.840 --> 00:02:30.750
+to have an account regional namespace,
+
+60
+00:02:30.750 --> 00:02:33.780
+and it allows you to reuse the same bucket name
+
+61
+00:02:33.780 --> 00:02:36.660
+across the regions for all your accounts and so on,
+
+62
+00:02:36.660 --> 00:02:38.730
+even though someone else may have named
+
+63
+00:02:38.730 --> 00:02:42.300
+the bucket the same way because AWS will add a suffix
+
+64
+00:02:42.300 --> 00:02:43.133
+to your bucket name,
+
+65
+00:02:43.133 --> 00:02:46.050
+making sure that it's going to be unique anyway.
+
+66
+00:02:46.050 --> 00:02:49.170
+So naming constraints, you have no uppercase,
+
+67
+00:02:49.170 --> 00:02:51.300
+no underscore, not an IP.
+
+68
+00:02:51.300 --> 00:02:54.240
+It must start with a lowercase number or letter,
+
+69
+00:02:54.240 --> 00:02:56.850
+it must not start with a prefix XN,
+
+70
+00:02:56.850 --> 00:03:00.750
+and it must not end with a suffix minus S3 alias.
+
+71
+00:03:00.750 --> 00:03:03.000
+So overall, you're completely fine
+
+72
+00:03:03.000 --> 00:03:05.730
+if you use letters and numbers and you keep it simple.
+
+73
+00:03:05.730 --> 00:03:07.530
+And before there was a constraint
+
+74
+00:03:07.530 --> 00:03:09.090
+around the global unique name,
+
+75
+00:03:09.090 --> 00:03:11.010
+but now with the account original namespace,
+
+76
+00:03:11.010 --> 00:03:13.290
+you can pretty much use whatever you want
+
+77
+00:03:13.290 --> 00:03:16.983
+for your bucket name in AWS, which is super nice.
+
+78
+00:03:18.120 --> 00:03:19.500
+Okay, so now let's talk about objects.
+
+79
+00:03:19.500 --> 00:03:21.450
+So these objects, they're files
+
+80
+00:03:21.450 --> 00:03:23.550
+and they have what's called a key.
+
+81
+00:03:23.550 --> 00:03:27.750
+And an Amazon S3 object key is the full path of your file.
+
+82
+00:03:27.750 --> 00:03:30.090
+So if you look at my bucket,
+
+83
+00:03:30.090 --> 00:03:32.100
+this is the top level directory.
+
+84
+00:03:32.100 --> 00:03:35.940
+Then the key of my file, a TXT, is my_file.txt.
+
+85
+00:03:35.940 --> 00:03:39.900
+But in case you want to nest it in what we call folders,
+
+86
+00:03:39.900 --> 00:03:42.360
+then the key is going to be the full path.
+
+87
+00:03:42.360 --> 00:03:46.076
+So my_folderI/another_folder
+
+88
+00:03:46.076 --> 00:03:48.810
+/my_file.txt.
+
+89
+00:03:48.810 --> 00:03:52.260
+Therefore, the key is composed of a prefix,
+
+90
+00:03:52.260 --> 00:03:54.270
+and then an object name.
+
+91
+00:03:54.270 --> 00:03:55.800
+So we can, for example,
+
+92
+00:03:55.800 --> 00:03:59.730
+decompose the path from before into the prefix,
+
+93
+00:03:59.730 --> 00:04:02.670
+which is my_folderI and another_folder,
+
+94
+00:04:02.670 --> 00:04:05.910
+and the object name, which is my_file.txt.
+
+95
+00:04:05.910 --> 00:04:07.860
+So Amazon S3 does not have a concept
+
+96
+00:04:07.860 --> 00:04:10.080
+of directories per se,
+
+97
+00:04:10.080 --> 00:04:11.970
+although when you look in the console,
+
+98
+00:04:11.970 --> 00:04:13.860
+the UI, you will think otherwise
+
+99
+00:04:13.860 --> 00:04:15.930
+and you will actually create directories.
+
+100
+00:04:15.930 --> 00:04:20.850
+But anything and everything in Amazon S3 is actually a key.
+
+101
+00:04:20.850 --> 00:04:23.130
+And keys are just very, very long names
+
+102
+00:04:23.130 --> 00:04:26.040
+that contain slashes and keys are made of a prefix
+
+103
+00:04:26.040 --> 00:04:27.213
+and an object name.
+
+104
+00:04:28.200 --> 00:04:31.380
+Okay, so the objects then, what are they?
+
+105
+00:04:31.380 --> 00:04:33.300
+Well, the values are the content of the body.
+
+106
+00:04:33.300 --> 00:04:34.410
+So you can upload a file,
+
+107
+00:04:34.410 --> 00:04:37.110
+you can upload whatever you want into Amazon S3.
+
+108
+00:04:37.110 --> 00:04:40.740
+So the max object size is 50 terabytes.
+
+109
+00:04:40.740 --> 00:04:43.980
+And if you upload a file that is very big,
+
+110
+00:04:43.980 --> 00:04:46.980
+and if that file is greater than five gigabytes,
+
+111
+00:04:46.980 --> 00:04:51.480
+so a big file, okay, then you must use the multi-part upload
+
+112
+00:04:51.480 --> 00:04:53.610
+to upload that file into several parts.
+
+113
+00:04:53.610 --> 00:04:55.950
+So if you have a file of five terabytes,
+
+114
+00:04:55.950 --> 00:05:00.630
+then you must upload at least 1,000 parts of five gigabytes.
+
+115
+00:05:00.630 --> 00:05:02.730
+Now, the objects can also have metadata,
+
+116
+00:05:02.730 --> 00:05:05.190
+their list of key and value pairs,
+
+117
+00:05:05.190 --> 00:05:06.810
+and that could be set by the system
+
+118
+00:05:06.810 --> 00:05:10.500
+or set by the user to indicate some elements about the file,
+
+119
+00:05:10.500 --> 00:05:12.030
+some metadata.
+
+120
+00:05:12.030 --> 00:05:13.530
+Their tags, for example,
+
+121
+00:05:13.530 --> 00:05:16.140
+their Unicode key and value pairs up to 10,
+
+122
+00:05:16.140 --> 00:05:18.570
+they're very useful for security and lifecycles,
+
+123
+00:05:18.570 --> 00:05:21.780
+and sometimes the object will have a version ID
+
+124
+00:05:21.780 --> 00:05:23.970
+if you have enabled versioning.
+
+125
+00:05:23.970 --> 00:05:26.520
+So that's it for an introduction to Amazon S3.
+
+126
+00:05:26.520 --> 00:05:27.900
+I'm sure you're curious about how that works.
+
+127
+00:05:27.900 --> 00:05:30.153
+So let's go in the console to get started.
+

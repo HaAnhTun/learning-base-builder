@@ -1,0 +1,338 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.115
+If you're building multi-agent systems, schema design for inter-agent communication is one of the
+
+2
+00:00:06.115 --> 00:00:08.636
+places where reliability is won or lost.
+
+3
+00:00:08.699 --> 00:00:15.600
+In this lesson, we'll look at why unstructured handoffs fail, what a well-formed handoff message needs to include,
+
+4
+00:00:15.600 --> 00:00:22.392
+how to exclude content that inflates cost without adding value, and how to version and test schemas
+
+5
+00:00:22.392 --> 00:00:24.931
+as your agent implementations change.
+
+6
+00:00:25.600 --> 00:00:32.200
+A sending agent knows why it's asking for something. The receiving agent knows only what showed up in the message.
+
+7
+00:00:32.200 --> 00:00:39.299
+Everything that closes that gap is the handoff message. A structured payload carrying the task description,
+
+8
+00:00:39.299 --> 00:00:45.299
+the context the receiver needs, the expected output format, and any constraints on the work.
+
+9
+00:00:45.299 --> 00:00:49.599
+The reason it has to be that deliberate is context isolation.
+
+10
+00:00:49.599 --> 00:00:56.000
+Subagents live in their own context window, and nothing crosses that boundary on its own.
+
+11
+00:00:56.000 --> 00:01:02.089
+If it wasn't included, the receiver doesn't have it. Schema versioning is the practice of tagging
+
+12
+00:01:02.089 --> 00:01:04.537
+that payload with a version identifier,
+
+13
+00:01:04.599 --> 00:01:10.500
+so receivers keep parsing correctly as the format evolves over time.
+
+14
+00:01:10.500 --> 00:01:16.199
+Freeform handoffs fail in three consistent ways. Missing context is the most common.
+
+15
+00:01:16.199 --> 00:01:22.186
+The sending agent assumed the receiver already knew something it doesn't, and the receiver can't act
+
+16
+00:01:22.186 --> 00:01:25.240
+correctly because a critical fact was never passed.
+
+17
+00:01:25.300 --> 00:01:33.000
+Inconsistent format means there's no agreed structure, so the receiver is parsing raw text and guessing at intent.
+
+18
+00:01:33.000 --> 00:01:38.099
+Implicit assumptions are the most dangerous. The sender's model of the receiver is wrong,
+
+19
+00:01:38.099 --> 00:01:43.300
+and neither agent has a way to surface that mismatch until something breaks downstream.
+
+20
+00:01:43.300 --> 00:01:48.500
+Structured schemas address all three. They make the expected content explicit,
+
+21
+00:01:48.500 --> 00:01:54.584
+establish a shared format both sides can rely on, and force the sender to think through what the
+
+22
+00:01:54.584 --> 00:01:57.436
+receiver actually needs rather than assuming.
+
+23
+00:01:57.500 --> 00:02:04.258
+Every reliable handoff message has four components. The task description tells the receiver what
+
+24
+00:02:04.258 --> 00:02:06.229
+it's being asked to produce.
+
+25
+00:02:06.300 --> 00:02:13.100
+Relevant context is the subset of facts the receiver needs to do that, with no extras.
+
+26
+00:02:13.100 --> 00:02:19.100
+The output format specification tells the receiver exactly what structure the result should take.
+
+27
+00:02:19.100 --> 00:02:25.300
+A JSON object, a list, a specific field layout, and constraints define the boundaries,
+
+28
+00:02:25.300 --> 00:02:30.899
+scope limits, and any safety or policy restrictions the receiver has to respect.
+
+29
+00:02:30.899 --> 00:02:37.789
+These four elements together give the receiving agent everything it needs to act without requiring
+
+30
+00:02:37.789 --> 00:02:42.429
+any access to the sender's internal state or conversation history.
+
+31
+00:02:42.500 --> 00:02:47.899
+Deciding what to include and what to exclude is where schema design actually pays off.
+
+32
+00:02:47.899 --> 00:02:55.600
+What to include is the task description, the relevant context, the output format spec, and the explicit constraints.
+
+33
+00:02:55.600 --> 00:03:01.300
+If the receiver can't act without something, it goes in. What to exclude is everything else.
+
+34
+00:03:01.300 --> 00:03:07.699
+Full conversation histories, sender deliberation logs, internal state, redundant context.
+
+35
+00:03:07.699 --> 00:03:10.899
+Excess content doesn't improve the receiver's performance.
+
+36
+00:03:10.899 --> 00:03:17.100
+It inflates token cost, introduces noise, and makes the schema harder to parse.
+
+37
+00:03:17.100 --> 00:03:21.300
+The guiding question is whether the receiver needs this to complete the task.
+
+38
+00:03:21.300 --> 00:03:27.600
+If the answer is no, leave it out. Minimal but sufficient is the design target.
+
+39
+00:03:27.600 --> 00:03:31.899
+Two failure patterns sit on opposite ends of the over-specification problem.
+
+40
+00:03:31.899 --> 00:03:37.100
+Under-specified handoffs leave the receiver without enough context to act.
+
+41
+00:03:37.100 --> 00:03:44.100
+The receiver fills in the gaps with guesses, which leads to hallucinations, wrong outputs, or silent failure.
+
+42
+00:03:44.100 --> 00:03:48.699
+Over-specified handoffs dump the full sender context on the receiver.
+
+43
+00:03:48.699 --> 00:03:54.500
+The receiver technically has everything it needs, but it also has a lot it doesn't need.
+
+44
+00:03:54.500 --> 00:04:02.199
+That excess content increases cost, slows processing, and creates noise that competes with the signal.
+
+45
+00:04:02.199 --> 00:04:08.000
+Good schema design threads the needle. Enough context to act, nothing beyond that.
+
+46
+00:04:08.000 --> 00:04:15.300
+The test is whether the receiver can succeed using only what was passed, with nothing left to assume.
+
+47
+00:04:15.300 --> 00:04:19.700
+Schemas need to evolve without breaking the agents that consume them.
+
+48
+00:04:19.700 --> 00:04:22.299
+The core practice is version tagging.
+
+49
+00:04:22.299 --> 00:04:28.799
+Every handoff message carries a schema version field the receiver can inspect to know how to parse the payload.
+
+50
+00:04:28.899 --> 00:04:33.200
+Beyond that, receivers should handle missing optional fields gracefully,
+
+51
+00:04:33.200 --> 00:04:37.200
+rather than crashing when a field they expect isn't present.
+
+52
+00:04:37.200 --> 00:04:40.000
+New required fields need a migration path.
+
+53
+00:04:40.000 --> 00:04:47.000
+You can't add a required field to a schema without also updating every sender that produces messages in that format.
+
+54
+00:04:47.000 --> 00:04:54.000
+Forward compatibility means the receiver can process messages from older senders even after the schema has evolved.
+
+55
+00:04:54.000 --> 00:04:58.500
+That's what keeps a multi-agent system stable during incremental updates,
+
+56
+00:04:58.500 --> 00:05:03.299
+rather than requiring full system deploys for every schema change.
+
+57
+00:05:03.299 --> 00:05:08.899
+Schema testing should happen before the receiver runs in production, not after it fails.
+
+58
+00:05:08.899 --> 00:05:15.500
+Contract tests verify that every required field is present in the handoff message before it's dispatched.
+
+59
+00:05:15.500 --> 00:05:20.600
+Simulating the receiver with the schema alone, without actually running the full agent,
+
+60
+00:05:20.600 --> 00:05:25.100
+lets you check whether the message is sufficient to produce the expected output.
+
+61
+00:05:25.100 --> 00:05:30.100
+Testing with intentionally missing fields confirms the receiver degrades gracefully,
+
+62
+00:05:30.100 --> 00:05:33.000
+rather than crashing or silently skipping work.
+
+63
+00:05:33.000 --> 00:05:37.899
+A schema test suite is the simplest form of inter-agent integration testing.
+
+64
+00:05:37.899 --> 00:05:41.600
+It lets you catch handoff mismatches at development time,
+
+65
+00:05:41.600 --> 00:05:45.000
+rather than diagnosing silent failures in a live system.
+
+66
+00:05:45.000 --> 00:05:52.000
+The cost of writing these tests is small compared to the cost of debugging a broken handoff in production.
+
+67
+00:05:52.000 --> 00:05:57.100
+Schemas that are tightly coupled to a specific agent implementation are fragile.
+
+68
+00:05:57.100 --> 00:06:02.000
+If the schema contains fields that only one particular receiver knows how to interpret,
+
+69
+00:06:02.000 --> 00:06:08.700
+then you can't swap in a different implementation without rewriting the schema and every sender that produces it.
+
+70
+00:06:08.700 --> 00:06:12.299
+The right approach is to design schemas against an interface.
+
+71
+00:06:12.299 --> 00:06:16.100
+Specify what the task needs and what the output should look like,
+
+72
+00:06:16.100 --> 00:06:20.500
+without encoding assumptions about which specific agent will do the work.
+
+73
+00:06:20.500 --> 00:06:23.799
+Receivers that share a schema should be interchangeable.
+
+74
+00:06:23.799 --> 00:06:26.299
+That's the property of substitutability,
+
+75
+00:06:26.299 --> 00:06:31.799
+and it's what lets you swap an agent implementation for a newer or more capable version,
+
+76
+00:06:31.799 --> 00:06:35.399
+without breaking the rest of the system.
+
+77
+00:06:35.399 --> 00:06:41.000
+Structured handoff schemas are what separate brittle multi-agent systems from reliable ones.
+
+78
+00:06:41.000 --> 00:06:43.899
+Include what the receiver needs to act on.
+
+79
+00:06:43.899 --> 00:06:45.899
+Leave out everything else.
+
+80
+00:06:45.899 --> 00:06:50.000
+Version the schema so it can evolve without breaking older senders,
+
+81
+00:06:50.000 --> 00:06:56.399
+and write contract tests that catch mismatches at development time instead of in production.
+
+82
+00:06:56.399 --> 00:07:00.899
+Design against an interface rather than one specific receiver,
+
+83
+00:07:00.899 --> 00:07:05.000
+and you keep the freedom to swap implementations later.
+
+84
+00:07:05.000 --> 00:07:07.600
+That's it for this lesson. I'll see you in the next one.
+

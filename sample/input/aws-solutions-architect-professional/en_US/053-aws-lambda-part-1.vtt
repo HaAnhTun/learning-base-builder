@@ -1,0 +1,718 @@
+WEBVTT
+
+1
+00:00:00.210 --> 00:00:02.910
+<v Stephane>So now let's talk about AWS Lambda.</v>
+
+2
+00:00:02.910 --> 00:00:04.200
+And first its integration.
+
+3
+00:00:04.200 --> 00:00:06.480
+So there are some main integrations you need to know
+
+4
+00:00:06.480 --> 00:00:10.560
+such as API Gateway to invoke Lambda from Rest API,
+
+5
+00:00:10.560 --> 00:00:12.668
+Kinesis to read data from a Stream,
+
+6
+00:00:12.668 --> 00:00:14.040
+DynamoDB to read data
+
+7
+00:00:14.040 --> 00:00:17.629
+from a exchange log stream from DynamoDB,
+
+8
+00:00:17.629 --> 00:00:19.500
+S3 to react to new objects
+
+9
+00:00:19.500 --> 00:00:21.810
+being created in Amazon S3 for example,
+
+10
+00:00:21.810 --> 00:00:24.000
+Internet of Things, EventBridge,
+
+11
+00:00:24.000 --> 00:00:26.970
+as pretty much a rule output
+
+12
+00:00:26.970 --> 00:00:29.850
+from any kind of event in EventBridge.
+
+13
+00:00:29.850 --> 00:00:33.480
+CloudWatch logs, we have SNS to react to notifications,
+
+14
+00:00:33.480 --> 00:00:35.670
+Cognito to do some pre
+
+15
+00:00:35.670 --> 00:00:38.490
+and post authentication hooks with Lambda
+
+16
+00:00:38.490 --> 00:00:41.910
+and SQS to read data from a queue.
+
+17
+00:00:41.910 --> 00:00:43.590
+So here's an example, a very famous one,
+
+18
+00:00:43.590 --> 00:00:46.350
+which is the Serverless Thumbnail creation.
+
+19
+00:00:46.350 --> 00:00:48.540
+So we have a new image in Amazon S3,
+
+20
+00:00:48.540 --> 00:00:50.910
+which is going to trigger a Lambda function
+
+21
+00:00:50.910 --> 00:00:51.930
+to create a thumbnail.
+
+22
+00:00:51.930 --> 00:00:55.020
+It's going to push the new thumbnail in Amazon S3
+
+23
+00:00:55.020 --> 00:00:58.530
+and maybe push the metadata of this thumbnail in DynamoDB
+
+24
+00:00:58.530 --> 00:01:00.780
+that contains the image name, image size,
+
+25
+00:01:00.780 --> 00:01:02.520
+creation date, and so on.
+
+26
+00:01:02.520 --> 00:01:05.610
+Another very common architecture with Lambda
+
+27
+00:01:05.610 --> 00:01:08.940
+is to use EventBridge to create a time-based trigger
+
+28
+00:01:08.940 --> 00:01:11.700
+to trigger a Lambda function every one hour
+
+29
+00:01:11.700 --> 00:01:13.950
+to perform a task, effectively giving you a
+
+30
+00:01:13.950 --> 00:01:15.633
+serverless chron job.
+
+31
+00:01:16.590 --> 00:01:18.510
+AWS Lambda can run many languages,
+
+32
+00:01:18.510 --> 00:01:20.700
+such as Node.js for JavaScript,
+
+33
+00:01:20.700 --> 00:01:25.320
+Python, Java, C#, so either .NET Core or PowerShell,
+
+34
+00:01:25.320 --> 00:01:28.350
+Ruby and it supports many other languages
+
+35
+00:01:28.350 --> 00:01:29.183
+through something called
+
+36
+00:01:29.183 --> 00:01:31.200
+the custom runtime API, for example.
+
+37
+00:01:31.200 --> 00:01:34.620
+It supports the Rust or the Golang languages through that.
+
+38
+00:01:34.620 --> 00:01:37.830
+You also have the option to use containers on Lambda.
+
+39
+00:01:37.830 --> 00:01:39.810
+So this is a container image
+
+40
+00:01:39.810 --> 00:01:42.570
+and you must implement what's called the Lambda Runtime API.
+
+41
+00:01:42.570 --> 00:01:45.300
+Now, that may be too advanced from an exam perspective,
+
+42
+00:01:45.300 --> 00:01:46.680
+but what I need to remember is
+
+43
+00:01:46.680 --> 00:01:49.650
+that there is a service named ECS or Fargate.
+
+44
+00:01:49.650 --> 00:01:52.830
+And so to run container images, especially Docker images,
+
+45
+00:01:52.830 --> 00:01:55.710
+it is always going to be preferred from an exam perspective
+
+46
+00:01:55.710 --> 00:01:58.530
+to run them on ECS or Fargate versus Lambda.
+
+47
+00:01:58.530 --> 00:02:00.060
+Even though Lambda supports running
+
+48
+00:02:00.060 --> 00:02:03.960
+some level of customized Docker images.
+
+49
+00:02:03.960 --> 00:02:05.790
+So you don't need to remember all the languages
+
+50
+00:02:05.790 --> 00:02:06.870
+of course from Lambda, but just remember
+
+51
+00:02:06.870 --> 00:02:08.520
+that it has some level of support.
+
+52
+00:02:08.520 --> 00:02:09.840
+The most important ones is going to be
+
+53
+00:02:09.840 --> 00:02:13.080
+for sure Node.js and Python.
+
+54
+00:02:13.080 --> 00:02:15.600
+So Lambda will come up in the exam,
+
+55
+00:02:15.600 --> 00:02:18.600
+especially as a difference, for example,
+
+56
+00:02:18.600 --> 00:02:22.200
+versus batch versus ECS and other things like this.
+
+57
+00:02:22.200 --> 00:02:24.690
+And so knowing the limits of Lambda
+
+58
+00:02:24.690 --> 00:02:25.890
+really helps you understand
+
+59
+00:02:25.890 --> 00:02:27.750
+whether or not Lambda is a good choice.
+
+60
+00:02:27.750 --> 00:02:30.900
+So Lambda has up to 10 gigabytes of RAM,
+
+61
+00:02:30.900 --> 00:02:32.700
+and the CPU is linked to RAM.
+
+62
+00:02:32.700 --> 00:02:35.070
+So two vCPUs will be allocated
+
+63
+00:02:35.070 --> 00:02:37.620
+at about 1800 megabytes of RAM,
+
+64
+00:02:37.620 --> 00:02:39.960
+and six vCPUs will be allocated at
+
+65
+00:02:39.960 --> 00:02:42.810
+around 10 gigabytes of RAM.
+
+66
+00:02:42.810 --> 00:02:44.460
+Timeout is up to 15 minutes.
+
+67
+00:02:44.460 --> 00:02:46.230
+So if you have long executions,
+
+68
+00:02:46.230 --> 00:02:47.340
+for example one hour,
+
+69
+00:02:47.340 --> 00:02:49.380
+Lambda is not a good use case
+
+70
+00:02:49.380 --> 00:02:52.410
+and the temporary storage is 10 gigabytes.
+
+71
+00:02:52.410 --> 00:02:55.860
+Here are the deployment packages limits,
+
+72
+00:02:55.860 --> 00:02:56.850
+50 megabytes zipped,
+
+73
+00:02:56.850 --> 00:02:59.670
+250 megabytes unzipped, including layers.
+
+74
+00:02:59.670 --> 00:03:02.040
+You can get up to 1000 concurrent executions,
+
+75
+00:03:02.040 --> 00:03:04.560
+although that soft limit can be increased.
+
+76
+00:03:04.560 --> 00:03:07.620
+And the max image size for a container is 10 gigabytes
+
+77
+00:03:07.620 --> 00:03:09.720
+as well as the invocation payload,
+
+78
+00:03:09.720 --> 00:03:10.940
+six megabytes when synchronous,
+
+79
+00:03:10.940 --> 00:03:15.420
+and 256 kilobytes when asynchronous.
+
+80
+00:03:15.420 --> 00:03:17.190
+So talking about concurrency,
+
+81
+00:03:17.190 --> 00:03:20.970
+Lambda has up to 1000 concurrent executions.
+
+82
+00:03:20.970 --> 00:03:23.250
+So that means that you can go from
+
+83
+00:03:23.250 --> 00:03:26.640
+having two Lambda executions currently to 1000.
+
+84
+00:03:26.640 --> 00:03:28.590
+And you can set a reserved concurrency
+
+85
+00:03:28.590 --> 00:03:30.000
+at the function level,
+
+86
+00:03:30.000 --> 00:03:32.220
+which is going to make sure that there is a limit,
+
+87
+00:03:32.220 --> 00:03:35.370
+but also a reserved capacity for a specific function.
+
+88
+00:03:35.370 --> 00:03:37.828
+Now each invocation over the concurrency limit
+
+89
+00:03:37.828 --> 00:03:40.020
+is going to trigger a throttle.
+
+90
+00:03:40.020 --> 00:03:41.160
+And so when you're throttling,
+
+91
+00:03:41.160 --> 00:03:42.540
+you can retry your request.
+
+92
+00:03:42.540 --> 00:03:44.580
+And if you get too much throttling,
+
+93
+00:03:44.580 --> 00:03:46.800
+then you can request a quota increase
+
+94
+00:03:46.800 --> 00:03:50.160
+in the AWS service quotas service.
+
+95
+00:03:50.160 --> 00:03:52.800
+Now we have a Lambda concurrency issue
+
+96
+00:03:52.800 --> 00:03:54.600
+if we don't reserve concurrency.
+
+97
+00:03:54.600 --> 00:03:57.060
+So say we have an ALB with Lambda,
+
+98
+00:03:57.060 --> 00:03:58.950
+we have API gateway with Lambda,
+
+99
+00:03:58.950 --> 00:04:02.070
+and we have also users using the SDK
+
+100
+00:04:02.070 --> 00:04:04.290
+or the CLI to invoke Lambda functions.
+
+101
+00:04:04.290 --> 00:04:06.030
+So this is fine until some day,
+
+102
+00:04:06.030 --> 00:04:09.000
+your application on the ALB gets very popular
+
+103
+00:04:09.000 --> 00:04:10.410
+and you have many more users,
+
+104
+00:04:10.410 --> 00:04:11.820
+and all of a sudden you have
+
+105
+00:04:11.820 --> 00:04:15.180
+up to 1000 concurrent executions of Lambda,
+
+106
+00:04:15.180 --> 00:04:17.490
+and the few users on the API gateway
+
+107
+00:04:17.490 --> 00:04:18.840
+are going to be throttled
+
+108
+00:04:18.840 --> 00:04:21.150
+and the users of the SDK or CLI
+
+109
+00:04:21.150 --> 00:04:22.740
+also will be throttle.
+
+110
+00:04:22.740 --> 00:04:25.470
+So if you don't reserve concurrency, this can happen.
+
+111
+00:04:25.470 --> 00:04:27.159
+And so therefore you would reserve concurrency
+
+112
+00:04:27.159 --> 00:04:30.600
+for the API gateway and reserve concurrency for the SDK
+
+113
+00:04:30.600 --> 00:04:32.248
+and that you would not run into this issue
+
+114
+00:04:32.248 --> 00:04:34.350
+because there will be a minimum
+
+115
+00:04:34.350 --> 00:04:35.790
+number of Lambda functions
+
+116
+00:04:35.790 --> 00:04:38.733
+that can run for your API gateway and so on.
+
+117
+00:04:40.110 --> 00:04:42.410
+You can also deploy Lambda functions with CodeDeploy.
+
+118
+00:04:42.410 --> 00:04:44.970
+So CodeDeploy will help you do traffic shift
+
+119
+00:04:44.970 --> 00:04:47.430
+between two Lambda aliases or versions.
+
+120
+00:04:47.430 --> 00:04:49.050
+And so this feature is integrated directly
+
+121
+00:04:49.050 --> 00:04:50.610
+within the SAM framework.
+
+122
+00:04:50.610 --> 00:04:51.990
+So say you have a prod alias
+
+123
+00:04:51.990 --> 00:04:54.420
+pointing to the V1 and the V2 function.
+
+124
+00:04:54.420 --> 00:04:56.970
+Using code deploy, you can shift, gradually,
+
+125
+00:04:56.970 --> 00:04:59.100
+the traffic from V1 to V2
+
+126
+00:04:59.100 --> 00:05:02.250
+by having first 100% on V1 and 0% on V2,
+
+127
+00:05:02.250 --> 00:05:05.760
+and then slowly going 80/20 and so on.
+
+128
+00:05:05.760 --> 00:05:06.593
+So for this is CodeDeploy.
+
+129
+00:05:06.593 --> 00:05:10.110
+CodeDeploy will make that proportion vary over time.
+
+130
+00:05:10.110 --> 00:05:11.070
+So you have different strategies.
+
+131
+00:05:11.070 --> 00:05:13.170
+You have the linear to grow traffic
+
+132
+00:05:13.170 --> 00:05:15.450
+every N number of minutes until 100%.
+
+133
+00:05:15.450 --> 00:05:16.800
+So it's linear growth.
+
+134
+00:05:16.800 --> 00:05:19.560
+So you have, for example, 10% every three minutes
+
+135
+00:05:19.560 --> 00:05:21.420
+or 10% every 10 minutes.
+
+136
+00:05:21.420 --> 00:05:23.040
+And you can try Canary as well
+
+137
+00:05:23.040 --> 00:05:27.300
+to try a small amount of traffic for say five minutes.
+
+138
+00:05:27.300 --> 00:05:28.530
+So 10% for five minutes,
+
+139
+00:05:28.530 --> 00:05:30.870
+and then if everything is stable
+
+140
+00:05:30.870 --> 00:05:32.730
+and no rollback happens,
+
+141
+00:05:32.730 --> 00:05:34.920
+then switch all the traffic over.
+
+142
+00:05:34.920 --> 00:05:37.948
+So it's a bit quicker and you just test a small subset,
+
+143
+00:05:37.948 --> 00:05:39.390
+that's what it's called Canary.
+
+144
+00:05:39.390 --> 00:05:41.280
+So you get Canary, 10%, five minutes,
+
+145
+00:05:41.280 --> 00:05:44.040
+or Canary, 10%, 30 minutes, and so on.
+
+146
+00:05:44.040 --> 00:05:45.510
+And if you don't want to transition
+
+147
+00:05:45.510 --> 00:05:46.620
+from V1 to V2,
+
+148
+00:05:46.620 --> 00:05:47.610
+you can do all at once
+
+149
+00:05:47.610 --> 00:05:49.560
+to get immediate traffic shift
+
+150
+00:05:49.560 --> 00:05:51.450
+between your two Lambda versions.
+
+151
+00:05:51.450 --> 00:05:52.920
+You can also run pre
+
+152
+00:05:52.920 --> 00:05:54.837
+and post traffic hooks to check the health
+
+153
+00:05:54.837 --> 00:05:56.400
+of your Lambda function
+
+154
+00:05:56.400 --> 00:05:58.230
+so that you don't move over
+
+155
+00:05:58.230 --> 00:06:00.570
+all the traffic to the new one after a Canary
+
+156
+00:06:00.570 --> 00:06:03.120
+if you don't validate some kind of health checks
+
+157
+00:06:03.120 --> 00:06:05.043
+and posts traffic hooks.
+
+158
+00:06:06.090 --> 00:06:07.290
+Now regarding monitoring,
+
+159
+00:06:07.290 --> 00:06:08.760
+so CloudWatch is going to be good
+
+160
+00:06:08.760 --> 00:06:11.010
+because you're going to get all your execution logs
+
+161
+00:06:11.010 --> 00:06:12.450
+in CloudWatch logs.
+
+162
+00:06:12.450 --> 00:06:13.750
+And also CloudWatch metrics,
+
+163
+00:06:13.750 --> 00:06:15.360
+you're going to get all information
+
+164
+00:06:15.360 --> 00:06:18.390
+around successful invocations, error rates,
+
+165
+00:06:18.390 --> 00:06:20.370
+latency, timeouts, and so on.
+
+166
+00:06:20.370 --> 00:06:21.480
+And so for this, you need to make sure
+
+167
+00:06:21.480 --> 00:06:23.275
+that Lambda has an execution role
+
+168
+00:06:23.275 --> 00:06:27.300
+that allows access to CloudWatch logs, for example.
+
+169
+00:06:27.300 --> 00:06:29.070
+Now for X-ray, it's possible
+
+170
+00:06:29.070 --> 00:06:32.280
+to trace Lambda functions invocations with X-ray.
+
+171
+00:06:32.280 --> 00:06:33.840
+And so for this, you just enable it
+
+172
+00:06:33.840 --> 00:06:35.070
+in the Lambda configuration
+
+173
+00:06:35.070 --> 00:06:36.990
+to run the X-ray daemon for you.
+
+174
+00:06:36.990 --> 00:06:38.550
+And then in your code you would add
+
+175
+00:06:38.550 --> 00:06:42.150
+the tracing mechanism directly using the AWS SDK.
+
+176
+00:06:42.150 --> 00:06:43.410
+For this, again, you need to make sure
+
+177
+00:06:43.410 --> 00:06:47.520
+that your Lambda function has correct access to X-ray.
+
+178
+00:06:47.520 --> 00:06:49.320
+So that's it for the first part of Lambda.
+
+179
+00:06:49.320 --> 00:06:52.320
+I hope you liked it, and I will see you in the next lecture.
+

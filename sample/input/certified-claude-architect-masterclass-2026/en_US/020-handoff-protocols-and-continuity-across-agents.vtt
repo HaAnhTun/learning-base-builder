@@ -1,0 +1,294 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.519
+Handoff protocols are what turn message delivery into a completed verified transfer.
+
+2
+00:00:06.480 --> 00:00:11.920
+Here's what we're covering. Handoff verification, how failures in subagents need to surface back
+
+3
+00:00:11.920 --> 00:00:18.000
+to the orchestrator, what to preserve when a handoff fails mid-transfer, and how audit logging
+
+4
+00:00:18.000 --> 00:00:25.040
+makes interagent communication inspectable. Let's jump in. A sending agent transmits a message and
+
+5
+00:00:25.040 --> 00:00:31.680
+moves on. Did the handoff actually complete? That question is what handoff verification exists to
+
+6
+00:00:31.680 --> 00:00:38.000
+answer. Verification is the step where the sender confirms the receiver has what it needs and is
+
+7
+00:00:38.000 --> 00:00:44.400
+ready to proceed before the sender lets go of control. Error propagation is the mechanism that
+
+8
+00:00:44.400 --> 00:00:50.080
+carries failures inside a subagent back up to the orchestrator, which needs to see them to manage
+
+9
+00:00:50.080 --> 00:00:56.799
+the workflow at all, and silent failure is the pattern that defeats both. A handoff that looks
+
+10
+00:00:56.799 --> 00:01:04.080
+successful but quietly loses or corrupts information, raising no error, letting the system proceed on
+
+11
+00:01:04.080 --> 00:01:10.480
+state that's already wrong. Silent failures surface late and trace back hard, which is exactly what
+
+12
+00:01:10.480 --> 00:01:17.040
+makes them expensive. Verification is what separates a completed handoff from an assumed one.
+
+13
+00:01:17.599 --> 00:01:22.959
+The basic sequence works like this. The sender transmits the handoff message, the receiver
+
+14
+00:01:22.959 --> 00:01:29.040
+acknowledges receipt, the receiver confirms it has the context it needs to proceed, and only then
+
+15
+00:01:29.040 --> 00:01:34.480
+does the sender relinquish control. Without verification, the sender sends the message and
+
+16
+00:01:34.480 --> 00:01:40.080
+assumes everything is fine. If the message was malformed, if the receiver never got it, or if the
+
+17
+00:01:40.080 --> 00:01:46.400
+receiver is missing a piece of context it needs, the sender has no way to know. Verification isn't
+
+18
+00:01:46.400 --> 00:01:52.720
+a formality. It's the mechanism that makes the handoff's success observable rather than assumed,
+
+19
+00:01:52.720 --> 00:01:57.519
+and that observability is what gives the orchestrator something to act on when things go
+
+20
+00:01:57.519 --> 00:02:04.400
+wrong. Failures inside subagents have to reach the orchestrator to be handled. The practical design
+
+21
+00:02:04.400 --> 00:02:10.320
+requirement is that subagents return structured error payloads rather than null values or empty
+
+22
+00:02:10.320 --> 00:02:16.800
+responses. A structured error payload carries the failure type, the context the subagent was working
+
+23
+00:02:16.800 --> 00:02:22.960
+in, and hints about what recovery paths are available. Orchestrators need explicit error
+
+24
+00:02:22.960 --> 00:02:29.199
+handling paths designed alongside their happy paths, not added as an afterthought. An orchestrator
+
+25
+00:02:29.199 --> 00:02:34.880
+that receives only success responses from subagents because the subagents are swallowing their own
+
+26
+00:02:34.880 --> 00:02:41.520
+errors internally is operating on an incomplete picture of the workflow. It can't retry, reroute,
+
+27
+00:02:41.520 --> 00:02:47.199
+escalate to a human, or halt because it never sees the signals it would need to make those decisions.
+
+28
+00:02:48.479 --> 00:02:54.160
+The contrast between transparent and silent failure is one of the most important distinctions
+
+29
+00:02:54.160 --> 00:03:00.160
+in multi-agent system design. When failure is transparent, the subagent returns a structured
+
+30
+00:03:00.160 --> 00:03:06.000
+error with enough information for the orchestrator to decide how to respond. The system remains
+
+31
+00:03:06.000 --> 00:03:11.679
+manageable even when things go wrong because the failure is visible. When failure is silent, the
+
+32
+00:03:11.679 --> 00:03:18.080
+handoff produces a response that looks successful but loses or corrupts something critical. No error
+
+33
+00:03:18.080 --> 00:03:24.559
+is raised, the orchestrator proceeds on incorrect state, and the failure only surfaces downstream,
+
+34
+00:03:24.639 --> 00:03:30.320
+often far removed from where the actual problem occurred. Diagnosis becomes much harder because
+
+35
+00:03:30.320 --> 00:03:36.000
+there's no error signal to trace. Silent failures are disproportionately damaging,
+
+36
+00:03:36.000 --> 00:03:43.440
+exactly because they masquerade as success. Two error propagation anti-patterns show up frequently
+
+37
+00:03:43.440 --> 00:03:49.360
+in multi-agent systems. Swallowing errors happens when a subagent catches exceptions internally
+
+38
+00:03:49.360 --> 00:03:55.119
+and returns empty or partial output rather than an error. The orchestrator receives a response and
+
+39
+00:03:55.119 --> 00:04:01.440
+assumes success. It never learns the subagent failed. Undifferentiated errors happen when all
+
+40
+00:04:01.440 --> 00:04:07.119
+failure types return the same generic code. The orchestrator sees an error but can't tell whether
+
+41
+00:04:07.119 --> 00:04:13.199
+it's a retriable network timeout, a resource limit, or a hard constraint violation that the system
+
+42
+00:04:13.199 --> 00:04:19.119
+should halt on. Both anti-patterns degrade the orchestrator's ability to manage the workflow.
+
+43
+00:04:19.519 --> 00:04:25.600
+The fix for both is the same. Subagents need to surface structured typed errors with enough
+
+44
+00:04:25.600 --> 00:04:31.839
+information for the orchestrator to choose the right response. When a handoff fails mid-transfer,
+
+45
+00:04:31.839 --> 00:04:37.279
+recovering without losing work requires that state was preserved before the handoff started.
+
+46
+00:04:37.279 --> 00:04:42.399
+The pattern is to save task state to a durable checkpoint before initiating any handoff.
+
+47
+00:04:42.959 --> 00:04:48.320
+The checkpoint should reflect the last confirmed good state, not just the most recent attempt.
+
+48
+00:04:48.320 --> 00:04:53.359
+Retry logic should resume from the checkpoint rather than from the beginning of the workflow.
+
+49
+00:04:53.359 --> 00:04:59.200
+Without checkpointing, a failed handoff forces the entire workflow to restart from scratch,
+
+50
+00:04:59.200 --> 00:05:05.119
+which is expensive and may not even be safe if any prior steps had side effects. Checkpointing
+
+51
+00:05:05.119 --> 00:05:11.040
+is especially important in pipeline topologies where a failed handoff in the middle blocks
+
+52
+00:05:11.040 --> 00:05:16.000
+everything downstream. Preserved state is what gives the system a recovery path that doesn't
+
+53
+00:05:16.000 --> 00:05:22.559
+require a full restart. Handoff protocols that assume a specific receiver implementation
+
+54
+00:05:22.559 --> 00:05:28.640
+are fragile for the same reason that tightly coupled schemas are fragile. The protocol
+
+55
+00:05:28.640 --> 00:05:34.959
+should specify what behavior the receiver has to exhibit, what inputs it accepts, how it acknowledges
+
+56
+00:05:34.959 --> 00:05:42.160
+receipt, what it returns on success, and how it surfaces errors. It shouldn't encode assumptions
+
+57
+00:05:42.160 --> 00:05:48.079
+about which specific agent or model will do the work. Any receiver that conforms to the protocol
+
+58
+00:05:48.079 --> 00:05:53.920
+should be able to handle the handoff. That's the substitutability property, and it's what allows
+
+59
+00:05:53.920 --> 00:06:00.720
+you to upgrade, replace, or scale out receiver implementations without changing the protocol or
+
+60
+00:06:00.720 --> 00:06:07.519
+rewriting the senders. Designing for substitutability up front is much cheaper than refactoring a tightly
+
+61
+00:06:07.519 --> 00:06:14.079
+coupled system after it's in production. Audit logging is the primary tool for turning silent
+
+62
+00:06:14.079 --> 00:06:20.320
+handoff failures into diagnosable ones. A complete handoff log captures the sender identity, the
+
+63
+00:06:20.320 --> 00:06:26.480
+receiver identity, the timestamp, a summary of the payload, the verification result, and any errors.
+
+64
+00:06:27.040 --> 00:06:33.040
+When a failure surfaces downstream and you need to trace it back, the audit log lets you reconstruct
+
+65
+00:06:33.040 --> 00:06:38.880
+exactly what each agent had when it started, what it was asked to produce, and whether its handoffs
+
+66
+00:06:38.880 --> 00:06:46.320
+were verified. Without that log, silent failures require exhaustive debugging to localize. With it,
+
+67
+00:06:46.320 --> 00:06:51.359
+the chain of handoffs is inspectable, and the failure point is usually identifiable without
+
+68
+00:06:51.359 --> 00:06:57.200
+rerunning the full workflow. Log design is often underweighted in system design discussions,
+
+69
+00:06:57.200 --> 00:07:04.399
+but in multi-agent systems, it's foundational. The worst multi-agent bugs aren't the ones that
+
+70
+00:07:04.399 --> 00:07:10.799
+throw errors. It's the transfer that reports success and quietly drops half the context,
+
+71
+00:07:10.799 --> 00:07:17.200
+so the damage surfaces way downstream with nothing to trace it back to. Confirming the receiver is
+
+72
+00:07:17.200 --> 00:07:23.119
+really ready before you let go of control turns that silent loss into a visible one,
+
+73
+00:07:23.119 --> 00:07:29.440
+and visible is the only kind you can fix. That wraps up this lesson. I'll see you in the next one.
+

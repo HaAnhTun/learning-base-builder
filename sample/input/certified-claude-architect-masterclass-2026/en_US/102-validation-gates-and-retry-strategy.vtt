@@ -1,0 +1,342 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.800
+We'll walk through validation gates, how to structure retry loops that actually improve
+
+2
+00:00:04.800 --> 00:00:10.239
+results, and when retrying is the wrong answer. We'll also cover retry budgets and backoff
+
+3
+00:00:10.239 --> 00:00:14.560
+strategies. A lot of pipeline reliability lives here, so let's get into it.
+
+4
+00:00:15.600 --> 00:00:21.040
+Let's anchor the lesson with three terms. A validation gate is a deterministic check that
+
+5
+00:00:21.040 --> 00:00:26.000
+sits between the model's output and your application. It decides whether to accept the
+
+6
+00:00:26.000 --> 00:00:32.560
+output, retry, or escalate to a human or error handler. A retry loop is the mechanism that
+
+7
+00:00:32.560 --> 00:00:37.759
+re-prompts the model after a failed gate check. Critically, it includes the failure reason,
+
+8
+00:00:37.759 --> 00:00:43.520
+so the model has something concrete to act on. And a retry budget is the hard cap on how many
+
+9
+00:00:43.520 --> 00:00:48.639
+attempts the system allows before giving up. These three concepts work together. The gate
+
+10
+00:00:48.639 --> 00:00:53.599
+defines pass and fail, the loop handles the retry, and the budget keeps the whole thing
+
+11
+00:00:53.599 --> 00:00:59.840
+from running forever. Keep these definitions in mind as we go deeper. There are three distinct
+
+12
+00:00:59.840 --> 00:01:05.440
+layers of validation, and you need all of them. Schema validation is the first layer. It checks
+
+13
+00:01:05.440 --> 00:01:10.800
+that the output has the right fields, the right types, and the right structure. This is fast,
+
+14
+00:01:10.800 --> 00:01:16.959
+cheap, and fully deterministic. Format validation goes one level deeper. It checks that field values
+
+15
+00:01:16.959 --> 00:01:22.160
+meet specific constraints. A date field should hold a date. A score field should be a number
+
+16
+00:01:22.160 --> 00:01:28.000
+within a defined range. Semantic validation is the hardest layer. It checks that the content
+
+17
+00:01:28.000 --> 00:01:33.519
+actually means what it should. Does the summary actually summarize the right thing? Does the
+
+18
+00:01:33.519 --> 00:01:39.440
+recommendation align with the input constraints? Each layer catches a different class of failure.
+
+19
+00:01:39.440 --> 00:01:44.160
+Running only one of them leaves you exposed to the failures the other two are designed to catch.
+
+20
+00:01:45.360 --> 00:01:49.519
+I want to make the distinction between schema and semantic validation concrete,
+
+21
+00:01:49.519 --> 00:01:54.800
+because teams almost always implement schema checks first and stop there. Schema validation
+
+22
+00:01:54.800 --> 00:01:59.919
+is structural. You can check it with a JSON schema or a Pydantic model in milliseconds
+
+23
+00:01:59.919 --> 00:02:05.360
+without calling the model again. It will catch missing fields and wrong types. It won't catch
+
+24
+00:02:05.360 --> 00:02:10.479
+a summary that summarizes the wrong thing or a recommendation that completely contradicts
+
+25
+00:02:10.479 --> 00:02:16.639
+the user's constraints. That's where semantic validation comes in. Semantic validation is slower
+
+26
+00:02:16.639 --> 00:02:22.160
+and often requires a second model call or a handwritten rule set, but it's the layer that
+
+27
+00:02:22.160 --> 00:02:27.440
+catches the failures your users actually notice. Think of schema validation as the floor and
+
+28
+00:02:27.440 --> 00:02:32.399
+semantic validation as the ceiling. You need both to build a system users can trust.
+
+29
+00:02:33.679 --> 00:02:38.960
+One of the most important details in retry loop design is how you frame the retry prompt.
+
+30
+00:02:38.960 --> 00:02:43.520
+A generic try again prompt almost always reproduces the original failure.
+
+31
+00:02:43.520 --> 00:02:47.360
+The model doesn't know what it got wrong, so it makes the same choices again.
+
+32
+00:02:47.360 --> 00:02:53.039
+Instead, include the failure reason explicitly. Something like, your previous response was
+
+33
+00:02:53.039 --> 00:02:58.080
+missing the required summary field. Here is the output you returned. Please revise it to include
+
+34
+00:02:58.080 --> 00:03:04.160
+a one sentence summary. That kind of specificity gives the model something to act on. Paste the
+
+35
+00:03:04.160 --> 00:03:09.279
+original output alongside the failure message so the model can compare what it produced with what
+
+36
+00:03:09.279 --> 00:03:15.279
+you needed. Concrete feedback drives concrete improvement. Vague feedback drives vague revisions
+
+37
+00:03:15.279 --> 00:03:21.279
+that look different on the surface but fail the same validation check again. Retry budgets aren't
+
+38
+00:03:21.279 --> 00:03:27.039
+optional. Without a hard cap, a validation failure can turn into an infinite loop that drains cost
+
+39
+00:03:27.039 --> 00:03:32.880
+and blocks the pipeline. So let's talk about how to design a budget well. Set a small cap.
+
+40
+00:03:32.880 --> 00:03:38.160
+Two to three attempts covers the vast majority of recoverable failures. If a model can't succeed in
+
+41
+00:03:38.160 --> 00:03:43.919
+three tries, the problem is almost certainly a prompt design issue, not a one-off hiccup. Log
+
+42
+00:03:43.919 --> 00:03:49.919
+every attempt. Logging what failed and why on each retry is how you identify systemic problems in your
+
+43
+00:03:49.919 --> 00:03:56.240
+prompts over time. And escalate explicitly when the budget runs out. Don't silently return an
+
+44
+00:03:56.240 --> 00:04:02.000
+empty result. Route to a human review queue or return a structured error that downstream systems
+
+45
+00:04:02.000 --> 00:04:08.720
+can handle. Silence is the most dangerous failure mode of all. Sometimes a model gets stuck in a
+
+46
+00:04:08.720 --> 00:04:14.000
+pattern. It produces output that fails the same validation check on every attempt with only
+
+47
+00:04:14.000 --> 00:04:20.000
+superficial differences. Identical retries don't help here. What you need is variance. One technique
+
+48
+00:04:20.000 --> 00:04:26.160
+is a small temperature bump on each retry. Start the first retry at the model's default temperature.
+
+49
+00:04:26.160 --> 00:04:30.480
+Raise it slightly on the second attempt to push the model toward different phrasing and structure.
+
+50
+00:04:31.040 --> 00:04:36.640
+Another technique is prompt variation. Reframe the instruction slightly on each retry.
+
+51
+00:04:36.640 --> 00:04:41.440
+Not enough to change what you're asking for, but enough to break the model out of the same failure
+
+52
+00:04:41.440 --> 00:04:47.359
+path. Exponential backoff is also important when you're hitting rate limits under failure conditions.
+
+53
+00:04:47.359 --> 00:04:52.559
+Don't hammer the API with rapid retries. Space them out so you don't add a rate limit failure
+
+54
+00:04:52.559 --> 00:04:59.279
+on top of a validation failure. This slide introduces additional vocabulary worth knowing.
+
+55
+00:04:59.279 --> 00:05:03.760
+The reviewer pattern is a second model call that critiques the first call's output
+
+56
+00:05:03.760 --> 00:05:08.239
+before your application ever sees it. We'll cover this in depth in the next lesson,
+
+57
+00:05:08.239 --> 00:05:12.160
+but it's worth naming here because it's the next level up from a simple retry loop.
+
+58
+00:05:12.799 --> 00:05:18.880
+The escalation path is the defined action you take when retries run out. This should be explicit
+
+59
+00:05:18.880 --> 00:05:24.880
+in your architecture. Either return a structured error, flag the item for human review, or fall
+
+60
+00:05:24.880 --> 00:05:30.239
+back to a known safe default. Don't leave it undefined. And semantic drift is something to
+
+61
+00:05:30.239 --> 00:05:35.839
+watch for in longer retry chains. If you run too many retries without a strong anchor, the output
+
+62
+00:05:35.839 --> 00:05:41.279
+can satisfy your format checks, but drift further from the intended meaning with each attempt.
+
+63
+00:05:41.279 --> 00:05:47.839
+More retries isn't always better. Knowing when to escalate instead of retrying is a judgment call,
+
+64
+00:05:47.839 --> 00:05:53.519
+but there are clear signals. The most reliable signal is a semantic failure that repeats across
+
+65
+00:05:53.519 --> 00:05:58.320
+multiple attempts. If the model produces structurally valid output that consistently
+
+66
+00:05:58.320 --> 00:06:03.839
+misses the intended meaning, that's not a random failure. That's a signal your prompt isn't giving
+
+67
+00:06:03.839 --> 00:06:09.920
+the model what it needs to succeed. Escalate when that pattern appears. Another signal is when the
+
+68
+00:06:09.920 --> 00:06:14.880
+format passes, but the content meaning is consistently wrong. Schema checks give you a
+
+69
+00:06:14.880 --> 00:06:20.799
+green light, but the actual answer is off. That's a semantic validation failure, and no number of
+
+70
+00:06:20.799 --> 00:06:26.480
+retries is likely to fix it without changing the prompt. Treat repeated semantic failures as design
+
+71
+00:06:26.480 --> 00:06:30.959
+feedback, not bad luck. They're telling you something important about your instruction design.
+
+72
+00:06:32.239 --> 00:06:36.880
+Let me leave you with the single most common validation mistake I see in production systems.
+
+73
+00:06:37.440 --> 00:06:43.359
+Teams implement schema validation. They confirm the output is valid JSON with the right fields,
+
+74
+00:06:43.359 --> 00:06:49.760
+and they ship. But schema-only validation gives false confidence. A JSON object can be perfectly
+
+75
+00:06:49.760 --> 00:06:55.440
+structured and completely wrong. A required field can contain a string that technically satisfies
+
+76
+00:06:55.440 --> 00:07:00.880
+the type check but says the opposite of what was intended. You need at least one semantic check
+
+77
+00:07:00.880 --> 00:07:06.320
+on top of your schema checks. It doesn't have to be a full second model call. Sometimes a simple
+
+78
+00:07:06.320 --> 00:07:11.760
+rule works. Does the output mention at least one of the required topics? Is the score within a
+
+79
+00:07:11.760 --> 00:07:17.839
+plausible range? Passing schema validation is the floor. Build checks that actually catch the
+
+80
+00:07:17.839 --> 00:07:23.600
+failures your users will notice. Reliable pipelines need all three validation layers,
+
+81
+00:07:23.600 --> 00:07:29.679
+not just schema checks. Cap your retries, include the failure reason in every retry prompt,
+
+82
+00:07:29.679 --> 00:07:35.359
+and escalate when the same semantic failure repeats across attempts. Build your budgets
+
+83
+00:07:35.359 --> 00:07:40.959
+before you deploy, not after the first runaway loop. And that covers validation gates. In the
+
+84
+00:07:40.959 --> 00:07:46.239
+next lesson, we'll look at multi-pass review, where a second model call critiques the first
+
+85
+00:07:46.239 --> 00:07:49.359
+before the user ever sees it. I'll see you in that lesson.
+

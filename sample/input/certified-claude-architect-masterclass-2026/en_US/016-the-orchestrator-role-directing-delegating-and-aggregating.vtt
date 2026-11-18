@@ -1,0 +1,390 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.119
+It's time for us to walk through the orchestrator role in multi-agent systems.
+
+2
+00:00:05.119 --> 00:00:09.319
+Over the next few minutes, we'll look at the three core functions every orchestrator
+
+3
+00:00:09.319 --> 00:00:16.100
+performs, how task assignment and result aggregation works, what the orchestrator retains versus
+
+4
+00:00:16.100 --> 00:00:21.680
+what it delegates, and how to design for observability and error handling.
+
+5
+00:00:21.680 --> 00:00:26.760
+Strip an orchestrator down and it's really doing one job, holding the plan that no single
+
+6
+00:00:26.760 --> 00:00:28.479
+sub-agent can see.
+
+7
+00:00:28.479 --> 00:00:33.479
+It takes a high-level goal and decomposes it, which means breaking it into pieces small
+
+8
+00:00:33.479 --> 00:00:35.040
+enough to delegate.
+
+9
+00:00:35.040 --> 00:00:37.599
+The word that matters there is bounded.
+
+10
+00:00:37.599 --> 00:00:44.400
+Each sub-task needs a clear start and a clear end so the sub-agent knows what finished looks like.
+
+11
+00:00:44.400 --> 00:00:48.779
+Then it assigns those pieces, and when the work comes back it aggregates, collecting
+
+12
+00:00:48.779 --> 00:00:55.040
+the outputs, checking them, and synthesizing one coherent answer to the original request.
+
+13
+00:00:55.040 --> 00:01:01.400
+Decomposition, assignment, and aggregation are the full life cycle of orchestrated execution,
+
+14
+00:01:01.400 --> 00:01:04.720
+from goal intake to final delivery.
+
+15
+00:01:04.720 --> 00:01:08.559
+Everything else in this lesson hangs off those three.
+
+16
+00:01:08.559 --> 00:01:12.639
+Every orchestrator performs three core functions, and they happen in sequence.
+
+17
+00:01:12.639 --> 00:01:14.360
+First, decompose.
+
+18
+00:01:14.360 --> 00:01:21.199
+The orchestrator takes the high-level goal and breaks it into sub-tasks with bounded scope. Second, assign.
+
+19
+00:01:21.199 --> 00:01:26.160
+The orchestrator routes each sub-task to the appropriate sub-agent or tool based on
+
+20
+00:01:26.160 --> 00:01:28.160
+what that sub-task requires.
+
+21
+00:01:28.160 --> 00:01:30.040
+Third, aggregate.
+
+22
+00:01:30.040 --> 00:01:34.760
+The orchestrator collects what comes back, validates it, and synthesizes it.
+
+23
+00:01:34.760 --> 00:01:39.400
+What's important to recognize is that none of these functions happen automatically.
+
+24
+00:01:39.400 --> 00:01:43.559
+The orchestrator has to be explicitly designed to perform each one.
+
+25
+00:01:43.559 --> 00:01:48.319
+If any of these three functions is missing or poorly defined, the multi-agent system
+
+26
+00:01:48.319 --> 00:01:52.760
+will fail to produce reliable output at scale.
+
+27
+00:01:52.760 --> 00:01:55.559
+Effective task assignment starts with scoping.
+
+28
+00:01:55.559 --> 00:02:00.639
+Before you can assign a sub-task, it needs a clear, narrow definition.
+
+29
+00:02:00.639 --> 00:02:02.400
+What does success look like?
+
+30
+00:02:02.400 --> 00:02:05.000
+What tools or context are needed?
+
+31
+00:02:05.000 --> 00:02:07.120
+What's the expected output format?
+
+32
+00:02:07.120 --> 00:02:11.000
+The orchestrator holds all of this routing logic.
+
+33
+00:02:11.000 --> 00:02:12.919
+Sub-agents don't self-select their work.
+
+34
+00:02:12.919 --> 00:02:15.419
+They receive assignments with instructions.
+
+35
+00:02:15.419 --> 00:02:20.380
+The most common cause of sub-agent failure isn't the sub-agent itself, but a poorly
+
+36
+00:02:20.380 --> 00:02:26.380
+scoped sub-task arriving from an orchestrator that didn't define the work clearly enough.
+
+37
+00:02:26.380 --> 00:02:31.460
+Good task assignment is as much about precision in decomposition as it is about matching the
+
+38
+00:02:31.460 --> 00:02:34.460
+right agent to the right job.
+
+39
+00:02:34.460 --> 00:02:38.539
+One of the most important things to understand about orchestration is what the orchestrator
+
+40
+00:02:38.539 --> 00:02:41.600
+retains versus what it delegates.
+
+41
+00:02:41.600 --> 00:02:47.080
+The orchestrator keeps the master plan, the execution state that tracks what's been completed
+
+42
+00:02:47.080 --> 00:02:52.880
+and what's still in progress, the error handling logic for when things go wrong, and the aggregation
+
+43
+00:02:52.880 --> 00:02:56.520
+rules for how outputs get combined.
+
+44
+00:02:56.520 --> 00:03:02.759
+Sub-agents, by contrast, hold only what the orchestrator explicitly provides, their instructions,
+
+45
+00:03:02.759 --> 00:03:07.800
+the context for their specific sub-task, and the tools they need to complete it.
+
+46
+00:03:07.800 --> 00:03:09.759
+Nothing is inherited automatically.
+
+47
+00:03:09.759 --> 00:03:15.160
+This separation is intentional, and it's fundamental to how multi-agent systems maintain
+
+48
+00:03:15.160 --> 00:03:20.360
+predictability and avoid cross-contamination between tasks.
+
+49
+00:03:20.360 --> 00:03:24.399
+Result aggregation happens in three steps. First, collect.
+
+50
+00:03:24.399 --> 00:03:29.479
+The orchestrator gathers outputs from all sub-agents once they complete their assigned work.
+
+51
+00:03:29.479 --> 00:03:31.320
+Second, validate.
+
+52
+00:03:31.320 --> 00:03:38.080
+Each output is checked against expected format, schema, or constraints before it's used in synthesis.
+
+53
+00:03:38.199 --> 00:03:42.800
+Skipping validation is a very common mistake that causes downstream errors, which are hard
+
+54
+00:03:42.800 --> 00:03:45.000
+to trace back to their source.
+
+55
+00:03:45.000 --> 00:03:47.199
+Third, synthesize.
+
+56
+00:03:47.199 --> 00:03:52.039
+Validated outputs are combined into a coherent result that actually answers the original
+
+57
+00:03:52.039 --> 00:03:53.500
+high-level goal.
+
+58
+00:03:53.500 --> 00:03:58.479
+The orchestrator is the only component with visibility across all sub-task results, which
+
+59
+00:03:58.479 --> 00:04:06.960
+is exactly why aggregation is centralized there, rather than distributed across individual sub-agents.
+
+60
+00:04:06.960 --> 00:04:11.800
+When a sub-agent fails, the orchestrator has three options. Retry.
+
+61
+00:04:11.800 --> 00:04:19.119
+Reissue the same task with the same or slightly adjusted instructions if the failure looks transient. Substitute.
+
+62
+00:04:19.119 --> 00:04:26.880
+Route the task to an alternative agent or tool if the original sub-agent is unavailable or unsuitable. Escalate.
+
+63
+00:04:26.880 --> 00:04:33.739
+Surface the failure to a human for intervention when neither retry nor substitution is appropriate.
+
+64
+00:04:33.739 --> 00:04:41.179
+The key design principle here is that error-handling logic belongs in the orchestrator, not in the sub-agents.
+
+65
+00:04:41.179 --> 00:04:44.500
+Sub-agents shouldn't be making decisions about what to do when they fail.
+
+66
+00:04:44.500 --> 00:04:46.059
+They report the failure.
+
+67
+00:04:46.059 --> 00:04:49.059
+The orchestrator decides how to respond.
+
+68
+00:04:49.059 --> 00:04:54.000
+That separation keeps the system's behavior predictable and auditable.
+
+69
+00:04:54.000 --> 00:04:59.019
+The orchestrator pattern maps directly onto what's called the hub-and-spoke topology.
+
+70
+00:04:59.019 --> 00:05:00.980
+The orchestrator is the hub.
+
+71
+00:05:00.980 --> 00:05:07.100
+All task assignments, all result collection, and all routing decisions flow through it.
+
+72
+00:05:07.100 --> 00:05:08.380
+Sub-agents are the spokes.
+
+73
+00:05:08.380 --> 00:05:12.299
+They receive work from the hub and return results to the hub.
+
+74
+00:05:12.299 --> 00:05:14.940
+Spokes don't communicate with each other directly.
+
+75
+00:05:14.940 --> 00:05:17.019
+Everything is mediated by the hub.
+
+76
+00:05:17.019 --> 00:05:21.260
+This centralization is what makes the system easy to reason about and audit.
+
+77
+00:05:21.260 --> 00:05:25.579
+But it comes with a real trade-off, that the exam tests explicitly.
+
+78
+00:05:25.579 --> 00:05:29.899
+Hub-and-spoke creates a single point of failure and a potential bottleneck.
+
+79
+00:05:29.899 --> 00:05:34.700
+If the orchestrator fails or becomes overloaded, the entire system stalls.
+
+80
+00:05:34.700 --> 00:05:39.140
+That's the architectural cost of centralized coordination.
+
+81
+00:05:39.140 --> 00:05:44.179
+An orchestrator that can't explain its decisions is very difficult to debug.
+
+82
+00:05:44.179 --> 00:05:50.579
+Observability means designing the orchestrator to log what it's doing and why at each stage.
+
+83
+00:05:50.579 --> 00:05:55.619
+That includes logging every task assignment with the routing rationale behind it, recording
+
+84
+00:05:55.619 --> 00:06:01.899
+progress state after each sub-agent, complete so you know exactly where execution is at
+
+85
+00:06:01.899 --> 00:06:07.500
+any point, and capturing error events with the context that triggered them.
+
+86
+00:06:07.500 --> 00:06:12.920
+When these logs exist, the orchestrator's decision chain becomes an audit trail.
+
+87
+00:06:12.920 --> 00:06:18.500
+You can trace back through any execution and understand exactly what happened and why.
+
+88
+00:06:18.500 --> 00:06:24.660
+Without that logging, debugging a multi-agent system often means rerunning the entire pipeline
+
+89
+00:06:24.660 --> 00:06:28.739
+from scratch to reproduce an issue.
+
+90
+00:06:28.739 --> 00:06:34.019
+An orchestrator decomposes a goal, routes each piece, and stitches what comes back into
+
+91
+00:06:34.019 --> 00:06:35.899
+a single answer.
+
+92
+00:06:35.899 --> 00:06:39.579
+It's the only component with a view across the entire run.
+
+93
+00:06:39.579 --> 00:06:45.579
+That's why the retry or escalate call belongs there and not inside a sub-agent.
+
+94
+00:06:45.579 --> 00:06:50.480
+Keep in mind, centralizing every routing decision also concentrates the failure.
+
+95
+00:06:50.480 --> 00:06:55.059
+If the hub stalls, everything behind it stalls as well.
+
+96
+00:06:55.059 --> 00:06:56.339
+That wraps up this lesson.
+
+97
+00:06:56.339 --> 00:06:57.500
+I'll see you in the next one.
+

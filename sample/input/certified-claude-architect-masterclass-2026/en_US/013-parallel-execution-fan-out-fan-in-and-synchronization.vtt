@@ -1,0 +1,298 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.280
+In this lesson, we'll go through parallel execution patterns. We'll see how fan-out works,
+
+2
+00:00:05.280 --> 00:00:09.439
+how to verify that branches are actually independent before dispatching them,
+
+3
+00:00:09.439 --> 00:00:14.479
+how fan-in aggregates results at the synchronization point, what to do when some
+
+4
+00:00:14.479 --> 00:00:20.719
+branches fail, and how the cost versus latency trade-off plays out in practice. Let's get into it.
+
+5
+00:00:21.760 --> 00:00:26.079
+Running work in parallel is the easiest way to cut an agent's wall clock time,
+
+6
+00:00:26.079 --> 00:00:31.920
+and the easiest way to introduce bugs you can't reproduce. Parallel execution means multiple
+
+7
+00:00:31.920 --> 00:00:37.840
+independent tasks run concurrently. It needs a synchronization point to collect results and
+
+8
+00:00:37.840 --> 00:00:43.520
+handle partial failures before the pipeline continues. Fan-out is the dispatch step,
+
+9
+00:00:43.520 --> 00:00:49.279
+where a single task splits into multiple concurrent subtasks sent off all at once,
+
+10
+00:00:49.279 --> 00:00:54.159
+and it only holds up if every branch is independent of the others. Fan-in is the
+
+11
+00:00:54.159 --> 00:00:59.200
+synchronization step on the other side. It collects results from all the branches,
+
+12
+00:00:59.200 --> 00:01:04.239
+deals with varying result counts and partial failures, and reassembles everything before
+
+13
+00:01:04.239 --> 00:01:11.199
+the pipeline moves forward. Fan-out is the dispatch step in a parallel execution pattern.
+
+14
+00:01:11.199 --> 00:01:17.040
+One control point triggers multiple concurrent subtasks all at the same time. Every branch gets
+
+15
+00:01:17.040 --> 00:01:22.879
+its own inputs and runs independently. The branches don't have to be simple function calls.
+
+16
+00:01:22.879 --> 00:01:28.879
+They can be full sub-agents, tool invocations, or nested workflows. The key constraint is that
+
+17
+00:01:28.879 --> 00:01:35.919
+every branch has to be independent. Fan-out increases throughput by running work simultaneously
+
+18
+00:01:35.919 --> 00:01:40.959
+rather than one at a time, but it only works correctly when the branches genuinely don't
+
+19
+00:01:40.959 --> 00:01:46.319
+depend on each other. A fan-out with hidden interbranch dependencies produces incorrect
+
+20
+00:01:46.319 --> 00:01:52.800
+results because branches might run in any order or read stale state written by a sibling branch
+
+21
+00:01:52.800 --> 00:01:59.120
+that ran concurrently. Before committing to a fan-out design, run the independence test on
+
+22
+00:01:59.120 --> 00:02:05.040
+every branch pair. There are three questions to ask. First, can branch B start without waiting
+
+23
+00:02:05.040 --> 00:02:11.839
+for any output from branch A? If B needs A's output, they have a dependency and can't fan out.
+
+24
+00:02:11.839 --> 00:02:18.160
+Second, do the branches write to shared state that could cause race conditions? If two branches
+
+25
+00:02:18.160 --> 00:02:23.759
+both update the same record, the result depends on which one finishes last, and that's not
+
+26
+00:02:23.759 --> 00:02:29.919
+deterministic. Third, would running the branches in any order produce the same final result?
+
+27
+00:02:29.919 --> 00:02:35.759
+If order matters between branches, they're not independent. If any of these questions reveals a
+
+28
+00:02:35.759 --> 00:02:42.080
+dependency, fan-out is the wrong pattern for those branches. Fix the dependency first or use a
+
+29
+00:02:42.080 --> 00:02:49.440
+sequential design where ordering is enforced. Fan-in has four responsibilities at the synchronization
+
+30
+00:02:49.440 --> 00:02:56.639
+point. First, it collects outputs from all branches that completed successfully. Second, it handles
+
+31
+00:02:56.639 --> 00:03:02.639
+failures from branches that erred. Third, if the order of results matters for the next pipeline
+
+32
+00:03:02.639 --> 00:03:08.800
+step, it reassembles outputs in the correct sequence. And fourth, it merges the collected
+
+33
+00:03:08.800 --> 00:03:14.160
+results and passes the aggregated output to whatever comes next. Each of these has to be
+
+34
+00:03:14.160 --> 00:03:20.559
+explicitly designed. An ad hoc fan-in that just takes whatever results are ready and throws away
+
+35
+00:03:20.559 --> 00:03:27.119
+failures is a silent failure source. The fan-in logic is where partial failures show up, and
+
+36
+00:03:27.119 --> 00:03:32.399
+handling them explicitly is a non-negotiable design requirement for parallel pipelines.
+
+37
+00:03:33.679 --> 00:03:39.839
+Parallel and sequential execution have a real trade-off worth understanding clearly. Parallel
+
+38
+00:03:39.839 --> 00:03:45.919
+execution reduces total wall clock time when branches are genuinely independent. Multiple
+
+39
+00:03:45.919 --> 00:03:52.320
+branches run simultaneously, but it costs more in token spend per unit time and introduces
+
+40
+00:03:52.320 --> 00:03:58.160
+partial failure scenarios that sequential execution doesn't have. Sequential execution
+
+41
+00:03:58.160 --> 00:04:04.000
+is slower. Total time equals the sum of all step latencies, but it's cheaper per run,
+
+42
+00:04:04.000 --> 00:04:09.600
+and there's no synchronization logic to write and no partial failures from concurrent branches.
+
+43
+00:04:09.600 --> 00:04:15.839
+The exam trap here is worth flagging. Parallel execution introduces partial failure scenarios
+
+44
+00:04:15.839 --> 00:04:20.880
+that sequential execution doesn't. Designing explicit handling for the case where some
+
+45
+00:04:20.880 --> 00:04:26.000
+branches succeed and others fail is a required part of any parallel pipeline design.
+
+46
+00:04:27.200 --> 00:04:33.519
+When some parallel branches succeed and others fail, the fan-in step has three options. First,
+
+47
+00:04:33.519 --> 00:04:39.359
+fail the whole pipeline. Any branch failure aborts the operation entirely. This is appropriate when
+
+48
+00:04:39.359 --> 00:04:46.000
+all branches are required for a correct result. Second, proceed with partial results. Continue
+
+49
+00:04:46.000 --> 00:04:51.679
+with what succeeded and flag what failed. This works when partial results are still useful and
+
+50
+00:04:51.679 --> 00:04:59.760
+the pipeline can degrade gracefully. Third, retry failed branches individually. Redispatch only the
+
+51
+00:04:59.760 --> 00:05:05.519
+branches that errored rather than restarting the entire fan-out. Whichever strategy you choose,
+
+52
+00:05:05.519 --> 00:05:12.640
+it has to be explicit. Silently dropping failed branches and continuing as if they succeeded is
+
+53
+00:05:12.640 --> 00:05:18.239
+always the wrong answer. Silent failures introduce incorrect results that are extremely hard to
+
+54
+00:05:18.239 --> 00:05:24.239
+diagnose after the fact. How fan-in merges results depends on the pipeline's purpose.
+
+55
+00:05:24.799 --> 00:05:31.600
+Three common strategies. Voting. Multiple branches answer the same question and the majority result
+
+56
+00:05:31.600 --> 00:05:38.160
+wins. This is useful when you want resilience against individual branch errors or inconsistencies.
+
+57
+00:05:38.160 --> 00:05:43.600
+Concatenation. Branches produce independent outputs that are joined into a single list.
+
+58
+00:05:44.160 --> 00:05:50.399
+Works when each branch handles a distinct segment of the input. Structured aggregation. Each branch
+
+59
+00:05:50.399 --> 00:05:56.480
+contributes a named field to a shared output object. Useful when branches each compute a
+
+60
+00:05:56.480 --> 00:06:01.920
+different attribute of the same entity. The key design point is to choose the merge strategy
+
+61
+00:06:01.920 --> 00:06:07.200
+before designing the branches. The strategy shapes what each branch is expected to return,
+
+62
+00:06:07.279 --> 00:06:13.760
+which shapes its entire design. Parallel execution cuts latency but raises token spend.
+
+63
+00:06:14.320 --> 00:06:20.000
+When three branches run simultaneously, you're consuming roughly three times the tokens per second
+
+64
+00:06:20.000 --> 00:06:26.239
+compared to running the same work sequentially. The total token cost is the sum across all branches,
+
+65
+00:06:26.239 --> 00:06:32.559
+not just the longest one. Rate limits and quotas can also constrain how much concurrency is actually
+
+66
+00:06:32.559 --> 00:06:38.720
+achievable in practice. If your API tier limits you to a certain number of concurrent requests,
+
+67
+00:06:38.720 --> 00:06:43.839
+you may not get the latency improvement you expect from a large fan out. Model both dimensions
+
+68
+00:06:43.839 --> 00:06:50.320
+explicitly before choosing parallel over sequential. The latency win is real, but so
+
+69
+00:06:50.320 --> 00:06:56.160
+is the cost increase and the added complexity of synchronization and partial failure handling.
+
+70
+00:06:56.959 --> 00:07:02.559
+So the bad outcome in production is a branch quietly writing over state another branch is
+
+71
+00:07:02.559 --> 00:07:08.640
+still reading, and nobody catches it until an answer comes back subtly wrong. That's why
+
+72
+00:07:08.640 --> 00:07:14.640
+independence gets tested before the dispatch, not after results land. When a branch fails,
+
+73
+00:07:14.640 --> 00:07:21.359
+decide out loud what happens to the rest, because a silently dropped result does more damage than
+
+74
+00:07:21.359 --> 00:07:26.000
+a slow one. That's where we'll wrap this one up. I'll see you in the next lesson.
+

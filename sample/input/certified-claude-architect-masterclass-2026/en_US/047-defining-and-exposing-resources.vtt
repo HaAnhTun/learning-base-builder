@@ -1,0 +1,314 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.320
+MCP servers can expose more than tools. Resources are one of the three core MCP primitives,
+
+2
+00:00:06.320 --> 00:00:11.840
+and they give host applications a structured way to pull data from a server and inject it
+
+3
+00:00:11.840 --> 00:00:18.559
+into model context. Coming up in this video, we'll cover how resources are defined, what URI
+
+4
+00:00:18.559 --> 00:00:26.079
+schemes and MIME types do, and the difference between static and dynamic content. A tool is
+
+5
+00:00:26.079 --> 00:00:30.959
+something the model reaches for. A resource is something the application hands over,
+
+6
+00:00:30.959 --> 00:00:38.159
+and that difference drives everything else about how resources behave. An MCP resource is a URI
+
+7
+00:00:38.159 --> 00:00:45.040
+addressable data object that a server exposes so the host application can inject it into context.
+
+8
+00:00:45.040 --> 00:00:51.599
+It's application controlled, which means the host decides what gets pulled in, not the model. Each
+
+9
+00:00:51.599 --> 00:00:59.200
+resource is reached through a URI scheme, the protocol prefix-like file, DB or config, that
+
+10
+00:00:59.200 --> 00:01:05.279
+tells a client how to interpret the address. And each one carries a MIME type, a standard label
+
+11
+00:01:05.279 --> 00:01:12.080
+like text slash plain, or application slash JSON that declares the format of the content coming
+
+12
+00:01:12.080 --> 00:01:18.400
+back. Together, they form the contract between the server that owns the data and the host that
+
+13
+00:01:18.400 --> 00:01:25.199
+decides when to use it. A resource definition has only two required fields. The URI is the
+
+14
+00:01:25.199 --> 00:01:30.800
+stable address a client uses to request that resource, and the name is a human readable label
+
+15
+00:01:30.800 --> 00:01:36.959
+that identifies it. Those two are all the spec demands. The MIME type is optional. When you
+
+16
+00:01:36.959 --> 00:01:42.639
+include it, it helps the host interpret the content it gets back, telling it whether to treat the
+
+17
+00:01:42.639 --> 00:01:49.360
+payload as plain text, JSON, or something binary. But the resource is still perfectly retrievable
+
+18
+00:01:49.360 --> 00:01:56.720
+without one. Behind the scenes, a content handler on the server produces or fetches the data when a
+
+19
+00:01:56.720 --> 00:02:04.800
+client calls resources slash read. So think of URI and name as the contract and MIME type as helpful
+
+20
+00:02:04.800 --> 00:02:11.839
+metadata that makes the returned content easier for the host to handle correctly. The most important
+
+21
+00:02:11.839 --> 00:02:17.759
+design decision for any resource is whether it's static or dynamic. Static resources hold content
+
+22
+00:02:17.759 --> 00:02:24.479
+that doesn't change between requests. Configuration files, fixed reference tables, and policy documents
+
+23
+00:02:24.479 --> 00:02:30.639
+are typical examples. Because they're stable, they can be cached safely and don't require a live
+
+24
+00:02:30.639 --> 00:02:36.639
+handler to run on every call. Dynamic resources are the opposite. They're generated or fetched at
+
+25
+00:02:36.639 --> 00:02:43.839
+request time, so the content can differ from one call to the next. Database query results, live API
+
+26
+00:02:43.839 --> 00:02:50.320
+responses, and user-specific data all fall into this category. Caching a dynamic resource without
+
+27
+00:02:50.320 --> 00:02:55.679
+an expiry policy is a common mistake that causes models to work with stale context.
+
+28
+00:02:56.880 --> 00:03:02.639
+URI scheme design matters more than it might seem. A well-designed scheme is self-describing
+
+29
+00:03:02.639 --> 00:03:10.800
+and domain consistent. Using db colon slash slash for database records, file colon slash slash for
+
+30
+00:03:10.800 --> 00:03:17.039
+file system content, and config colon slash slash for configuration snapshots makes the source of a
+
+31
+00:03:17.039 --> 00:03:23.520
+resource obvious from the address alone. Stability is equally important. If a URI changes between
+
+32
+00:03:23.520 --> 00:03:29.679
+server versions, any client logic that cached the old address breaks silently. You should also avoid
+
+33
+00:03:29.679 --> 00:03:37.600
+embedding volatile state, like session tokens or timestamps, directly into the URI path. Stable URIs
+
+34
+00:03:37.600 --> 00:03:43.440
+let host applications build resource injection rules once and rely on them across deployments
+
+35
+00:03:43.440 --> 00:03:49.119
+without ongoing maintenance overhead. A consistent scheme also makes it easier to write access control
+
+36
+00:03:49.119 --> 00:03:56.479
+rules that apply across all resources of the same type. Here's a practical problem. A single resource
+
+37
+00:03:56.479 --> 00:04:03.279
+entry points at one fixed URI, but a server often holds thousands of files or records. You can't list
+
+38
+00:04:03.279 --> 00:04:10.160
+them all in advance. That's what resource templates solve. A template exposes a parameterized URI with
+
+39
+00:04:10.160 --> 00:04:16.559
+a named placeholder written in the standard URI template syntax, so file colon slash slash slash
+
+40
+00:04:16.559 --> 00:04:22.320
+open brace path, close brace stands in for any path. The client discovers these templates through
+
+41
+00:04:22.320 --> 00:04:28.320
+a distinct call, resources slash templates slash list, which is separate from the plain resources
+
+42
+00:04:28.320 --> 00:04:34.640
+slash list. Once the host knows the template, it fills in the parameter, say the actual file path,
+
+43
+00:04:34.640 --> 00:04:40.880
+and then calls resources slash read on that concrete URI. So templates give you a compact
+
+44
+00:04:40.880 --> 00:04:46.320
+way to advertise a whole family of addressable resources without enumerating everyone up front.
+
+45
+00:04:47.279 --> 00:04:54.160
+There are three resource types you'll encounter most often in MCP server designs. File resources
+
+46
+00:04:54.160 --> 00:05:01.519
+use the file colon slash slash scheme and return plain text or binary content with a content type
+
+47
+00:05:01.519 --> 00:05:08.799
+of text slash plain or application slash octet stream. Database records use a db colon slash
+
+48
+00:05:08.799 --> 00:05:15.760
+slash scheme and return query results as JSON with a content type of application slash JSON.
+
+49
+00:05:16.720 --> 00:05:23.679
+Config snapshots use config colon slash slash and return structured key value content from a
+
+50
+00:05:23.679 --> 00:05:29.600
+configuration store. Each type pairs a scheme with a predictable MIME type, which makes it
+
+51
+00:05:29.600 --> 00:05:35.760
+straightforward for host applications to route the content to the right part of the model's context
+
+52
+00:05:35.760 --> 00:05:42.799
+without inspecting the payload on every call. MCP supports resource subscriptions, which solve a
+
+53
+00:05:42.799 --> 00:05:48.160
+real problem with dynamic content. Without subscriptions, the only way to keep a resource
+
+54
+00:05:48.160 --> 00:05:54.959
+current is to pull, fetch it on every request, and hope the version in context is fresh. With
+
+55
+00:05:54.959 --> 00:06:01.600
+subscriptions, a client registers interest in a specific URI after the first retrieval. When the
+
+56
+00:06:01.600 --> 00:06:07.760
+server detects that resource's content has changed, it sends a notification to the subscribed client.
+
+57
+00:06:07.760 --> 00:06:13.679
+The client then refetches the updated content using the same URI. This pattern keeps dynamic
+
+58
+00:06:13.679 --> 00:06:19.440
+resources fresh without unnecessary polling and without flooding the server with repeat read calls
+
+59
+00:06:19.440 --> 00:06:26.399
+when nothing has changed. Exposing a resource from a server involves three implementation steps.
+
+60
+00:06:26.959 --> 00:06:32.480
+First, you declare the resource in the server's resource list at startup so clients can discover
+
+61
+00:06:32.480 --> 00:06:40.239
+it when they call resources slash list. Second, you implement a read handler that accepts a URI
+
+62
+00:06:40.239 --> 00:06:46.559
+and returns the resource content, along with the appropriate MIME type. Third, if the resource is
+
+63
+00:06:46.559 --> 00:06:52.480
+dynamic and change notifications matter for your use case, you implement a subscribe handler that
+
+64
+00:06:52.480 --> 00:06:58.559
+manages client registrations. The host application orchestrates all of this by calling resources
+
+65
+00:06:58.559 --> 00:07:05.440
+slash list to see what's available and resources slash read to retrieve specific content when it
+
+66
+00:07:05.440 --> 00:07:12.399
+decides to inject it. The application controlled nature of resources is the distinction people most
+
+67
+00:07:12.399 --> 00:07:18.399
+often get backwards. The host application decides which resources to retrieve and when to inject
+
+68
+00:07:18.399 --> 00:07:23.679
+them into context. The model doesn't invoke resources the way it invokes tools. Once the
+
+69
+00:07:23.679 --> 00:07:28.959
+host has injected resource content into the conversation, the model reads it as it would
+
+70
+00:07:28.959 --> 00:07:35.519
+any other context, but it didn't select it. This is the key distinction between resources and tools.
+
+71
+00:07:36.079 --> 00:07:42.079
+Tools are model controlled. Resources are application controlled. The host selects. The
+
+72
+00:07:42.079 --> 00:07:48.320
+model reads. Confusing these two control models is the mistake that comes up most often when people
+
+73
+00:07:48.320 --> 00:07:54.079
+first work with resources. Keep the control points sharp. The application controls resources
+
+74
+00:07:54.079 --> 00:08:01.359
+and the model controls tool invocations. Resources give a host application an addressable way to pull
+
+75
+00:08:01.359 --> 00:08:08.720
+server data into model context. That matters because the control points sit with the application,
+
+76
+00:08:08.720 --> 00:08:14.559
+not the model. The model reads what it's handed and it never goes shopping for a resource on its
+
+77
+00:08:14.559 --> 00:08:20.480
+own. One thing to watch is that mixing up that control point is the most common misread of the
+
+78
+00:08:20.480 --> 00:08:24.320
+primitive. That's a wrap on this lesson. I'll see you in the next one.
+

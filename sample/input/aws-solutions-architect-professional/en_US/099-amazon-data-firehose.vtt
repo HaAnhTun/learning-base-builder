@@ -1,0 +1,890 @@
+WEBVTT
+
+1
+00:00:00.870 --> 00:00:03.120
+<v Instructor>Okay, so we've seen Kinesis Data Streams.</v>
+
+2
+00:00:03.120 --> 00:00:04.350
+Now, Firehose.
+
+3
+00:00:04.350 --> 00:00:06.060
+So, Firehose is actually quite easy.
+
+4
+00:00:06.060 --> 00:00:09.270
+It is to store data into target destinations.
+
+5
+00:00:09.270 --> 00:00:11.340
+So we have producers and it could be, again,
+
+6
+00:00:11.340 --> 00:00:12.870
+a bunch of applications from before
+
+7
+00:00:12.870 --> 00:00:16.410
+that can send directly the data into Kinesis Data Firehose,
+
+8
+00:00:16.410 --> 00:00:17.837
+or Kinesis Data Firehose can read
+
+9
+00:00:17.837 --> 00:00:20.100
+from your Kinesis Data Streams,
+
+10
+00:00:20.100 --> 00:00:23.970
+from Amazon CloudWatch or AWS IoT.
+
+11
+00:00:23.970 --> 00:00:25.350
+But the most common you're going to see
+
+12
+00:00:25.350 --> 00:00:29.130
+is going to be Firehose reading from Kinesis Data Streams.
+
+13
+00:00:29.130 --> 00:00:31.350
+So it's going to read the records one by one,
+
+14
+00:00:31.350 --> 00:00:33.750
+up to one megabyte at a time, okay?
+
+15
+00:00:33.750 --> 00:00:35.670
+And then if you want to transform the record,
+
+16
+00:00:35.670 --> 00:00:37.470
+we could have a Lambda function
+
+17
+00:00:37.470 --> 00:00:38.970
+created to transform the record
+
+18
+00:00:38.970 --> 00:00:41.040
+to do some small modification.
+
+19
+00:00:41.040 --> 00:00:42.810
+And then, Kinesis Data Firehose
+
+20
+00:00:42.810 --> 00:00:45.450
+will try to fill a big batch of data
+
+21
+00:00:45.450 --> 00:00:47.970
+to write that data into a target database
+
+22
+00:00:47.970 --> 00:00:49.830
+or a target destination, okay?
+
+23
+00:00:49.830 --> 00:00:51.330
+So that's why it's called batch writes.
+
+24
+00:00:51.330 --> 00:00:53.520
+It doesn't write stuff instantaneously.
+
+25
+00:00:53.520 --> 00:00:56.640
+It will try to batch them to write them efficiently.
+
+26
+00:00:56.640 --> 00:00:58.650
+So therefore, Kinesis Data Firehose
+
+27
+00:00:58.650 --> 00:01:01.620
+is a near real time service.
+
+28
+00:01:01.620 --> 00:01:04.530
+So in terms of destinations, we have AWS.
+
+29
+00:01:04.530 --> 00:01:07.380
+So Amazon S3 is very important.
+
+30
+00:01:07.380 --> 00:01:10.200
+Amazon Redshift, and to write to Redshift,
+
+31
+00:01:10.200 --> 00:01:12.900
+Kinesis Data Firehose will first write into Amazon S3,
+
+32
+00:01:12.900 --> 00:01:15.360
+and then issue a copy command into Redshift
+
+33
+00:01:15.360 --> 00:01:17.310
+or Amazon OpenSearch.
+
+34
+00:01:17.310 --> 00:01:19.260
+And you have to remember these three destinations,
+
+35
+00:01:19.260 --> 00:01:21.060
+they're very important.
+
+36
+00:01:21.060 --> 00:01:22.590
+Other destinations include
+
+37
+00:01:22.590 --> 00:01:24.930
+third-party destinations from partners
+
+38
+00:01:24.930 --> 00:01:28.144
+such as Datadog, Splunk, New Relic, and MongoDB,
+
+39
+00:01:28.144 --> 00:01:30.780
+but they could be others coming up in the future.
+
+40
+00:01:30.780 --> 00:01:32.025
+You don't need to know them.
+
+41
+00:01:32.025 --> 00:01:33.720
+So this is why we'll not update this slide
+
+42
+00:01:33.720 --> 00:01:34.560
+if there are new partners,
+
+43
+00:01:34.560 --> 00:01:37.020
+but you can see that there will be new partners over time,
+
+44
+00:01:37.020 --> 00:01:39.810
+or also there could be a custom destination.
+
+45
+00:01:39.810 --> 00:01:43.581
+As long as there is a valid HTTP endpoint as an API,
+
+46
+00:01:43.581 --> 00:01:48.540
+you can have Firehose deliver data into that destination.
+
+47
+00:01:48.540 --> 00:01:50.969
+And finally, if you have failure for processing
+
+48
+00:01:50.969 --> 00:01:53.730
+or you want to archive all data going to Firehose,
+
+49
+00:01:53.730 --> 00:01:56.100
+it is very much possible to send all
+
+50
+00:01:56.100 --> 00:01:59.730
+or just a failed data into a backup S3 bucket
+
+51
+00:01:59.730 --> 00:02:02.160
+from Kinesis Data Firehose.
+
+52
+00:02:02.160 --> 00:02:05.160
+Well, Kinesis Data Firehose is a fully managed service.
+
+53
+00:02:05.160 --> 00:02:07.410
+It requires no administration
+
+54
+00:02:07.410 --> 00:02:09.240
+and it's considered near real time
+
+55
+00:02:09.240 --> 00:02:10.320
+because you have a buffer
+
+56
+00:02:10.320 --> 00:02:12.448
+based on the time spent in the buffer
+
+57
+00:02:12.448 --> 00:02:14.520
+and the size of your buffer.
+
+58
+00:02:14.520 --> 00:02:17.250
+And then, data is delivered to your destination.
+
+59
+00:02:17.250 --> 00:02:21.180
+Now, there is the option to disable that buffer now,.
+
+60
+00:02:21.180 --> 00:02:23.010
+So what do you use Firehose for?
+
+61
+00:02:23.010 --> 00:02:25.830
+Well, you're going to load data into Redshift,
+
+62
+00:02:25.830 --> 00:02:27.383
+Amazon S3, OpenSearch, or Splunk.
+
+63
+00:02:29.190 --> 00:02:31.860
+You have to remember these four destinations by heart.
+
+64
+00:02:31.860 --> 00:02:34.697
+So remember Redshift, S3, OpenSearch, and Splunk.
+
+65
+00:02:36.000 --> 00:02:37.920
+The really cool thing about Kinesis Data Firehose
+
+66
+00:02:37.920 --> 00:02:40.260
+is that unlike Kinesis data Streams,
+
+67
+00:02:40.260 --> 00:02:41.910
+there is automatic scaling.
+
+68
+00:02:41.910 --> 00:02:43.380
+That means that if you need more throughput,
+
+69
+00:02:43.380 --> 00:02:45.960
+Kinesis Data Firehose will scale for you.
+
+70
+00:02:45.960 --> 00:02:48.780
+And if you need less, it will scale down for you as well.
+
+71
+00:02:48.780 --> 00:02:51.210
+It also supports many data formats
+
+72
+00:02:51.210 --> 00:02:53.190
+and also is able to do data conversion.
+
+73
+00:02:53.190 --> 00:02:54.930
+For example, from JSON to Parquet,
+
+74
+00:02:54.930 --> 00:02:57.360
+ORC if you use S3.
+
+75
+00:02:57.360 --> 00:02:59.460
+The other data transformations you can do
+
+76
+00:02:59.460 --> 00:03:01.170
+are done through AWS Lambda.
+
+77
+00:03:01.170 --> 00:03:03.480
+For example, if you wanted to transform
+
+78
+00:03:03.480 --> 00:03:05.580
+a CSV into a JSON file,
+
+79
+00:03:05.580 --> 00:03:08.400
+we could use AWS Lambda to do that transformation
+
+80
+00:03:08.400 --> 00:03:11.280
+coupled with Kinesis Data Firehose.
+
+81
+00:03:11.280 --> 00:03:14.340
+Also supports compression when the target is Amazon S3.
+
+82
+00:03:14.340 --> 00:03:15.810
+So you're able to compress
+
+83
+00:03:15.810 --> 00:03:18.360
+that data being sent into GZIP, ZIP,
+
+84
+00:03:18.360 --> 00:03:20.970
+or SNAPPY directly into S3.
+
+85
+00:03:20.970 --> 00:03:23.850
+And if you load it into Redshift further down the road,
+
+86
+00:03:23.850 --> 00:03:25.050
+then GZIP is going to be
+
+87
+00:03:25.050 --> 00:03:27.780
+the only supported conversion mechanism.
+
+88
+00:03:27.780 --> 00:03:30.690
+Finally, you're going to pay only for the amount of data
+
+89
+00:03:30.690 --> 00:03:32.670
+that goes through Firehose.
+
+90
+00:03:32.670 --> 00:03:33.840
+And so, the really cool thing
+
+91
+00:03:33.840 --> 00:03:36.870
+is that you don't need to provision Firehose in advance
+
+92
+00:03:36.870 --> 00:03:38.820
+and you don't get billed for provision capacity.
+
+93
+00:03:38.820 --> 00:03:41.880
+You just get billed for used capacity.
+
+94
+00:03:41.880 --> 00:03:45.000
+Finally, exam will trick you into thinking
+
+95
+00:03:45.000 --> 00:03:46.890
+that Spark or the KCL
+
+96
+00:03:46.890 --> 00:03:49.650
+can read from KDF or Kinesis Data Firehose.
+
+97
+00:03:49.650 --> 00:03:50.820
+This is not the case.
+
+98
+00:03:50.820 --> 00:03:54.000
+Spark streaming and Kinesis Client Library
+
+99
+00:03:54.000 --> 00:03:55.620
+do not read from Firehose.
+
+100
+00:03:55.620 --> 00:03:57.698
+They only read from Kinesis Data Streams.
+
+101
+00:03:57.698 --> 00:04:01.500
+So I just wanted to make that very, very clear right now.
+
+102
+00:04:01.500 --> 00:04:04.440
+Okay, so what does the delivery diagram look like?
+
+103
+00:04:04.440 --> 00:04:06.840
+Well, we have Firehose in the middle
+
+104
+00:04:06.840 --> 00:04:07.830
+and it's going to have a source.
+
+105
+00:04:07.830 --> 00:04:09.450
+For example, my source in this example
+
+106
+00:04:09.450 --> 00:04:11.250
+is the Kinesis Data Streams.
+
+107
+00:04:11.250 --> 00:04:13.710
+So it's going to send that stream into Firehose
+
+108
+00:04:13.710 --> 00:04:16.170
+and maybe we'll be able to do some data transformation.
+
+109
+00:04:16.170 --> 00:04:18.390
+So remember, I said CSV to JSON.
+
+110
+00:04:18.390 --> 00:04:20.220
+Actually, there's a bunch of blueprints
+
+111
+00:04:20.220 --> 00:04:22.170
+available for AWS Lambda
+
+112
+00:04:22.170 --> 00:04:24.990
+to try help you transform the data in Firehose
+
+113
+00:04:24.990 --> 00:04:26.610
+in the format you want.
+
+114
+00:04:26.610 --> 00:04:29.610
+Once the data is formatted and transformed,
+
+115
+00:04:29.610 --> 00:04:31.560
+we can send the outputs, for example,
+
+116
+00:04:31.560 --> 00:04:35.430
+to an Amazon S3 bucket if S3 is your destination.
+
+117
+00:04:35.430 --> 00:04:37.530
+Or if Redshift is your destination,
+
+118
+00:04:37.530 --> 00:04:39.152
+actually it goes through S3.
+
+119
+00:04:39.152 --> 00:04:41.730
+And then, there will be a copy command issued
+
+120
+00:04:41.730 --> 00:04:44.460
+to put that data into Redshift.
+
+121
+00:04:44.460 --> 00:04:45.920
+So what about the source records?
+
+122
+00:04:45.920 --> 00:04:48.840
+Can we get the source records into an S3 bucket?
+
+123
+00:04:48.840 --> 00:04:50.250
+The answer is yes.
+
+124
+00:04:50.250 --> 00:04:53.280
+Any source record that goes through Kinesis Data Firehose
+
+125
+00:04:53.280 --> 00:04:54.480
+can be configured
+
+126
+00:04:54.480 --> 00:04:57.120
+to land into another bucket of your choice.
+
+127
+00:04:57.120 --> 00:04:58.710
+So if the exam asks you, okay,
+
+128
+00:04:58.710 --> 00:05:00.600
+how do we get all the source data
+
+129
+00:05:00.600 --> 00:05:03.748
+into a Amazon S3 bucket through Kinesis Data Firehose?
+
+130
+00:05:03.748 --> 00:05:06.360
+Well, this is directly a feature from Firehose.
+
+131
+00:05:06.360 --> 00:05:07.710
+There's also a really good feature.
+
+132
+00:05:07.710 --> 00:05:09.840
+In case there is a transformation failure,
+
+133
+00:05:09.840 --> 00:05:11.940
+we can archive the transformation failure
+
+134
+00:05:11.940 --> 00:05:13.710
+into an Amazon S3 buckets.
+
+135
+00:05:13.710 --> 00:05:16.560
+Or even if there is a delivery failure,
+
+136
+00:05:16.560 --> 00:05:18.630
+well, we can also have that delivery failure
+
+137
+00:05:18.630 --> 00:05:20.640
+put into an Amazon S3 bucket.
+
+138
+00:05:20.640 --> 00:05:22.680
+What you remember out of it, out of this diagram,
+
+139
+00:05:22.680 --> 00:05:26.250
+is that you don't lose data with Kinesis Data Firehose.
+
+140
+00:05:26.250 --> 00:05:28.131
+Either it ends in your targets
+
+141
+00:05:28.131 --> 00:05:30.609
+or you will have a recollection
+
+142
+00:05:30.609 --> 00:05:33.510
+of all the transformation failures, the delivery failures,
+
+143
+00:05:33.510 --> 00:05:36.150
+and even the source records if you wanted to
+
+144
+00:05:36.150 --> 00:05:38.280
+into another S3 bucket.
+
+145
+00:05:38.280 --> 00:05:40.830
+So remember this diagram, it's really important.
+
+146
+00:05:40.830 --> 00:05:42.360
+That's basically your understanding
+
+147
+00:05:42.360 --> 00:05:44.460
+of Kinesis Data Firehose.
+
+148
+00:05:44.460 --> 00:05:48.480
+Now we're going to look into how often Kinesis Data Firehose
+
+149
+00:05:48.480 --> 00:05:51.240
+sends the output data to the targets.
+
+150
+00:05:51.240 --> 00:05:52.890
+And for this, we need to understand
+
+151
+00:05:52.890 --> 00:05:55.050
+the Firehose buffer sizing.
+
+152
+00:05:55.050 --> 00:05:56.220
+So how does Firehose work?
+
+153
+00:05:56.220 --> 00:05:57.300
+Well, Firehose will receive
+
+154
+00:05:57.300 --> 00:05:59.670
+a bunch of records from the source
+
+155
+00:05:59.670 --> 00:06:03.150
+and it will accumulate all these records into a buffer.
+
+156
+00:06:03.150 --> 00:06:05.430
+And that buffer, hence this name,
+
+157
+00:06:05.430 --> 00:06:06.630
+is not flushed all the time.
+
+158
+00:06:06.630 --> 00:06:08.610
+It's flushed based on some rules.
+
+159
+00:06:08.610 --> 00:06:12.030
+It's based on time and size rules.
+
+160
+00:06:12.030 --> 00:06:15.210
+So we need to define a buffer size,
+
+161
+00:06:15.210 --> 00:06:17.310
+for example, 32 megabytes.
+
+162
+00:06:17.310 --> 00:06:20.250
+That means that if you have enough data from the source
+
+163
+00:06:20.250 --> 00:06:24.060
+that reach and fill a buffer size of 32 megabytes,
+
+164
+00:06:24.060 --> 00:06:26.910
+then, automatically, it's gonna be flushed.
+
+165
+00:06:26.910 --> 00:06:28.680
+The other setting is buffer time,
+
+166
+00:06:28.680 --> 00:06:30.480
+for example, two minutes.
+
+167
+00:06:30.480 --> 00:06:32.670
+That means that if after two minutes,
+
+168
+00:06:32.670 --> 00:06:34.560
+your buffer size is not full,
+
+169
+00:06:34.560 --> 00:06:36.930
+nonetheless it's going to be flushed.
+
+170
+00:06:36.930 --> 00:06:40.695
+So Firehose, sorry, can automatically increase
+
+171
+00:06:40.695 --> 00:06:42.810
+the buffer size to increase throughputs.
+
+172
+00:06:42.810 --> 00:06:45.300
+So it scales really nicely for you
+
+173
+00:06:45.300 --> 00:06:47.730
+and accommodates any throughput size.
+
+174
+00:06:47.730 --> 00:06:49.380
+So if we have high throughput,
+
+175
+00:06:49.380 --> 00:06:53.100
+we have a lot of data going through Kinesis Firehose,
+
+176
+00:06:53.100 --> 00:06:54.731
+then the buffer size limit will be hit
+
+177
+00:06:54.731 --> 00:06:57.180
+and will flush based on buffer size.
+
+178
+00:06:57.180 --> 00:06:59.610
+But if we have low throughputs, usually,
+
+179
+00:06:59.610 --> 00:07:02.040
+that means that the buffer size limit will not be hit.
+
+180
+00:07:02.040 --> 00:07:05.580
+But instead, the buffer time limit will be hit.
+
+181
+00:07:05.580 --> 00:07:09.390
+Now, buffer time, the minimum you can set is one minute.
+
+182
+00:07:09.390 --> 00:07:12.300
+And buffer size, you can set a few megabytes.
+
+183
+00:07:12.300 --> 00:07:15.570
+Okay, so Kinesis Data Streams versus Firehose.
+
+184
+00:07:15.570 --> 00:07:17.550
+They looks similar but they're actually not.
+
+185
+00:07:17.550 --> 00:07:20.700
+Streams is you're going to have to write custom code
+
+186
+00:07:20.700 --> 00:07:22.590
+for your producer and your consumer.
+
+187
+00:07:22.590 --> 00:07:24.000
+And it's going to be real time,
+
+188
+00:07:24.000 --> 00:07:25.980
+we're going to get 200 millisecond latency
+
+189
+00:07:25.980 --> 00:07:27.327
+for classic consumers
+
+190
+00:07:27.327 --> 00:07:31.080
+or 70 millisecond latency for enhanced fan-out consumers.
+
+191
+00:07:31.080 --> 00:07:33.000
+You have On-demand or Provisioned mode
+
+192
+00:07:33.000 --> 00:07:34.440
+for capacity planning.
+
+193
+00:07:34.440 --> 00:07:37.380
+You get data storage between 1 to 365 days,
+
+194
+00:07:37.380 --> 00:07:41.070
+replay capability and multiple consumers.
+
+195
+00:07:41.070 --> 00:07:42.570
+You can also use with Lambda
+
+196
+00:07:42.570 --> 00:07:46.020
+to insert data in real time to OpenSearch, for example.
+
+197
+00:07:46.020 --> 00:07:47.610
+Firehose, on the other hand,
+
+198
+00:07:47.610 --> 00:07:49.980
+is going to be fully managed autoscaling.
+
+199
+00:07:49.980 --> 00:07:53.310
+It will send data out to S3, Splunk, Redshift,
+
+200
+00:07:53.310 --> 00:07:54.900
+and OpenSearch for you.
+
+201
+00:07:54.900 --> 00:07:57.120
+And it has some serverless data transformation
+
+202
+00:07:57.120 --> 00:07:58.980
+it can do with AWS Lambda
+
+203
+00:07:58.980 --> 00:08:00.510
+and it's near real time.
+
+204
+00:08:00.510 --> 00:08:03.420
+It's automated scaling and there is no data storage.
+
+205
+00:08:03.420 --> 00:08:06.510
+So Firehose does not replay data or stuff like this.
+
+206
+00:08:06.510 --> 00:08:08.640
+So you need to really see the differences between the two.
+
+207
+00:08:08.640 --> 00:08:11.010
+To me, they're clear around what they are,
+
+208
+00:08:11.010 --> 00:08:12.060
+but you have to remember.
+
+209
+00:08:12.060 --> 00:08:14.810
+Finally, remember that with the producer or the KPL,
+
+210
+00:08:14.810 --> 00:08:17.700
+we can produce either into Streams or Firehose.
+
+211
+00:08:17.700 --> 00:08:18.630
+That is fine.
+
+212
+00:08:18.630 --> 00:08:19.740
+So remember about your use case.
+
+213
+00:08:19.740 --> 00:08:22.560
+If your use case is to have applications read data,
+
+214
+00:08:22.560 --> 00:08:23.850
+maybe it's gonna be Streams.
+
+215
+00:08:23.850 --> 00:08:28.410
+But if all your use case is about is to send data into S3
+
+216
+00:08:28.410 --> 00:08:29.880
+or Redshift or Splunk,
+
+217
+00:08:29.880 --> 00:08:32.220
+then maybe Firehose is going to be a use case for you.
+
+218
+00:08:32.220 --> 00:08:33.420
+And remember, the real time
+
+219
+00:08:33.420 --> 00:08:35.790
+versus near real time constraints.
+
+220
+00:08:35.790 --> 00:08:37.230
+So that's it for Firehose.
+
+221
+00:08:37.230 --> 00:08:38.063
+I hope you liked it
+
+222
+00:08:38.063 --> 00:08:39.840
+and I will see you in the next lecture.
+

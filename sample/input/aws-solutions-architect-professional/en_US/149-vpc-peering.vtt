@@ -1,0 +1,678 @@
+WEBVTT
+
+1
+00:00:00.120 --> 00:00:03.180
+<v Instructor>Okay, so next, let's talk about VPC peering.</v>
+
+2
+00:00:03.180 --> 00:00:07.470
+We know the basics, VPC peering is used to connect two VPC,
+
+3
+00:00:07.470 --> 00:00:11.400
+privately, using the internal AWS network.
+
+4
+00:00:11.400 --> 00:00:13.210
+And why do we do VPC peering?
+
+5
+00:00:13.210 --> 00:00:15.270
+Well, because we make them behave,
+
+6
+00:00:15.270 --> 00:00:17.240
+as if they were in the same Network.
+
+7
+00:00:17.240 --> 00:00:20.410
+So the idea is that we have a VPC A and VPC B,
+
+8
+00:00:20.410 --> 00:00:22.580
+and they have non overlapping CIDR,
+
+9
+00:00:22.580 --> 00:00:24.980
+and then we create a VPC peering connection.
+
+10
+00:00:24.980 --> 00:00:26.760
+And then we have to update some route tables,
+
+11
+00:00:26.760 --> 00:00:29.490
+but we allow the instances in VPC A,
+
+12
+00:00:29.490 --> 00:00:33.890
+to communicate privately, to VPC B,
+
+13
+00:00:33.890 --> 00:00:35.430
+and vice versa.
+
+14
+00:00:35.430 --> 00:00:38.590
+Okay. For this, we must not have overlapping CIDR's,
+
+15
+00:00:38.590 --> 00:00:41.370
+and we'll see this in a future lecture.
+
+16
+00:00:41.370 --> 00:00:45.290
+So the VPC peering connection is not transitive.
+
+17
+00:00:45.290 --> 00:00:47.300
+This is something you should know as well,
+
+18
+00:00:47.300 --> 00:00:48.460
+which is the means that,
+
+19
+00:00:48.460 --> 00:00:51.550
+if you are establishing connection with another VPC,
+
+20
+00:00:51.550 --> 00:00:54.820
+for example, VPC C and you create a VPC peering connection,
+
+21
+00:00:54.820 --> 00:00:59.216
+between A and C because VPC peering is not a transitive,
+
+22
+00:00:59.216 --> 00:01:01.880
+instances in VPC B
+
+23
+00:01:01.880 --> 00:01:05.640
+cannot talk to instances in VPC C.
+
+24
+00:01:05.640 --> 00:01:07.370
+That is just not allowed.
+
+25
+00:01:07.370 --> 00:01:11.130
+For making sure that the VPC B can't talk to VPC C,
+
+26
+00:01:11.130 --> 00:01:13.790
+you need to create your own VPC peering connection,
+
+27
+00:01:13.790 --> 00:01:16.730
+between B and C for it to work.
+
+28
+00:01:16.730 --> 00:01:19.400
+So you can do VPC peering in your own accounts,
+
+29
+00:01:19.400 --> 00:01:21.920
+but also with another alias accounts.
+
+30
+00:01:21.920 --> 00:01:25.290
+For this, remember, anytime you establish VPC peering,
+
+31
+00:01:25.290 --> 00:01:28.630
+you must update route tables in each VPC subnet,
+
+32
+00:01:28.630 --> 00:01:31.710
+to ensure the instances know what to talk to,
+
+33
+00:01:31.710 --> 00:01:35.570
+and where to go through the VPC peering connection.
+
+34
+00:01:35.570 --> 00:01:37.090
+Okay, good to know.
+
+35
+00:01:37.090 --> 00:01:41.410
+So VPC peering can work inter-region and cross-accounts.
+
+36
+00:01:41.410 --> 00:01:42.920
+And then once it's established,
+
+37
+00:01:42.920 --> 00:01:46.020
+we can reference a security group have a peered VPC,
+
+38
+00:01:46.020 --> 00:01:47.630
+and that works cross accounts.
+
+39
+00:01:47.630 --> 00:01:49.690
+So these rules are very helpful,
+
+40
+00:01:49.690 --> 00:01:51.730
+for example here or saying, hey,
+
+41
+00:01:51.730 --> 00:01:54.540
+I want to allow Port 80 from this Security Group,
+
+42
+00:01:54.540 --> 00:01:57.470
+of VPC in my other accounts,
+
+43
+00:01:57.470 --> 00:02:00.400
+or VPC in my accounts, but a different VPC.
+
+44
+00:02:00.400 --> 00:02:01.710
+So using these rules,
+
+45
+00:02:01.710 --> 00:02:03.890
+we are able to reference Security Groups,
+
+46
+00:02:03.890 --> 00:02:06.530
+using other peer VPC and that makes security,
+
+47
+00:02:06.530 --> 00:02:08.410
+very easy to manage.
+
+48
+00:02:08.410 --> 00:02:11.050
+Next, the longest prefix match.
+
+49
+00:02:11.050 --> 00:02:13.840
+So VPC uses something called a longest prefix match,
+
+50
+00:02:13.840 --> 00:02:17.060
+to select the most specific route to route for.
+
+51
+00:02:17.060 --> 00:02:19.890
+So let's have an example with VPC A,
+
+52
+00:02:19.890 --> 00:02:23.920
+that is peered with both VPC B and C.
+
+53
+00:02:23.920 --> 00:02:25.230
+And in this example,
+
+54
+00:02:25.230 --> 00:02:27.340
+we can look at if you can see in your screen,
+
+55
+00:02:27.340 --> 00:02:32.110
+a VPC B and VPC C are set up exactly the same way.
+
+56
+00:02:32.110 --> 00:02:34.070
+And so they have the same CIDR,
+
+57
+00:02:34.070 --> 00:02:37.200
+and they have the same subnet CIDR as well.
+
+58
+00:02:37.200 --> 00:02:38.370
+So for example,
+
+59
+00:02:38.370 --> 00:02:41.910
+we definitely cannot peer VPC B and VPC C together,
+
+60
+00:02:41.910 --> 00:02:43.700
+because they have overlapping CIDR.
+
+61
+00:02:43.700 --> 00:02:46.620
+But VPC A, doesn't have an overlapping CIDR with,
+
+62
+00:02:46.620 --> 00:02:49.460
+either VPC B or VPC C and therefore,
+
+63
+00:02:49.460 --> 00:02:53.070
+we're able to create two VPC peering connections.
+
+64
+00:02:53.070 --> 00:02:55.900
+Now, the problem is that we have a subnet A,
+
+65
+00:02:55.900 --> 00:02:57.850
+with a bunch of instances here,
+
+66
+00:02:57.850 --> 00:03:01.070
+and there's one instance in VPC B We'd like to access,
+
+67
+00:03:01.070 --> 00:03:04.950
+which is 10.0.0 point 77 slash 32,
+
+68
+00:03:04.950 --> 00:03:06.720
+which represents one IP.
+
+69
+00:03:06.720 --> 00:03:08.430
+And then we want to be able to say,
+
+70
+00:03:08.430 --> 00:03:11.210
+traffic that goes specifically to that instance,
+
+71
+00:03:11.210 --> 00:03:13.640
+should go through VPCs B,
+
+72
+00:03:13.640 --> 00:03:17.160
+but any other traffic should go through VPC C.
+
+73
+00:03:17.160 --> 00:03:20.350
+And so the idea is that we're going to define route tables.
+
+74
+00:03:20.350 --> 00:03:21.980
+And in the VPC A,
+
+75
+00:03:21.980 --> 00:03:24.920
+we're going to say anything that is 172
+
+76
+00:03:24.920 --> 00:03:26.440
+is going to be local,
+
+77
+00:03:26.440 --> 00:03:29.199
+anything that is very specific,
+
+78
+00:03:29.199 --> 00:03:33.160
+so 10 000 point 77 slash 32,
+
+79
+00:03:33.160 --> 00:03:35.000
+is going to be the most specific route,
+
+80
+00:03:35.000 --> 00:03:37.650
+and is going to be sent to the VPC B,
+
+81
+00:03:37.650 --> 00:03:41.240
+and then anything else 10 point 0.00 slash 16
+
+82
+00:03:41.240 --> 00:03:43.560
+is going to go to VPC C.
+
+83
+00:03:43.560 --> 00:03:45.850
+The idea is that this route here,
+
+84
+00:03:45.850 --> 00:03:49.610
+slash 32 is the most specific it is the longest prefix,
+
+85
+00:03:49.610 --> 00:03:52.090
+and therefore it's going to be having priority,
+
+86
+00:03:52.090 --> 00:03:54.860
+in case there's a match or the second rule.
+
+87
+00:03:54.860 --> 00:03:56.510
+And then the other VPC,
+
+88
+00:03:56.510 --> 00:03:59.360
+have just a basic VPC peering connection.
+
+89
+00:03:59.360 --> 00:04:00.610
+So once you understand this,
+
+90
+00:04:00.610 --> 00:04:02.480
+that means that anything that's going to be the most
+
+91
+00:04:02.480 --> 00:04:03.313
+specific route,
+
+92
+00:04:03.313 --> 00:04:06.920
+is going to have precedence over more larger routes.
+
+93
+00:04:06.920 --> 00:04:09.700
+This is very intuitive, but it's nice to point out.
+
+94
+00:04:09.700 --> 00:04:13.330
+Okay, now, what are some valid configurations,
+
+95
+00:04:13.330 --> 00:04:14.780
+for VPC peering?
+
+96
+00:04:14.780 --> 00:04:18.030
+The first one is overlapping CIDR for IPV4.
+
+97
+00:04:18.030 --> 00:04:21.360
+So in case we have two VPC and they share one CIDR,
+
+98
+00:04:21.360 --> 00:04:22.670
+they cannot connect.
+
+99
+00:04:22.670 --> 00:04:26.470
+That is true if even one CIDR out of the many CIDRs
+
+100
+00:04:26.470 --> 00:04:28.980
+defined in the VPC overlap.
+
+101
+00:04:28.980 --> 00:04:33.980
+So in this example, 10.3.0.0 and 10.2.0.0 don't overlap,
+
+102
+00:04:34.430 --> 00:04:38.040
+but because there is another CIDR in EGP C that overlap,
+
+103
+00:04:38.040 --> 00:04:40.560
+then we cannot introduce VPC peering.
+
+104
+00:04:40.560 --> 00:04:43.030
+And this is also true for IPV6.
+
+105
+00:04:43.030 --> 00:04:45.080
+So as long as there's one IPV4,
+
+106
+00:04:45.080 --> 00:04:47.080
+overlap between the VPC A and B,
+
+107
+00:04:47.080 --> 00:04:48.680
+you cannot peer them even if they have
+
+108
+00:04:48.680 --> 00:04:51.090
+different IPV6 CIDR's.
+
+109
+00:04:51.090 --> 00:04:54.230
+The second thing is that there is no transitive VPC peering.
+
+110
+00:04:54.230 --> 00:04:56.620
+So we've seen this configuration it does not work.
+
+111
+00:04:56.620 --> 00:05:00.430
+So if you have a VPC B peered with A and A peered with C,
+
+112
+00:05:00.430 --> 00:05:02.450
+Then B and C cannot connect.
+
+113
+00:05:02.450 --> 00:05:04.490
+They have to be peered to one another.
+
+114
+00:05:04.490 --> 00:05:07.580
+But also there's something called no Edge to Edge routing,
+
+115
+00:05:07.580 --> 00:05:09.950
+and that may be a little bit new to you.
+
+116
+00:05:09.950 --> 00:05:11.170
+So what does it mean?
+
+117
+00:05:11.170 --> 00:05:13.250
+We have this example where VPC B,
+
+118
+00:05:14.201 --> 00:05:15.650
+and VPC A are peered together.
+
+119
+00:05:15.650 --> 00:05:18.880
+And VPC A is linked to your corporate network,
+
+120
+00:05:18.880 --> 00:05:22.050
+using either direct connect or a VPN connection,
+
+121
+00:05:22.050 --> 00:05:23.440
+whatever you want, right?
+
+122
+00:05:23.440 --> 00:05:27.200
+In this example, VPC B can connect to VPC A,
+
+123
+00:05:27.200 --> 00:05:30.620
+but it cannot connect to the corporate network,
+
+124
+00:05:30.620 --> 00:05:32.180
+through VPC A.
+
+125
+00:05:32.180 --> 00:05:34.630
+The reason is there's no edge to edge routing.
+
+126
+00:05:34.630 --> 00:05:35.900
+And this is also true.
+
+127
+00:05:35.900 --> 00:05:38.630
+If you're using VPC B peered with VPC A.
+
+128
+00:05:38.630 --> 00:05:40.913
+And there's an internet gateway in VPC A.
+
+129
+00:05:41.859 --> 00:05:42.692
+It doesn't work.
+
+130
+00:05:42.692 --> 00:05:45.260
+VPC B will not be able to access the Internet,
+
+131
+00:05:45.260 --> 00:05:47.740
+through the internet gateway or VPC A.
+
+132
+00:05:47.740 --> 00:05:51.330
+So no extra edge routing applies to site to site VPN,
+
+133
+00:05:51.330 --> 00:05:55.030
+Direct Connect Internet gateways, NAT gateways,
+
+134
+00:05:55.030 --> 00:05:58.850
+and gateway VPC endpoints for S3 and DynamoD8.
+
+135
+00:05:58.850 --> 00:06:00.340
+So all these things, you should remember.
+
+136
+00:06:00.340 --> 00:06:01.720
+So let's do a deep dive.
+
+137
+00:06:01.720 --> 00:06:03.950
+Okay, so let's go through this example,
+
+138
+00:06:03.950 --> 00:06:07.010
+where someone comes up in your company and say yes,
+
+139
+00:06:07.010 --> 00:06:09.250
+I would like to have a central VPC,
+
+140
+00:06:09.250 --> 00:06:11.310
+and a central NAT gateway,
+
+141
+00:06:11.310 --> 00:06:12.960
+and that NAT gateway is going to be connected to,
+
+142
+00:06:12.960 --> 00:06:15.440
+an Internet gateway to connect to the Internet.
+
+143
+00:06:15.440 --> 00:06:18.320
+And then I want to have multiple VPC,
+
+144
+00:06:18.320 --> 00:06:21.350
+connect to the Internet gateway through my central VPC.
+
+145
+00:06:21.350 --> 00:06:23.130
+And that may seem like a good idea.
+
+146
+00:06:23.130 --> 00:06:26.400
+So let's go ahead we have a VPC and a private subnet.
+
+147
+00:06:26.400 --> 00:06:28.910
+And we're going to do a VPC peering connection.
+
+148
+00:06:28.910 --> 00:06:30.950
+And will it work?
+
+149
+00:06:30.950 --> 00:06:33.610
+Well, no, this is an invalid configuration.
+
+150
+00:06:33.610 --> 00:06:35.610
+It will not allow your private subnets,
+
+151
+00:06:35.610 --> 00:06:37.970
+to talk to the Internet's gateway,
+
+152
+00:06:37.970 --> 00:06:40.710
+because there is no Edge to Edge routing,
+
+153
+00:06:40.710 --> 00:06:43.760
+for NAT devices through VPC peering.
+
+154
+00:06:43.760 --> 00:06:45.350
+And that is something you have to remember
+
+155
+00:06:45.350 --> 00:06:46.360
+going to the exam.
+
+156
+00:06:46.360 --> 00:06:49.210
+I will give you a solution to that problem later on.
+
+157
+00:06:49.210 --> 00:06:52.140
+But this is an invalid configuration.
+
+158
+00:06:52.140 --> 00:06:55.230
+And so no matter how many VPCs you're trying to connect to
+
+159
+00:06:55.230 --> 00:06:56.430
+the central VPC,
+
+160
+00:06:56.430 --> 00:06:58.680
+if you have defined VPC peering,
+
+161
+00:06:58.680 --> 00:07:00.880
+then there will be no Edge to Edge routing,
+
+162
+00:07:00.880 --> 00:07:03.740
+and so you cannot leverage a NAT gateway,
+
+163
+00:07:03.740 --> 00:07:05.260
+to talk to the Internet gateway,
+
+164
+00:07:05.260 --> 00:07:08.940
+to have a central traffic going through the central VPC.
+
+165
+00:07:08.940 --> 00:07:11.350
+We will see how to solve this problem in the next lecture.
+
+166
+00:07:11.350 --> 00:07:13.280
+So that's it for VPC peering.
+
+167
+00:07:13.280 --> 00:07:14.113
+I hope you liked it,
+
+168
+00:07:14.113 --> 00:07:15.150
+Hope you learned a thing or two,
+
+169
+00:07:15.150 --> 00:07:17.100
+and I will see you in the next lecture.
+

@@ -1,0 +1,202 @@
+WEBVTT
+
+1
+00:00:00.040 --> 00:00:01.527
+<v Instructor>Okay, so let's talk about SAM.</v>
+
+2
+00:00:01.527 --> 00:00:04.910
+SAM stands for Serverless Application Model.
+
+3
+00:00:04.910 --> 00:00:06.220
+It's a framework for developing
+
+4
+00:00:06.220 --> 00:00:07.960
+and deploying serverless applications
+
+5
+00:00:07.960 --> 00:00:10.240
+and all the code is in YAML.
+
+6
+00:00:10.240 --> 00:00:12.840
+So examples is that you can create lambda functions
+
+7
+00:00:12.840 --> 00:00:13.900
+using the SAM framework,
+
+8
+00:00:13.900 --> 00:00:15.630
+DynamoDB tables,
+
+9
+00:00:15.630 --> 00:00:16.920
+API Gateway
+
+10
+00:00:16.920 --> 00:00:19.110
+and StepFunction's State Machines.
+
+11
+00:00:19.110 --> 00:00:22.114
+SAM can also help you to run Lambda, API Gateway
+
+12
+00:00:22.114 --> 00:00:23.850
+and DynamoDB locally
+
+13
+00:00:23.850 --> 00:00:25.960
+making it super easy for you to create
+
+14
+00:00:25.960 --> 00:00:28.430
+a very good development cycle.
+
+15
+00:00:28.430 --> 00:00:30.790
+SAM can also leverage CodeDeploy when
+
+16
+00:00:30.790 --> 00:00:32.820
+you deploy new Lambda function versions
+
+17
+00:00:32.820 --> 00:00:35.220
+and leverages the traffic shifting feature.
+
+18
+00:00:35.220 --> 00:00:37.300
+And that's something that is very important.
+
+19
+00:00:37.300 --> 00:00:40.760
+Also, SAM is using CloudFormation in the backend.
+
+20
+00:00:40.760 --> 00:00:43.010
+So SAM is a very handy tool when it comes to
+
+21
+00:00:43.010 --> 00:00:46.340
+developing and deploying serverless applications.
+
+22
+00:00:46.340 --> 00:00:48.089
+Okay, so what you need to know
+
+23
+00:00:48.089 --> 00:00:52.980
+from as a pro perspective is the CICD Architecture for SAM.
+
+24
+00:00:52.980 --> 00:00:56.520
+So you would have a code pipeline to orchestrate everything.
+
+25
+00:00:56.520 --> 00:00:58.670
+Your code would be stored in CodeCommit.
+
+26
+00:00:58.670 --> 00:01:01.330
+Then it would be sent to CodeBuild
+
+27
+00:01:01.330 --> 00:01:04.060
+to build, test and package the code.
+
+28
+00:01:04.060 --> 00:01:06.440
+And then a CloudFormation step
+
+29
+00:01:06.440 --> 00:01:08.360
+in CodePipeline would be applied.
+
+30
+00:01:08.360 --> 00:01:09.930
+And the CloudFormation is relying
+
+31
+00:01:09.930 --> 00:01:11.450
+on the Serverless Application Model.
+
+32
+00:01:11.450 --> 00:01:12.890
+So SAM will also be there.
+
+33
+00:01:12.890 --> 00:01:14.830
+That's a little square in the right example.
+
+34
+00:01:14.830 --> 00:01:17.730
+And then because we are deploying a Lambda function
+
+35
+00:01:17.730 --> 00:01:20.480
+then CodeDeploye will automatically be invoked
+
+36
+00:01:20.480 --> 00:01:23.540
+by SAM itself to do a traffic shifting
+
+37
+00:01:23.540 --> 00:01:26.000
+between your version one Lambda function
+
+38
+00:01:26.000 --> 00:01:27.940
+to your version two Lambda function.
+
+39
+00:01:27.940 --> 00:01:32.080
+CloudFormation can also deploy your API Gateway
+
+40
+00:01:32.080 --> 00:01:35.110
+and update it if necessary or DynamoDB.
+
+41
+00:01:35.110 --> 00:01:37.760
+But this is just classic CloudFormation.
+
+42
+00:01:37.760 --> 00:01:39.280
+The one thing that you remember for SAM
+
+43
+00:01:39.280 --> 00:01:41.850
+is that if it deploys a Lambda function
+
+44
+00:01:41.850 --> 00:01:43.890
+internally is going to use CodeDeploy
+
+45
+00:01:43.890 --> 00:01:45.360
+to perform this traffic shifting.
+
+46
+00:01:45.360 --> 00:01:48.250
+And that is very important to know this going into the exam.
+
+47
+00:01:48.250 --> 00:01:49.083
+And that's it.
+
+48
+00:01:49.083 --> 00:01:50.990
+Just a very short lecture about SAM.
+
+49
+00:01:50.990 --> 00:01:51.823
+I hope you liked it.
+
+50
+00:01:51.823 --> 00:01:53.680
+And I will see you in the next lecture.
+

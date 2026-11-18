@@ -1,0 +1,290 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.239
+When an error hits, do you retry? And if so, how? That's the question that this lesson answers.
+
+2
+00:00:06.239 --> 00:00:10.720
+Over the next few minutes, we'll cover how to classify errors as transient or permanent,
+
+3
+00:00:11.279 --> 00:00:16.639
+how to match the right policy to each error type, how to set a retry budget that keeps
+
+4
+00:00:16.639 --> 00:00:21.920
+cost and latency under control, and when aborting is the right call. Let's get into it.
+
+5
+00:00:23.040 --> 00:00:28.159
+Some errors go away if you wait a second and ask again. Others fail identically,
+
+6
+00:00:28.159 --> 00:00:33.360
+no matter how many times you ask, and the whole design rests on telling those apart.
+
+7
+00:00:33.360 --> 00:00:38.720
+A transient error is a temporary failure likely to resolve on its own, like a timeout,
+
+8
+00:00:38.720 --> 00:00:44.479
+a rate limit hit, or a brief network blip, so retrying is appropriate because the condition
+
+9
+00:00:44.479 --> 00:00:50.639
+may already be gone by the time the next attempt fires. A permanent error won't resolve by retrying
+
+10
+00:00:50.639 --> 00:00:57.040
+the same request, like incorrect input, permission denied, or a reasoning error in the model's plan.
+
+11
+00:00:57.759 --> 00:01:03.520
+Exponential backoff is the retry strategy where wait time doubles after each failure,
+
+12
+00:01:03.520 --> 00:01:09.040
+typically with added jitter, which prevents retry storms and gives overloaded systems
+
+13
+00:01:09.040 --> 00:01:15.919
+room to recover. Every retry decision starts with one question. Is this error likely to resolve
+
+14
+00:01:15.919 --> 00:01:22.480
+if I try again? That question is the entire foundation of retry design. If yes, the error
+
+15
+00:01:22.480 --> 00:01:29.680
+is transient and some retry policy is appropriate. If no, the error is permanent and retrying only
+
+16
+00:01:29.680 --> 00:01:35.599
+delays the real fix while spending tokens and adding latency. Getting the classification wrong
+
+17
+00:01:35.599 --> 00:01:41.760
+in either direction has consequences. Retry a permanent error and you waste resources.
+
+18
+00:01:41.760 --> 00:01:47.599
+Abort on a transient error and you fail unnecessarily. The classification comes first
+
+19
+00:01:47.599 --> 00:01:53.839
+before you touch policy, delay, or budget. Build that habit early because the exam will test
+
+20
+00:01:53.839 --> 00:01:59.120
+whether you can distinguish those categories reliably under conditions designed to blur the
+
+21
+00:01:59.120 --> 00:02:05.839
+line. The practical classification question is what category does this error fall into?
+
+22
+00:02:06.400 --> 00:02:12.960
+Transient errors include rate limit responses, request timeouts, temporary network failures,
+
+23
+00:02:12.960 --> 00:02:19.520
+and service overload signals. Permanent errors include invalid input format, permission denied,
+
+24
+00:02:19.520 --> 00:02:26.080
+authentication failures, and reasoning errors in the agent's plan. Some errors are genuinely
+
+25
+00:02:26.080 --> 00:02:32.240
+ambiguous. A 500 status from an external service could be transient overload or a permanent server
+
+26
+00:02:32.240 --> 00:02:39.759
+side bug. When you can't tell, use one conservative retry with a delay before treating the error as
+
+27
+00:02:39.759 --> 00:02:46.399
+permanent. That single retry catches transient cases without spiraling into repeated attempts
+
+28
+00:02:46.399 --> 00:02:52.880
+against something that isn't going to recover on its own. Two basic retry policies sit below
+
+29
+00:02:52.880 --> 00:02:58.559
+exponential backoff on the complexity scale. Immediate retry fires the next attempt with no
+
+30
+00:02:58.559 --> 00:03:05.679
+delay. It's appropriate only for momentary glitches that resolve in milliseconds, which is rare in real
+
+31
+00:03:05.679 --> 00:03:12.880
+agentic workflows. Spamming retries at full speed under load makes congestion worse, not better. Fixed
+
+32
+00:03:12.880 --> 00:03:18.639
+delay adds a constant weight between each attempt. It's simpler to implement and much better than
+
+33
+00:03:18.639 --> 00:03:25.440
+immediate retry in most cases. The limitation is that it doesn't adapt. A fixed delay that works
+
+34
+00:03:25.440 --> 00:03:31.440
+fine under normal load may be too short during a burst failure event where the downstream system
+
+35
+00:03:31.440 --> 00:03:38.000
+needs more recovery time between attempts. Fixed delay is fine for simple cases, but exponential
+
+36
+00:03:38.000 --> 00:03:44.240
+backoff handles the full range of real-world failure patterns more reliably. Exponential
+
+37
+00:03:44.240 --> 00:03:50.720
+backoff with jitter is the standard retry policy for transient errors. Wait time doubles after each
+
+38
+00:03:50.720 --> 00:03:57.759
+failure. One second, two seconds, four seconds, eight, up to a configured cap. The doubling gives the
+
+39
+00:03:57.759 --> 00:04:03.600
+downstream system progressively more time to recover between each attempt. Jitter adds randomness
+
+40
+00:04:03.600 --> 00:04:09.119
+to the wait time. Without it, a fleet of clients that all hit the same rate limit will all retry
+
+41
+00:04:09.119 --> 00:04:14.320
+at the same moment, creating a synchronized wave that immediately re-triggers the limit.
+
+42
+00:04:14.320 --> 00:04:19.600
+Jitter spreads those retries out and prevents that pattern. The critical constraint is that
+
+43
+00:04:19.600 --> 00:04:25.440
+exponential backoff should only be applied to transient errors. Applying it to permanent errors
+
+44
+00:04:25.440 --> 00:04:31.440
+just delays failure recognition without any chance of improving the outcome. Matching retry
+
+45
+00:04:31.440 --> 00:04:37.440
+policy to error type is a practical design discipline. Rate limit errors call for exponential
+
+46
+00:04:37.440 --> 00:04:44.239
+backoff with jitter, and you should respect any retry after header the service sends back. Timeout
+
+47
+00:04:44.239 --> 00:04:50.239
+errors are usually handled with a short fixed delay or a brief exponential backoff, capped at
+
+48
+00:04:50.239 --> 00:04:57.359
+one to three retry attempts. Invalid input errors should trigger an immediate abort. Retrying
+
+49
+00:04:57.359 --> 00:05:04.399
+identical input against the same validation produces identical failure every time. Reasoning errors
+
+50
+00:05:04.399 --> 00:05:10.480
+in the model's plan are permanent by definition. The model produced an incorrect plan. Retrying
+
+51
+00:05:10.480 --> 00:05:16.799
+the same prompt doesn't change the plan. Abort and escalate so the plan can be corrected at the source.
+
+52
+00:05:17.760 --> 00:05:24.320
+Retry budgets exist because uncapped retries accumulate cost and latency with no guarantee of
+
+53
+00:05:24.320 --> 00:05:30.559
+ever succeeding. A retry budget sets the maximum number of attempts before the pipeline gives up
+
+54
+00:05:30.559 --> 00:05:37.679
+and escalates. Each additional attempt multiplies token spend and adds to total wait time. A pipeline
+
+55
+00:05:37.679 --> 00:05:43.040
+with no retry budget can spiral into dozens of attempts on a failure that was never going to
+
+56
+00:05:43.279 --> 00:05:50.000
+resolve. Retry budgets keep pipeline latency bounded and predictable. Design the budget around
+
+57
+00:05:50.000 --> 00:05:56.480
+acceptable latency and cost limits, not around the probability of eventual success. If the system
+
+58
+00:05:56.480 --> 00:06:03.359
+hasn't recovered after three attempts with backoff, it likely needs intervention. Abort conditions
+
+59
+00:06:03.359 --> 00:06:09.119
+are the other side of the retry budget. Two conditions signal that aborting is correct.
+
+60
+00:06:09.119 --> 00:06:14.880
+First, the retry budget is exhausted. Maximum attempts have been reached, the error is still
+
+61
+00:06:14.880 --> 00:06:21.359
+unresolved, and continuing would only add more cost and latency. Abort and escalate upstream.
+
+62
+00:06:22.000 --> 00:06:29.359
+Second, a permanent error on the first encounter. There's no retry warranted at all. Abort immediately
+
+63
+00:06:29.359 --> 00:06:35.279
+and surface the error. Aborting early on permanent errors avoids compounding cost on guaranteed
+
+64
+00:06:35.279 --> 00:06:42.320
+failure. One important clarification. Abort doesn't mean silent failure. Aborting triggers
+
+65
+00:06:42.320 --> 00:06:48.799
+escalation and surfaces the error to the next component or to a human reviewer. The failure
+
+66
+00:06:48.799 --> 00:06:55.600
+becomes visible, not hidden. Every retry is a bet that something outside of your code changed between
+
+67
+00:06:55.600 --> 00:07:01.519
+attempts. That's actually a good lesson for every developer. When you retry the same code, you're
+
+68
+00:07:01.519 --> 00:07:06.640
+expecting a different result only because something outside of it changed. If the failure
+
+69
+00:07:06.640 --> 00:07:12.079
+was transient, that is a bet worth making with a backoff and a ceiling on how many retries you
+
+70
+00:07:12.079 --> 00:07:17.600
+attempt. If it was permanent, you're paying the same bill over and over for the same result.
+
+71
+00:07:17.600 --> 00:07:21.920
+Classifying the error first is what holds the whole thing together.
+
+72
+00:07:22.880 --> 00:07:25.839
+That wraps up this lesson. I'll see you in the next one.
+

@@ -1,0 +1,1358 @@
+WEBVTT
+
+1
+00:00:00.210 --> 00:00:01.800
+<v Stephane>So now let's talk about STS,</v>
+
+2
+00:00:01.800 --> 00:00:05.220
+which is a service that is so important in AWS,
+
+3
+00:00:05.220 --> 00:00:08.340
+which isn't going to allow us to assume roles
+
+4
+00:00:08.340 --> 00:00:11.520
+across different accounts within the same accounts,
+
+5
+00:00:11.520 --> 00:00:14.670
+and also enable us to do identity federation,
+
+6
+00:00:14.670 --> 00:00:16.170
+so let's get started.
+
+7
+00:00:16.170 --> 00:00:19.080
+First, we define IAM role within your accounts
+
+8
+00:00:19.080 --> 00:00:21.600
+or across accounts that we want to assume.
+
+9
+00:00:21.600 --> 00:00:25.140
+Then we define which principals can access this IAM role,
+
+10
+00:00:25.140 --> 00:00:26.760
+and we'll use the STS service,
+
+11
+00:00:26.760 --> 00:00:29.640
+which stands for Security Token Service,
+
+12
+00:00:29.640 --> 00:00:30.720
+to retrieve credentials,
+
+13
+00:00:30.720 --> 00:00:32.250
+and they're gonna be temporary,
+
+14
+00:00:32.250 --> 00:00:33.240
+and this will allow us
+
+15
+00:00:33.240 --> 00:00:35.940
+to impersonate the IAM role we have access to
+
+16
+00:00:35.940 --> 00:00:38.220
+using the AssumeRole API,
+
+17
+00:00:38.220 --> 00:00:40.440
+and the credentials are going to be temporary, as I said,
+
+18
+00:00:40.440 --> 00:00:43.020
+between 15 minutes to 12 hours,
+
+19
+00:00:43.020 --> 00:00:44.490
+so the diagram, what does it look like?
+
+20
+00:00:44.490 --> 00:00:46.410
+Our users wants to access a role,
+
+21
+00:00:46.410 --> 00:00:49.320
+for example, it's within the same or another accounts,
+
+22
+00:00:49.320 --> 00:00:50.370
+and so, to do so,
+
+23
+00:00:50.370 --> 00:00:53.730
+it's going to use the AssumeRole API on STS.
+
+24
+00:00:53.730 --> 00:00:55.770
+STS will check the permissions
+
+25
+00:00:55.770 --> 00:00:57.030
+and make sure the setup is correct,
+
+26
+00:00:57.030 --> 00:00:58.770
+and we'll go into details on how that look likes,
+
+27
+00:00:58.770 --> 00:01:01.260
+and then, we'll get security credentials back.
+
+28
+00:01:01.260 --> 00:01:02.610
+They're gonna be temporary,
+
+29
+00:01:02.610 --> 00:01:04.350
+and these security credentials
+
+30
+00:01:04.350 --> 00:01:06.780
+will allow us to access the target role,
+
+31
+00:01:06.780 --> 00:01:08.070
+so in which situations
+
+32
+00:01:08.070 --> 00:01:10.680
+would we want to assume a role using STS?
+
+33
+00:01:10.680 --> 00:01:11.513
+Well, first of all,
+
+34
+00:01:11.513 --> 00:01:13.890
+if you want to provide access to an IAM user
+
+35
+00:01:13.890 --> 00:01:16.920
+in an AWS account that you own or your own accounts
+
+36
+00:01:16.920 --> 00:01:18.360
+to another resource,
+
+37
+00:01:18.360 --> 00:01:20.880
+or maybe you want to provide IAM access users
+
+38
+00:01:20.880 --> 00:01:21.870
+in other accounts,
+
+39
+00:01:21.870 --> 00:01:24.060
+third parties access to your account as well.
+
+40
+00:01:24.060 --> 00:01:25.620
+Maybe you want to also
+
+41
+00:01:25.620 --> 00:01:27.780
+help your AWS services do what they need,
+
+42
+00:01:27.780 --> 00:01:29.550
+so using service roles,
+
+43
+00:01:29.550 --> 00:01:32.700
+and then, maybe we also want to perform identity federation,
+
+44
+00:01:32.700 --> 00:01:35.550
+and we'll have a deep dive onto identity federation
+
+45
+00:01:35.550 --> 00:01:36.383
+in this course
+
+46
+00:01:36.383 --> 00:01:37.980
+because you need to know them all.
+
+47
+00:01:37.980 --> 00:01:41.160
+Now, for STS, there's this feature
+
+48
+00:01:41.160 --> 00:01:43.590
+which allows you to revoke active sessions
+
+49
+00:01:43.590 --> 00:01:45.210
+and credentials for a role,
+
+50
+00:01:45.210 --> 00:01:46.710
+and so this is very simple.
+
+51
+00:01:46.710 --> 00:01:49.590
+You just need to change the policy and add a time statement
+
+52
+00:01:49.590 --> 00:01:53.340
+or use the AWSRevokeOlderSessions manage policy,
+
+53
+00:01:53.340 --> 00:01:54.600
+and that's perfect,
+
+54
+00:01:54.600 --> 00:01:56.400
+and so using this time condition,
+
+55
+00:01:56.400 --> 00:01:57.233
+you're able to say,
+
+56
+00:01:57.233 --> 00:01:59.280
+"Okay, this role cannot be used anymore,"
+
+57
+00:01:59.280 --> 00:02:02.220
+and so that gives you an extra level of security.
+
+58
+00:02:02.220 --> 00:02:05.130
+Remember, when we use STS, when we assume a role
+
+59
+00:02:05.130 --> 00:02:07.350
+for it be a user, an application, or a service,
+
+60
+00:02:07.350 --> 00:02:10.140
+we give up our original permissions,
+
+61
+00:02:10.140 --> 00:02:12.210
+and we take the permissions assigned to the role,
+
+62
+00:02:12.210 --> 00:02:13.680
+and so we already had a discussion
+
+63
+00:02:13.680 --> 00:02:15.870
+as to whether we should use a role
+
+64
+00:02:15.870 --> 00:02:17.610
+or a resource-based policy,
+
+65
+00:02:17.610 --> 00:02:19.650
+but just a slight reminder here.
+
+66
+00:02:19.650 --> 00:02:22.140
+Okay, so here is the deep dive a little bit
+
+67
+00:02:22.140 --> 00:02:24.150
+on providing access to an IAM user
+
+68
+00:02:24.150 --> 00:02:26.580
+in your or another AWS accounts that you own,
+
+69
+00:02:26.580 --> 00:02:29.520
+so this is within your circle of trust,
+
+70
+00:02:29.520 --> 00:02:31.680
+in which case, we can, for example,
+
+71
+00:02:31.680 --> 00:02:33.900
+create a role in Account A or A*.
+
+72
+00:02:33.900 --> 00:02:36.000
+It could be another account that you own, okay?
+
+73
+00:02:36.000 --> 00:02:38.580
+To terminate EC2 instances,
+
+74
+00:02:38.580 --> 00:02:40.020
+and so this is very important
+
+75
+00:02:40.020 --> 00:02:41.520
+that this is all the accounts that you own
+
+76
+00:02:41.520 --> 00:02:42.660
+because in the next slide,
+
+77
+00:02:42.660 --> 00:02:45.420
+we'll see about the accounts we don't own, third parties,
+
+78
+00:02:45.420 --> 00:02:48.120
+so in this case, the user will assume a role,
+
+79
+00:02:48.120 --> 00:02:49.860
+and that role will be allowing us
+
+80
+00:02:49.860 --> 00:02:52.350
+to terminate EC2 instances,
+
+81
+00:02:52.350 --> 00:02:53.280
+and the benefits is that,
+
+82
+00:02:53.280 --> 00:02:55.620
+is that we need to explicitly grant our users
+
+83
+00:02:55.620 --> 00:02:57.480
+permission to assume the role
+
+84
+00:02:57.480 --> 00:03:01.170
+to perform the Terminate EC2 Instance action.
+
+85
+00:03:01.170 --> 00:03:04.980
+We can also force the users to switch to that role
+
+86
+00:03:04.980 --> 00:03:06.300
+using the Management Console
+
+87
+00:03:06.300 --> 00:03:08.940
+or the CLI and the AssumeRole API,
+
+88
+00:03:08.940 --> 00:03:09.773
+and so the idea
+
+89
+00:03:09.773 --> 00:03:12.480
+is that we have an extra level of security here.
+
+90
+00:03:12.480 --> 00:03:15.420
+We can also add multifactor authentication protection
+
+91
+00:03:15.420 --> 00:03:16.253
+to the role
+
+92
+00:03:16.253 --> 00:03:19.050
+so that only users are assigned using MFA
+
+93
+00:03:19.050 --> 00:03:20.820
+can assume the role,
+
+94
+00:03:20.820 --> 00:03:22.680
+and so what this gives us, as well, is
+
+95
+00:03:22.680 --> 00:03:26.130
+least privilege and auditing using CloudTrail,
+
+96
+00:03:26.130 --> 00:03:29.310
+so by using this intermediary step
+
+97
+00:03:29.310 --> 00:03:31.620
+to do terminate EC2 instances,
+
+98
+00:03:31.620 --> 00:03:34.500
+we have a lot of extra security added to it,
+
+99
+00:03:34.500 --> 00:03:36.960
+and that is a very common pattern in AWS,
+
+100
+00:03:36.960 --> 00:03:38.640
+something that a solutions architect
+
+101
+00:03:38.640 --> 00:03:40.980
+should be thinking about a lot.
+
+102
+00:03:40.980 --> 00:03:43.680
+Okay, but what does it look like in practice
+
+103
+00:03:43.680 --> 00:03:46.020
+when we have STS cross-account access?
+
+104
+00:03:46.020 --> 00:03:46.920
+Again, just a reminder,
+
+105
+00:03:46.920 --> 00:03:48.990
+but something you've already seen before, probably,
+
+106
+00:03:48.990 --> 00:03:51.360
+so we have a production accounts with an S3 buckets
+
+107
+00:03:51.360 --> 00:03:54.000
+and a development accounts with two groups of users,
+
+108
+00:03:54.000 --> 00:03:56.160
+for example, testers and developers,
+
+109
+00:03:56.160 --> 00:03:58.110
+and we want to provide developers
+
+110
+00:03:58.110 --> 00:04:01.080
+access to the S3 bucket production app.
+
+111
+00:04:01.080 --> 00:04:03.120
+Okay, so the first thing we do is that
+
+112
+00:04:03.120 --> 00:04:04.440
+in the production accounts,
+
+113
+00:04:04.440 --> 00:04:06.180
+the admin will create a role
+
+114
+00:04:06.180 --> 00:04:07.740
+that grants the development account
+
+115
+00:04:07.740 --> 00:04:10.470
+read/write access to the productionapp bucket,
+
+116
+00:04:10.470 --> 00:04:13.380
+so this role will allow us to access the S3 buckets.
+
+117
+00:04:13.380 --> 00:04:14.910
+Then, in the development accounts,
+
+118
+00:04:14.910 --> 00:04:19.050
+we're granting the members of the developer group access
+
+119
+00:04:19.050 --> 00:04:22.650
+to assume this UpdateApp role,
+
+120
+00:04:22.650 --> 00:04:24.090
+so what happens then?
+
+121
+00:04:24.090 --> 00:04:25.590
+The users of that group,
+
+122
+00:04:25.590 --> 00:04:27.120
+the developers group only,
+
+123
+00:04:27.120 --> 00:04:30.897
+can access or request access to the role using the STS API,
+
+124
+00:04:30.897 --> 00:04:34.590
+and STS will return the role temporary credentials,
+
+125
+00:04:34.590 --> 00:04:35.970
+and using these credentials,
+
+126
+00:04:35.970 --> 00:04:37.500
+the users can access the S3 bucket
+
+127
+00:04:37.500 --> 00:04:38.790
+using the role credentials,
+
+128
+00:04:38.790 --> 00:04:40.380
+so very, very, very simple.
+
+129
+00:04:40.380 --> 00:04:41.250
+Again, just revision,
+
+130
+00:04:41.250 --> 00:04:44.880
+but I want to make dead clear how STS works
+
+131
+00:04:44.880 --> 00:04:47.370
+because it gets a little bit more complicated right now,
+
+132
+00:04:47.370 --> 00:04:49.260
+and this is probably something new for you,
+
+133
+00:04:49.260 --> 00:04:51.990
+but very important to note going into the exam,
+
+134
+00:04:51.990 --> 00:04:54.720
+so in case you want to provide access
+
+135
+00:04:54.720 --> 00:04:57.390
+to AWS accounts owned by third parties,
+
+136
+00:04:57.390 --> 00:05:00.240
+there's going to be an extra thing called external ID,
+
+137
+00:05:00.240 --> 00:05:02.280
+so this is text, and then I have a diagram,
+
+138
+00:05:02.280 --> 00:05:03.690
+so there's a zone of trust,
+
+139
+00:05:03.690 --> 00:05:04.590
+and the zone of trust
+
+140
+00:05:04.590 --> 00:05:07.560
+is all the accounts and organizations that you own,
+
+141
+00:05:07.560 --> 00:05:09.450
+and outside of that zone of trust
+
+142
+00:05:09.450 --> 00:05:10.890
+is going to be third parties.
+
+143
+00:05:10.890 --> 00:05:12.660
+For example, you work with a partner,
+
+144
+00:05:12.660 --> 00:05:13.980
+and they provide you a service,
+
+145
+00:05:13.980 --> 00:05:16.650
+and you want to give, like I say, consulting company,
+
+146
+00:05:16.650 --> 00:05:18.450
+and you want to give that consulting company
+
+147
+00:05:18.450 --> 00:05:19.920
+access to your accounts.
+
+148
+00:05:19.920 --> 00:05:21.630
+They're outside of your zone of trust.
+
+149
+00:05:21.630 --> 00:05:25.230
+They're not directly in your organization,
+
+150
+00:05:25.230 --> 00:05:28.890
+and so you can use IAM Access Analyzer
+
+151
+00:05:28.890 --> 00:05:31.500
+to find out which resources in your accounts
+
+152
+00:05:31.500 --> 00:05:33.540
+are outside of your zone of trust, okay?
+
+153
+00:05:33.540 --> 00:05:36.030
+Which account, which resources, for example, your S3 buckets
+
+154
+00:05:36.030 --> 00:05:38.580
+are going to be granted to third parties,
+
+155
+00:05:38.580 --> 00:05:40.620
+and so if you wanna grant access to your third parties
+
+156
+00:05:40.620 --> 00:05:42.210
+to some of your resources,
+
+157
+00:05:42.210 --> 00:05:45.360
+you can get something called the third-party AWS account ID,
+
+158
+00:05:45.360 --> 00:05:47.970
+which is a very obvious,
+
+159
+00:05:47.970 --> 00:05:50.700
+and the most important thing here is
+
+160
+00:05:50.700 --> 00:05:53.040
+you define an external ID,
+
+161
+00:05:53.040 --> 00:05:55.080
+and this external ID is a secret
+
+162
+00:05:55.080 --> 00:05:56.970
+between you and the third party,
+
+163
+00:05:56.970 --> 00:05:58.980
+and you have to define it,
+
+164
+00:05:58.980 --> 00:06:02.250
+and this is because if you give access to the third party
+
+165
+00:06:02.250 --> 00:06:03.780
+to a role in your accounts,
+
+166
+00:06:03.780 --> 00:06:05.670
+you want to make sure that only that third party
+
+167
+00:06:05.670 --> 00:06:07.290
+has access to this role,
+
+168
+00:06:07.290 --> 00:06:09.030
+so this is to uniquely associate the role
+
+169
+00:06:09.030 --> 00:06:10.590
+between you and a third party,
+
+170
+00:06:10.590 --> 00:06:12.720
+and you must be provided when defining the trust
+
+171
+00:06:12.720 --> 00:06:14.070
+and when assuming the role,
+
+172
+00:06:14.070 --> 00:06:15.240
+and we'll see why,
+
+173
+00:06:15.240 --> 00:06:17.310
+and it must be chosen by the third party.
+
+174
+00:06:17.310 --> 00:06:20.490
+You define the permissions in the IAM policy,
+
+175
+00:06:20.490 --> 00:06:21.720
+and you're good to go,
+
+176
+00:06:21.720 --> 00:06:23.910
+so let's have a look at a bit more details
+
+177
+00:06:23.910 --> 00:06:25.470
+to make this a bit more clear
+
+178
+00:06:25.470 --> 00:06:28.890
+about this, why this external ID is so important,
+
+179
+00:06:28.890 --> 00:06:31.050
+and this is called the confused deputy,
+
+180
+00:06:31.050 --> 00:06:34.620
+so this is a diagram directly coming from the documentation,
+
+181
+00:06:34.620 --> 00:06:38.040
+and so we see here is that we have your AWS accounts
+
+182
+00:06:38.040 --> 00:06:39.450
+on the left-hand side,
+
+183
+00:06:39.450 --> 00:06:41.880
+and we have the third party in the middle,
+
+184
+00:06:41.880 --> 00:06:43.710
+and we have another AWS accounts
+
+185
+00:06:43.710 --> 00:06:45.510
+on the right-hand side, okay?
+
+186
+00:06:45.510 --> 00:06:47.850
+And what the account on the right-hand side
+
+187
+00:06:47.850 --> 00:06:48.810
+that we don't own
+
+188
+00:06:48.810 --> 00:06:51.570
+is going to try to attack us on the left-hand side,
+
+189
+00:06:51.570 --> 00:06:52.410
+and to attack us,
+
+190
+00:06:52.410 --> 00:06:54.990
+it's going to be using the account in the middle,
+
+191
+00:06:54.990 --> 00:06:57.990
+so let's see what happens when you don't use the external ID
+
+192
+00:06:57.990 --> 00:06:59.820
+and how this attack is possible
+
+193
+00:06:59.820 --> 00:07:02.430
+and what happens when the, once we have the external ID,
+
+194
+00:07:02.430 --> 00:07:04.410
+and how this prevents this attack,
+
+195
+00:07:04.410 --> 00:07:07.440
+so in the first case, our AWS accounts right here
+
+196
+00:07:07.440 --> 00:07:10.110
+has created an ExampleRole right here,
+
+197
+00:07:10.110 --> 00:07:13.170
+and this ExampleRole is going to be able to be assumed
+
+198
+00:07:13.170 --> 00:07:14.940
+by the middle accounts,
+
+199
+00:07:14.940 --> 00:07:19.170
+so we're saying, "Okay, here is the ARN of this ExampleRole,
+
+200
+00:07:19.170 --> 00:07:20.820
+and you are able to assume this role
+
+201
+00:07:20.820 --> 00:07:23.520
+and access some of our resources within our accounts
+
+202
+00:07:23.520 --> 00:07:24.353
+using this role,
+
+203
+00:07:24.353 --> 00:07:26.640
+so this is everything we've seen so far,
+
+204
+00:07:26.640 --> 00:07:28.920
+and then, the other AWS accounts
+
+205
+00:07:28.920 --> 00:07:30.810
+is going to try to attack us,
+
+206
+00:07:30.810 --> 00:07:32.977
+so it's going to say, "Hey," to the middle accounts,
+
+207
+00:07:32.977 --> 00:07:34.687
+"Hey, I have a role for you,
+
+208
+00:07:34.687 --> 00:07:36.097
+"and this role is going to allow you
+
+209
+00:07:36.097 --> 00:07:38.340
+"to access stuff in my accounts,"
+
+210
+00:07:38.340 --> 00:07:40.860
+but instead of providing a role in their accounts,
+
+211
+00:07:40.860 --> 00:07:45.000
+they provide the exact same AWS1 ExampleRole ARN
+
+212
+00:07:45.000 --> 00:07:46.410
+to the middle accounts,
+
+213
+00:07:46.410 --> 00:07:47.243
+so this one doesn't know.
+
+214
+00:07:47.243 --> 00:07:48.750
+It can't verify whether this role
+
+215
+00:07:48.750 --> 00:07:51.330
+belongs to the accounts on the left or on the right,
+
+216
+00:07:51.330 --> 00:07:53.610
+and so it's going to assume that role,
+
+217
+00:07:53.610 --> 00:07:54.900
+and by assuming that role,
+
+218
+00:07:54.900 --> 00:07:55.910
+instead of assuming the role
+
+219
+00:07:55.910 --> 00:07:56.823
+on the right-hand side accounts,
+
+220
+00:07:56.823 --> 00:07:58.100
+it's going to assume roles
+
+221
+00:07:58.100 --> 00:08:00.540
+in the left-hand side accounts without knowing it,
+
+222
+00:08:00.540 --> 00:08:01.680
+and so, therefore,
+
+223
+00:08:01.680 --> 00:08:04.140
+it's going to think that it's going to be performing actions
+
+224
+00:08:04.140 --> 00:08:05.400
+on the right-hand side accounts,
+
+225
+00:08:05.400 --> 00:08:06.870
+but actually, it performs action
+
+226
+00:08:06.870 --> 00:08:08.070
+on the left-hand side accounts,
+
+227
+00:08:08.070 --> 00:08:09.810
+and this is called the confused deputy
+
+228
+00:08:09.810 --> 00:08:12.300
+because the account in the middle is confused.
+
+229
+00:08:12.300 --> 00:08:13.770
+It thinks it's going to operate
+
+230
+00:08:13.770 --> 00:08:14.910
+on the right-hand side accounts,
+
+231
+00:08:14.910 --> 00:08:17.097
+but it actually operates on the left-hand side accounts,
+
+232
+00:08:17.097 --> 00:08:21.450
+and so this is why AWS defined this external ID thing,
+
+233
+00:08:21.450 --> 00:08:23.580
+and let's see how this protects against this attack,
+
+234
+00:08:23.580 --> 00:08:24.660
+and this is an exam question,
+
+235
+00:08:24.660 --> 00:08:27.450
+so this is why I'm going go deep into this,
+
+236
+00:08:27.450 --> 00:08:30.120
+so we have now the same setup,
+
+237
+00:08:30.120 --> 00:08:33.150
+but this time, we also define an external ID
+
+238
+00:08:33.150 --> 00:08:35.280
+to assume this role,
+
+239
+00:08:35.280 --> 00:08:37.920
+and this external ID is something secret
+
+240
+00:08:37.920 --> 00:08:39.810
+that is shared between your accounts
+
+241
+00:08:39.810 --> 00:08:41.520
+and the account in the middle,
+
+242
+00:08:41.520 --> 00:08:42.353
+so we're saying,
+
+243
+00:08:42.353 --> 00:08:45.270
+"Okay, here is the ARN of the account you should assume,
+
+244
+00:08:45.270 --> 00:08:47.730
+but when you do assume this ARN,
+
+245
+00:08:47.730 --> 00:08:50.130
+you need to pass in the external ID
+
+246
+00:08:50.130 --> 00:08:52.080
+that we have defined together,
+
+247
+00:08:52.080 --> 00:08:54.360
+and so, as such, okay, it's able to access this role
+
+248
+00:08:54.360 --> 00:08:57.660
+because we know we both know the secrets, okay?
+
+249
+00:08:57.660 --> 00:09:00.180
+And when we look at the other AWS accounts
+
+250
+00:09:00.180 --> 00:09:02.220
+on the right-hand side, which is trying to attack us,
+
+251
+00:09:02.220 --> 00:09:03.690
+it's going to try to use, again,
+
+252
+00:09:03.690 --> 00:09:05.280
+this role on the left-hand side,
+
+253
+00:09:05.280 --> 00:09:08.040
+but it doesn't know the external ID,
+
+254
+00:09:08.040 --> 00:09:09.900
+and so it's going to give another external ID
+
+255
+00:09:09.900 --> 00:09:11.670
+to the account in the middle,
+
+256
+00:09:11.670 --> 00:09:14.550
+and this time, by providing the wrong external ID,
+
+257
+00:09:14.550 --> 00:09:16.950
+this is going to be preventing the account in the middle
+
+258
+00:09:16.950 --> 00:09:18.450
+to access our AWS accounts
+
+259
+00:09:18.450 --> 00:09:20.610
+because the external ID is not matching,
+
+260
+00:09:20.610 --> 00:09:24.060
+and therefore, we have added an extra level of security,
+
+261
+00:09:24.060 --> 00:09:25.110
+so bottom line is
+
+262
+00:09:25.110 --> 00:09:26.670
+you don't need to know exactly all the steps,
+
+263
+00:09:26.670 --> 00:09:28.170
+but I want to show you exactly how that works
+
+264
+00:09:28.170 --> 00:09:30.150
+and not just tell you using external ID
+
+265
+00:09:30.150 --> 00:09:31.590
+prevents this kind of attacks,
+
+266
+00:09:31.590 --> 00:09:33.240
+so bottom line is still
+
+267
+00:09:33.240 --> 00:09:35.910
+if you are using third-party accounts,
+
+268
+00:09:35.910 --> 00:09:38.520
+and they need to get access to your AWS accounts,
+
+269
+00:09:38.520 --> 00:09:40.140
+and you need to secure that,
+
+270
+00:09:40.140 --> 00:09:43.290
+the answer is to use the STS AssumeRole API,
+
+271
+00:09:43.290 --> 00:09:45.600
+but also to define an external ID,
+
+272
+00:09:45.600 --> 00:09:46.560
+and this, hopefully,
+
+273
+00:09:46.560 --> 00:09:49.230
+description of how this works helps you.
+
+274
+00:09:49.230 --> 00:09:52.230
+You can also use session tags in STS.
+
+275
+00:09:52.230 --> 00:09:55.200
+The idea is that when you assume an IAM role,
+
+276
+00:09:55.200 --> 00:09:56.033
+or, for example,
+
+277
+00:09:56.033 --> 00:09:58.500
+you have user federation that leverages STS,
+
+278
+00:09:58.500 --> 00:10:01.770
+it is possible for you to pass a session tag,
+
+279
+00:10:01.770 --> 00:10:02.910
+so how does that work?
+
+280
+00:10:02.910 --> 00:10:04.710
+Well, your user is going to, for example,
+
+281
+00:10:04.710 --> 00:10:07.620
+do the STS AssumeRole API call
+
+282
+00:10:07.620 --> 00:10:10.260
+and pass a session tag as part of the API call,
+
+283
+00:10:10.260 --> 00:10:13.470
+for example, for Department=HR,
+
+284
+00:10:13.470 --> 00:10:14.970
+and STS will then return
+
+285
+00:10:14.970 --> 00:10:17.550
+temporary security credentials for that user
+
+286
+00:10:17.550 --> 00:10:19.140
+with the session tag,
+
+287
+00:10:19.140 --> 00:10:20.490
+so why do we do this?
+
+288
+00:10:20.490 --> 00:10:23.400
+Well, then, in our IAM policies,
+
+289
+00:10:23.400 --> 00:10:27.286
+we can use a condition called the aws:PrincipalTag,
+
+290
+00:10:27.286 --> 00:10:29.100
+and the idea is that using this,
+
+291
+00:10:29.100 --> 00:10:31.980
+the tag of the condition is going to be compared
+
+292
+00:10:31.980 --> 00:10:35.550
+to the tag passed to the STS AssumeRole,
+
+293
+00:10:35.550 --> 00:10:38.490
+and so this allows us to have conditions
+
+294
+00:10:38.490 --> 00:10:40.860
+to make sure that the principal making the request
+
+295
+00:10:40.860 --> 00:10:42.660
+has the specified tags.
+
+296
+00:10:42.660 --> 00:10:45.960
+For example, we have an S3 bucket named hr-docs,
+
+297
+00:10:45.960 --> 00:10:49.170
+and it contains this S3 bucket policy.
+
+298
+00:10:49.170 --> 00:10:50.970
+As you can see in the condition,
+
+299
+00:10:50.970 --> 00:10:55.470
+there is a StringEquals PrincipalTag/Department equals HR,
+
+300
+00:10:55.470 --> 00:10:57.060
+and therefore, only a user
+
+301
+00:10:57.060 --> 00:11:00.840
+that has done an AssumeRole with that specific session tag
+
+302
+00:11:00.840 --> 00:11:04.350
+will be able to make an API call into the S3 buckets,
+
+303
+00:11:04.350 --> 00:11:06.180
+so this is particularly helpful
+
+304
+00:11:06.180 --> 00:11:08.220
+when you federate users in STS
+
+305
+00:11:08.220 --> 00:11:12.240
+and you want to have some conditions in your IAM policies
+
+306
+00:11:12.240 --> 00:11:15.093
+based on some tags passed through the federation,
+
+307
+00:11:15.960 --> 00:11:18.000
+so finally, to conclude with STS,
+
+308
+00:11:18.000 --> 00:11:20.040
+there's a few important APIs you need to know.
+
+309
+00:11:20.040 --> 00:11:22.050
+The AssumRole is the most basic one,
+
+310
+00:11:22.050 --> 00:11:23.190
+which is to access a role
+
+311
+00:11:23.190 --> 00:11:25.464
+within your account or across accounts.
+
+312
+00:11:25.464 --> 00:11:27.000
+AssumeRoleWithSAML,
+
+313
+00:11:27.000 --> 00:11:31.020
+which is to get credentials when we are federated with SAML.
+
+314
+00:11:31.020 --> 00:11:32.610
+AssumeRoleWithWebIdentity,
+
+315
+00:11:32.610 --> 00:11:34.800
+which we are using a IdP,
+
+316
+00:11:34.800 --> 00:11:37.740
+and so that includes Amazon Cognito, Login with Amazon,
+
+317
+00:11:37.740 --> 00:11:41.640
+Facebook, Google, or any OpenID Connect-compatible IdP,
+
+318
+00:11:41.640 --> 00:11:43.710
+and so we'll be seeing this in detail
+
+319
+00:11:43.710 --> 00:11:45.570
+in the federation section,
+
+320
+00:11:45.570 --> 00:11:47.640
+and overall, just so you know right now,
+
+321
+00:11:47.640 --> 00:11:48.690
+AWS does not recommend
+
+322
+00:11:48.690 --> 00:11:51.840
+to use the AssumeRoleWithWebIdentity API anymore.
+
+323
+00:11:51.840 --> 00:11:54.270
+It recommends to use Cognito instead.
+
+324
+00:11:54.270 --> 00:11:57.120
+Then we have a GetSessionToken, which is used for MFA,
+
+325
+00:11:57.120 --> 00:12:00.090
+so when we log using MFA to get credentials back,
+
+326
+00:12:00.090 --> 00:12:01.710
+or GetFederationToken,
+
+327
+00:12:01.710 --> 00:12:05.520
+which is usually to get a credentials,
+
+328
+00:12:05.520 --> 00:12:06.353
+temporary credentials,
+
+329
+00:12:06.353 --> 00:12:08.760
+when we have federation using a proxy app,
+
+330
+00:12:08.760 --> 00:12:11.100
+for example, when we have something that distributes tokens
+
+331
+00:12:11.100 --> 00:12:13.470
+within a corporate network, okay?
+
+332
+00:12:13.470 --> 00:12:14.520
+So at a high level,
+
+333
+00:12:14.520 --> 00:12:16.560
+these are the important APIs you need to know.
+
+334
+00:12:16.560 --> 00:12:18.720
+The most important ones are going to be the first four.
+
+335
+00:12:18.720 --> 00:12:20.940
+I don't think the fifth one is going to be in the exam,
+
+336
+00:12:20.940 --> 00:12:23.850
+but still, for me, good to tell you what it is, okay?
+
+337
+00:12:23.850 --> 00:12:24.683
+So that's it.
+
+338
+00:12:24.683 --> 00:12:25.620
+I will see you in the next lecture
+
+339
+00:12:25.620 --> 00:12:27.183
+for some identity federation.
+

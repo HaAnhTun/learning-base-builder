@@ -1,0 +1,1218 @@
+WEBVTT
+
+1
+00:00:00.180 --> 00:00:02.460
+<v Instructor>Okay, so let's get into DynamoDB.</v>
+
+2
+00:00:02.460 --> 00:00:05.310
+So DynamoDB is going to be a NoSQL database,
+
+3
+00:00:05.310 --> 00:00:08.430
+fully managed, serverless, and can provide massive scale.
+
+4
+00:00:08.430 --> 00:00:12.030
+It can go up to 1 million requests per second.
+
+5
+00:00:12.030 --> 00:00:13.710
+It's going to have a similar architecture
+
+6
+00:00:13.710 --> 00:00:14.910
+to Apache Casandra,
+
+7
+00:00:14.910 --> 00:00:19.830
+and users of Cassandra can migrate to DynamoDB, for example.
+
+8
+00:00:19.830 --> 00:00:21.930
+There's no disk space to provision,
+
+9
+00:00:21.930 --> 00:00:24.960
+and the max object size is going to be 400 kilobytes.
+
+10
+00:00:24.960 --> 00:00:27.810
+And a way to store bigger objects into DynamoDB
+
+11
+00:00:27.810 --> 00:00:30.420
+is to actually store the objects into Amazon S3
+
+12
+00:00:30.420 --> 00:00:34.110
+and store a reference to that object in DynamoDB.
+
+13
+00:00:34.110 --> 00:00:36.060
+In terms of capacity, you have two modes.
+
+14
+00:00:36.060 --> 00:00:37.170
+You have provision capacity,
+
+15
+00:00:37.170 --> 00:00:39.810
+where you specify how many write capacity units
+
+16
+00:00:39.810 --> 00:00:42.900
+and read capacity units and if you want autoscaling on.
+
+17
+00:00:42.900 --> 00:00:45.390
+Or you can use on-demand, where you're going to have to pay
+
+18
+00:00:45.390 --> 00:00:46.917
+for every single write and read.
+
+19
+00:00:46.917 --> 00:00:49.080
+And this is better when you're going to have
+
+20
+00:00:49.080 --> 00:00:52.470
+a more unexpected, unpredictable type of workload.
+
+21
+00:00:52.470 --> 00:00:53.760
+So provision is going to give you
+
+22
+00:00:53.760 --> 00:00:56.460
+the smoothest type of scaling and a better cost,
+
+23
+00:00:56.460 --> 00:00:58.080
+whereas on-demand is gonna be very helpful
+
+24
+00:00:58.080 --> 00:00:59.910
+if you don't know your patterns in advance,
+
+25
+00:00:59.910 --> 00:01:02.670
+or you're doing some development, et cetera, et cetera.
+
+26
+00:01:02.670 --> 00:01:05.640
+It supports CRUD, so Create, Read, Update, Delete.
+
+27
+00:01:05.640 --> 00:01:08.520
+And the read can be eventually or strongly consistent.
+
+28
+00:01:08.520 --> 00:01:11.040
+And it supports transactions across multiple tables.
+
+29
+00:01:11.040 --> 00:01:14.550
+So it is possible to get ACID support with DynamoDB.
+
+30
+00:01:14.550 --> 00:01:17.700
+You get backups available and point-in-time recovery.
+
+31
+00:01:17.700 --> 00:01:19.830
+And finally, you have two table classes,
+
+32
+00:01:19.830 --> 00:01:21.510
+standard for frequently accessed data
+
+33
+00:01:21.510 --> 00:01:25.380
+and infrequent access for infrequently accessed data.
+
+34
+00:01:25.380 --> 00:01:27.390
+So everything as said, you should already know,
+
+35
+00:01:27.390 --> 00:01:29.340
+but let's go back over the basics real quick.
+
+36
+00:01:29.340 --> 00:01:31.500
+DynamoDB is made of tables.
+
+37
+00:01:31.500 --> 00:01:33.210
+And each table has primary keys
+
+38
+00:01:33.210 --> 00:01:36.210
+that must be decided at creation time.
+
+39
+00:01:36.210 --> 00:01:38.070
+Each table can have an infinite number of items,
+
+40
+00:01:38.070 --> 00:01:41.040
+which are called rows, and each item will have attributes.
+
+41
+00:01:41.040 --> 00:01:43.500
+They're like columns that can be added over time,
+
+42
+00:01:43.500 --> 00:01:44.730
+and they can be null.
+
+43
+00:01:44.730 --> 00:01:47.820
+As I said, an item cannot be bigger than 400 kilobytes.
+
+44
+00:01:47.820 --> 00:01:49.140
+And in terms of data types supported,
+
+45
+00:01:49.140 --> 00:01:53.010
+you have scalar, so string, number, binary, Boolean, null.
+
+46
+00:01:53.010 --> 00:01:55.170
+You get document types such list, map.
+
+47
+00:01:55.170 --> 00:01:56.910
+And you get set types such as string set,
+
+48
+00:01:56.910 --> 00:01:59.040
+number set, and binary set.
+
+49
+00:01:59.040 --> 00:02:00.810
+Okay, primary key is more important.
+
+50
+00:02:00.810 --> 00:02:03.600
+So option one, you get just a partition key,
+
+51
+00:02:03.600 --> 00:02:04.800
+and it's called a HASH.
+
+52
+00:02:04.800 --> 00:02:06.870
+And in this case, the partition key
+
+53
+00:02:06.870 --> 00:02:08.820
+must be unique for each item.
+
+54
+00:02:08.820 --> 00:02:11.640
+The whole idea behind the primary key is the uniqueness.
+
+55
+00:02:11.640 --> 00:02:14.070
+And so the partition key must be diverse enough
+
+56
+00:02:14.070 --> 00:02:16.170
+so that the data is going to be distributed.
+
+57
+00:02:16.170 --> 00:02:17.730
+For example, if you have a users table,
+
+58
+00:02:17.730 --> 00:02:21.000
+user_id is going to be a great partition key.
+
+59
+00:02:21.000 --> 00:02:22.230
+So we'll have the partition key,
+
+60
+00:02:22.230 --> 00:02:23.640
+and then we'll have a bunch of attributes
+
+61
+00:02:23.640 --> 00:02:25.530
+such as First Name and Age.
+
+62
+00:02:25.530 --> 00:02:27.420
+And this gives us the kind of users like this.
+
+63
+00:02:27.420 --> 00:02:29.400
+So for John, there will be a user_id,
+
+64
+00:02:29.400 --> 00:02:31.260
+and for Katie, another user_id.
+
+65
+00:02:31.260 --> 00:02:32.820
+And so this user_id is great.
+
+66
+00:02:32.820 --> 00:02:34.410
+We only have one. It's unique.
+
+67
+00:02:34.410 --> 00:02:36.900
+So it's a great choice for a partition key.
+
+68
+00:02:36.900 --> 00:02:39.390
+The other option is to use a partition key
+
+69
+00:02:39.390 --> 00:02:40.740
+that's going to be a primary key
+
+70
+00:02:40.740 --> 00:02:42.060
+that's going to be composites.
+
+71
+00:02:42.060 --> 00:02:45.570
+And so it's called a partition key plus a sort key,
+
+72
+00:02:45.570 --> 00:02:47.070
+in which case what must be unique
+
+73
+00:02:47.070 --> 00:02:48.960
+is the combination of the two.
+
+74
+00:02:48.960 --> 00:02:51.450
+So the partition key itself can be repeated
+
+75
+00:02:51.450 --> 00:02:53.220
+as long as the sort key associated with it
+
+76
+00:02:53.220 --> 00:02:55.020
+is going to be different every time.
+
+77
+00:02:55.020 --> 00:02:57.300
+The data is going to be grouped logically
+
+78
+00:02:57.300 --> 00:02:59.310
+on the tables by partition key.
+
+79
+00:02:59.310 --> 00:03:01.290
+And it's also common to see the sort key
+
+80
+00:03:01.290 --> 00:03:03.030
+being called a range key.
+
+81
+00:03:03.030 --> 00:03:05.190
+For example, if you have users-and-games table,
+
+82
+00:03:05.190 --> 00:03:07.530
+user_id would be great for the partition key,
+
+83
+00:03:07.530 --> 00:03:10.740
+and game_id would be great for the sort key.
+
+84
+00:03:10.740 --> 00:03:13.170
+So it's possible that a user has multiple games,
+
+85
+00:03:13.170 --> 00:03:15.240
+but each game_id and user_id combination
+
+86
+00:03:15.240 --> 00:03:17.790
+is going to be unique, hence this is a great choice.
+
+87
+00:03:17.790 --> 00:03:21.720
+Another good choice for a sort key is usually timestamp.
+
+88
+00:03:21.720 --> 00:03:22.920
+So you're trying to describe something
+
+89
+00:03:22.920 --> 00:03:26.670
+that happens over time for a specific user_id and so on.
+
+90
+00:03:26.670 --> 00:03:28.710
+You will choose user_id for partition key,
+
+91
+00:03:28.710 --> 00:03:31.680
+and you will choose a timestamp column for the sort key.
+
+92
+00:03:31.680 --> 00:03:33.870
+So here's the example for user_id and game_id.
+
+93
+00:03:33.870 --> 00:03:35.520
+We have the partition key and the sort key.
+
+94
+00:03:35.520 --> 00:03:38.730
+And together, as a composite key, they are unique,
+
+95
+00:03:38.730 --> 00:03:41.010
+and the result can be some of the attributes.
+
+96
+00:03:41.010 --> 00:03:42.660
+So again, here's an example,
+
+97
+00:03:42.660 --> 00:03:46.500
+for this user_id, 12 something 45.
+
+98
+00:03:46.500 --> 00:03:48.030
+Then there's two games that have been played.
+
+99
+00:03:48.030 --> 00:03:49.740
+One was won, and one was lost.
+
+100
+00:03:49.740 --> 00:03:51.420
+And so we can see that the combination
+
+101
+00:03:51.420 --> 00:03:54.810
+of the user_id and the game_id in this case is unique.
+
+102
+00:03:54.810 --> 00:03:57.600
+Okay, hopefully all of this is not new to you.
+
+103
+00:03:57.600 --> 00:03:59.130
+Then we have indexes.
+
+104
+00:03:59.130 --> 00:04:01.680
+Object is made of a partition key,
+
+105
+00:04:01.680 --> 00:04:04.380
+a sort key that is optional, and some attributes.
+
+106
+00:04:04.380 --> 00:04:06.990
+And so we can define some indexes on top of it.
+
+107
+00:04:06.990 --> 00:04:10.980
+So the first one is an LSI, or Local Secondary Index.
+
+108
+00:04:10.980 --> 00:04:13.650
+You need to make sure the partition key is kept.
+
+109
+00:04:13.650 --> 00:04:17.070
+And you will just select an alternative sort key.
+
+110
+00:04:17.070 --> 00:04:19.650
+And this LSI, or Local Secondary Index,
+
+111
+00:04:19.650 --> 00:04:21.660
+must be defined at table creation time.
+
+112
+00:04:21.660 --> 00:04:24.060
+It cannot be defined afterwards.
+
+113
+00:04:24.060 --> 00:04:25.410
+The other index you have
+
+114
+00:04:25.410 --> 00:04:27.630
+is in case you want to change the primary key.
+
+115
+00:04:27.630 --> 00:04:30.900
+Then it's called a GSI for Global Secondary Index.
+
+116
+00:04:30.900 --> 00:04:32.970
+In this case, you can change the primary key,
+
+117
+00:04:32.970 --> 00:04:35.490
+and you can also optionally have a sort key.
+
+118
+00:04:35.490 --> 00:04:38.820
+And it can be defined after the table is created.
+
+119
+00:04:38.820 --> 00:04:42.240
+So the idea in DynamoDB is that you can only query
+
+120
+00:04:42.240 --> 00:04:43.920
+by primary key plus sort key
+
+121
+00:04:43.920 --> 00:04:46.800
+on the main table and the indexes.
+
+122
+00:04:46.800 --> 00:04:47.970
+So it's not like RDS,
+
+123
+00:04:47.970 --> 00:04:51.450
+where you can query any single column and any single rows.
+
+124
+00:04:51.450 --> 00:04:53.430
+In DynamoDB, you need to think about
+
+125
+00:04:53.430 --> 00:04:55.410
+what your queries are going to be
+
+126
+00:04:55.410 --> 00:04:57.840
+and create the right indexes for these queries
+
+127
+00:04:57.840 --> 00:04:58.680
+for it to work.
+
+128
+00:04:58.680 --> 00:04:59.970
+So this is a major difference
+
+129
+00:04:59.970 --> 00:05:03.360
+between a traditional RDBMS such as RDS
+
+130
+00:05:03.360 --> 00:05:05.730
+and a NoSQL database such as DynamoDB.
+
+131
+00:05:05.730 --> 00:05:09.120
+In our case, in DynamoDB, if you want to query something,
+
+132
+00:05:09.120 --> 00:05:10.650
+you need to make sure an index
+
+133
+00:05:10.650 --> 00:05:12.750
+has been created for it in advance.
+
+134
+00:05:12.750 --> 00:05:17.040
+Now, DynamoDB is a point of focus on the Developer exam,
+
+135
+00:05:17.040 --> 00:05:19.380
+little less on the Solutions Architect Pro.
+
+136
+00:05:19.380 --> 00:05:20.430
+So you don't need to know all the details,
+
+137
+00:05:20.430 --> 00:05:22.620
+but remember, between the LSI and the GSI,
+
+138
+00:05:22.620 --> 00:05:24.660
+but remember that you need an index
+
+139
+00:05:24.660 --> 00:05:27.360
+if you want to query a specific attribute in DynamoDB.
+
+140
+00:05:28.320 --> 00:05:30.600
+Okay, so some important features of DynamoDB.
+
+141
+00:05:30.600 --> 00:05:33.840
+Number one is TTL, which is to make a row expire
+
+142
+00:05:33.840 --> 00:05:36.000
+after a specific amount of time.
+
+143
+00:05:36.000 --> 00:05:38.670
+We have DynamoDB Streams where we want to react
+
+144
+00:05:38.670 --> 00:05:40.590
+to changes in DynamoDB tables in real time.
+
+145
+00:05:40.590 --> 00:05:42.600
+So this is a very common architecture,
+
+146
+00:05:42.600 --> 00:05:43.890
+and this stream can be read
+
+147
+00:05:43.890 --> 00:05:46.650
+by Lambda, very commonly, or EC2.
+
+148
+00:05:46.650 --> 00:05:49.530
+You get 24 hours retention of data in that stream.
+
+149
+00:05:49.530 --> 00:05:51.630
+So here's a very common architecture.
+
+150
+00:05:51.630 --> 00:05:54.330
+You have Create, Read, Update, Deletes are done to a table
+
+151
+00:05:54.330 --> 00:05:55.710
+and anything that modifies the table.
+
+152
+00:05:55.710 --> 00:05:57.750
+So Create, Update, and Delete
+
+153
+00:05:57.750 --> 00:06:00.390
+will be put into a DynamoDB stream.
+
+154
+00:06:00.390 --> 00:06:02.520
+And that stream can be read by Lambda.
+
+155
+00:06:02.520 --> 00:06:04.230
+And then from Lambda, you can, for example,
+
+156
+00:06:04.230 --> 00:06:07.170
+put the data into Amazon OpenSearch,
+
+157
+00:06:07.170 --> 00:06:09.900
+or can Kinesis if you want it to have some downstream,
+
+158
+00:06:09.900 --> 00:06:12.330
+maybe Kinesis analytics application on top of it.
+
+159
+00:06:12.330 --> 00:06:15.750
+So this is a very, very common solution architecture.
+
+160
+00:06:15.750 --> 00:06:17.460
+We also have global tables,
+
+161
+00:06:17.460 --> 00:06:20.730
+which is basically a table that is going to be replicated
+
+162
+00:06:20.730 --> 00:06:22.290
+across all your regions.
+
+163
+00:06:22.290 --> 00:06:24.270
+And this is Active-Active type of replication,
+
+164
+00:06:24.270 --> 00:06:25.860
+so you can have many regions.
+
+165
+00:06:25.860 --> 00:06:28.320
+And for this, you need to enable DynamoDB Streams first.
+
+166
+00:06:28.320 --> 00:06:30.900
+And it's very useful if you want to have low latency access
+
+167
+00:06:30.900 --> 00:06:32.850
+to data into different regions,
+
+168
+00:06:32.850 --> 00:06:35.310
+or you want to create a disaster recovery strategy
+
+169
+00:06:35.310 --> 00:06:37.860
+that's going to have a very, very low RTO.
+
+170
+00:06:37.860 --> 00:06:39.000
+So here's the example.
+
+171
+00:06:39.000 --> 00:06:41.490
+We have two tables, one in us-east-1
+
+172
+00:06:41.490 --> 00:06:44.130
+and the other one in ap-southeast-2.
+
+173
+00:06:44.130 --> 00:06:46.950
+And whatever we do to the table on us-east-1
+
+174
+00:06:46.950 --> 00:06:50.250
+is going to be replicated to the table in ap-southeast-2.
+
+175
+00:06:50.250 --> 00:06:52.590
+And similarly, whatever we do in ap-southeast-2
+
+176
+00:06:52.590 --> 00:06:55.833
+is going to be replicated back into us-east-1.
+
+177
+00:06:56.730 --> 00:06:58.920
+Okay, you can use can Kinesis Data Streams
+
+178
+00:06:58.920 --> 00:06:59.970
+with DynamoDB Streams.
+
+179
+00:06:59.970 --> 00:07:00.900
+How does that work?
+
+180
+00:07:00.900 --> 00:07:03.060
+Well, we know that DynamoDB Streams
+
+181
+00:07:03.060 --> 00:07:04.980
+will capture item-level changes,
+
+182
+00:07:04.980 --> 00:07:06.960
+but we can now send these changes
+
+183
+00:07:06.960 --> 00:07:10.050
+directly into a desired Kinesis data stream.
+
+184
+00:07:10.050 --> 00:07:10.883
+Why would you do that?
+
+185
+00:07:10.883 --> 00:07:13.320
+Well, we only have 24 hours of data retention
+
+186
+00:07:13.320 --> 00:07:14.490
+in DynamoDB Streams.
+
+187
+00:07:14.490 --> 00:07:15.870
+But with Kinesis Data Streams,
+
+188
+00:07:15.870 --> 00:07:20.220
+we can get longer data retention period up to 365 days.
+
+189
+00:07:20.220 --> 00:07:23.190
+Also, we could use the Kinesis-related tool suites
+
+190
+00:07:23.190 --> 00:07:24.510
+to analyze the data.
+
+191
+00:07:24.510 --> 00:07:25.343
+So how does that work?
+
+192
+00:07:25.343 --> 00:07:27.690
+So DynamoDB tables will push item-level changes
+
+193
+00:07:27.690 --> 00:07:30.660
+in Kinesis data stream, and then we can use, for example,
+
+194
+00:07:30.660 --> 00:07:33.120
+Kinesis Data Firehose to read this data
+
+195
+00:07:33.120 --> 00:07:35.250
+and store it into the usual places,
+
+196
+00:07:35.250 --> 00:07:39.000
+so Amazon S3, Redshift, or OpenSearch.
+
+197
+00:07:39.000 --> 00:07:40.470
+Or you could use Kinesis Data Analytics
+
+198
+00:07:40.470 --> 00:07:42.390
+to analyze this data in real time
+
+199
+00:07:42.390 --> 00:07:43.920
+and do some real-time computation
+
+200
+00:07:43.920 --> 00:07:46.410
+such as some filtering, aggregation, transformation,
+
+201
+00:07:46.410 --> 00:07:49.470
+and send that later on to Kinesis Data Streams,
+
+202
+00:07:49.470 --> 00:07:51.960
+Kinesis Data Firehose, or Lambda.
+
+203
+00:07:51.960 --> 00:07:54.450
+So now let's get into solution architecture.
+
+204
+00:07:54.450 --> 00:07:57.510
+So we know that Amazon S3 is not a great way
+
+205
+00:07:57.510 --> 00:07:58.470
+to search for objects,
+
+206
+00:07:58.470 --> 00:08:01.080
+because it doesn't have any indexing capabilities.
+
+207
+00:08:01.080 --> 00:08:02.490
+And so what we wanna do
+
+208
+00:08:02.490 --> 00:08:06.450
+is store some metadata information into DynamoDB.
+
+209
+00:08:06.450 --> 00:08:08.370
+So the way it works is that we will do writes
+
+210
+00:08:08.370 --> 00:08:12.090
+to Amazon S3 buckets to add objects or update objects,
+
+211
+00:08:12.090 --> 00:08:13.290
+and we'll have a Lambda function
+
+212
+00:08:13.290 --> 00:08:16.170
+being triggered by the S3 events.
+
+213
+00:08:16.170 --> 00:08:18.150
+This Lambda function is going to take the metadata
+
+214
+00:08:18.150 --> 00:08:21.060
+of the objects we're trying to insert into Amazon S3
+
+215
+00:08:21.060 --> 00:08:23.670
+and insert this into a DynamoDB table.
+
+216
+00:08:23.670 --> 00:08:26.670
+And the cool thing about it is that now we can create an API
+
+217
+00:08:26.670 --> 00:08:30.239
+to search for object metadata by creating the right indexes,
+
+218
+00:08:30.239 --> 00:08:32.070
+the LSI and the GSI.
+
+219
+00:08:32.070 --> 00:08:35.220
+So some things we can do thanks to this architecture
+
+220
+00:08:35.220 --> 00:08:36.540
+is now we can say, okay,
+
+221
+00:08:36.540 --> 00:08:40.890
+give me all the objects by date in Amazon S3.
+
+222
+00:08:40.890 --> 00:08:42.690
+Or give me the total amount of storage
+
+223
+00:08:42.690 --> 00:08:44.580
+used by a certain customer.
+
+224
+00:08:44.580 --> 00:08:47.880
+Or give me all the objects that have a certain attribute.
+
+225
+00:08:47.880 --> 00:08:50.190
+So by having these objects into S3 only,
+
+226
+00:08:50.190 --> 00:08:52.650
+we could never answer these kind of queries.
+
+227
+00:08:52.650 --> 00:08:54.540
+By having it into a DynamoDB table,
+
+228
+00:08:54.540 --> 00:08:56.073
+it becomes quite trivial.
+
+229
+00:08:57.270 --> 00:09:00.030
+So finally, let's talk about caching in DynamoDB.
+
+230
+00:09:00.030 --> 00:09:02.970
+So DAX, as you may know, is DynamoDB Accelerator.
+
+231
+00:09:02.970 --> 00:09:05.550
+And it is a seamless cache for DynamoDB.
+
+232
+00:09:05.550 --> 00:09:07.410
+You don't need to rewrite your application.
+
+233
+00:09:07.410 --> 00:09:10.050
+And all the writes we go through DAX to DynamoDB.
+
+234
+00:09:10.050 --> 00:09:12.780
+And what this gives you is micro-second latency
+
+235
+00:09:12.780 --> 00:09:15.810
+for cache reads and queries, which is very handy.
+
+236
+00:09:15.810 --> 00:09:17.190
+It solves the hot key problem.
+
+237
+00:09:17.190 --> 00:09:18.960
+So if there is, in DynamoDB,
+
+238
+00:09:18.960 --> 00:09:21.330
+a specific row that is being read too many times
+
+239
+00:09:21.330 --> 00:09:22.890
+because it is very popular,
+
+240
+00:09:22.890 --> 00:09:25.590
+then you're gonna get a throttling issue in DynamoDB,
+
+241
+00:09:25.590 --> 00:09:28.140
+in which case, creating a DAX cluster
+
+242
+00:09:28.140 --> 00:09:29.100
+in front of the DynamoDB
+
+243
+00:09:29.100 --> 00:09:31.020
+is going to solve that problem for you
+
+244
+00:09:31.020 --> 00:09:33.090
+by caching that row and making sure
+
+245
+00:09:33.090 --> 00:09:35.490
+it doesn't ever reach DynamoDB.
+
+246
+00:09:35.490 --> 00:09:38.040
+By default, your data is going to be cached
+
+247
+00:09:38.040 --> 00:09:41.400
+for five minutes in your DAX, and there will be the TTL.
+
+248
+00:09:41.400 --> 00:09:44.130
+Then the data will have to be re-fetched from DynamoDB.
+
+249
+00:09:44.130 --> 00:09:46.620
+You can get up to 10 nodes in the cluster.
+
+250
+00:09:46.620 --> 00:09:49.098
+And it could be multi-AZ, in which case,
+
+251
+00:09:49.098 --> 00:09:52.320
+AWS recommends you three nodes minimum for production.
+
+252
+00:09:52.320 --> 00:09:53.153
+It's also secure.
+
+253
+00:09:53.153 --> 00:09:55.650
+You get encryption at rest with KMS, VPC integration,
+
+254
+00:09:55.650 --> 00:09:57.630
+IAM, CloudTrail, and so on.
+
+255
+00:09:57.630 --> 00:10:00.660
+And this is a default choice for a cache in DynamoDB.
+
+256
+00:10:00.660 --> 00:10:02.850
+But we'll have a bit of a discussion
+
+257
+00:10:02.850 --> 00:10:04.770
+into the right strategy right after.
+
+258
+00:10:04.770 --> 00:10:07.080
+So the idea is your application wants to write
+
+259
+00:10:07.080 --> 00:10:09.240
+to DynamoDB tables and read from them,
+
+260
+00:10:09.240 --> 00:10:11.220
+and in the middle is going to be DAX.
+
+261
+00:10:11.220 --> 00:10:12.750
+And it's gonna be seamless for us.
+
+262
+00:10:12.750 --> 00:10:14.460
+And it's going to cache the right rows
+
+263
+00:10:14.460 --> 00:10:17.640
+and make sure we get the right performance where we need it.
+
+264
+00:10:17.640 --> 00:10:20.160
+So the question is, from an architectural point of view,
+
+265
+00:10:20.160 --> 00:10:23.880
+should you use DAX or ElastiCache for DynamoDB?
+
+266
+00:10:23.880 --> 00:10:28.140
+So as a very simple problem, when you have your clients
+
+267
+00:10:28.140 --> 00:10:30.720
+who want to directly access DynamoDB,
+
+268
+00:10:30.720 --> 00:10:33.000
+then the right answer is to use DAX.
+
+269
+00:10:33.000 --> 00:10:34.590
+Because you will scan,
+
+270
+00:10:34.590 --> 00:10:37.140
+you will have the individual objects
+
+271
+00:10:37.140 --> 00:10:39.360
+being cached in DAX directly,
+
+272
+00:10:39.360 --> 00:10:41.160
+and even the results of your query
+
+273
+00:10:41.160 --> 00:10:44.010
+and your scan will be in DAX.
+
+274
+00:10:44.010 --> 00:10:46.020
+But let's assume that your client,
+
+275
+00:10:46.020 --> 00:10:48.570
+after retrieving a lot of the data,
+
+276
+00:10:48.570 --> 00:10:50.790
+performs some heavy computation.
+
+277
+00:10:50.790 --> 00:10:53.520
+And this computation can take, I don't know,
+
+278
+00:10:53.520 --> 00:10:54.810
+10 seconds, 30 seconds.
+
+279
+00:10:54.810 --> 00:10:56.430
+It can take a long time.
+
+280
+00:10:56.430 --> 00:11:00.120
+Then you will want to be able to cache the results
+
+281
+00:11:00.120 --> 00:11:02.340
+of these computations somewhere.
+
+282
+00:11:02.340 --> 00:11:04.620
+And that's somewhere may be ElastiCache.
+
+283
+00:11:04.620 --> 00:11:08.100
+So for example, ElastiCache index example could be a place
+
+284
+00:11:08.100 --> 00:11:11.010
+where you want to store your aggregation results
+
+285
+00:11:11.010 --> 00:11:13.950
+and make sure other clients can look into ElastiCache
+
+286
+00:11:13.950 --> 00:11:16.830
+before getting data from DynamoDB
+
+287
+00:11:16.830 --> 00:11:19.200
+to get the aggregation results.
+
+288
+00:11:19.200 --> 00:11:21.000
+So it is one kind of architecture.
+
+289
+00:11:21.000 --> 00:11:23.850
+You could also swap ElastiCache for DynamoDB itself
+
+290
+00:11:23.850 --> 00:11:26.910
+and have a table act as a cache, it is possible.
+
+291
+00:11:26.910 --> 00:11:30.060
+But I want to show you here that DAX and ElastiCache
+
+292
+00:11:30.060 --> 00:11:32.310
+can serve very different purposes, okay?
+
+293
+00:11:32.310 --> 00:11:35.310
+DAX is going to be for individual object cache
+
+294
+00:11:35.310 --> 00:11:38.340
+and for query and scan caches in DynamoDB,
+
+295
+00:11:38.340 --> 00:11:41.430
+whereas ElastiCache is for whatever you wanna put in it.
+
+296
+00:11:41.430 --> 00:11:42.540
+So it's very possible for you
+
+297
+00:11:42.540 --> 00:11:44.400
+to perform some heavy computations
+
+298
+00:11:44.400 --> 00:11:46.560
+and cache them centrally in the ElastiCache
+
+299
+00:11:46.560 --> 00:11:49.170
+to avoid going back to DAX and DynamoDB
+
+300
+00:11:49.170 --> 00:11:51.960
+and do some expensive computations again.
+
+301
+00:11:51.960 --> 00:11:53.670
+Okay, so that's it into DynamoDB.
+
+302
+00:11:53.670 --> 00:11:55.530
+Remember, it's from the architectural point of view.
+
+303
+00:11:55.530 --> 00:11:57.270
+This is all you need to know for the exam.
+
+304
+00:11:57.270 --> 00:11:59.220
+And I will see you in the next lecture.
+

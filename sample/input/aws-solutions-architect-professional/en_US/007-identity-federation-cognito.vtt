@@ -1,0 +1,858 @@
+WEBVTT
+
+1
+00:00:00.240 --> 00:00:01.590
+<v Instructor>Okay, so now let's discuss</v>
+
+2
+00:00:01.590 --> 00:00:04.290
+Identity Federation in AWS.
+
+3
+00:00:04.290 --> 00:00:06.630
+So the idea is that you want to give users
+
+4
+00:00:06.630 --> 00:00:09.420
+that sit outside of AWS permissions to access
+
+5
+00:00:09.420 --> 00:00:11.730
+your AWS resources in your accounts.
+
+6
+00:00:11.730 --> 00:00:14.160
+And the idea is that because the users already exist
+
+7
+00:00:14.160 --> 00:00:16.500
+within your corporate directory,
+
+8
+00:00:16.500 --> 00:00:19.680
+then you don't want to create specific IAM users for them
+
+9
+00:00:19.680 --> 00:00:22.260
+because you'd like to do user management outside of AWS.
+
+10
+00:00:22.260 --> 00:00:24.540
+So this is why we need Identity Federation.
+
+11
+00:00:24.540 --> 00:00:26.280
+So the use cases is, for example,
+
+12
+00:00:26.280 --> 00:00:28.560
+your corporation has its own identity system,
+
+13
+00:00:28.560 --> 00:00:30.270
+for example, Active Directory,
+
+14
+00:00:30.270 --> 00:00:31.860
+or you have a web and mobile application
+
+15
+00:00:31.860 --> 00:00:34.410
+that needs to access AWS resources.
+
+16
+00:00:34.410 --> 00:00:36.390
+And so this is where we need Identity Federation.
+
+17
+00:00:36.390 --> 00:00:38.490
+So at its core, here's what it looks like.
+
+18
+00:00:38.490 --> 00:00:41.430
+So the user wants to access AWS,
+
+19
+00:00:41.430 --> 00:00:43.440
+and we have an identity provider.
+
+20
+00:00:43.440 --> 00:00:45.030
+First, and this will not be represented
+
+21
+00:00:45.030 --> 00:00:48.240
+on any following graphs, but just on this one,
+
+22
+00:00:48.240 --> 00:00:49.380
+obviously you need to set up
+
+23
+00:00:49.380 --> 00:00:51.870
+a trust relationship between AWS
+
+24
+00:00:51.870 --> 00:00:55.320
+and the identity provider to tell AWS that it's fine
+
+25
+00:00:55.320 --> 00:00:58.530
+to get an identity from this one provider.
+
+26
+00:00:58.530 --> 00:00:59.880
+Then the user will perform a login
+
+27
+00:00:59.880 --> 00:01:01.770
+onto this identity provider,
+
+28
+00:01:01.770 --> 00:01:04.290
+will receive back credentials for AWS,
+
+29
+00:01:04.290 --> 00:01:08.820
+and will access AWS using these temporary credentials.
+
+30
+00:01:08.820 --> 00:01:11.880
+So Identity Federation can have multiple flavors.
+
+31
+00:01:11.880 --> 00:01:15.180
+It could be SAML 2.0, a custom identity broker,
+
+32
+00:01:15.180 --> 00:01:18.330
+Web Identity Federation with or without Amazon Cognito,
+
+33
+00:01:18.330 --> 00:01:20.790
+and then IAM Identity Center.
+
+34
+00:01:20.790 --> 00:01:23.400
+So I'm going to discuss the first three,
+
+35
+00:01:23.400 --> 00:01:25.080
+single sign-on will have its own lecture,
+
+36
+00:01:25.080 --> 00:01:27.540
+and this is the more recent generation
+
+37
+00:01:27.540 --> 00:01:28.920
+of Identity Federation,
+
+38
+00:01:28.920 --> 00:01:30.450
+but still from an example perspective,
+
+39
+00:01:30.450 --> 00:01:32.490
+you need to know about all of them.
+
+40
+00:01:32.490 --> 00:01:36.210
+So let's go ahead with SAML 2.0 Federation.
+
+41
+00:01:36.210 --> 00:01:40.170
+So SAML 2.0 stands for Security Assertion Markup Language,
+
+42
+00:01:40.170 --> 00:01:41.370
+and it's an open standard used
+
+43
+00:01:41.370 --> 00:01:43.920
+by many identity providers such as ADFS.
+
+44
+00:01:43.920 --> 00:01:46.140
+It supports integration with Microsoft Active Directory,
+
+45
+00:01:46.140 --> 00:01:50.040
+which is nice, or any SAML 2.0-compatible IDP,
+
+46
+00:01:50.040 --> 00:01:51.843
+which is identity provider with AWS.
+
+47
+00:01:52.800 --> 00:01:55.170
+Using this, we can access the console, the CLI,
+
+48
+00:01:55.170 --> 00:01:57.600
+or any API using temporary credentials.
+
+49
+00:01:57.600 --> 00:01:58.980
+So we don't need to create IAM users
+
+50
+00:01:58.980 --> 00:02:01.830
+for each of the employees in your ADFS.
+
+51
+00:02:01.830 --> 00:02:04.980
+And you need, for example, of course to set up a trust
+
+52
+00:02:04.980 --> 00:02:09.570
+between IAM and your SAML 2.0 identity providers both ways.
+
+53
+00:02:09.570 --> 00:02:11.670
+So under the hood we'll use an API
+
+54
+00:02:11.670 --> 00:02:16.290
+called AssumeRoleWithSAML, comes from the STS service,
+
+55
+00:02:16.290 --> 00:02:18.120
+and that will give us temporary credentials
+
+56
+00:02:18.120 --> 00:02:19.980
+using SAML assertion.
+
+57
+00:02:19.980 --> 00:02:21.060
+So as I said,
+
+58
+00:02:21.060 --> 00:02:23.820
+SAML 2.0 Federation is the old way of doing things.
+
+59
+00:02:23.820 --> 00:02:25.410
+And now IAM Identity Center
+
+60
+00:02:25.410 --> 00:02:27.060
+is the new managed way
+
+61
+00:02:27.060 --> 00:02:28.170
+and simpler way of doing things,
+
+62
+00:02:28.170 --> 00:02:31.980
+yet we still have to learn about SAML 2.0 Federation.
+
+63
+00:02:31.980 --> 00:02:33.390
+So the best way to understand this is
+
+64
+00:02:33.390 --> 00:02:35.280
+to go through a diagram.
+
+65
+00:02:35.280 --> 00:02:38.640
+So we have our corporation where our identity provider sits,
+
+66
+00:02:38.640 --> 00:02:42.540
+and AWS, and our user wants to access an S3 bucket.
+
+67
+00:02:42.540 --> 00:02:44.370
+Now inside of our corporation,
+
+68
+00:02:44.370 --> 00:02:46.650
+we'll have a portal or identity provider,
+
+69
+00:02:46.650 --> 00:02:50.247
+and the user will make an authentication request to the IDP.
+
+70
+00:02:50.247 --> 00:02:54.510
+The IDP will verify the request through an identity store,
+
+71
+00:02:54.510 --> 00:02:56.130
+for example, LDAP-based,
+
+72
+00:02:56.130 --> 00:02:59.070
+and then it will return a SAML assertion
+
+73
+00:02:59.070 --> 00:03:01.290
+if the login is successful.
+
+74
+00:03:01.290 --> 00:03:02.760
+So this SAML assertion is the proof
+
+75
+00:03:02.760 --> 00:03:05.250
+that the user is who they claim to be,
+
+76
+00:03:05.250 --> 00:03:07.770
+and therefore with this SAML assertion,
+
+77
+00:03:07.770 --> 00:03:10.650
+the user can call the STS service
+
+78
+00:03:10.650 --> 00:03:13.020
+with AssumeRoleWithSAML API,
+
+79
+00:03:13.020 --> 00:03:15.120
+and STS will verify the assertion,
+
+80
+00:03:15.120 --> 00:03:17.880
+make sure that yes, it is the one that is trusted,
+
+81
+00:03:17.880 --> 00:03:20.853
+and then say, "Okay, here are some temporary
+
+82
+00:03:20.853 --> 00:03:21.960
+security credentials for you."
+
+83
+00:03:21.960 --> 00:03:24.630
+And the user will be able to access the AWS APIs
+
+84
+00:03:24.630 --> 00:03:26.550
+using that mechanism.
+
+85
+00:03:26.550 --> 00:03:28.740
+It is very similar if the user
+
+86
+00:03:28.740 --> 00:03:30.600
+wants to access the console of AWS.
+
+87
+00:03:30.600 --> 00:03:31.950
+So very similar setup.
+
+88
+00:03:31.950 --> 00:03:35.280
+So we still have the IDP and the LDAP identity-based store.
+
+89
+00:03:35.280 --> 00:03:38.160
+We have the authentication loop, as I said from before,
+
+90
+00:03:38.160 --> 00:03:40.740
+but this time we post to AWS sign-in
+
+91
+00:03:40.740 --> 00:03:43.290
+in this endpoint with slash SAML.
+
+92
+00:03:43.290 --> 00:03:44.700
+And what this will return is
+
+93
+00:03:44.700 --> 00:03:47.520
+that it will return security credentials
+
+94
+00:03:47.520 --> 00:03:49.260
+through the STS service,
+
+95
+00:03:49.260 --> 00:03:51.000
+and this will return a special URL,
+
+96
+00:03:51.000 --> 00:03:53.100
+the sign-in URL for the AWS console.
+
+97
+00:03:53.100 --> 00:03:55.200
+And this URL will be used by the user
+
+98
+00:03:55.200 --> 00:03:57.870
+to be redirected into the AWS management console.
+
+99
+00:03:57.870 --> 00:03:59.760
+And from there on, everything is good.
+
+100
+00:03:59.760 --> 00:04:01.590
+So these two flows are very similar
+
+101
+00:04:01.590 --> 00:04:05.580
+because they use the same SAML 2.0 Federation.
+
+102
+00:04:05.580 --> 00:04:08.100
+Now if we have ADFS, it's something you may have.
+
+103
+00:04:08.100 --> 00:04:11.280
+Well, this is the exact same mechanism as before.
+
+104
+00:04:11.280 --> 00:04:13.500
+The only difference is that on the left hand side,
+
+105
+00:04:13.500 --> 00:04:16.800
+we have the Microsoft Active Directory Federation Services
+
+106
+00:04:16.800 --> 00:04:19.440
+on the top left, and then on the bottom right,
+
+107
+00:04:19.440 --> 00:04:23.070
+where the user sits, is Active directory itself, okay?
+
+108
+00:04:23.070 --> 00:04:24.540
+So this is for you to understand
+
+109
+00:04:24.540 --> 00:04:27.690
+what is the difference between the IDP, so ADFS,
+
+110
+00:04:27.690 --> 00:04:30.723
+and the directory itself, which is Active Directory.
+
+111
+00:04:31.830 --> 00:04:34.410
+Okay, more complicated and definitely older
+
+112
+00:04:34.410 --> 00:04:37.350
+is that if your identity provider is not compatible
+
+113
+00:04:37.350 --> 00:04:38.859
+with SAML 2.0,
+
+114
+00:04:38.859 --> 00:04:41.370
+then you need to use a custom identity broker.
+
+115
+00:04:41.370 --> 00:04:44.400
+So let's say we want to access AWS services
+
+116
+00:04:44.400 --> 00:04:45.930
+and the management console,
+
+117
+00:04:45.930 --> 00:04:48.210
+and we have our corporation identity provider,
+
+118
+00:04:48.210 --> 00:04:50.580
+we'll have a custom identity broker.
+
+119
+00:04:50.580 --> 00:04:53.400
+Now the user will login to the identity broker,
+
+120
+00:04:53.400 --> 00:04:55.710
+which will verify the login itself,
+
+121
+00:04:55.710 --> 00:05:00.150
+but then the identity broker will be the one to authenticate
+
+122
+00:05:00.150 --> 00:05:02.690
+and request temporary credentials from AWS.
+
+123
+00:05:02.690 --> 00:05:05.850
+So this time, there is no AWS API that can be used.
+
+124
+00:05:05.850 --> 00:05:09.300
+So therefore the custom identity broker has admin power
+
+125
+00:05:09.300 --> 00:05:11.550
+and can request temporary credentials directly
+
+126
+00:05:11.550 --> 00:05:13.230
+from the STS service,
+
+127
+00:05:13.230 --> 00:05:15.750
+which will be returning these credentials themselves.
+
+128
+00:05:15.750 --> 00:05:19.380
+Now that means that the identity broker is responsible
+
+129
+00:05:19.380 --> 00:05:23.310
+and must determine the appropriate IAM role for that user.
+
+130
+00:05:23.310 --> 00:05:25.200
+So it pushes the management
+
+131
+00:05:25.200 --> 00:05:28.380
+of the users into the identity broker itself.
+
+132
+00:05:28.380 --> 00:05:31.005
+Then the only way for it to work is to use the AssumeRole
+
+133
+00:05:31.005 --> 00:05:34.140
+or GetFederationToken API from STS directly
+
+134
+00:05:34.140 --> 00:05:36.090
+from the custom identity broker.
+
+135
+00:05:36.090 --> 00:05:38.550
+So once the security credentials are retrieved,
+
+136
+00:05:38.550 --> 00:05:39.840
+then they're passed on to the user,
+
+137
+00:05:39.840 --> 00:05:42.480
+and the user can access the APIs of AWS
+
+138
+00:05:42.480 --> 00:05:45.750
+or be redirected to the management console.
+
+139
+00:05:45.750 --> 00:05:48.120
+So again, these are the old ways of doing things.
+
+140
+00:05:48.120 --> 00:05:51.360
+SSO will come up later in this course.
+
+141
+00:05:51.360 --> 00:05:54.360
+Now with web identity federation, we have two flavors,
+
+142
+00:05:54.360 --> 00:05:56.820
+we have without Cognito and with Cognito.
+
+143
+00:05:56.820 --> 00:06:00.120
+So without Cognito is not recommended by AWS anymore.
+
+144
+00:06:00.120 --> 00:06:01.830
+You're recommended to use Cognito instead,
+
+145
+00:06:01.830 --> 00:06:03.960
+but still you need to know about it.
+
+146
+00:06:03.960 --> 00:06:06.150
+So what is Web Identity Federation?
+
+147
+00:06:06.150 --> 00:06:08.190
+So this time we have an untrusted environment.
+
+148
+00:06:08.190 --> 00:06:11.280
+So before, it was our corporation, so we knew the clients,
+
+149
+00:06:11.280 --> 00:06:13.590
+but in this case, we have AWS Cloud,
+
+150
+00:06:13.590 --> 00:06:16.710
+and we want to access services from our client directly,
+
+151
+00:06:16.710 --> 00:06:18.210
+but we are going to authenticate
+
+152
+00:06:18.210 --> 00:06:20.310
+with a third party identity provider.
+
+153
+00:06:20.310 --> 00:06:22.140
+It could be Amazon, Google, Facebook,
+
+154
+00:06:22.140 --> 00:06:25.380
+or any OpenID Connect-compatible IDP.
+
+155
+00:06:25.380 --> 00:06:27.200
+So this obviously will be set up with AWS
+
+156
+00:06:27.200 --> 00:06:29.220
+as a trust mechanism.
+
+157
+00:06:29.220 --> 00:06:32.190
+And so the flow is that the client will log in into the IDP,
+
+158
+00:06:32.190 --> 00:06:34.050
+the third party IDP,
+
+159
+00:06:34.050 --> 00:06:36.360
+and then the web identity token
+
+160
+00:06:36.360 --> 00:06:38.880
+is going to be shared back with the clients.
+
+161
+00:06:38.880 --> 00:06:41.700
+The client will use a special STS API
+
+162
+00:06:41.700 --> 00:06:43.643
+called the AssumeRoleWithWebIdentity API.
+
+163
+00:06:44.970 --> 00:06:47.280
+And then by trading that token,
+
+164
+00:06:47.280 --> 00:06:48.480
+it will receive
+
+165
+00:06:48.480 --> 00:06:51.930
+temporary security security credentials for AWS.
+
+166
+00:06:51.930 --> 00:06:53.310
+These credentials will be used
+
+167
+00:06:53.310 --> 00:06:55.950
+to access AWS resources directly.
+
+168
+00:06:55.950 --> 00:06:57.693
+So this is the old way without Cognito.
+
+169
+00:06:57.693 --> 00:07:00.660
+With Cognito, it's a little bit more secure and more simple.
+
+170
+00:07:00.660 --> 00:07:03.660
+So it's preferred over Web Identity Federation
+
+171
+00:07:03.660 --> 00:07:04.980
+because here in Cognito,
+
+172
+00:07:04.980 --> 00:07:06.240
+we can create IAM roles
+
+173
+00:07:06.240 --> 00:07:08.100
+with the least privilege needed,
+
+174
+00:07:08.100 --> 00:07:09.450
+and then we just need to build the trust
+
+175
+00:07:09.450 --> 00:07:12.480
+between the OIDC IdP and AWS.
+
+176
+00:07:12.480 --> 00:07:14.070
+So now we have the Cognito service,
+
+177
+00:07:14.070 --> 00:07:15.360
+the client still authenticates
+
+178
+00:07:15.360 --> 00:07:19.080
+to a third party identity provider, gets a token back,
+
+179
+00:07:19.080 --> 00:07:22.290
+but then the token is exchanged with Amazon Cognito,
+
+180
+00:07:22.290 --> 00:07:24.510
+which will return a Cognito token.
+
+181
+00:07:24.510 --> 00:07:27.150
+That Cognito token can be exchanged with STS
+
+182
+00:07:27.150 --> 00:07:30.090
+to receive temporary security credentials for AWS.
+
+183
+00:07:30.090 --> 00:07:31.770
+And then the client will be able
+
+184
+00:07:31.770 --> 00:07:35.010
+to access the AWS resources directly.
+
+185
+00:07:35.010 --> 00:07:37.710
+So why should we use this mechanism with Cognito?
+
+186
+00:07:37.710 --> 00:07:40.980
+Well, Cognito will support anonymous users, which is a plus.
+
+187
+00:07:40.980 --> 00:07:44.760
+It will support MFA, and it will have data synchronization.
+
+188
+00:07:44.760 --> 00:07:45.960
+So in that instance,
+
+189
+00:07:45.960 --> 00:07:47.970
+Amazon Cognito operates at what's called
+
+190
+00:07:47.970 --> 00:07:49.800
+a token vending machine
+
+191
+00:07:49.800 --> 00:07:53.130
+because it exchanges token for credentials.
+
+192
+00:07:53.130 --> 00:07:55.980
+Okay, so when we have Web Identity Federation,
+
+193
+00:07:55.980 --> 00:07:57.330
+can we restrict IAM policies?
+
+194
+00:07:57.330 --> 00:08:00.720
+The answer is yes, you can use an IAM policy variable.
+
+195
+00:08:00.720 --> 00:08:04.860
+And so here is an example of a policy that allows the user
+
+196
+00:08:04.860 --> 00:08:09.860
+to only list a bucket with a prefix as the user ID,
+
+197
+00:08:10.200 --> 00:08:11.970
+and also to get, update,
+
+198
+00:08:11.970 --> 00:08:14.910
+and put objects in with that specific prefix.
+
+199
+00:08:14.910 --> 00:08:18.450
+So the idea is that when you have a Web Identity Federation,
+
+200
+00:08:18.450 --> 00:08:19.830
+you can use some special variables.
+
+201
+00:08:19.830 --> 00:08:23.321
+For example, going to identity.amazon.com:sub
+
+202
+00:08:23.321 --> 00:08:27.180
+or amazon.com:user_id and so on
+
+203
+00:08:27.180 --> 00:08:30.150
+to restrict your IAM policies with conditions
+
+204
+00:08:30.150 --> 00:08:31.890
+and make sure that the users really have
+
+205
+00:08:31.890 --> 00:08:33.990
+the restrictions they need, okay?
+
+206
+00:08:33.990 --> 00:08:36.450
+So that's it for Identity Federation.
+
+207
+00:08:36.450 --> 00:08:37.890
+These are the old ways, obviously,
+
+208
+00:08:37.890 --> 00:08:38.940
+except when we're using Cognito.
+
+209
+00:08:38.940 --> 00:08:41.460
+And we'll see SSO in the future lecture.
+
+210
+00:08:41.460 --> 00:08:42.390
+So I hope you liked this,
+
+211
+00:08:42.390 --> 00:08:44.010
+and I will strongly suggest
+
+212
+00:08:44.010 --> 00:08:46.440
+you revisit this lecture one more time before the exam
+
+213
+00:08:46.440 --> 00:08:47.850
+and it should all make sense,
+
+214
+00:08:47.850 --> 00:08:49.800
+and I will see you in the next lecture.
+

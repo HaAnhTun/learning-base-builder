@@ -1,0 +1,614 @@
+WEBVTT
+
+1
+00:00:00.690 --> 00:00:03.130
+<v ->Okay, so now let's talk about the security</v>
+
+2
+00:00:03.130 --> 00:00:04.640
+of our VPC endpoints.
+
+3
+00:00:04.640 --> 00:00:07.090
+And they're called VPC Endpoint Policies.
+
+4
+00:00:07.090 --> 00:00:09.320
+So VPC Endpoint Policy, as you can guess,
+
+5
+00:00:09.320 --> 00:00:11.320
+is going to be a JSON document
+
+6
+00:00:11.320 --> 00:00:13.840
+to control access to a service.
+
+7
+00:00:13.840 --> 00:00:15.483
+And this looks just like this.
+
+8
+00:00:16.320 --> 00:00:18.400
+So in this example, what do we have?
+
+9
+00:00:18.400 --> 00:00:23.060
+Well, we have a policy that allows us to do SQS SendMessage
+
+10
+00:00:23.060 --> 00:00:26.750
+to a specific queue using a specific principle,
+
+11
+00:00:26.750 --> 00:00:29.300
+which represents a user through IM.
+
+12
+00:00:29.300 --> 00:00:32.070
+So this is applied to a VPC endpoint.
+
+13
+00:00:32.070 --> 00:00:36.440
+That means that only that user can access this queue
+
+14
+00:00:36.440 --> 00:00:37.960
+through that VPC endpoint,
+
+15
+00:00:37.960 --> 00:00:40.850
+and it has to be an SQS SendMessage.
+
+16
+00:00:40.850 --> 00:00:43.640
+So this does not override or replace IM user policies
+
+17
+00:00:43.640 --> 00:00:45.870
+or service specific policies,
+
+18
+00:00:45.870 --> 00:00:48.131
+so you may still have an SQS queue policy
+
+19
+00:00:48.131 --> 00:00:52.510
+and the IM user still needs to be allowed to talk to SQS.
+
+20
+00:00:52.510 --> 00:00:54.960
+But this is yet another level of protection.
+
+21
+00:00:54.960 --> 00:00:58.530
+This one is happening at the VPC endpoint level.
+
+22
+00:00:58.530 --> 00:01:03.490
+So for notes, is that if our IM user is trying to access SQS
+
+23
+00:01:03.490 --> 00:01:06.840
+out of our VPC endpoint using the public route,
+
+24
+00:01:06.840 --> 00:01:08.110
+then it may still work,
+
+25
+00:01:08.110 --> 00:01:11.020
+because the VPC endpoint policy will not apply.
+
+26
+00:01:11.020 --> 00:01:12.290
+In this case what we could do,
+
+27
+00:01:12.290 --> 00:01:16.230
+is add an SQS queue policy to deny any action
+
+28
+00:01:16.230 --> 00:01:18.820
+that is not done through the VPC endpoint,
+
+29
+00:01:18.820 --> 00:01:20.690
+effectively forcing any connection
+
+30
+00:01:20.690 --> 00:01:22.300
+to go through the VPC endpoint.
+
+31
+00:01:22.300 --> 00:01:24.970
+And then forcing the VPC endpoint policy
+
+32
+00:01:24.970 --> 00:01:27.090
+to be applied no matter what.
+
+33
+00:01:27.090 --> 00:01:29.440
+Okay, so another way you can apply
+
+34
+00:01:29.440 --> 00:01:32.810
+a VPC endpoint policy is going to be on an S3 bucket.
+
+35
+00:01:32.810 --> 00:01:34.150
+So here is an example.
+
+36
+00:01:34.150 --> 00:01:37.240
+In this example, we are restricting access,
+
+37
+00:01:37.240 --> 00:01:39.600
+through the VPC endpoint only,
+
+38
+00:01:39.600 --> 00:01:42.573
+to one specific bucket called my_secure_bucket.
+
+39
+00:01:43.580 --> 00:01:44.780
+So here we're saying,
+
+40
+00:01:44.780 --> 00:01:47.940
+anyone can do GetObject and PutObject
+
+41
+00:01:47.940 --> 00:01:51.050
+on and only on my_secure_bucket.
+
+42
+00:01:51.050 --> 00:01:52.080
+Hopefully that makes sense.
+
+43
+00:01:52.080 --> 00:01:52.940
+But if you can't remember,
+
+44
+00:01:52.940 --> 00:01:55.260
+this VPC endpoint policy is applied
+
+45
+00:01:55.260 --> 00:01:56.980
+at the VPC endpoint level.
+
+46
+00:01:56.980 --> 00:01:59.500
+And one can circumvent it, if they want to go
+
+47
+00:01:59.500 --> 00:02:02.200
+through Amazon S3 through the public route.
+
+48
+00:02:02.200 --> 00:02:05.050
+So here is another VPC endpoint policy.
+
+49
+00:02:05.050 --> 00:02:07.290
+And this time it's to only allow access
+
+50
+00:02:07.290 --> 00:02:09.430
+to Amazon Linux 2 repositories.
+
+51
+00:02:09.430 --> 00:02:10.690
+So the idea is,
+
+52
+00:02:10.690 --> 00:02:13.640
+when our EC2 instances need to do an update
+
+53
+00:02:13.640 --> 00:02:15.620
+of their Linux operating system,
+
+54
+00:02:15.620 --> 00:02:18.060
+what actually goes on is that they are getting some objects
+
+55
+00:02:18.060 --> 00:02:20.590
+on an S3 bucket that belongs to Amazon.
+
+56
+00:02:20.590 --> 00:02:24.550
+And so, this VPC endpoint policy allows your EC2 instances
+
+57
+00:02:24.550 --> 00:02:27.590
+to have access privately to this repository
+
+58
+00:02:27.590 --> 00:02:30.380
+through your VPC endpoint policy.
+
+59
+00:02:30.380 --> 00:02:33.440
+Okay, so we can combine your VPC endpoint policy
+
+60
+00:02:33.440 --> 00:02:35.320
+and your S3 bucket policy.
+
+61
+00:02:35.320 --> 00:02:39.090
+So your S3 bucket policy may have some specific conditions.
+
+62
+00:02:39.090 --> 00:02:44.090
+And this one example is aws:sourceVpce equals this VPC ID
+
+63
+00:02:44.410 --> 00:02:46.160
+to deny any traffic that doesn't come
+
+64
+00:02:46.160 --> 00:02:48.130
+from a specific VPC endpoint.
+
+65
+00:02:48.130 --> 00:02:48.963
+So here we're saying,
+
+66
+00:02:48.963 --> 00:02:52.060
+if we have this condition in our S3 bucket policy,
+
+67
+00:02:52.060 --> 00:02:53.530
+then any traffic going through
+
+68
+00:02:53.530 --> 00:02:55.760
+our VPC endpoint is going to be authorized.
+
+69
+00:02:55.760 --> 00:02:57.980
+And any traffic not going through the VPC endpoint,
+
+70
+00:02:57.980 --> 00:02:59.540
+is going to be denied.
+
+71
+00:02:59.540 --> 00:03:02.580
+So effectively, we've locked down our S3 bucket
+
+72
+00:03:02.580 --> 00:03:05.930
+to be only usable from our VPC endpoints.
+
+73
+00:03:05.930 --> 00:03:08.010
+And if we have many VPC endpoints,
+
+74
+00:03:08.010 --> 00:03:12.270
+and we want to be able to have a more global condition,
+
+75
+00:03:12.270 --> 00:03:16.830
+then we can use the condition aws:sourceVpc equals this,
+
+76
+00:03:16.830 --> 00:03:18.670
+for a specific VPC.
+
+77
+00:03:18.670 --> 00:03:20.010
+But here's the catch,
+
+78
+00:03:20.010 --> 00:03:23.330
+the aws:sourceVpc condition only works
+
+79
+00:03:23.330 --> 00:03:26.230
+for VPC endpoints and for private traffic.
+
+80
+00:03:26.230 --> 00:03:28.300
+So this is when you have multiple endpoints
+
+81
+00:03:28.300 --> 00:03:30.420
+and you want to manage access to your S3 bucket
+
+82
+00:03:30.420 --> 00:03:32.080
+for all your endpoints.
+
+83
+00:03:32.080 --> 00:03:35.470
+So it only works when you go through VPC endpoints.
+
+84
+00:03:35.470 --> 00:03:39.240
+So that means that if you want to restrict access using IP,
+
+85
+00:03:39.240 --> 00:03:40.490
+the only way to do it,
+
+86
+00:03:40.490 --> 00:03:44.740
+is to use a specific public IP address or an elastic IP.
+
+87
+00:03:44.740 --> 00:03:47.950
+You cannot use this SourceIp condition
+
+88
+00:03:47.950 --> 00:03:50.570
+to restrict based on a private IP.
+
+89
+00:03:50.570 --> 00:03:55.070
+So remember, if you are having a private VPC endpoint
+
+90
+00:03:55.070 --> 00:03:58.320
+and you want to restrict access using private IP,
+
+91
+00:03:58.320 --> 00:04:03.320
+you have to use aws:SourceVpce or SourceVpc as a condition.
+
+92
+00:04:03.340 --> 00:04:06.310
+But if you want to restrict based on the public IP,
+
+93
+00:04:06.310 --> 00:04:09.680
+then you have to use the aws:SourceIP.
+
+94
+00:04:09.680 --> 00:04:11.880
+The aws:SourceIP only applies to public IPs,
+
+95
+00:04:11.880 --> 00:04:15.830
+and the other ones only apply to private network traffic.
+
+96
+00:04:15.830 --> 00:04:17.870
+So let's have a look through an example
+
+97
+00:04:17.870 --> 00:04:19.580
+for S3 bucket policy.
+
+98
+00:04:19.580 --> 00:04:22.690
+So this S3 bucket policy restricts your access
+
+99
+00:04:22.690 --> 00:04:26.590
+to your S3 bucket through only one specific VPC endpoint.
+
+100
+00:04:26.590 --> 00:04:29.780
+So we're saying principal, star, action, star, effect,
+
+101
+00:04:29.780 --> 00:04:34.350
+deny anything that doesn't come from the source VPCE
+
+102
+00:04:34.350 --> 00:04:36.170
+that we have specified here.
+
+103
+00:04:36.170 --> 00:04:39.590
+Or, here is an example where we're denying any traffic
+
+104
+00:04:39.590 --> 00:04:41.870
+that doesn't come from the source VPC
+
+105
+00:04:41.870 --> 00:04:43.140
+and the source VPC we have.
+
+106
+00:04:43.140 --> 00:04:46.430
+This is in case we have multiple VPC endpoints.
+
+107
+00:04:46.430 --> 00:04:49.590
+So finally, how can we troubleshoot a connection
+
+108
+00:04:49.590 --> 00:04:54.590
+from an instance in a private subnet in a VPC to Amazon S3?
+
+109
+00:04:55.110 --> 00:04:56.560
+And, as you can see,
+
+110
+00:04:56.560 --> 00:04:58.760
+there's going to be a lot of moving parts.
+
+111
+00:04:58.760 --> 00:05:00.230
+But just before I do so,
+
+112
+00:05:00.230 --> 00:05:02.280
+if you want to do it as an exercise yourself,
+
+113
+00:05:02.280 --> 00:05:05.380
+try to see all the possible things that can go wrong
+
+114
+00:05:05.380 --> 00:05:07.140
+when trying to connect an EC2 instance
+
+115
+00:05:07.140 --> 00:05:11.400
+in a private subnet onto an Amazon S3 bucket privately.
+
+116
+00:05:11.400 --> 00:05:12.970
+Okay, so let's get started.
+
+117
+00:05:12.970 --> 00:05:14.660
+First one, is that we have to check
+
+118
+00:05:14.660 --> 00:05:17.060
+the security group of our instance.
+
+119
+00:05:17.060 --> 00:05:19.190
+The security group has outbound rules.
+
+120
+00:05:19.190 --> 00:05:22.630
+And if the outbound rules are not allowing the traffic out,
+
+121
+00:05:22.630 --> 00:05:24.460
+then things will not work.
+
+122
+00:05:24.460 --> 00:05:27.410
+Then we have to create our VPC endpoint gateway,
+
+123
+00:05:27.410 --> 00:05:29.210
+because we are accessing Amazon S3.
+
+124
+00:05:29.210 --> 00:05:31.560
+And so, our VPC endpoint gateway will have
+
+125
+00:05:31.560 --> 00:05:33.370
+a VPC endpoint policy.
+
+126
+00:05:33.370 --> 00:05:35.290
+And it needs to allow, obviously,
+
+127
+00:05:35.290 --> 00:05:37.853
+our EC2 instance to access Amazon S3.
+
+128
+00:05:38.730 --> 00:05:41.890
+Then we need to make sure we update the route tables
+
+129
+00:05:41.890 --> 00:05:44.490
+to make sure that anything that is requested
+
+130
+00:05:44.490 --> 00:05:46.610
+for Amazon S3 is going to go
+
+131
+00:05:46.610 --> 00:05:48.740
+through the VPC endpoint gateway.
+
+132
+00:05:48.740 --> 00:05:50.410
+If we don't set up the route table,
+
+133
+00:05:50.410 --> 00:05:52.000
+then our EC2 instance can never talk
+
+134
+00:05:52.000 --> 00:05:54.950
+to the VPC endpoint gateway, and things will not work.
+
+135
+00:05:54.950 --> 00:05:57.800
+And also, we need to make sure that the VPC DNS settings
+
+136
+00:05:57.800 --> 00:06:00.050
+for the DNS resolution are enabled
+
+137
+00:06:00.050 --> 00:06:02.720
+for the resolution to be correctly done.
+
+138
+00:06:02.720 --> 00:06:05.980
+Next, once we go through the VPC endpoint gateway,
+
+139
+00:06:05.980 --> 00:06:08.220
+we are getting into the Amazon S3 bucket.
+
+140
+00:06:08.220 --> 00:06:09.670
+And here we have to verify
+
+141
+00:06:09.670 --> 00:06:12.680
+that the Amazon S3 bucket policy is indeed allowing
+
+142
+00:06:12.680 --> 00:06:15.740
+our EC2 instance to access Amazon S3.
+
+143
+00:06:15.740 --> 00:06:16.780
+And then finally,
+
+144
+00:06:16.780 --> 00:06:19.410
+our EC2 instance may have an EC2 instance role.
+
+145
+00:06:19.410 --> 00:06:22.261
+And that role may allow it, or may not allow it,
+
+146
+00:06:22.261 --> 00:06:23.470
+to access the S3 bucket.
+
+147
+00:06:23.470 --> 00:06:25.850
+So we also have to check IAM permissions.
+
+148
+00:06:25.850 --> 00:06:26.683
+And that's it.
+
+149
+00:06:26.683 --> 00:06:28.690
+As you can see, there's a lot of moving parts
+
+150
+00:06:28.690 --> 00:06:30.760
+that can restrict your EC2 instance
+
+151
+00:06:30.760 --> 00:06:32.810
+from connecting to your Amazon S3 bucket.
+
+152
+00:06:32.810 --> 00:06:35.750
+And understanding that, is key going into the exam.
+
+153
+00:06:35.750 --> 00:06:38.550
+So that's it for me, I will see you in the next lecture.
+

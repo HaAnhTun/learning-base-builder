@@ -1,0 +1,690 @@
+WEBVTT
+
+1
+00:00:00.090 --> 00:00:02.460
+<v Lecturer>Okay, so let's talk about AWS Organizations,</v>
+
+2
+00:00:02.460 --> 00:00:03.540
+which is a way for you
+
+3
+00:00:03.540 --> 00:00:06.090
+to manage multiple AWS accounts at once.
+
+4
+00:00:06.090 --> 00:00:07.590
+So within Organizations,
+
+5
+00:00:07.590 --> 00:00:11.220
+we have, at the top, the root organizational unit,
+
+6
+00:00:11.220 --> 00:00:12.390
+or OU,
+
+7
+00:00:12.390 --> 00:00:14.790
+and it will contain our management account,
+
+8
+00:00:14.790 --> 00:00:16.230
+which is the account that will be used
+
+9
+00:00:16.230 --> 00:00:18.330
+for all administration purposes.
+
+10
+00:00:18.330 --> 00:00:22.350
+Then within the root OU, you can have different OUs.
+
+11
+00:00:22.350 --> 00:00:24.810
+You can have an OU for your development environment,
+
+12
+00:00:24.810 --> 00:00:28.170
+and this OU can have multiple member accounts.
+
+13
+00:00:28.170 --> 00:00:29.490
+So you have to make a distinction
+
+14
+00:00:29.490 --> 00:00:30.599
+between the management account
+
+15
+00:00:30.599 --> 00:00:32.010
+that you use to manage all the other accounts
+
+16
+00:00:32.010 --> 00:00:33.300
+and organizations.
+
+17
+00:00:33.300 --> 00:00:34.410
+And then the member accounts,
+
+18
+00:00:34.410 --> 00:00:36.210
+which are just normal AWS accounts
+
+19
+00:00:36.210 --> 00:00:38.580
+that are part of an organization.
+
+20
+00:00:38.580 --> 00:00:39.840
+So we can have an OU for dev,
+
+21
+00:00:39.840 --> 00:00:41.400
+we can have an OU for prod as well
+
+22
+00:00:41.400 --> 00:00:43.140
+with other member accounts.
+
+23
+00:00:43.140 --> 00:00:44.610
+And we can have OU within OU.
+
+24
+00:00:44.610 --> 00:00:48.240
+So it's very possible to have an HR OU within the prod OU,
+
+25
+00:00:48.240 --> 00:00:50.828
+which is, by the way, within the root OU.
+
+26
+00:00:50.828 --> 00:00:52.950
+So you can have HR or finance and so on.
+
+27
+00:00:52.950 --> 00:00:54.480
+So once we have all these accounts,
+
+28
+00:00:54.480 --> 00:00:58.140
+how does Organizations perform its administration?
+
+29
+00:00:58.140 --> 00:00:59.640
+Well, there is a very special role
+
+30
+00:00:59.640 --> 00:01:00.840
+you need to know about for the exam
+
+31
+00:01:00.840 --> 00:01:03.930
+called the organization account access role.
+
+32
+00:01:03.930 --> 00:01:05.400
+So when we have the organization
+
+33
+00:01:05.400 --> 00:01:06.660
+and the management account,
+
+34
+00:01:06.660 --> 00:01:09.180
+if we happen to create a member account
+
+35
+00:01:09.180 --> 00:01:12.600
+using an API from the Organization service,
+
+36
+00:01:12.600 --> 00:01:16.050
+then, automatically, an IAM role within the member account
+
+37
+00:01:16.050 --> 00:01:17.130
+is going to be created.
+
+38
+00:01:17.130 --> 00:01:18.570
+And that IAM role is called
+
+39
+00:01:18.570 --> 00:01:21.300
+the Organization Account Access Role.
+
+40
+00:01:21.300 --> 00:01:22.290
+Now, the management account,
+
+41
+00:01:22.290 --> 00:01:24.750
+when it needs to perform administrative duties
+
+42
+00:01:24.750 --> 00:01:26.460
+onto the member account,
+
+43
+00:01:26.460 --> 00:01:28.770
+will assume that administrative role
+
+44
+00:01:28.770 --> 00:01:30.930
+using the AssumeRole API.
+
+45
+00:01:30.930 --> 00:01:34.260
+So this IAM role grants full administrator permissions
+
+46
+00:01:34.260 --> 00:01:36.510
+in the member account to the management account.
+
+47
+00:01:36.510 --> 00:01:40.380
+And this is the magic of how AWS Organizations work.
+
+48
+00:01:40.380 --> 00:01:44.010
+Now, this role is going to be used by the management account
+
+49
+00:01:44.010 --> 00:01:46.200
+to perform admin task in the member account,
+
+50
+00:01:46.200 --> 00:01:48.330
+for example, creating IAM users.
+
+51
+00:01:48.330 --> 00:01:50.460
+This role can also be assumed by IAM users
+
+52
+00:01:50.460 --> 00:01:53.220
+in the management account if they're authorized to do so.
+
+53
+00:01:53.220 --> 00:01:56.010
+And, as I said, this role is automatically added
+
+54
+00:01:56.010 --> 00:01:57.570
+to new member accounts created
+
+55
+00:01:57.570 --> 00:02:00.780
+with the API of AWS Organizations.
+
+56
+00:02:00.780 --> 00:02:04.470
+But in case you are inviting an account into an organization
+
+57
+00:02:04.470 --> 00:02:06.720
+and that account already exists from out there,
+
+58
+00:02:06.720 --> 00:02:09.030
+then you must manually create this role.
+
+59
+00:02:09.030 --> 00:02:11.280
+Otherwise, things will not work.
+
+60
+00:02:11.280 --> 00:02:13.770
+Now, we have an OU and multiple accounts.
+
+61
+00:02:13.770 --> 00:02:15.570
+So we have multiple account strategy.
+
+62
+00:02:15.570 --> 00:02:18.810
+And you can create accounts per department, per cost center,
+
+63
+00:02:18.810 --> 00:02:20.850
+per environment, physical dev/test/prod.
+
+64
+00:02:20.850 --> 00:02:24.660
+You can create them based on regulatory restrictions.
+
+65
+00:02:24.660 --> 00:02:27.480
+You can get them for better resource isolation,
+
+66
+00:02:27.480 --> 00:02:29.670
+for example, you wanna have one account per VPC,
+
+67
+00:02:29.670 --> 00:02:32.880
+or you want to have separate per-account service limits,
+
+68
+00:02:32.880 --> 00:02:34.230
+or you want to have a separate account
+
+69
+00:02:34.230 --> 00:02:35.850
+for logging and so on.
+
+70
+00:02:35.850 --> 00:02:37.980
+So you have, you know, different strategies to look at.
+
+71
+00:02:37.980 --> 00:02:39.480
+For example, do you want multi accounts
+
+72
+00:02:39.480 --> 00:02:42.960
+or one account with a multi VPC in it?
+
+73
+00:02:42.960 --> 00:02:44.970
+And then of course you can share multiple accounts.
+
+74
+00:02:44.970 --> 00:02:46.260
+So you need to have tagging standards
+
+75
+00:02:46.260 --> 00:02:47.940
+for billing purposes, as we'll see this.
+
+76
+00:02:47.940 --> 00:02:49.920
+And then some things we may want to do
+
+77
+00:02:49.920 --> 00:02:52.110
+is to enable CloudTrail on all accounts
+
+78
+00:02:52.110 --> 00:02:54.150
+and then send all the logs of CloudTrail
+
+79
+00:02:54.150 --> 00:02:57.750
+into a central account that will have an Amazon S3 bucket,
+
+80
+00:02:57.750 --> 00:02:59.820
+or also maybe aggregate
+
+81
+00:02:59.820 --> 00:03:01.710
+all the CloudWatch logs within all accounts
+
+82
+00:03:01.710 --> 00:03:03.480
+into a central logging account,
+
+83
+00:03:03.480 --> 00:03:06.540
+or maybe create a central account for security.
+
+84
+00:03:06.540 --> 00:03:09.780
+So these are just strategies. There's really no guideline.
+
+85
+00:03:09.780 --> 00:03:11.340
+It's up to you and your architecture
+
+86
+00:03:11.340 --> 00:03:13.080
+to decide what you want to do.
+
+87
+00:03:13.080 --> 00:03:15.420
+So you have a business unit type of OU.
+
+88
+00:03:15.420 --> 00:03:16.950
+So you have management account,
+
+89
+00:03:16.950 --> 00:03:19.500
+then a OU per business unit,
+
+90
+00:03:19.500 --> 00:03:22.620
+and then maybe multiple accounts within each business unit.
+
+91
+00:03:22.620 --> 00:03:24.480
+You can also get, for example, a management account
+
+92
+00:03:24.480 --> 00:03:27.960
+and then dev/test/prod types of OUs.
+
+93
+00:03:27.960 --> 00:03:30.810
+And then you can also get project-based type of OUs.
+
+94
+00:03:30.810 --> 00:03:32.220
+It's really up to you to decide,
+
+95
+00:03:32.220 --> 00:03:34.890
+but this just gives you a few ideas.
+
+96
+00:03:34.890 --> 00:03:36.990
+So there are two feature modes you need to know
+
+97
+00:03:36.990 --> 00:03:38.277
+for AWS Organization.
+
+98
+00:03:38.277 --> 00:03:41.790
+The first one is a consolidated billing feature.
+
+99
+00:03:41.790 --> 00:03:44.640
+So this is going to aggregate billing across all accounts
+
+100
+00:03:44.640 --> 00:03:46.260
+and gives you a single payment method
+
+101
+00:03:46.260 --> 00:03:48.780
+directly from the management account.
+
+102
+00:03:48.780 --> 00:03:50.670
+And the reason you do so is that you're going to get
+
+103
+00:03:50.670 --> 00:03:53.640
+pricing benefits from the aggregated usage.
+
+104
+00:03:53.640 --> 00:03:55.920
+You're going to get volume discounts for EC2,
+
+105
+00:03:55.920 --> 00:03:57.210
+for Amazon S3, and so on
+
+106
+00:03:57.210 --> 00:04:00.090
+because you are using more across all accounts.
+
+107
+00:04:00.090 --> 00:04:03.450
+All the features are also going to be another feature mode
+
+108
+00:04:03.450 --> 00:04:04.530
+for Organizations.
+
+109
+00:04:04.530 --> 00:04:06.210
+So this, of course,
+
+110
+00:04:06.210 --> 00:04:08.610
+includes the consolidated billing feature,
+
+111
+00:04:08.610 --> 00:04:11.580
+but on top of it, it adds the SCP feature
+
+112
+00:04:11.580 --> 00:04:13.350
+that we'll see in the next lecture.
+
+113
+00:04:13.350 --> 00:04:15.930
+And in case you invite an account,
+
+114
+00:04:15.930 --> 00:04:18.480
+it needs to approve enabling all features
+
+115
+00:04:18.480 --> 00:04:20.220
+to be part of that mode.
+
+116
+00:04:20.220 --> 00:04:21.990
+And then once you have the all features enabled,
+
+117
+00:04:21.990 --> 00:04:23.310
+then we can use an SCP,
+
+118
+00:04:23.310 --> 00:04:25.500
+so a service control policy,
+
+119
+00:04:25.500 --> 00:04:27.210
+to prevent the member account
+
+120
+00:04:27.210 --> 00:04:29.310
+from ever leaving the organization.
+
+121
+00:04:29.310 --> 00:04:31.560
+And this is why the accounts that have been invited
+
+122
+00:04:31.560 --> 00:04:33.420
+into an organization with all features
+
+123
+00:04:33.420 --> 00:04:36.300
+must approve these features beforehand.
+
+124
+00:04:36.300 --> 00:04:38.040
+And once you have enabled all features,
+
+125
+00:04:38.040 --> 00:04:40.620
+you cannot go back to using Organizations
+
+126
+00:04:40.620 --> 00:04:43.200
+only to consolidate billing.
+
+127
+00:04:43.200 --> 00:04:44.033
+Okay.
+
+128
+00:04:44.033 --> 00:04:46.770
+So talking about what is shared and savings,
+
+129
+00:04:46.770 --> 00:04:49.620
+we have reserved instances in Organizations.
+
+130
+00:04:49.620 --> 00:04:51.120
+So for billing purposes,
+
+131
+00:04:51.120 --> 00:04:54.000
+the consolidated billing feature of AWS Organizations
+
+132
+00:04:54.000 --> 00:04:56.850
+will treat all the accounts as one account that we know.
+
+133
+00:04:56.850 --> 00:04:58.740
+That means that all the accounts in the organization
+
+134
+00:04:58.740 --> 00:05:02.730
+will receive the hourly cost benefit of a reserved instance
+
+135
+00:05:02.730 --> 00:05:04.920
+that is purchased by any other account.
+
+136
+00:05:04.920 --> 00:05:06.240
+So that means that it will give you
+
+137
+00:05:06.240 --> 00:05:08.010
+the maximum amount of saving,
+
+138
+00:05:08.010 --> 00:05:09.300
+even if a specific account
+
+139
+00:05:09.300 --> 00:05:12.390
+is not using that reserve instance but another is.
+
+140
+00:05:12.390 --> 00:05:14.970
+So the payer accounts of an organization,
+
+141
+00:05:14.970 --> 00:05:16.110
+so the management account,
+
+142
+00:05:16.110 --> 00:05:19.290
+can turn off the RI, reserve instance sharing,
+
+143
+00:05:19.290 --> 00:05:21.000
+or savings plan discount sharing,
+
+144
+00:05:21.000 --> 00:05:23.100
+for any account including VPR accounts.
+
+145
+00:05:23.100 --> 00:05:25.567
+So it's possible for you to disable it and say,
+
+146
+00:05:25.567 --> 00:05:27.420
+"Well, this RI or this savings plan
+
+147
+00:05:27.420 --> 00:05:30.420
+only belongs to that specific account."
+
+148
+00:05:30.420 --> 00:05:32.850
+That means that in that case,
+
+149
+00:05:32.850 --> 00:05:35.400
+then the reserve instances and savings plan discounts
+
+150
+00:05:35.400 --> 00:05:37.230
+will not be shared across accounts
+
+151
+00:05:37.230 --> 00:05:39.060
+that have this turned off.
+
+152
+00:05:39.060 --> 00:05:43.020
+And then, on the opposite side, for a reserved instance
+
+153
+00:05:43.020 --> 00:05:46.800
+or a savings plan to be shared across two accounts,
+
+154
+00:05:46.800 --> 00:05:50.160
+then both these accounts must have sharing turned on, okay?
+
+155
+00:05:50.160 --> 00:05:53.580
+So this is a little thing that the exam can test you on.
+
+156
+00:05:53.580 --> 00:05:54.900
+You need to also know the process
+
+157
+00:05:54.900 --> 00:05:57.360
+to move accounts between two organizations.
+
+158
+00:05:57.360 --> 00:05:59.310
+So let's say we want to move a member account
+
+159
+00:05:59.310 --> 00:06:01.590
+from an old to a new organization.
+
+160
+00:06:01.590 --> 00:06:04.530
+First, we just send an invite to the member account,
+
+161
+00:06:04.530 --> 00:06:06.720
+and then we're going to accept the invite
+
+162
+00:06:06.720 --> 00:06:08.070
+from the member account.
+
+163
+00:06:08.070 --> 00:06:09.240
+It's as simple as that.
+
+164
+00:06:09.240 --> 00:06:11.430
+Before, we had to remove the member account
+
+165
+00:06:11.430 --> 00:06:12.690
+from the previous organization,
+
+166
+00:06:12.690 --> 00:06:13.523
+but now we don't.
+
+167
+00:06:13.523 --> 00:06:15.540
+We just send an invite and it can be moved over
+
+168
+00:06:15.540 --> 00:06:17.370
+across two organizations.
+
+169
+00:06:17.370 --> 00:06:18.203
+All right.
+
+170
+00:06:18.203 --> 00:06:19.036
+So that's it for this lecture.
+
+171
+00:06:19.036 --> 00:06:20.010
+I hope you liked it,
+
+172
+00:06:20.010 --> 00:06:21.960
+and I will see you in the next lecture.
+

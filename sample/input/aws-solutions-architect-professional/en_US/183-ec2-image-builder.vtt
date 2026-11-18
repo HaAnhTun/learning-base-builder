@@ -1,0 +1,310 @@
+WEBVTT
+
+1
+00:00:00.240 --> 00:00:01.500
+<v Speaker>So now let's talk about</v>
+
+2
+00:00:01.500 --> 00:00:04.290
+the EC2 Image Builder service.
+
+3
+00:00:04.290 --> 00:00:07.740
+So it's a service used to create and automate the creation
+
+4
+00:00:07.740 --> 00:00:10.350
+of virtual machines or container images.
+
+5
+00:00:10.350 --> 00:00:12.510
+So basically you want to automate the creation,
+
+6
+00:00:12.510 --> 00:00:16.140
+maintain, and validate and test your EC2 AMIs.
+
+7
+00:00:16.140 --> 00:00:18.450
+So you can run the Image Builder on a schedule.
+
+8
+00:00:18.450 --> 00:00:21.060
+For example, build an AMI every week
+
+9
+00:00:21.060 --> 00:00:23.520
+or whenever packages are updated, et cetera, et cetera.
+
+10
+00:00:23.520 --> 00:00:24.810
+Or you can run it
+
+11
+00:00:24.810 --> 00:00:27.570
+with some automation as we'll see in the next slide.
+
+12
+00:00:27.570 --> 00:00:28.470
+It's a free service
+
+13
+00:00:28.470 --> 00:00:30.990
+so you only pay for the underlying resources created
+
+14
+00:00:30.990 --> 00:00:32.430
+and these are EC2 instances
+
+15
+00:00:32.430 --> 00:00:33.960
+as I will show you right now.
+
+16
+00:00:33.960 --> 00:00:36.480
+On top of it, once you create an AMI
+
+17
+00:00:36.480 --> 00:00:38.760
+from the EC2 Image Builder service,
+
+18
+00:00:38.760 --> 00:00:41.580
+you can publish that AMI to multiple regions
+
+19
+00:00:41.580 --> 00:00:42.960
+and multiple accounts.
+
+20
+00:00:42.960 --> 00:00:46.140
+Which is going to help with your distribution.
+
+21
+00:00:46.140 --> 00:00:48.960
+So the EC2 Image Builder service, once you set it up
+
+22
+00:00:48.960 --> 00:00:51.000
+and you set up, you build instructions,
+
+23
+00:00:51.000 --> 00:00:53.940
+is going to create a builder EC2 instance.
+
+24
+00:00:53.940 --> 00:00:56.430
+It's an instance that comes with almost nothing on it.
+
+25
+00:00:56.430 --> 00:00:59.070
+And then the Image Builder service is going to
+
+26
+00:00:59.070 --> 00:01:01.140
+run what's called the Build Components to
+
+27
+00:01:01.140 --> 00:01:03.390
+customize the software on your instance,
+
+28
+00:01:03.390 --> 00:01:05.100
+based on the instructions you gave it.
+
+29
+00:01:05.100 --> 00:01:07.950
+So it's going to build your AMI as it goes.
+
+30
+00:01:07.950 --> 00:01:10.050
+Then when the build instructions are done,
+
+31
+00:01:10.050 --> 00:01:12.960
+the AMI is going to be created from it,
+
+32
+00:01:12.960 --> 00:01:15.480
+and this AMI is going to be tested.
+
+33
+00:01:15.480 --> 00:01:16.920
+So a new EC2 instance,
+
+34
+00:01:16.920 --> 00:01:19.710
+from that AMI is going to be created.
+
+35
+00:01:19.710 --> 00:01:22.740
+All the tests are going to be run on the AMI,
+
+36
+00:01:22.740 --> 00:01:25.290
+for example to test if the AMI is working,
+
+37
+00:01:25.290 --> 00:01:27.030
+if it's secure and so on.
+
+38
+00:01:27.030 --> 00:01:28.950
+And then the image, the image itself,
+
+39
+00:01:28.950 --> 00:01:31.170
+so the AMI, is going to be distributed,
+
+40
+00:01:31.170 --> 00:01:32.970
+of course in the region it was created,
+
+41
+00:01:32.970 --> 00:01:35.640
+but also to other regions if you wanted to,
+
+42
+00:01:35.640 --> 00:01:37.980
+and to multiple accounts if you need to.
+
+43
+00:01:37.980 --> 00:01:40.080
+Which really gives you a central way
+
+44
+00:01:40.080 --> 00:01:43.800
+to build your AMIs on AWS.
+
+45
+00:01:43.800 --> 00:01:46.260
+So let's have a look at the CICD architecture
+
+46
+00:01:46.260 --> 00:01:47.910
+for the EC2 Image Builder service.
+
+47
+00:01:47.910 --> 00:01:51.900
+So first we have a CodePipeline to orchestrate everything,
+
+48
+00:01:51.900 --> 00:01:53.940
+and within the CodePipeline we start
+
+49
+00:01:53.940 --> 00:01:56.940
+from CodeCommit to get our code source.
+
+50
+00:01:56.940 --> 00:02:00.120
+So we're going to create our application there
+
+51
+00:02:00.120 --> 00:02:02.520
+and then it's going to be passed onto CodeBuild so that
+
+52
+00:02:02.520 --> 00:02:05.490
+the application is being built, the code is being compiled,
+
+53
+00:02:05.490 --> 00:02:07.470
+and then we have an executable.
+
+54
+00:02:07.470 --> 00:02:10.320
+Then once the application is ready to be shipped,
+
+55
+00:02:10.320 --> 00:02:12.120
+we need to build an AMI,
+
+56
+00:02:12.120 --> 00:02:14.280
+and therefore we're going to use CloudFormation.
+
+57
+00:02:14.280 --> 00:02:16.500
+Which is going to automate
+
+58
+00:02:16.500 --> 00:02:19.350
+and launch the EC2 Image Builder service,
+
+59
+00:02:19.350 --> 00:02:21.150
+which is going to take the code,
+
+60
+00:02:21.150 --> 00:02:23.070
+lastly built from CodeBuild
+
+61
+00:02:23.070 --> 00:02:25.350
+and then create an AMI out of it.
+
+62
+00:02:25.350 --> 00:02:28.440
+So this is the stage two, where we build this AMI
+
+63
+00:02:28.440 --> 00:02:30.540
+and the stage three is the rollout of this AMI.
+
+64
+00:02:30.540 --> 00:02:33.360
+So again, we're going to use a CloudFormation template,
+
+65
+00:02:33.360 --> 00:02:35.760
+this time to perform a rolling update
+
+66
+00:02:35.760 --> 00:02:37.650
+onto an auto scaling group,
+
+67
+00:02:37.650 --> 00:02:41.370
+where EC2 instances are using the previous AMI,
+
+68
+00:02:41.370 --> 00:02:44.130
+and therefore CloudFormation has some logic to
+
+69
+00:02:44.130 --> 00:02:46.140
+upgrade your images once at a time.
+
+70
+00:02:46.140 --> 00:02:48.900
+So your instances are going to be upgraded
+
+71
+00:02:48.900 --> 00:02:52.260
+over time from the old AMI to the new AMI,
+
+72
+00:02:52.260 --> 00:02:54.990
+and that gives you a fully automated way to push code
+
+73
+00:02:54.990 --> 00:02:57.420
+into CodeCommit to build an AMI from it,
+
+74
+00:02:57.420 --> 00:03:01.980
+and to roll out the AMI in production to your instances.
+
+75
+00:03:01.980 --> 00:03:02.940
+So that's it for this lecture,
+
+76
+00:03:02.940 --> 00:03:04.110
+I hope you liked it,
+
+77
+00:03:04.110 --> 00:03:06.060
+and I will see you in the next lecture.
+

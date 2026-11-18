@@ -1,0 +1,1346 @@
+WEBVTT
+
+1
+00:00:00.080 --> 00:00:02.490
+<v Instructor>Now let's get into the API gateway.</v>
+
+2
+00:00:02.490 --> 00:00:05.290
+So at a high level we know what a API gateway does,
+
+3
+00:00:05.290 --> 00:00:07.980
+it exposes a REST API to our clients.
+
+4
+00:00:07.980 --> 00:00:10.870
+Usually it will proxy a request to Lambda, but not only,
+
+5
+00:00:10.870 --> 00:00:12.370
+and we'll see this in this lecture.
+
+6
+00:00:12.370 --> 00:00:15.810
+And Lambda can do some create-read-update-delete
+
+7
+00:00:15.810 --> 00:00:18.360
+on a Dynamo DB table, that is some very classic
+
+8
+00:00:18.360 --> 00:00:20.270
+solution architecture that is serverless,
+
+9
+00:00:20.270 --> 00:00:21.560
+but it can do so much more.
+
+10
+00:00:21.560 --> 00:00:22.920
+But as in the general idea,
+
+11
+00:00:22.920 --> 00:00:25.990
+we have our first point of contact with our client
+
+12
+00:00:25.990 --> 00:00:28.460
+is going to be our Amazon API Gateway.
+
+13
+00:00:28.460 --> 00:00:29.293
+So what does it do?
+
+14
+00:00:29.293 --> 00:00:31.850
+It helps expose Lambda functions, but not only,
+
+15
+00:00:31.850 --> 00:00:36.850
+also HTTP endpoints and AWS services as an API.
+
+16
+00:00:37.090 --> 00:00:38.650
+But why would you leverage an API gateway
+
+17
+00:00:38.650 --> 00:00:40.940
+instead of just calling these things directly?
+
+18
+00:00:40.940 --> 00:00:43.210
+Well, the API gateway gives you a lot of features
+
+19
+00:00:43.210 --> 00:00:46.920
+that you may want if you are maintaining APIs at scale.
+
+20
+00:00:46.920 --> 00:00:48.380
+The first one is API versioning.
+
+21
+00:00:48.380 --> 00:00:51.100
+So you can publish multiple versions of your API,
+
+22
+00:00:51.100 --> 00:00:53.100
+which is really helpful to make sure your clients
+
+23
+00:00:53.100 --> 00:00:56.370
+can migrate from one version to another as you add features.
+
+24
+00:00:56.370 --> 00:00:57.590
+It gives you authorization.
+
+25
+00:00:57.590 --> 00:01:00.580
+So we'll see the integration for security on that.
+
+26
+00:01:00.580 --> 00:01:03.500
+Traffic management so you can define API keys,
+
+27
+00:01:03.500 --> 00:01:05.670
+usage plan and throttles.
+
+28
+00:01:05.670 --> 00:01:06.930
+You can get huge scale.
+
+29
+00:01:06.930 --> 00:01:10.020
+So the API Gateway does scale very well.
+
+30
+00:01:10.020 --> 00:01:12.020
+It's serverless, so you don't you manage any server
+
+31
+00:01:12.020 --> 00:01:13.150
+for these features.
+
+32
+00:01:13.150 --> 00:01:15.690
+You can do some request and response transformations
+
+33
+00:01:15.690 --> 00:01:17.480
+directly from the API gateway,
+
+34
+00:01:17.480 --> 00:01:19.940
+for some compatibility issues for example.
+
+35
+00:01:19.940 --> 00:01:23.170
+You can publish an API as an open API spec,
+
+36
+00:01:23.170 --> 00:01:25.470
+or import an API as an open API spec.
+
+37
+00:01:25.470 --> 00:01:28.540
+The idea is that, when you have an open API specification,
+
+38
+00:01:28.540 --> 00:01:29.880
+your clients can just generate
+
+39
+00:01:29.880 --> 00:01:33.010
+a client library automatically from that specification
+
+40
+00:01:33.010 --> 00:01:34.820
+and start using your API on the go,
+
+41
+00:01:34.820 --> 00:01:39.710
+which is a lot of time saved and has support for CORS.
+
+42
+00:01:39.710 --> 00:01:42.090
+Okay, so some limits to know right off the bat
+
+43
+00:01:42.090 --> 00:01:43.600
+for the Amazon API Gateway,
+
+44
+00:01:43.600 --> 00:01:45.250
+when you think as a solution architect
+
+45
+00:01:45.250 --> 00:01:46.890
+is it the right thing for me?
+
+46
+00:01:46.890 --> 00:01:50.850
+Number one is, there is a 29-seconds timeout,
+
+47
+00:01:50.850 --> 00:01:52.830
+and that is a very important limit.
+
+48
+00:01:52.830 --> 00:01:56.140
+So if you are proxying a request to a Lambda function,
+
+49
+00:01:56.140 --> 00:01:57.010
+but that Lambda function,
+
+50
+00:01:57.010 --> 00:01:59.710
+even though it has a 15 minutes timeout,
+
+51
+00:01:59.710 --> 00:02:02.490
+takes three minutes to process a request,
+
+52
+00:02:02.490 --> 00:02:04.660
+your Amazon API Gateway will timeout
+
+53
+00:02:04.660 --> 00:02:06.120
+before your Lambda function,
+
+54
+00:02:06.120 --> 00:02:08.970
+because the timeouts on any requests on the API gateway
+
+55
+00:02:08.970 --> 00:02:10.930
+is 29 seconds.
+
+56
+00:02:10.930 --> 00:02:13.330
+So that is a really important limit to know
+
+57
+00:02:13.330 --> 00:02:15.720
+when you look at your solution architecture.
+
+58
+00:02:15.720 --> 00:02:19.080
+The second thing is, the 10 megabytes max payload size,
+
+59
+00:02:19.080 --> 00:02:20.470
+and I'll be talking about it more.
+
+60
+00:02:20.470 --> 00:02:21.303
+But the idea is that you cannot send
+
+61
+00:02:21.303 --> 00:02:24.610
+more than 10 megabytes of data in one request
+
+62
+00:02:24.610 --> 00:02:26.510
+through the Amazon API Gateway.
+
+63
+00:02:26.510 --> 00:02:27.810
+So again, if you're trying to upload
+
+64
+00:02:27.810 --> 00:02:29.200
+big files onto whatever,
+
+65
+00:02:29.200 --> 00:02:32.540
+maybe the Amazon API Gateway is not the right thing for you.
+
+66
+00:02:32.540 --> 00:02:34.600
+And it's super important to take into account
+
+67
+00:02:34.600 --> 00:02:37.593
+these two limits when designing your solution architecture.
+
+68
+00:02:38.580 --> 00:02:41.500
+Okay, so something we've already seen are deployment stages.
+
+69
+00:02:41.500 --> 00:02:43.390
+So the API changes are deployed to stages
+
+70
+00:02:43.390 --> 00:02:45.160
+and we can have as many stages as we want,
+
+71
+00:02:45.160 --> 00:02:47.440
+and you can name it however you want.
+
+72
+00:02:47.440 --> 00:02:50.670
+For example, dev, test, prod, and so on.
+
+73
+00:02:50.670 --> 00:02:52.090
+And the stages could be rolled back,
+
+74
+00:02:52.090 --> 00:02:54.550
+as a history of deployment is kept.
+
+75
+00:02:54.550 --> 00:02:56.430
+So you can roll back in previous stages
+
+76
+00:02:56.430 --> 00:02:57.710
+in case a deployment was wrong.
+
+77
+00:02:57.710 --> 00:03:00.690
+It's a really neat feature in case you something bad
+
+78
+00:03:00.690 --> 00:03:03.220
+and want to get back in time.
+
+79
+00:03:03.220 --> 00:03:05.610
+So we've seen how to deploy a stage
+
+80
+00:03:05.610 --> 00:03:06.790
+and what it can be pointed to.
+
+81
+00:03:06.790 --> 00:03:09.080
+So it can be pointed to a prod alias
+
+82
+00:03:09.080 --> 00:03:10.730
+or a test alias for you Lambda function,
+
+83
+00:03:10.730 --> 00:03:12.930
+and these aliases can be pointing to V1, V2.
+
+84
+00:03:12.930 --> 00:03:14.730
+I'm not going to go over it again,
+
+85
+00:03:14.730 --> 00:03:17.650
+but you remember this from a previous lecture.
+
+86
+00:03:17.650 --> 00:03:19.200
+Next, for the integrations.
+
+87
+00:03:19.200 --> 00:03:21.350
+So we have HTTP-type of integration,
+
+88
+00:03:21.350 --> 00:03:24.530
+in case you have an HTTP endpoint exposed in your backend,
+
+89
+00:03:24.530 --> 00:03:26.900
+for example, you have an internal HTTP API on premise
+
+90
+00:03:26.900 --> 00:03:28.370
+or you have an application load balancer
+
+91
+00:03:28.370 --> 00:03:31.120
+and you want to add an API gateway in front of it,
+
+92
+00:03:31.120 --> 00:03:32.160
+why would you do it?
+
+93
+00:03:32.160 --> 00:03:35.070
+Maybe you want to add rate-limiting, caching features,
+
+94
+00:03:35.070 --> 00:03:38.220
+user authentication, API keys, et cetera, et cetera.
+
+95
+00:03:38.220 --> 00:03:39.450
+So these could be very good reasons
+
+96
+00:03:39.450 --> 00:03:41.950
+to add an API gateway as an extra layer.
+
+97
+00:03:41.950 --> 00:03:43.610
+There are Lambda functions and they're very classic,
+
+98
+00:03:43.610 --> 00:03:44.750
+we've seen it many times.
+
+99
+00:03:44.750 --> 00:03:47.700
+So the API gateway will invoke a Lambda function,
+
+100
+00:03:47.700 --> 00:03:50.230
+and it's a very easy way to create a REST API
+
+101
+00:03:50.230 --> 00:03:53.823
+that is backed by AWS Lambda, all in a serverless fashion.
+
+102
+00:03:54.690 --> 00:03:55.960
+Also very important.
+
+103
+00:03:55.960 --> 00:03:57.610
+This is something that's very prominent
+
+104
+00:03:57.610 --> 00:03:59.110
+in the devops exam that still comes up
+
+105
+00:03:59.110 --> 00:04:01.030
+in the solutions architect professional exam,
+
+106
+00:04:01.030 --> 00:04:04.690
+which is that you can expose a service specific API
+
+107
+00:04:04.690 --> 00:04:06.340
+through the API gateway.
+
+108
+00:04:06.340 --> 00:04:07.950
+So it's any API.
+
+109
+00:04:07.950 --> 00:04:10.180
+So some very common use cases for example
+
+110
+00:04:10.180 --> 00:04:13.090
+would be to start a Step Functions workflow
+
+111
+00:04:13.090 --> 00:04:15.180
+or to post a message to SQS.
+
+112
+00:04:15.180 --> 00:04:18.610
+But again, leveraging these features of authentication
+
+113
+00:04:18.610 --> 00:04:21.300
+to deploy publicly, to have rate control and so on.
+
+114
+00:04:21.300 --> 00:04:23.770
+So it is very common to have an API gateway
+
+115
+00:04:23.770 --> 00:04:27.480
+proxying an AWS service for a specific API.
+
+116
+00:04:27.480 --> 00:04:30.570
+Now let's talk about directly one of these application
+
+117
+00:04:30.570 --> 00:04:32.500
+as a solution architecture discussion.
+
+118
+00:04:32.500 --> 00:04:35.910
+So we want to have API gateway in front of S3
+
+119
+00:04:35.910 --> 00:04:37.590
+to upload a file.
+
+120
+00:04:37.590 --> 00:04:39.160
+But the thing, is if you remember what I said
+
+121
+00:04:39.160 --> 00:04:40.660
+in the very beginning of this lecture,
+
+122
+00:04:40.660 --> 00:04:43.450
+I said you will be impacted by the 10 megabytes
+
+123
+00:04:43.450 --> 00:04:44.600
+payload size limits.
+
+124
+00:04:44.600 --> 00:04:45.920
+So let's have an example.
+
+125
+00:04:45.920 --> 00:04:47.360
+We have the client application
+
+126
+00:04:47.360 --> 00:04:49.420
+and we have an S3 bucket and it's private,
+
+127
+00:04:49.420 --> 00:04:52.995
+and we want to allow users to upload files into S3.
+
+128
+00:04:52.995 --> 00:04:56.150
+One way do it, we'd say okay, we have an API gateway
+
+129
+00:04:56.150 --> 00:04:59.020
+and the API gateway is going to be a proxy
+
+130
+00:04:59.020 --> 00:05:03.200
+in front of the service S3 for the API put objects.
+
+131
+00:05:03.200 --> 00:05:04.940
+So we can say okay, I wanna upload a file,
+
+132
+00:05:04.940 --> 00:05:07.210
+and then the API gateway with the proper configuration
+
+133
+00:05:07.210 --> 00:05:09.410
+will upload that file into S3.
+
+134
+00:05:09.410 --> 00:05:11.550
+But the limits here is that you cannot go over
+
+135
+00:05:11.550 --> 00:05:13.560
+10 megabytes of payload size.
+
+136
+00:05:13.560 --> 00:05:15.270
+So if you want to upload a big file,
+
+137
+00:05:15.270 --> 00:05:16.740
+you'll run into some issues.
+
+138
+00:05:16.740 --> 00:05:19.200
+So this is not a perfect architecture,
+
+139
+00:05:19.200 --> 00:05:21.200
+but it is a possible architecture.
+
+140
+00:05:21.200 --> 00:05:22.610
+And this is the kind of things you have to go
+
+141
+00:05:22.610 --> 00:05:25.530
+and really really look at when you go into the exam.
+
+142
+00:05:25.530 --> 00:05:27.570
+Now, what is a better architecture?
+
+143
+00:05:27.570 --> 00:05:28.920
+Well, we have the same kind of things.
+
+144
+00:05:28.920 --> 00:05:31.440
+The client application does talk to the API gateway,
+
+145
+00:05:31.440 --> 00:05:33.680
+because we like the features of the API gateway,
+
+146
+00:05:33.680 --> 00:05:36.440
+and says I want to upload a file.
+
+147
+00:05:36.440 --> 00:05:39.567
+Now, the API gateway will talk to a Lambda function,
+
+148
+00:05:39.567 --> 00:05:41.600
+and that Lambda function can do something.
+
+149
+00:05:41.600 --> 00:05:45.560
+It can generate a pre-signed URL from our S3 buckets.
+
+150
+00:05:45.560 --> 00:05:48.620
+And what it does by getting this pre-signed URL
+
+151
+00:05:48.620 --> 00:05:51.590
+is that it will return the URL itself, which is very light,
+
+152
+00:05:51.590 --> 00:05:53.210
+and the real URL will be forwarded
+
+153
+00:05:53.210 --> 00:05:55.200
+to our client application from the API gateway.
+
+154
+00:05:55.200 --> 00:05:56.900
+And then, using that pre-signed URL
+
+155
+00:05:56.900 --> 00:05:58.510
+directly from our client application,
+
+156
+00:05:58.510 --> 00:06:01.600
+we are able to upload directly into S3,
+
+157
+00:06:01.600 --> 00:06:04.240
+any file of any size we want.
+
+158
+00:06:04.240 --> 00:06:06.430
+So this architecture is much better.
+
+159
+00:06:06.430 --> 00:06:08.130
+Yes, there is an extra Lambda function,
+
+160
+00:06:08.130 --> 00:06:11.180
+but it's scales a lot better, it respects every component
+
+161
+00:06:11.180 --> 00:06:12.490
+for what it's supposed to be doing,
+
+162
+00:06:12.490 --> 00:06:14.600
+and using a pre-signed URL, we can upload files
+
+163
+00:06:14.600 --> 00:06:18.520
+of megabytes, gigabytes or terabytes, whatever we want.
+
+164
+00:06:18.520 --> 00:06:21.200
+So this is a much better solution architecture.
+
+165
+00:06:21.200 --> 00:06:23.420
+Again, these two architectures work.
+
+166
+00:06:23.420 --> 00:06:25.850
+It depends on what kind of limits you want to have.
+
+167
+00:06:25.850 --> 00:06:27.030
+And again, this is the kind of things
+
+168
+00:06:27.030 --> 00:06:28.820
+that the exam will test you on.
+
+169
+00:06:28.820 --> 00:06:31.600
+Now, the API gateway has different endpoint types.
+
+170
+00:06:31.600 --> 00:06:32.990
+The first one is Edge-Optimized,
+
+171
+00:06:32.990 --> 00:06:36.510
+which a default which means that your requests
+
+172
+00:06:36.510 --> 00:06:39.250
+are routed through the CloudFront Edge locations.
+
+173
+00:06:39.250 --> 00:06:40.390
+So that improves latencies,
+
+174
+00:06:40.390 --> 00:06:42.390
+and that's really helpful when you have global clients.
+
+175
+00:06:42.390 --> 00:06:47.260
+But your API gateway itself still lives in only one region.
+
+176
+00:06:47.260 --> 00:06:50.560
+Then you can deploy it also as a regional API gateway,
+
+177
+00:06:50.560 --> 00:06:51.680
+so that means that all the clients
+
+178
+00:06:51.680 --> 00:06:53.970
+are within the same region, otherwise it doesn't make sense,
+
+179
+00:06:53.970 --> 00:06:55.727
+and you could manually combine this with CloudFront
+
+180
+00:06:55.727 --> 00:06:57.610
+if you want to have more control
+
+181
+00:06:57.610 --> 00:07:00.010
+over the caching strategies, distribution,
+
+182
+00:07:00.010 --> 00:07:01.000
+that kind of things.
+
+183
+00:07:01.000 --> 00:07:02.700
+So by default Edge optimized,
+
+184
+00:07:02.700 --> 00:07:05.390
+but you could have a regional API gateway
+
+185
+00:07:05.390 --> 00:07:07.520
+and combine this with CloudFront.
+
+186
+00:07:07.520 --> 00:07:08.610
+Finally, private,
+
+187
+00:07:08.610 --> 00:07:11.640
+where you want to just deploy things only within your VPC
+
+188
+00:07:11.640 --> 00:07:14.420
+and get access from the ENI,
+
+189
+00:07:14.420 --> 00:07:16.090
+and you need to use a resource policy
+
+190
+00:07:16.090 --> 00:07:18.950
+to define access to your private API gateway.
+
+191
+00:07:18.950 --> 00:07:20.650
+So remember, three different ways
+
+192
+00:07:20.650 --> 00:07:22.150
+of deploying your API gateway.
+
+193
+00:07:23.520 --> 00:07:24.740
+Next, super important,
+
+194
+00:07:24.740 --> 00:07:28.090
+you can cache API responses from your API gateway.
+
+195
+00:07:28.090 --> 00:07:29.470
+Why would you use caching?
+
+196
+00:07:29.470 --> 00:07:32.540
+Well, to reduce the number of calls made to the backend.
+
+197
+00:07:32.540 --> 00:07:35.390
+So the idea is that your client talks to the API gateway,
+
+198
+00:07:35.390 --> 00:07:36.223
+and your API gateway,
+
+199
+00:07:36.223 --> 00:07:38.750
+before issuing a request to the backend,
+
+200
+00:07:38.750 --> 00:07:40.590
+will check the gateway cache,
+
+201
+00:07:40.590 --> 00:07:41.930
+and if it is available in the cache
+
+202
+00:07:41.930 --> 00:07:43.520
+it will return it to the clients.
+
+203
+00:07:43.520 --> 00:07:46.560
+Otherwise, it will do a query in the backend
+
+204
+00:07:46.560 --> 00:07:47.840
+if there's a cache miss
+
+205
+00:07:47.840 --> 00:07:50.420
+and store the result in the gateway cache.
+
+206
+00:07:50.420 --> 00:07:51.580
+This is very helpful.
+
+207
+00:07:51.580 --> 00:07:54.580
+And then your data in your cache has a time to live,
+
+208
+00:07:54.580 --> 00:07:56.630
+which is 300 seconds by default.
+
+209
+00:07:56.630 --> 00:07:57.930
+So five minutes.
+
+210
+00:07:57.930 --> 00:08:00.310
+But you can set it to zero if you don't wanna cache,
+
+211
+00:08:00.310 --> 00:08:02.650
+or one hour if you want your data
+
+212
+00:08:02.650 --> 00:08:04.750
+to be cached for a long time.
+
+213
+00:08:04.750 --> 00:08:07.070
+Caches are defined per stage,
+
+214
+00:08:07.070 --> 00:08:11.070
+and it's possible to override each cache setting per method.
+
+215
+00:08:11.070 --> 00:08:12.950
+So if you have a get on whatever URL,
+
+216
+00:08:12.950 --> 00:08:14.040
+or a put in whatever URL,
+
+217
+00:08:14.040 --> 00:08:15.820
+and you don't want it to cache for that thing,
+
+218
+00:08:15.820 --> 00:08:17.100
+you can overwrite the cache setting
+
+219
+00:08:17.100 --> 00:08:19.120
+for these specific methods.
+
+220
+00:08:19.120 --> 00:08:22.240
+The clients themselves as well can invalidate the cache
+
+221
+00:08:22.240 --> 00:08:25.630
+using a header called "Cache-Control: max-age=0,"
+
+222
+00:08:25.630 --> 00:08:27.740
+and you need the proper IM authorization to do this,
+
+223
+00:08:27.740 --> 00:08:28.700
+but it's possible for the client
+
+224
+00:08:28.700 --> 00:08:31.010
+to basically bypass the cache.
+
+225
+00:08:31.010 --> 00:08:33.540
+You also have the ability to flush the entire cache,
+
+226
+00:08:33.540 --> 00:08:36.560
+so it means invalidating it immediately,
+
+227
+00:08:36.560 --> 00:08:39.950
+if you wanted to repopulate the cache at one point of time.
+
+228
+00:08:39.950 --> 00:08:41.840
+Finally, the cache can be encrypted,
+
+229
+00:08:41.840 --> 00:08:43.306
+and you can define a capacity of the cache
+
+230
+00:08:43.306 --> 00:08:47.290
+between 0.5 gigabytes to 237 gigabyte.
+
+231
+00:08:47.290 --> 00:08:49.290
+So it can be quite big.
+
+232
+00:08:49.290 --> 00:08:50.440
+Now in terms of errors,
+
+233
+00:08:50.440 --> 00:08:52.680
+it's very important to understand the API gateway errors
+
+234
+00:08:52.680 --> 00:08:55.720
+because they indicate to you a lot of information.
+
+235
+00:08:55.720 --> 00:08:59.640
+In case you get a 4xx, that means it's client errors.
+
+236
+00:08:59.640 --> 00:09:02.348
+So examples, 400 is Bad Request.
+
+237
+00:09:02.348 --> 00:09:04.210
+403 is Access Denied,
+
+238
+00:09:04.210 --> 00:09:06.190
+or maybe your web application firewall
+
+239
+00:09:06.190 --> 00:09:07.260
+has filtered the request.
+
+240
+00:09:07.260 --> 00:09:10.800
+429 is quota exceeded, or a throttle
+
+241
+00:09:10.800 --> 00:09:13.000
+directly coming from the API gateway.
+
+242
+00:09:13.000 --> 00:09:15.380
+And when you get a 5xx,
+
+243
+00:09:15.380 --> 00:09:17.430
+that means it's a server-side error.
+
+244
+00:09:17.430 --> 00:09:19.000
+So some notable one.
+
+245
+00:09:19.000 --> 00:09:21.730
+502 means a Bad Gateway Exception.
+
+246
+00:09:21.730 --> 00:09:23.250
+That means usually when the Lambda function
+
+247
+00:09:23.250 --> 00:09:25.790
+returns a bad output, or occasionally
+
+248
+00:09:25.790 --> 00:09:28.770
+when you have out of order invocations due to heavy loads.
+
+249
+00:09:28.770 --> 00:09:31.700
+You have 503, which is Service Unavailable Exception.
+
+250
+00:09:31.700 --> 00:09:33.680
+So this is when the backend cannot respond.
+
+251
+00:09:33.680 --> 00:09:36.230
+And 504, which is Integration Failure.
+
+252
+00:09:36.230 --> 00:09:37.590
+And one example is the limit
+
+253
+00:09:37.590 --> 00:09:40.430
+I was talking to you about in the beginning of this lecture,
+
+254
+00:09:40.430 --> 00:09:43.110
+which is for example when the endpoint request timed out
+
+255
+00:09:43.110 --> 00:09:45.680
+because the API gateway has a request timeout
+
+256
+00:09:45.680 --> 00:09:48.160
+of about 29 seconds maximum.
+
+257
+00:09:48.160 --> 00:09:49.910
+So this is when you will get a 504.
+
+258
+00:09:51.170 --> 00:09:52.690
+Next for security.
+
+259
+00:09:52.690 --> 00:09:55.910
+So you can load SSL certificates onto your API gateway,
+
+260
+00:09:55.910 --> 00:09:58.870
+and then you use Route53 to define a CNAME.
+
+261
+00:09:58.870 --> 00:10:00.020
+You can have resource policy,
+
+262
+00:10:00.020 --> 00:10:01.820
+for example, like an S3 bucket policy.
+
+263
+00:10:01.820 --> 00:10:04.290
+So this controls who can access the API,
+
+264
+00:10:04.290 --> 00:10:06.780
+which accounts, which IP, which CIDR blocks,
+
+265
+00:10:06.780 --> 00:10:08.840
+which VPC or VPC endpoints.
+
+266
+00:10:08.840 --> 00:10:10.170
+And then, IAM Execution Roles
+
+267
+00:10:10.170 --> 00:10:11.520
+for the API gateway at the API level,
+
+268
+00:10:11.520 --> 00:10:13.180
+for example, if your AIP gateway
+
+269
+00:10:13.180 --> 00:10:14.490
+needs to invoke a Lambda Functions
+
+270
+00:10:14.490 --> 00:10:16.640
+and you need to define the IAM roles for that.
+
+271
+00:10:16.640 --> 00:10:19.610
+It support CORS, so Cross-origin Resource Sharing.
+
+272
+00:10:19.610 --> 00:10:22.670
+That means it gives you some browser-based security
+
+273
+00:10:22.670 --> 00:10:25.290
+and it controls which domain can call your API,
+
+274
+00:10:25.290 --> 00:10:27.203
+if the client is well behaved.
+
+275
+00:10:28.790 --> 00:10:30.400
+Authentication, there's three ways.
+
+276
+00:10:30.400 --> 00:10:32.030
+You have IAM-based access.
+
+277
+00:10:32.030 --> 00:10:33.600
+This is good when you want to provide access
+
+278
+00:10:33.600 --> 00:10:34.830
+within your own infrastructure,
+
+279
+00:10:34.830 --> 00:10:38.130
+and it uses the IAM credentials passed in in the header
+
+280
+00:10:38.130 --> 00:10:40.660
+through something called Sig V4.
+
+281
+00:10:40.660 --> 00:10:42.490
+You have Lambda-based authorizers,
+
+282
+00:10:42.490 --> 00:10:44.550
+used to be known as custom authorizers,
+
+283
+00:10:44.550 --> 00:10:46.550
+and this is when you want to use a Lambda function
+
+284
+00:10:46.550 --> 00:10:48.950
+to verify a custom authentication token,
+
+285
+00:10:48.950 --> 00:10:51.760
+things like Oauth, SAML or 3rd party authentication,
+
+286
+00:10:51.760 --> 00:10:54.110
+and you have to program the Lambda function
+
+287
+00:10:54.110 --> 00:10:56.530
+to verify the authentication mechanism.
+
+288
+00:10:56.530 --> 00:11:00.170
+Or we can use the deep integration with Cognito User Pool,
+
+289
+00:11:00.170 --> 00:11:03.641
+in which case the client has to authenticate with Cognito
+
+290
+00:11:03.641 --> 00:11:04.474
+and the client will pass in
+
+291
+00:11:04.474 --> 00:11:07.210
+the authentication code token to API gateway,
+
+292
+00:11:07.210 --> 00:11:09.170
+and the API gateway knows out of the box
+
+293
+00:11:09.170 --> 00:11:11.370
+how to verify that token.
+
+294
+00:11:11.370 --> 00:11:12.600
+So what does it look like?
+
+295
+00:11:12.600 --> 00:11:15.210
+With the client connecting to the Cognito User Pool,
+
+296
+00:11:15.210 --> 00:11:17.710
+authenticating and then gets a token back,
+
+297
+00:11:17.710 --> 00:11:20.280
+it passes the token to the API gateway
+
+298
+00:11:20.280 --> 00:11:22.650
+and the API gateway can verify that token
+
+299
+00:11:22.650 --> 00:11:24.920
+with the Cognito User Pool.
+
+300
+00:11:24.920 --> 00:11:28.500
+And then if it does, then it can invoke your Lambda function
+
+301
+00:11:28.500 --> 00:11:30.480
+and it will pass the identity of the color
+
+302
+00:11:30.480 --> 00:11:31.313
+to the Lambda function,
+
+303
+00:11:31.313 --> 00:11:35.410
+so you can do some extra logic on your Lambda function side.
+
+304
+00:11:35.410 --> 00:11:38.020
+So the thing to notice here is that your client
+
+305
+00:11:38.020 --> 00:11:40.880
+has to first authenticate with Cognito User Pool,
+
+306
+00:11:40.880 --> 00:11:44.730
+and you need to program obviously for this, the right code.
+
+307
+00:11:44.730 --> 00:11:46.910
+Finally, in terms of logging, monitoring
+
+308
+00:11:46.910 --> 00:11:48.320
+and tracing, that's very important,
+
+309
+00:11:48.320 --> 00:11:51.420
+CloudWatch Logs does give you logging at the stage level
+
+310
+00:11:51.420 --> 00:11:53.620
+for log-level error or info,
+
+311
+00:11:53.620 --> 00:11:56.430
+and you can log full requests and responses data.
+
+312
+00:11:56.430 --> 00:11:58.950
+So it can be quite helpful when you want to troubleshoot.
+
+313
+00:11:58.950 --> 00:12:01.870
+You can also send API gateway access logs
+
+314
+00:12:01.870 --> 00:12:02.950
+which is customizable,
+
+315
+00:12:02.950 --> 00:12:05.420
+and the logs can be sent directly if you wanted to
+
+316
+00:12:05.420 --> 00:12:06.920
+into Kinesis Data Firehose
+
+317
+00:12:06.920 --> 00:12:09.470
+as an alternative to CloudWatch Logs.
+
+318
+00:12:09.470 --> 00:12:10.720
+You have CloudWatch Metrics
+
+319
+00:12:10.720 --> 00:12:11.930
+where you get metrics by stage
+
+320
+00:12:11.930 --> 00:12:14.030
+and you can enable detailed metrics,
+
+321
+00:12:14.030 --> 00:12:15.770
+and you get some information such as
+
+322
+00:12:15.770 --> 00:12:18.410
+the integration latency, the latency overall,
+
+323
+00:12:18.410 --> 00:12:20.960
+the cache hit count and the cache miss count.
+
+324
+00:12:20.960 --> 00:12:22.920
+All of these are very important to understand
+
+325
+00:12:22.920 --> 00:12:25.860
+if you have optimized your API gateway the right way.
+
+326
+00:12:25.860 --> 00:12:27.900
+Finally, X-Ray will give you tracing
+
+327
+00:12:27.900 --> 00:12:29.750
+to get extra information about the requests
+
+328
+00:12:29.750 --> 00:12:31.100
+going through API gateway,
+
+329
+00:12:31.100 --> 00:12:33.300
+such as latency, errors and so on.
+
+330
+00:12:33.300 --> 00:12:36.030
+And so, if you have X-Ray on the API gateway
+
+331
+00:12:36.030 --> 00:12:37.820
+plus X-Ray on your Lambda function,
+
+332
+00:12:37.820 --> 00:12:39.570
+that will give you the entire picture
+
+333
+00:12:39.570 --> 00:12:41.840
+of how your architecture is working.
+
+334
+00:12:41.840 --> 00:12:43.810
+Okay, so lots of good information.
+
+335
+00:12:43.810 --> 00:12:44.760
+I hope you liked this lecture
+
+336
+00:12:44.760 --> 00:12:46.710
+and I will see you in the next lecture.
+

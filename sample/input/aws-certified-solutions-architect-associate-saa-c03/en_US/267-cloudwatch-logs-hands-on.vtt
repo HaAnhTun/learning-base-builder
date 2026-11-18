@@ -1,0 +1,790 @@
+WEBVTT
+
+1
+00:00:00.330 --> 00:00:02.017
+<v Instructor>Okay, so I am in the CloudWatch console,</v>
+
+2
+00:00:02.017 --> 00:00:04.204
+and I'm gonna go on the left hand side for logs,
+
+3
+00:00:04.204 --> 00:00:08.790
+and on the log management I will find all my log groups.
+
+4
+00:00:08.790 --> 00:00:11.169
+So this is the logs that get created within AWS,
+
+5
+00:00:11.169 --> 00:00:13.740
+and when it's a service creating a log,
+
+6
+00:00:13.740 --> 00:00:18.690
+you will see an AWS glue or a /Kinesis /Lambda,
+
+7
+00:00:18.690 --> 00:00:20.222
+which indicates it's a service log.
+
+8
+00:00:20.222 --> 00:00:23.040
+But if you wanted to, you could also create
+
+9
+00:00:23.040 --> 00:00:25.830
+your own log groups by clicking on create log group,
+
+10
+00:00:25.830 --> 00:00:27.840
+and you could enter whatever name you want.
+
+11
+00:00:27.840 --> 00:00:30.360
+For example, demo logs.
+
+12
+00:00:30.360 --> 00:00:32.070
+You could set up a retention policy
+
+13
+00:00:32.070 --> 00:00:35.280
+for this log standard in terms of storage class,
+
+14
+00:00:35.280 --> 00:00:36.930
+standard, or infrequent access,
+
+15
+00:00:36.930 --> 00:00:38.996
+a KMS key if you wanted to encrypt things,
+
+16
+00:00:38.996 --> 00:00:41.515
+as well as deviation protection if you wanted to prevent
+
+17
+00:00:41.515 --> 00:00:44.444
+against accidental or unintended deletes,
+
+18
+00:00:44.444 --> 00:00:46.545
+and then you would create your log group,
+
+19
+00:00:46.545 --> 00:00:48.989
+and here you would find your log group as well.
+
+20
+00:00:48.989 --> 00:00:51.000
+So then your application,
+
+21
+00:00:51.000 --> 00:00:53.430
+we need to send directly logs into your log group.
+
+22
+00:00:53.430 --> 00:00:56.639
+So different options, but we have logs also created by AWS,
+
+23
+00:00:56.639 --> 00:00:58.020
+and you may have different ones,
+
+24
+00:00:58.020 --> 00:01:00.141
+of course based on how you've been using this course.
+
+25
+00:01:00.141 --> 00:01:02.468
+So here we have, for example,
+
+26
+00:01:02.468 --> 00:01:05.823
+a function named HelloWorld,
+
+27
+00:01:07.590 --> 00:01:10.140
+and so this function, HelloWorld, is a Lambda function
+
+28
+00:01:10.140 --> 00:01:13.650
+and that's what's going to actually populate logs in it.
+
+29
+00:01:13.650 --> 00:01:15.270
+So I have a HelloWorld function.
+
+30
+00:01:15.270 --> 00:01:16.890
+If you don't have it, don't stress.
+
+31
+00:01:16.890 --> 00:01:19.993
+You can just create a function, use a blueprint,
+
+32
+00:01:19.993 --> 00:01:24.300
+and then you use the HelloWorld blueprint for Python.
+
+33
+00:01:24.300 --> 00:01:26.783
+You name your function HelloWorld and you're good to go,
+
+34
+00:01:28.200 --> 00:01:29.550
+and you would be good to go.
+
+35
+00:01:29.550 --> 00:01:33.630
+Okay, but I already have my function so here it is.
+
+36
+00:01:33.630 --> 00:01:36.090
+So the idea is that this function, when it runs,
+
+37
+00:01:36.090 --> 00:01:38.400
+it creates outputs, and this output gets sent
+
+38
+00:01:38.400 --> 00:01:40.440
+directly into CloudWatch logs, and it's the best way for us
+
+39
+00:01:40.440 --> 00:01:43.055
+to visualize how CloudWatch logs is working.
+
+40
+00:01:43.055 --> 00:01:46.410
+So we scroll down and we have a look at log streams,
+
+41
+00:01:46.410 --> 00:01:48.900
+and log streams will be created over time.
+
+42
+00:01:48.900 --> 00:01:50.344
+It represents the different invocations
+
+43
+00:01:50.344 --> 00:01:52.408
+of your Lambda instances in this instance,
+
+44
+00:01:52.408 --> 00:01:54.527
+but log streams can be whatever you want
+
+45
+00:01:54.527 --> 00:01:56.760
+and whatever the service wanted to be.
+
+46
+00:01:56.760 --> 00:01:58.050
+So you'll have different log streams
+
+47
+00:01:58.050 --> 00:02:01.020
+and each log stream will just have logs inside.
+
+48
+00:02:01.020 --> 00:02:03.058
+So this is the logs from this first log stream,
+
+49
+00:02:03.058 --> 00:02:06.630
+and then this will be the log from the second log stream.
+
+50
+00:02:06.630 --> 00:02:09.270
+So you can see within each log stream,
+
+51
+00:02:09.270 --> 00:02:11.670
+we have a timestamp of when the data was created,
+
+52
+00:02:11.670 --> 00:02:13.980
+as well as the message which is corresponding
+
+53
+00:02:13.980 --> 00:02:15.540
+to the log line value.
+
+54
+00:02:15.540 --> 00:02:17.100
+So everything that gets sent
+
+55
+00:02:17.100 --> 00:02:20.815
+from Lambda into CloudWatch logs is available here.
+
+56
+00:02:20.815 --> 00:02:23.220
+So you can have a look, and this would be a very nice way
+
+57
+00:02:23.220 --> 00:02:24.565
+for you to debug your applications
+
+58
+00:02:24.565 --> 00:02:28.875
+if you want to have this kind of capability
+
+59
+00:02:28.875 --> 00:02:30.135
+when you have an error.
+
+60
+00:02:30.135 --> 00:02:32.167
+So what can we do with these logs?
+
+61
+00:02:32.167 --> 00:02:33.920
+Well, you can explore them of course,
+
+62
+00:02:33.920 --> 00:02:37.740
+but you can also create what's called a metric filter.
+
+63
+00:02:37.740 --> 00:02:39.835
+So a metric filter will allow us
+
+64
+00:02:39.835 --> 00:02:42.865
+to have a look at specific occurrences
+
+65
+00:02:42.865 --> 00:02:46.800
+of certain texts or patterns in our log lines,
+
+66
+00:02:46.800 --> 00:02:48.305
+and we create a metric out of it.
+
+67
+00:02:48.305 --> 00:02:50.059
+This is great for alarms.
+
+68
+00:02:50.059 --> 00:02:52.359
+So here we can enter a filter
+
+69
+00:02:52.359 --> 00:02:54.780
+and the filter can be quite complicated.
+
+70
+00:02:54.780 --> 00:02:57.753
+You have a specific syntax that you don't have to learn,
+
+71
+00:02:57.753 --> 00:03:00.472
+but just to mix in things very simple,
+
+72
+00:03:00.472 --> 00:03:05.290
+I will just enter info here and let's see if that works,
+
+73
+00:03:05.290 --> 00:03:09.240
+and we have our custom log data that's available here
+
+74
+00:03:09.240 --> 00:03:11.160
+that is provided by AWS.
+
+75
+00:03:11.160 --> 00:03:14.280
+You test the pattern and it says, well, for the word info,
+
+76
+00:03:14.280 --> 00:03:16.798
+I found two log lines, and so this was created metrics
+
+77
+00:03:16.798 --> 00:03:18.867
+for these two log lines.
+
+78
+00:03:18.867 --> 00:03:21.600
+Of course you could also choose a log stream.
+
+79
+00:03:21.600 --> 00:03:22.830
+For example, this log stream,
+
+80
+00:03:22.830 --> 00:03:25.150
+which is the log from our function,
+
+81
+00:03:25.150 --> 00:03:28.270
+and then we could choose, for example, the start keyword
+
+82
+00:03:30.241 --> 00:03:32.520
+and then test it,
+
+83
+00:03:32.520 --> 00:03:34.830
+and we can see that we have different starts.
+
+84
+00:03:34.830 --> 00:03:36.960
+And so it's interesting because maybe we'll say
+
+85
+00:03:36.960 --> 00:03:40.620
+that anytime there's a start and then the request ID,
+
+86
+00:03:40.620 --> 00:03:42.870
+we have a start of our Lambda function.
+
+87
+00:03:42.870 --> 00:03:44.531
+Of course this is a metric already available to us
+
+88
+00:03:44.531 --> 00:03:47.520
+in our Lambda function directly,
+
+89
+00:03:47.520 --> 00:03:50.220
+but we can recreate it using a metric filter.
+
+90
+00:03:50.220 --> 00:03:51.570
+So as you can see in its start
+
+91
+00:03:51.570 --> 00:03:53.715
+is going to trigger a false positive so it's up to you
+
+92
+00:03:53.715 --> 00:03:57.599
+to really edit your filter pattern
+
+93
+00:03:57.599 --> 00:04:00.270
+and maybe add better things
+
+94
+00:04:00.270 --> 00:04:02.220
+so that you only have start request ID,
+
+95
+00:04:02.220 --> 00:04:03.450
+and we're good to go.
+
+96
+00:04:03.450 --> 00:04:05.340
+All right, so this is for you to build.
+
+97
+00:04:05.340 --> 00:04:06.759
+This is just an interesting thing to do.
+
+98
+00:04:06.759 --> 00:04:11.193
+So I call this one demo filter Lambda.
+
+99
+00:04:12.383 --> 00:04:16.560
+I scroll down and then we have to enter a namespace.
+
+100
+00:04:16.560 --> 00:04:18.210
+This is where your metric is going to be stored.
+
+101
+00:04:18.210 --> 00:04:19.361
+So demo namespace.
+
+102
+00:04:19.361 --> 00:04:24.361
+Metric name again, Countstart Lambda.
+
+103
+00:04:25.050 --> 00:04:25.980
+Metric value.
+
+104
+00:04:25.980 --> 00:04:28.470
+So what happens when an occurrence is found?
+
+105
+00:04:28.470 --> 00:04:30.990
+So we'll just have one to have account of one
+
+106
+00:04:30.990 --> 00:04:35.983
+anytime we have a match, and then we can also add dimensions
+
+107
+00:04:35.983 --> 00:04:39.006
+in case you have multiple accounts, multiple regions,
+
+108
+00:04:39.006 --> 00:04:41.926
+or you're an organization, this is very helpful
+
+109
+00:04:41.926 --> 00:04:45.810
+to have this kind of dimensions within your metrics.
+
+110
+00:04:45.810 --> 00:04:48.630
+Click on next, we create this metric filter.
+
+111
+00:04:48.630 --> 00:04:52.896
+So it has been created, and now this filter right here
+
+112
+00:04:52.896 --> 00:04:55.780
+if I click on it, it's available to me here
+
+113
+00:04:55.780 --> 00:04:59.147
+and so I can just now directly click on this,
+
+114
+00:04:59.147 --> 00:05:02.728
+and it's gonna give me a link directly into my metric.
+
+115
+00:05:02.728 --> 00:05:05.342
+So as you can see, my CloudWatch graph is empty
+
+116
+00:05:05.342 --> 00:05:09.540
+because this metric is only going to get populated
+
+117
+00:05:09.540 --> 00:05:12.864
+for the new values and not the historical values.
+
+118
+00:05:12.864 --> 00:05:15.720
+So what I need to do to just demo you how this works
+
+119
+00:05:15.720 --> 00:05:18.210
+is that I go into my function, I click on test,
+
+120
+00:05:18.210 --> 00:05:19.391
+and I just click on test.
+
+121
+00:05:19.391 --> 00:05:21.226
+I'll do it once or twice.
+
+122
+00:05:21.226 --> 00:05:23.237
+Okay, I've done it four times,
+
+123
+00:05:23.237 --> 00:05:25.379
+and now I just need to wait a little bit
+
+124
+00:05:25.379 --> 00:05:29.548
+for CloudWatch to populate this metric.
+
+125
+00:05:29.548 --> 00:05:33.039
+And so here in my metric, I had to select it
+
+126
+00:05:33.039 --> 00:05:34.800
+and go back to count metric.
+
+127
+00:05:34.800 --> 00:05:36.872
+Here in my graph I see there's one data point
+
+128
+00:05:36.872 --> 00:05:39.122
+for my metric Countstart Lambda.
+
+129
+00:05:39.122 --> 00:05:41.250
+So it's not very fascinating as you can see,
+
+130
+00:05:41.250 --> 00:05:43.800
+but we can see that this metric filter
+
+131
+00:05:43.800 --> 00:05:45.295
+get populated from the logs,
+
+132
+00:05:45.295 --> 00:05:47.820
+and what you can do on top of this now
+
+133
+00:05:47.820 --> 00:05:50.546
+is that once you have a metric like this one,
+
+134
+00:05:50.546 --> 00:05:55.546
+so you would go back into your CloudWatch log management.
+
+135
+00:05:56.285 --> 00:06:01.285
+Let's take again our HelloWorld and then our metric filter.
+
+136
+00:06:02.070 --> 00:06:03.890
+You can take this metric
+
+137
+00:06:03.890 --> 00:06:06.945
+and then you would create an alarm on top of it,
+
+138
+00:06:06.945 --> 00:06:09.435
+and this is cool because now you can get alerting
+
+139
+00:06:09.435 --> 00:06:13.500
+based on the value of this metric so now it's a seven.
+
+140
+00:06:13.500 --> 00:06:16.601
+You can get an alarm based on this metric,
+
+141
+00:06:16.601 --> 00:06:17.922
+and so you can say for example,
+
+142
+00:06:17.922 --> 00:06:20.621
+well, whenever you have greater than 10,
+
+143
+00:06:20.621 --> 00:06:23.670
+then you've started Lambda too many times in five minutes
+
+144
+00:06:23.670 --> 00:06:25.290
+so I want an alarm on this.
+
+145
+00:06:25.290 --> 00:06:26.850
+And this is very helpful because this is an alarm
+
+146
+00:06:26.850 --> 00:06:30.063
+created on top of CloudWatch logs through a metric.
+
+147
+00:06:31.542 --> 00:06:34.887
+So there are other things you can do in CloudWatch logs.
+
+148
+00:06:34.887 --> 00:06:37.530
+For example, we can click on action here
+
+149
+00:06:37.530 --> 00:06:39.468
+and we can edit the retention settings
+
+150
+00:06:39.468 --> 00:06:43.050
+to say after how long the log will expire.
+
+151
+00:06:43.050 --> 00:06:46.860
+We can also export the data to Amazon S3 directly
+
+152
+00:06:46.860 --> 00:06:48.860
+to have a data dump into Amazon S3,
+
+153
+00:06:48.860 --> 00:06:51.510
+and we could also start tailing the logs.
+
+154
+00:06:51.510 --> 00:06:54.067
+That means you can see the logs as they happen in real time.
+
+155
+00:06:54.067 --> 00:06:57.118
+We also have the option to have subscription filters.
+
+156
+00:06:57.118 --> 00:06:59.210
+This is a way for you to stream the logs
+
+157
+00:06:59.210 --> 00:07:01.290
+into a different service.
+
+158
+00:07:01.290 --> 00:07:03.753
+Here we have the option to use Amazon open search service.
+
+159
+00:07:03.753 --> 00:07:07.235
+Kinesis, Amazon Data Firehose, or Lambda.
+
+160
+00:07:07.235 --> 00:07:09.630
+These are the four destinations available right now.
+
+161
+00:07:09.630 --> 00:07:11.801
+If there's more, this is fine. (chuckles)
+
+162
+00:07:11.801 --> 00:07:15.720
+And then the last thing we can do
+
+163
+00:07:15.720 --> 00:07:18.720
+is to have a look at CloudWatch logs insights.
+
+164
+00:07:18.720 --> 00:07:20.738
+So if I have a look at CloudWatch logs insights,
+
+165
+00:07:20.738 --> 00:07:24.238
+here we have the option to query our logs
+
+166
+00:07:24.238 --> 00:07:29.238
+using a query language, and it's called Logs Insight QL.
+
+167
+00:07:30.239 --> 00:07:33.781
+So you would enter a query, scroll down,
+
+168
+00:07:33.781 --> 00:07:36.577
+and then you would click on run query.
+
+169
+00:07:36.577 --> 00:07:39.892
+And this is going to run the query, and as you can see,
+
+170
+00:07:39.892 --> 00:07:42.275
+we get the results of this query right here,
+
+171
+00:07:42.275 --> 00:07:44.571
+and we have 70 lines of logs.
+
+172
+00:07:44.571 --> 00:07:47.635
+We can get a graph of how the log is over time,
+
+173
+00:07:47.635 --> 00:07:50.010
+and we can get the results of this query.
+
+174
+00:07:50.010 --> 00:07:51.625
+Now, this is just an example,
+
+175
+00:07:51.625 --> 00:07:54.450
+but this can be very complicated
+
+176
+00:07:54.450 --> 00:07:57.540
+in terms of the types of query you make of course.
+
+177
+00:07:57.540 --> 00:08:01.980
+For example, you can get some magic ideas
+
+178
+00:08:01.980 --> 00:08:04.260
+by using these facets and fields,
+
+179
+00:08:04.260 --> 00:08:07.410
+and this is based from your log or look up tables.
+
+180
+00:08:07.410 --> 00:08:09.810
+But if you want to have pre-made queries as well,
+
+181
+00:08:09.810 --> 00:08:10.995
+you could click on this little folder,
+
+182
+00:08:10.995 --> 00:08:12.900
+and it shows you the saved queries.
+
+183
+00:08:12.900 --> 00:08:14.817
+This is also accessible from the top
+
+184
+00:08:14.817 --> 00:08:16.878
+and you could have common queries, for example,
+
+185
+00:08:16.878 --> 00:08:19.350
+the 25 most recently added log events,
+
+186
+00:08:19.350 --> 00:08:23.400
+but also the number of exceptions logged every five minutes,
+
+187
+00:08:23.400 --> 00:08:25.666
+or for example, for some specific services,
+
+188
+00:08:25.666 --> 00:08:28.145
+the latency statistics for five minute intervals,
+
+189
+00:08:28.145 --> 00:08:31.740
+and you can just learn, you know, there's max, mins,
+
+190
+00:08:31.740 --> 00:08:33.990
+average, binning every five minutes.
+
+191
+00:08:33.990 --> 00:08:35.580
+So lots of different things you can do
+
+192
+00:08:35.580 --> 00:08:37.080
+with CloudWatch logs inside.
+
+193
+00:08:37.080 --> 00:08:40.230
+Again, just for you to know, for real world practice.
+
+194
+00:08:40.230 --> 00:08:41.400
+Not necessarily for the exam.
+
+195
+00:08:41.400 --> 00:08:43.965
+You want to know how to read this or type it.
+
+196
+00:08:43.965 --> 00:08:45.857
+So that's it for CloudWatch logs.
+
+197
+00:08:45.857 --> 00:08:49.833
+I hope you liked it and I will see you in the next lecture.
+

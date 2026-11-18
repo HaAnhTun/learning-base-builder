@@ -1,0 +1,538 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.079
+When you're choosing how an MCP client talks to a server,
+
+2
+00:00:03.079 --> 00:00:06.920
+STDIO is one of two primary options.
+
+3
+00:00:06.920 --> 00:00:09.159
+It spawns the server as a subprocess
+
+4
+00:00:09.159 --> 00:00:12.760
+and exchanges messages through stand-in and stand-out.
+
+5
+00:00:12.760 --> 00:00:15.239
+Let me walk you through how that works,
+
+6
+00:00:15.239 --> 00:00:17.079
+when it's the right choice, and why
+
+7
+00:00:17.079 --> 00:00:20.600
+Cloud Code uses STDIO natively.
+
+8
+00:00:20.600 --> 00:00:23.280
+STDIO transport works because of something
+
+9
+00:00:23.280 --> 00:00:25.239
+every process already has.
+
+10
+00:00:25.239 --> 00:00:27.840
+When a program starts, the operating system
+
+11
+00:00:27.840 --> 00:00:31.159
+hands it standard streams, stand-in for input,
+
+12
+00:00:31.159 --> 00:00:34.520
+stand-out for output, and stder for errors.
+
+13
+00:00:34.520 --> 00:00:38.279
+STDIO transport uses stand-in and stand-out
+
+14
+00:00:38.279 --> 00:00:41.959
+as a bidirectional pipe for MCP messages,
+
+15
+00:00:41.959 --> 00:00:45.200
+which is why it needs no network configuration at all.
+
+16
+00:00:45.200 --> 00:00:48.319
+The other half of the picture is the child process.
+
+17
+00:00:48.319 --> 00:00:50.919
+A child process is one that a parent process
+
+18
+00:00:50.919 --> 00:00:52.639
+spawns and manages.
+
+19
+00:00:52.639 --> 00:00:55.540
+And in this model, the MCP client is the parent,
+
+20
+00:00:55.540 --> 00:00:57.639
+and the server is the child.
+
+21
+00:00:57.639 --> 00:00:59.720
+So the client launches the server,
+
+22
+00:00:59.720 --> 00:01:03.439
+keeps hold of its streams, and talks to it directly.
+
+23
+00:01:03.439 --> 00:01:06.760
+That relationship is the whole transport.
+
+24
+00:01:06.760 --> 00:01:09.599
+Here's how STDIO transport actually
+
+25
+00:01:09.599 --> 00:01:11.680
+works at the process level.
+
+26
+00:01:11.680 --> 00:01:14.120
+When the client starts, it reads its configuration
+
+27
+00:01:14.120 --> 00:01:16.199
+to find the command that launches
+
+28
+00:01:16.199 --> 00:01:18.639
+each registered MCP server.
+
+29
+00:01:18.639 --> 00:01:21.660
+It then spawns those servers as child processes,
+
+30
+00:01:21.660 --> 00:01:25.879
+using the operating system's standard process creation facilities.
+
+31
+00:01:25.879 --> 00:01:28.319
+Once the child is running, the client and server
+
+32
+00:01:28.319 --> 00:01:31.440
+exchange new line delimited JSON messages.
+
+33
+00:01:31.440 --> 00:01:33.800
+Client writes to the child's stand-in.
+
+34
+00:01:33.800 --> 00:01:35.959
+Server reads from its own stand-in
+
+35
+00:01:35.959 --> 00:01:38.120
+and writes responses to stand-out.
+
+36
+00:01:38.120 --> 00:01:40.480
+Client reads from the child's stand-out.
+
+37
+00:01:40.480 --> 00:01:42.459
+That's the entire communication model.
+
+38
+00:01:42.459 --> 00:01:46.099
+There's no socket, no port, no HTTP layer.
+
+39
+00:01:46.099 --> 00:01:48.739
+The OS process table and pipe infrastructure
+
+40
+00:01:48.739 --> 00:01:50.040
+handle everything.
+
+41
+00:01:50.040 --> 00:01:53.080
+This is fast, simple, and completely self-contained
+
+42
+00:01:53.080 --> 00:01:55.319
+on a single machine.
+
+43
+00:01:55.319 --> 00:01:59.239
+The contrast between STDIO and network-based transports
+
+44
+00:01:59.239 --> 00:02:01.239
+is sharper than it looks.
+
+45
+00:02:01.239 --> 00:02:05.879
+STDIO uses OS-level pipes, not the network stack.
+
+46
+00:02:05.879 --> 00:02:09.720
+There's no port to bind, no firewall rule to configure,
+
+47
+00:02:09.720 --> 00:02:12.199
+no TLS certificate to manage.
+
+48
+00:02:12.199 --> 00:02:15.160
+It's inherently single user because the process
+
+49
+00:02:15.160 --> 00:02:17.839
+is private to the client that spawned it.
+
+50
+00:02:17.839 --> 00:02:20.279
+Network transports do the opposite.
+
+51
+00:02:20.279 --> 00:02:23.600
+The server binds to a port, listens for connections,
+
+52
+00:02:23.600 --> 00:02:26.320
+and handles authentication and encryption
+
+53
+00:02:26.320 --> 00:02:29.279
+to safely serve multiple clients.
+
+54
+00:02:29.279 --> 00:02:33.000
+Network transport is more complex to deploy and operate,
+
+55
+00:02:33.000 --> 00:02:36.000
+but it's the only option when the client and server
+
+56
+00:02:36.000 --> 00:02:37.880
+aren't on the same machine.
+
+57
+00:02:37.880 --> 00:02:42.000
+STDIO is simple precisely because it gives up everything
+
+58
+00:02:42.000 --> 00:02:45.399
+that network transport offers.
+
+59
+00:02:45.399 --> 00:02:48.759
+STDIO fits best in three situations.
+
+60
+00:02:48.759 --> 00:02:50.559
+Local development is the obvious one
+
+61
+00:02:50.559 --> 00:02:54.199
+because running an MCP server as a subprocess on your dev
+
+62
+00:02:54.199 --> 00:02:58.800
+machine is the fastest iteration loop while you build and test.
+
+63
+00:02:58.800 --> 00:03:01.240
+Desktop tool integrations are another,
+
+64
+00:03:01.240 --> 00:03:03.800
+since an application that bundles its own server
+
+65
+00:03:03.800 --> 00:03:06.479
+always has both components on the same machine.
+
+66
+00:03:06.479 --> 00:03:08.759
+Then there is Cloud Code, which supports
+
+67
+00:03:08.759 --> 00:03:12.639
+STDIO for local MCP servers and falls back
+
+68
+00:03:12.639 --> 00:03:16.240
+to HTTP or SSE for remote ones.
+
+69
+00:03:16.240 --> 00:03:19.240
+You register a local server in Cloud Code settings
+
+70
+00:03:19.240 --> 00:03:21.039
+with the command that launches it,
+
+71
+00:03:21.039 --> 00:03:25.520
+and Cloud Code spawns it as a child process at session start.
+
+72
+00:03:25.520 --> 00:03:28.639
+What STDIO can't do matters just as much.
+
+73
+00:03:28.639 --> 00:03:30.559
+The moment a use case needs access
+
+74
+00:03:30.559 --> 00:03:33.679
+from another host or a second simultaneous user,
+
+75
+00:03:33.679 --> 00:03:36.960
+STDIO is the wrong transport.
+
+76
+00:03:36.960 --> 00:03:40.279
+Three characteristics define STDIO deployments.
+
+77
+00:03:40.279 --> 00:03:42.279
+Zero configuration means there's nothing
+
+78
+00:03:42.279 --> 00:03:44.199
+to set up on the network side.
+
+79
+00:03:44.199 --> 00:03:46.360
+The OS handles the pipe.
+
+80
+00:03:46.360 --> 00:03:49.199
+Single user scope means one server process
+
+81
+00:03:49.199 --> 00:03:50.880
+per client instance.
+
+82
+00:03:50.880 --> 00:03:52.839
+There's no concept of sharing.
+
+83
+00:03:52.839 --> 00:03:55.240
+And subprocess lifecycle means the server
+
+84
+00:03:55.240 --> 00:03:57.839
+starts when the client spawns it and exits
+
+85
+00:03:57.839 --> 00:03:59.500
+when the client exits.
+
+86
+00:03:59.500 --> 00:04:01.839
+These three properties work together.
+
+87
+00:04:01.839 --> 00:04:04.360
+Because each client owns its process,
+
+88
+00:04:04.360 --> 00:04:07.199
+and that process lives only for the session,
+
+89
+00:04:07.199 --> 00:04:10.639
+there's no shared state between clients, no port conflicts,
+
+90
+00:04:10.639 --> 00:04:14.119
+and no cleanup problem when a client disconnects.
+
+91
+00:04:14.119 --> 00:04:16.000
+The simplicity is a feature when you're
+
+92
+00:04:16.000 --> 00:04:17.920
+operating in the right context.
+
+93
+00:04:17.920 --> 00:04:21.679
+But each of these properties is also a constraint.
+
+94
+00:04:21.679 --> 00:04:24.720
+State management in STDIO is straightforward.
+
+95
+00:04:24.720 --> 00:04:28.459
+Because one server process is tied to one client session,
+
+96
+00:04:28.459 --> 00:04:32.000
+the server can keep state in memory across all tool
+
+97
+00:04:32.000 --> 00:04:34.279
+calls within that session.
+
+98
+00:04:34.279 --> 00:04:36.320
+You don't need to serialize state
+
+99
+00:04:36.320 --> 00:04:41.079
+to a database between calls because the process stays alive.
+
+100
+00:04:41.079 --> 00:04:43.239
+A tool call made early in the session
+
+101
+00:04:43.239 --> 00:04:47.239
+can produce a result that a later call reads from memory.
+
+102
+00:04:47.239 --> 00:04:50.040
+When the client exits, the process exits,
+
+103
+00:04:50.040 --> 00:04:52.760
+and all in-memory state is released.
+
+104
+00:04:52.760 --> 00:04:56.559
+There's no risk of stale session state leaking to another user
+
+105
+00:04:56.559 --> 00:04:59.440
+because each user gets their own process.
+
+106
+00:04:59.440 --> 00:05:02.839
+This model simplifies server implementation significantly.
+
+107
+00:05:02.839 --> 00:05:07.760
+But it means STDIO can't serve a shared cache or shared resource
+
+108
+00:05:07.760 --> 00:05:10.600
+across multiple clients.
+
+109
+00:05:10.600 --> 00:05:13.119
+STDIO has three limitations that
+
+110
+00:05:13.119 --> 00:05:15.040
+are important for the exam.
+
+111
+00:05:15.040 --> 00:05:16.480
+No remote access.
+
+112
+00:05:16.480 --> 00:05:18.679
+Because the server is a subprocess,
+
+113
+00:05:18.679 --> 00:05:21.640
+it's physically inaccessible from any other host.
+
+114
+00:05:21.640 --> 00:05:23.640
+There's no address to connect to.
+
+115
+00:05:23.640 --> 00:05:25.440
+No multi-user sharing.
+
+116
+00:05:25.440 --> 00:05:27.720
+Each user gets their own process.
+
+117
+00:05:27.720 --> 00:05:31.959
+Sharing a single STDIO server across clients
+
+118
+00:05:31.959 --> 00:05:33.920
+isn't architecturally possible.
+
+119
+00:05:33.920 --> 00:05:37.839
+And STDIO isn't appropriate for production API deployments.
+
+120
+00:05:37.839 --> 00:05:40.279
+If you're building a server that multiple users
+
+121
+00:05:40.279 --> 00:05:44.040
+or multiple applications need to reach over a network,
+
+122
+00:05:44.040 --> 00:05:46.839
+STDIO isn't the right transport.
+
+123
+00:05:46.839 --> 00:05:47.920
+These aren't bugs.
+
+124
+00:05:47.920 --> 00:05:51.079
+They're design choices that make STDIO simpler.
+
+125
+00:05:51.079 --> 00:05:56.760
+But they do define a clear ceiling on where STDIO applies.
+
+126
+00:05:56.760 --> 00:06:02.799
+A local MCP server under STDIO is really just another child process.
+
+127
+00:06:02.799 --> 00:06:05.399
+The client owns its entire lifetime.
+
+128
+00:06:05.399 --> 00:06:07.640
+There's no port to open and no session
+
+129
+00:06:07.640 --> 00:06:10.600
+to resume because when your client goes away,
+
+130
+00:06:10.600 --> 00:06:12.519
+the server goes with it.
+
+131
+00:06:12.519 --> 00:06:15.640
+Almost everything else about STDIO
+
+132
+00:06:15.640 --> 00:06:19.040
+falls out of that single relationship.
+
+133
+00:06:19.040 --> 00:06:20.279
+That's it for this one.
+
+134
+00:06:20.279 --> 00:06:22.600
+I'll see you in the next lesson.
+

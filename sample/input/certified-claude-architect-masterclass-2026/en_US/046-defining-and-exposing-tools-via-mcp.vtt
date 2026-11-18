@@ -1,0 +1,290 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.679
+Tools are how an MCP server gives a language model the ability to actually do things.
+
+2
+00:00:05.679 --> 00:00:10.640
+In this lesson, we'll go through every step of exposing a tool, writing the decorator,
+
+3
+00:00:10.640 --> 00:00:17.040
+specifying the input schema, choosing the right return format, handling errors inside the handler,
+
+4
+00:00:17.040 --> 00:00:22.319
+and verifying the whole thing works with the MCP inspector before connecting a real client.
+
+5
+00:00:23.440 --> 00:00:27.600
+You already know what an MCP server is and what the inspector does,
+
+6
+00:00:27.600 --> 00:00:33.680
+so let's go one level down into the tool itself. A tool definition is what the client actually
+
+7
+00:00:33.680 --> 00:00:39.680
+sees in the capability list. It carries the name, the description the model reads when deciding
+
+8
+00:00:39.680 --> 00:00:45.919
+whether to call, and the input schema describing the arguments. Behind that definition sits the
+
+9
+00:00:45.919 --> 00:00:52.880
+handler, which is just an ordinary Python function with type annotated parameters. The SDK runs it
+
+10
+00:00:52.880 --> 00:00:58.880
+when a client invokes the tool. Whatever that function returns becomes the tool result. Return
+
+11
+00:00:58.880 --> 00:01:04.879
+a plain string when the model needs to read it, or a JSON serializable dictionary when downstream
+
+12
+00:01:04.879 --> 00:01:11.279
+code needs to parse it. Those pieces are what the rest of this lesson builds. You first create a
+
+13
+00:01:11.279 --> 00:01:18.000
+server instance by calling the MCP server class with a server name. Then the at mcp.tool decorator
+
+14
+00:01:18.000 --> 00:01:24.000
+registers a Python function as an MCP tool. Place it directly above the function definition.
+
+15
+00:01:24.000 --> 00:01:29.599
+The function name becomes the tool name clients see in the capability list. The docstring becomes
+
+16
+00:01:29.599 --> 00:01:34.720
+the tool description that the model reads to decide whether and when to call it. This makes
+
+17
+00:01:34.720 --> 00:01:40.559
+the docstring one of the most important pieces of text you write for your server. A vague description
+
+18
+00:01:40.559 --> 00:01:46.559
+like gets data gives the model nothing to work with. A specific description like queries the
+
+19
+00:01:46.559 --> 00:01:53.279
+ticket system and returns open tickets filtered by assignee and status tells the model exactly
+
+20
+00:01:53.279 --> 00:01:58.800
+when the tool is appropriate. Invest time in descriptions. They directly affect how reliably
+
+21
+00:01:58.800 --> 00:02:06.879
+the model chooses and uses your tools. Tools return two kinds of output, plain text or structured data.
+
+22
+00:02:06.879 --> 00:02:12.399
+Return a plain string when the model needs to read the result and compose it into a reply.
+
+23
+00:02:13.039 --> 00:02:18.720
+Lookup results, generated content, and human readable summaries all fit the text format.
+
+24
+00:02:19.360 --> 00:02:25.839
+Return a JSON serializable dictionary when the output has multiple fields or when another tool
+
+25
+00:02:25.839 --> 00:02:31.520
+in the same conversation will consume it. Multi-field records, lists of objects, and
+
+26
+00:02:31.520 --> 00:02:38.880
+paginated results all benefit from structured returns. The SDK serializes dictionaries to JSON
+
+27
+00:02:38.880 --> 00:02:44.720
+automatically before sending them to the client. Pick the format based on how the result will be
+
+28
+00:02:44.720 --> 00:02:51.440
+used, not on what's easier to write in the handler. The input schema is what tells the model which
+
+29
+00:02:51.440 --> 00:02:58.800
+arguments to pass and in what format. The SDK generates a JSON schema automatically from your
+
+30
+00:02:58.800 --> 00:03:05.199
+Python type annotations so you don't write raw JSON yourself. Annotate parameters with standard
+
+31
+00:03:05.199 --> 00:03:13.520
+Python types, star, int, float, bool, list, and dict all map cleanly. Mark optional parameters with
+
+32
+00:03:13.520 --> 00:03:19.039
+optional t and provide default values so the model knows it doesn't have to include them.
+
+33
+00:03:19.039 --> 00:03:27.199
+If you're using Pydantic, add field description to each parameter to include per field documentation
+
+34
+00:03:27.199 --> 00:03:32.960
+in the schema. The model reads these descriptions when it constructs a tool call, so clear field
+
+35
+00:03:32.960 --> 00:03:39.039
+descriptions reduce the number of malformed calls you'll see during testing and in production.
+
+36
+00:03:40.399 --> 00:03:45.919
+Three patterns cover the majority of MCP tools you'll build. The database query pattern accepts
+
+37
+00:03:45.919 --> 00:03:52.559
+filter parameters, runs a SQL query using an async database driver, and returns rows as a
+
+38
+00:03:52.559 --> 00:04:00.320
+structured list. The API wrapper pattern accepts request parameters, calls an external HTTP endpoint
+
+39
+00:04:00.320 --> 00:04:08.240
+using HTTPX or AIO HTTP, and returns the parsed response. The file system access pattern accepts
+
+40
+00:04:08.240 --> 00:04:14.800
+a path and an operation type, reads or writes using AIO files, and returns the file content
+
+41
+00:04:14.800 --> 00:04:20.880
+or a confirmation string. Each of these follows the same decorator plus handler structure.
+
+42
+00:04:20.880 --> 00:04:27.040
+What changes is the library you use for the async IO and the schema you define for the inputs.
+
+43
+00:04:27.760 --> 00:04:31.519
+Recognizing these patterns speeds up tool development considerably.
+
+44
+00:04:32.640 --> 00:04:39.119
+To signal that a tool failed, you raise an exception rather than return one. For a controlled
+
+45
+00:04:39.119 --> 00:04:43.679
+client visible message, raise tool error with the text you want the model to see.
+
+46
+00:04:44.320 --> 00:04:50.720
+Any standard exception works too, and the MCP server class converts it into a tool result marked
+
+47
+00:04:50.720 --> 00:04:57.839
+with is error set to true. This matters because a returned dict becomes tool content, a successful
+
+48
+00:04:57.839 --> 00:05:03.600
+result, not an error. So raising is how you actually flag failure, and you don't have to fear
+
+49
+00:05:03.600 --> 00:05:09.920
+an uncaught exception. The MCP server class automatically catches unhandled exceptions
+
+50
+00:05:09.920 --> 00:05:15.679
+in your handler and returns them as error results, so the server keeps running and other clients
+
+51
+00:05:15.679 --> 00:05:22.959
+stay connected. Use tool error or mask error details to control exactly what the client sees
+
+52
+00:05:22.959 --> 00:05:29.600
+when something goes wrong. The MCP inspector is the right tool for testing before you connect a
+
+53
+00:05:29.600 --> 00:05:35.760
+real client. Run it with npx at model context protocol slash inspector and point it at your
+
+54
+00:05:35.760 --> 00:05:41.119
+server process. The inspector connects over whatever transport you configured and displays
+
+55
+00:05:41.119 --> 00:05:48.799
+the full capability list. Every tool, resource, and prompt your server registered. Click any tool to see
+
+56
+00:05:48.799 --> 00:05:55.679
+its schema, then fill in the input form and submit a test request. The inspector shows you the raw JSON
+
+57
+00:05:55.679 --> 00:06:02.559
+RPC request and response, so you can verify that the schema matches what you expected, that the
+
+58
+00:06:02.559 --> 00:06:08.480
+handler runs without errors, and that the return format is what the client will receive. Catching
+
+59
+00:06:08.480 --> 00:06:14.079
+schema mismatches and handler bugs here is much faster than debugging them through a model
+
+60
+00:06:14.079 --> 00:06:20.720
+interaction. How you write tool descriptions has a direct effect on how reliably the model uses
+
+61
+00:06:20.720 --> 00:06:27.760
+your server. Three rules guide good description writing. Be specific. Instead of gets tickets, say
+
+62
+00:06:27.760 --> 00:06:34.079
+returns a list of open tickets filtered by assignee and status sorted by creation date. State side
+
+63
+00:06:34.079 --> 00:06:41.200
+effects. If the tool writes data, deletes records, or sends an email, say so explicitly. The model
+
+64
+00:06:41.200 --> 00:06:47.200
+uses this to avoid triggering mutations when it's only trying to read. List limits, document rate
+
+65
+00:06:47.200 --> 00:06:53.279
+limits, pagination caps, and size constraints. The model won't guess that a result is capped at 100
+
+66
+00:06:53.279 --> 00:06:59.279
+rows unless you say so. These three elements, specificity, side effects, and limits are what
+
+67
+00:06:59.279 --> 00:07:04.640
+separate descriptions that work from descriptions that lead to incorrect or unexpected tool calls.
+
+68
+00:07:05.839 --> 00:07:11.279
+In production, the failure looks like the model picking the wrong tool or filling in arguments
+
+69
+00:07:11.279 --> 00:07:18.079
+that don't make sense. That usually traces back to a vague doc string or a loose type annotation,
+
+70
+00:07:18.079 --> 00:07:24.559
+since those are the only contract the model ever reads. Write the description for someone who can't
+
+71
+00:07:24.559 --> 00:07:29.040
+see your code, then let the inspector prove it before a client has to.
+
+72
+00:07:29.839 --> 00:07:32.559
+That's where we'll leave it. I'll see you in the next lesson.
+

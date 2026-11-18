@@ -1,0 +1,1258 @@
+WEBVTT
+
+1
+00:00:00.100 --> 00:00:03.160
+<v Explainer>So the exam as a strong emphasis</v>
+
+2
+00:00:03.160 --> 00:00:07.460
+on Microsoft Active Directory and AWS directory services.
+
+3
+00:00:07.460 --> 00:00:08.530
+So I really wanna make sure
+
+4
+00:00:08.530 --> 00:00:11.000
+that we both understand what this is
+
+5
+00:00:11.000 --> 00:00:12.090
+'cause I think it's quite complicated
+
+6
+00:00:12.090 --> 00:00:14.160
+especially if you're not from Microsoft background
+
+7
+00:00:14.160 --> 00:00:16.340
+and I wanna make sure you choose the right answer
+
+8
+00:00:16.340 --> 00:00:20.170
+at the exam when a question or two comes up on this topic.
+
+9
+00:00:20.170 --> 00:00:22.190
+So, what is Microsoft AD?
+
+10
+00:00:22.190 --> 00:00:24.660
+It's found on any windows server
+
+11
+00:00:24.660 --> 00:00:27.940
+that has something called AD Domain Services.
+
+12
+00:00:27.940 --> 00:00:30.120
+And it's going to a database of objects
+
+13
+00:00:30.120 --> 00:00:32.060
+would it be user accounts, computers,
+
+14
+00:00:32.060 --> 00:00:34.790
+printers, file shares, security groups
+
+15
+00:00:34.790 --> 00:00:38.280
+and it's gonna be centralized way for security management,
+
+16
+00:00:38.280 --> 00:00:40.710
+creating new accounts, assigning partitions all
+
+17
+00:00:40.710 --> 00:00:43.880
+in your windows, in Microsoft environment.
+
+18
+00:00:43.880 --> 00:00:46.390
+And the objects, the users, the accounts, the printers
+
+19
+00:00:46.390 --> 00:00:48.380
+everything they're going to be grouped together
+
+20
+00:00:48.380 --> 00:00:51.120
+and organized into something called a tree.
+
+21
+00:00:51.120 --> 00:00:53.070
+And as the name indicates,(chuckles)
+
+22
+00:00:53.070 --> 00:00:56.100
+a group of trees is called a forest.
+
+23
+00:00:56.100 --> 00:00:58.180
+So, what do we have Microsoft AD?
+
+24
+00:00:58.180 --> 00:01:00.710
+For example, we have a domain controller that knows
+
+25
+00:01:00.710 --> 00:01:03.460
+that John is username and password is the password
+
+26
+00:01:03.460 --> 00:01:06.000
+which is not a very strong password, but anyway
+
+27
+00:01:06.000 --> 00:01:08.540
+and we have other machines
+
+28
+00:01:08.540 --> 00:01:12.450
+Microsoft machines connected to this domain controller.
+
+29
+00:01:12.450 --> 00:01:15.360
+The beautiful thing is that now one can use John password
+
+30
+00:01:15.360 --> 00:01:18.380
+of on any of these machines to connect
+
+31
+00:01:18.380 --> 00:01:22.130
+and the active directory will check the login itself.
+
+32
+00:01:22.130 --> 00:01:24.480
+So that allows us to synchronize sort of
+
+33
+00:01:24.480 --> 00:01:27.070
+all these logins across domain controller.
+
+34
+00:01:27.070 --> 00:01:30.100
+That is something very, very simple simplified as well.
+
+35
+00:01:30.100 --> 00:01:31.080
+Don't get at me
+
+36
+00:01:31.080 --> 00:01:34.220
+if I don't do this exactly perfectly for the Microsoft AD
+
+37
+00:01:34.220 --> 00:01:36.390
+but this is at a high level providing you an idea
+
+38
+00:01:36.390 --> 00:01:38.750
+of how Microsoft AD works.
+
+39
+00:01:38.750 --> 00:01:40.350
+So what is ADFS?
+
+40
+00:01:40.350 --> 00:01:42.200
+Well, ADFS will provide Single-Sign On
+
+41
+00:01:42.200 --> 00:01:45.570
+across applications and it has SAML innovation
+
+42
+00:01:45.570 --> 00:01:46.403
+across third party.
+
+43
+00:01:46.403 --> 00:01:49.890
+For example, the Console, Dropbox, Office 365 and so on.
+
+44
+00:01:49.890 --> 00:01:51.510
+So we've seen how ADFS works.
+
+45
+00:01:51.510 --> 00:01:53.050
+So remember the user
+
+46
+00:01:53.050 --> 00:01:54.380
+will browse to URL
+
+47
+00:01:54.380 --> 00:01:56.840
+in the Microsoft Active Directory Services
+
+48
+00:01:56.840 --> 00:01:59.840
+which will authenticate the user against a Microsoft Active
+
+49
+00:01:59.840 --> 00:02:00.880
+Directory.
+
+50
+00:02:00.880 --> 00:02:02.650
+The SAML Token will be returned to the user
+
+51
+00:02:02.650 --> 00:02:06.840
+and then the we'll exchange it with AWS to get a sign in URL
+
+52
+00:02:06.840 --> 00:02:08.060
+for the console.
+
+53
+00:02:08.060 --> 00:02:10.320
+So we'll see how this will be improved
+
+54
+00:02:10.320 --> 00:02:13.040
+with the SSO service later on.
+
+55
+00:02:13.040 --> 00:02:16.740
+Okay, so now let's get into AWS Directory Services.
+
+56
+00:02:16.740 --> 00:02:20.300
+We have three flavors and this is a managed service by AWS.
+
+57
+00:02:20.300 --> 00:02:24.630
+So the first coin is called AWS Managed Microsoft AD.
+
+58
+00:02:24.630 --> 00:02:27.020
+As you can expect is going to be a Microsoft AD
+
+59
+00:02:27.020 --> 00:02:28.190
+in the Cloud.
+
+60
+00:02:28.190 --> 00:02:31.580
+So you're going to be able to create your own AD in AWS
+
+61
+00:02:31.580 --> 00:02:35.740
+manage users locally, and it has support for MFA.
+
+62
+00:02:35.740 --> 00:02:38.247
+You will have to establish a trust with your on-premise AD
+
+63
+00:02:38.247 --> 00:02:40.470
+and we'll see what that trust looks like.
+
+64
+00:02:40.470 --> 00:02:43.440
+If you want to have some kind of connection
+
+65
+00:02:43.440 --> 00:02:47.610
+between your on-premise AD and your AWS Manage Microsoft AD.
+
+66
+00:02:47.610 --> 00:02:49.247
+So let's have a look here in this diagram,
+
+67
+00:02:49.247 --> 00:02:52.010
+you can see that the Manage AD is connected
+
+68
+00:02:52.010 --> 00:02:55.110
+to the on-premise AD through a trust and it supports MFA
+
+69
+00:02:55.110 --> 00:02:56.620
+and so the users can authenticate
+
+70
+00:02:56.620 --> 00:02:59.510
+on the right hand side or on the left hand side.
+
+71
+00:02:59.510 --> 00:03:01.830
+Then we have Microsoft AD.
+
+72
+00:03:01.830 --> 00:03:04.850
+We have database directory services, AD Connector.
+
+73
+00:03:04.850 --> 00:03:07.230
+So, I wish they name things differently, but anyway,
+
+74
+00:03:07.230 --> 00:03:09.280
+so this is a proxy to make the link
+
+75
+00:03:09.280 --> 00:03:12.330
+from your Cloud AD to your on-premises AD
+
+76
+00:03:12.330 --> 00:03:13.537
+and it supports MFA.
+
+77
+00:03:13.537 --> 00:03:16.640
+And the users are for the only managed in one place
+
+78
+00:03:16.640 --> 00:03:18.470
+which is the on-premise AD.
+
+79
+00:03:18.470 --> 00:03:20.670
+So in this case, the authentication goes
+
+80
+00:03:20.670 --> 00:03:23.010
+to the AD connector, which is a proxy
+
+81
+00:03:23.010 --> 00:03:24.580
+and it gets proxy back
+
+82
+00:03:24.580 --> 00:03:28.130
+onto the on-premise AD to get the response.
+
+83
+00:03:28.130 --> 00:03:31.200
+So in the first case with Microsoft Manage AD
+
+84
+00:03:31.200 --> 00:03:33.970
+we had two places where the users were defined.
+
+85
+00:03:33.970 --> 00:03:36.890
+There were defined on-premise and in the Cloud
+
+86
+00:03:36.890 --> 00:03:38.940
+and there was some trust between the two
+
+87
+00:03:38.940 --> 00:03:40.080
+but with the AD connector
+
+88
+00:03:40.080 --> 00:03:42.330
+they're only defined on-premise
+
+89
+00:03:42.330 --> 00:03:44.560
+and we've defined a proxy to access that
+
+90
+00:03:44.560 --> 00:03:47.070
+on-premise AD directly from the Cloud.
+
+91
+00:03:47.070 --> 00:03:50.130
+Finally, we have Simple AD, which is not Microsoft AD
+
+92
+00:03:50.130 --> 00:03:52.040
+it's a AD-compatible API.
+
+93
+00:03:52.040 --> 00:03:55.030
+It's called Samba and it's managed in AWS
+
+94
+00:03:55.030 --> 00:03:55.950
+but it's standalone
+
+95
+00:03:55.950 --> 00:03:58.650
+and it cannot be joined with an on-premise AD.
+
+96
+00:03:58.650 --> 00:04:02.140
+So in this case with Simple AD, it's a cheaper alternative.
+
+97
+00:04:02.140 --> 00:04:03.920
+It doesn't have as much capability.
+
+98
+00:04:03.920 --> 00:04:05.720
+It doesn't support MFA, for example.
+
+99
+00:04:06.759 --> 00:04:08.750
+It cannot be joined to AWS
+
+100
+00:04:08.750 --> 00:04:10.780
+such as SQL server and so on
+
+101
+00:04:10.780 --> 00:04:13.290
+but contribute simpler, cheaper
+
+102
+00:04:13.290 --> 00:04:16.050
+and maybe a good solution based on the questions you get.
+
+103
+00:04:16.050 --> 00:04:18.640
+So we have three kinds of directory services
+
+104
+00:04:18.640 --> 00:04:20.370
+and I think they're quite clear the differences
+
+105
+00:04:20.370 --> 00:04:22.830
+but I really want to go deep dive into each of
+
+106
+00:04:22.830 --> 00:04:24.540
+those to make it very very clear
+
+107
+00:04:24.540 --> 00:04:26.010
+as to how they're different.
+
+108
+00:04:26.010 --> 00:04:28.660
+So, with AWS managed Microsoft AD,
+
+109
+00:04:28.660 --> 00:04:31.510
+you're going to be deploying Microsoft active directory
+
+110
+00:04:31.510 --> 00:04:33.130
+within your VPC.
+
+111
+00:04:33.130 --> 00:04:34.040
+So here's what it looks like.
+
+112
+00:04:34.040 --> 00:04:37.738
+We have two AZs and we'll have two AD Domain Controller or
+
+113
+00:04:37.738 --> 00:04:42.120
+AD DC deployed in two different for high availability.
+
+114
+00:04:42.120 --> 00:04:44.140
+And now we're going to be able to create easy
+
+115
+00:04:44.140 --> 00:04:45.890
+two windows instances
+
+116
+00:04:45.890 --> 00:04:47.840
+and we can deploy traditional applications
+
+117
+00:04:47.840 --> 00:04:50.410
+on these instances, for example, SharePoint
+
+118
+00:04:50.410 --> 00:04:53.310
+or we can do something called seamless domain join
+
+119
+00:04:53.310 --> 00:04:56.710
+from your Amazon EC2 instances in Multiple Accounts
+
+120
+00:04:56.710 --> 00:04:59.620
+and VPCs directly onto your domain controllers.
+
+121
+00:04:59.620 --> 00:05:01.550
+This is a feature directly coming out of
+
+122
+00:05:01.550 --> 00:05:03.620
+the managed Microsoft AD.
+
+123
+00:05:03.620 --> 00:05:05.420
+And finally we have integrations.
+
+124
+00:05:05.420 --> 00:05:08.800
+So if we deploy a Managed Microsoft AD in the Cloud
+
+125
+00:05:08.800 --> 00:05:11.470
+we can use it seamlessly integrated
+
+126
+00:05:11.470 --> 00:05:15.470
+with RDS for SQL Server, workspaces, Quick sites.
+
+127
+00:05:15.470 --> 00:05:18.340
+And we can even create SSO to provide access
+
+128
+00:05:18.340 --> 00:05:19.590
+to third party applications
+
+129
+00:05:19.590 --> 00:05:20.980
+and have another diagram showing you this
+
+130
+00:05:20.980 --> 00:05:22.450
+in a second.
+
+131
+00:05:22.450 --> 00:05:25.920
+This directory, so the Managed Microsoft AD
+
+132
+00:05:25.920 --> 00:05:28.250
+can be a standalone repository in AWS,
+
+133
+00:05:28.250 --> 00:05:30.670
+or it can be joined to your on-premise AD
+
+134
+00:05:30.670 --> 00:05:32.720
+and we'll see how to join it in a second.
+
+135
+00:05:33.850 --> 00:05:38.130
+The Multi AZ deployment is going to be 2AZ at minimum
+
+136
+00:05:38.130 --> 00:05:40.430
+but in case you want to increase your scaling
+
+137
+00:05:40.430 --> 00:05:41.610
+and your availability
+
+138
+00:05:41.610 --> 00:05:44.500
+you are able to add more Domain Controllers.
+
+139
+00:05:44.500 --> 00:05:46.980
+So in this example, I'm adding two more Domain Controllers,
+
+140
+00:05:46.980 --> 00:05:51.240
+that's 4 AD DC and we have increased availability.
+
+141
+00:05:51.240 --> 00:05:55.210
+Finally, this looks like RDS for Microsoft AD.
+
+142
+00:05:55.210 --> 00:05:58.140
+So you have automated backups if you need to.
+
+143
+00:05:58.140 --> 00:05:59.420
+And another last feature is
+
+144
+00:05:59.420 --> 00:06:01.750
+that you get Automated Multi-Region replication
+
+145
+00:06:01.750 --> 00:06:04.010
+of your directory, if you need to.
+
+146
+00:06:04.010 --> 00:06:06.860
+Now, let's have a look at the integrations in depth.
+
+147
+00:06:06.860 --> 00:06:10.140
+So your managed Microsoft AA DC is in the middle
+
+148
+00:06:10.140 --> 00:06:12.160
+and it can get integrated
+
+149
+00:06:12.160 --> 00:06:15.100
+with your on-premise active directory
+
+150
+00:06:15.100 --> 00:06:17.730
+using something called two-way Forest trust
+
+151
+00:06:17.730 --> 00:06:20.090
+and we'll see this in a second in the next slide.
+
+152
+00:06:20.090 --> 00:06:22.640
+It can also integrate with a bunch of database services.
+
+153
+00:06:22.640 --> 00:06:25.657
+So most importantly is RDS for SQL server,
+
+154
+00:06:25.657 --> 00:06:28.330
+Amazon Workspaces, Quick sites, Connect,
+
+155
+00:06:28.330 --> 00:06:30.620
+WorkDocs and Single-Sign On.
+
+156
+00:06:30.620 --> 00:06:32.890
+And with Single-Sign On that we'll see in the future lecture
+
+157
+00:06:32.890 --> 00:06:37.370
+we have access to more SAML business applications
+
+158
+00:06:37.370 --> 00:06:42.370
+such as GitHub, Box, Dropbox, Office 365 and so on.
+
+159
+00:06:42.460 --> 00:06:46.060
+Finally, your traditional active directory applications
+
+160
+00:06:46.060 --> 00:06:48.220
+such as your dot NET Apps, your SharePoint
+
+161
+00:06:48.220 --> 00:06:49.710
+and your SQL server that you deploy
+
+162
+00:06:49.710 --> 00:06:52.660
+on EC2 instances can obviously be integrated
+
+163
+00:06:52.660 --> 00:06:56.240
+with that active directory that's managed by AWS.
+
+164
+00:06:56.240 --> 00:06:58.000
+So, what do you remember out of it?
+
+165
+00:06:58.000 --> 00:07:00.830
+That is the going to be the most integrated
+
+166
+00:07:00.830 --> 00:07:04.130
+with AWS offering from directory services.
+
+167
+00:07:04.130 --> 00:07:06.970
+Now, something I want to highlight is how to connect this
+
+168
+00:07:06.970 --> 00:07:09.090
+to your on-premise active directory
+
+169
+00:07:09.090 --> 00:07:11.330
+because that is going to be extremely important
+
+170
+00:07:11.330 --> 00:07:14.460
+going to the exam to understand this subtlety.
+
+171
+00:07:14.460 --> 00:07:17.280
+So you are able to connect your on-premise AD
+
+172
+00:07:17.280 --> 00:07:20.240
+to AWS Manage Microsoft AD.
+
+173
+00:07:20.240 --> 00:07:22.720
+And for this, you need to set up a Direct Connect
+
+174
+00:07:22.720 --> 00:07:25.270
+and this will going to be DX in this course
+
+175
+00:07:25.270 --> 00:07:27.410
+or a VPN connection between the two.
+
+176
+00:07:27.410 --> 00:07:29.170
+So we have your on-premise and your VPC
+
+177
+00:07:29.170 --> 00:07:31.520
+and we have set up a connection between these two.
+
+178
+00:07:31.520 --> 00:07:33.660
+And so we have our on-premise Microsoft AD
+
+179
+00:07:33.660 --> 00:07:35.820
+which manages its own user on-premise,
+
+180
+00:07:35.820 --> 00:07:38.273
+and you have AWS Manage Microsoft AD
+
+181
+00:07:38.273 --> 00:07:42.290
+this going to also be managing its own users on AWS.
+
+182
+00:07:42.290 --> 00:07:45.900
+And so you can set up three kind of forest trust.
+
+183
+00:07:45.900 --> 00:07:50.090
+The first one is one way when we have AWS trust on-premise
+
+184
+00:07:50.090 --> 00:07:51.870
+the second one is the other one way
+
+185
+00:07:51.870 --> 00:07:54.490
+which you have the on-premise trust AWS.
+
+186
+00:07:54.490 --> 00:07:56.820
+And finally you have something called two-way forest trust
+
+187
+00:07:56.820 --> 00:07:59.550
+where they both trust each other and means
+
+188
+00:07:59.550 --> 00:08:02.820
+that you can access one from the other and vice versa.
+
+189
+00:08:02.820 --> 00:08:03.960
+So let's have a look
+
+190
+00:08:03.960 --> 00:08:06.050
+we have trust this way and trust that way.
+
+191
+00:08:06.050 --> 00:08:08.950
+And so that means that we have a two-way forest trust.
+
+192
+00:08:08.950 --> 00:08:11.130
+And the important thing to understand here
+
+193
+00:08:11.130 --> 00:08:14.090
+is that this forest trust is going to be different
+
+194
+00:08:14.090 --> 00:08:15.920
+than synchronization.
+
+195
+00:08:15.920 --> 00:08:18.560
+So, replication is not something that is supported
+
+196
+00:08:18.560 --> 00:08:21.000
+by AWS management Microsoft AD.
+
+197
+00:08:21.000 --> 00:08:25.030
+So that means that their users are living independently
+
+198
+00:08:25.030 --> 00:08:28.120
+on the two different Microsoft active directory.
+
+199
+00:08:28.120 --> 00:08:31.190
+But thanks to this forest trust, they're able to talk
+
+200
+00:08:31.190 --> 00:08:33.000
+to each other in case one user is missing
+
+201
+00:08:33.000 --> 00:08:35.580
+from one and ask the other DC, Hey
+
+202
+00:08:35.580 --> 00:08:38.300
+do you think you have that user because I trust you
+
+203
+00:08:38.300 --> 00:08:40.690
+so very important to understand the distinction.
+
+204
+00:08:40.690 --> 00:08:42.910
+So, your traditional active directory app
+
+205
+00:08:42.910 --> 00:08:44.780
+can connect to on-premise.
+
+206
+00:08:44.780 --> 00:08:47.440
+Your easy to instances can do seamless domain joint
+
+207
+00:08:47.440 --> 00:08:49.500
+onto your Microsoft Manage AD.
+
+208
+00:08:49.500 --> 00:08:52.610
+But now, because we have set up a two-way forest trust
+
+209
+00:08:52.610 --> 00:08:54.990
+your traditional active directory app
+
+210
+00:08:54.990 --> 00:08:58.100
+in case it is trying to request a domain that belongs
+
+211
+00:08:58.100 --> 00:08:59.130
+to AWS.
+
+212
+00:08:59.130 --> 00:08:59.963
+Thanks to the trust.
+
+213
+00:08:59.963 --> 00:09:01.740
+It's able to go all the way
+
+214
+00:09:01.740 --> 00:09:03.770
+and check the user on the right hand side.
+
+215
+00:09:03.770 --> 00:09:07.530
+So this is the whole idea behind two-way forest trust.
+
+216
+00:09:07.530 --> 00:09:09.610
+You don't need to know that level of detail in the exam
+
+217
+00:09:09.610 --> 00:09:11.580
+but hopefully that gives you a much better idea
+
+218
+00:09:11.580 --> 00:09:14.070
+of what is a trust between your on-premise
+
+219
+00:09:14.070 --> 00:09:17.870
+and your online on AWS Microsoft AD.
+
+220
+00:09:17.870 --> 00:09:20.720
+So, now let's talk about a bit more solution architecture
+
+221
+00:09:20.720 --> 00:09:22.470
+because we have to get into those
+
+222
+00:09:22.470 --> 00:09:23.750
+and they can be quite complicated
+
+223
+00:09:23.750 --> 00:09:28.200
+but say you want to have your Microsoft AD that's
+
+224
+00:09:28.200 --> 00:09:32.650
+on-premise replicated on AWS for minimizing latency.
+
+225
+00:09:32.650 --> 00:09:34.800
+So, for example, we want to say, okay
+
+226
+00:09:34.800 --> 00:09:39.530
+we want to have our replica of the on-premise AD on AWS
+
+227
+00:09:39.530 --> 00:09:43.770
+because if somehow the direct connect or the VPN goes down
+
+228
+00:09:43.770 --> 00:09:46.170
+then we still want our users to have connectivity
+
+229
+00:09:46.170 --> 00:09:47.710
+and function correctly.
+
+230
+00:09:47.710 --> 00:09:51.780
+So we also need to be establishing trust between these ADs.
+
+231
+00:09:51.780 --> 00:09:53.170
+So what does it look like?
+
+232
+00:09:53.170 --> 00:09:56.150
+Well, we have our on-premise Microsoft AD with one domain
+
+233
+00:09:56.150 --> 00:09:59.943
+and we have the VPC AWS Managed Microsoft AD DC
+
+234
+00:09:59.943 --> 00:10:01.780
+with another domain.
+
+235
+00:10:01.780 --> 00:10:04.660
+The only way to set up some kind of replication
+
+236
+00:10:04.660 --> 00:10:07.210
+is for you to deploy active directory
+
+237
+00:10:07.210 --> 00:10:09.750
+on an easy two windows instance,
+
+238
+00:10:09.750 --> 00:10:12.380
+and you will have to set up replication.
+
+239
+00:10:12.380 --> 00:10:13.320
+And by setting up those replication
+
+240
+00:10:13.320 --> 00:10:17.150
+we'll have a replica on-premise Microsoft AD onto our VPC
+
+241
+00:10:17.150 --> 00:10:19.240
+which may help minimize latency
+
+242
+00:10:19.240 --> 00:10:22.300
+and also have a disaster recovery strategy.
+
+243
+00:10:22.300 --> 00:10:25.420
+And finally, we can set up a two-way forest trust
+
+244
+00:10:25.420 --> 00:10:27.010
+between our EC2 instance
+
+245
+00:10:27.010 --> 00:10:32.010
+and our AWS Manage Microsoft AD DC in this own VPC.
+
+246
+00:10:32.120 --> 00:10:33.840
+So this is the kind
+
+247
+00:10:33.840 --> 00:10:35.710
+of solution architecture that will be asked
+
+248
+00:10:35.710 --> 00:10:36.870
+from you at the exam.
+
+249
+00:10:36.870 --> 00:10:38.180
+So that's why it's really important to
+
+250
+00:10:38.180 --> 00:10:39.380
+get the basics done first.
+
+251
+00:10:39.380 --> 00:10:42.570
+And then talk about these little interesting twists
+
+252
+00:10:42.570 --> 00:10:44.590
+on solution architecture.
+
+253
+00:10:44.590 --> 00:10:48.720
+Okay, so that's all for AWS manage Microsoft AD.
+
+254
+00:10:48.720 --> 00:10:51.170
+Now we have AD Connector, which is much simpler.
+
+255
+00:10:51.170 --> 00:10:52.930
+So it's going to be a gateway.
+
+256
+00:10:52.930 --> 00:10:54.860
+So a proxy to redirect your request
+
+257
+00:10:54.860 --> 00:10:57.510
+your on-premise Microsoft Active Directory
+
+258
+00:10:57.510 --> 00:11:00.420
+there's no caching capability.
+
+259
+00:11:00.420 --> 00:11:02.540
+The users are solely managed on-premise,
+
+260
+00:11:02.540 --> 00:11:04.120
+there is no trust being set up
+
+261
+00:11:04.120 --> 00:11:06.200
+and need to have VPN or Direct Connect.
+
+262
+00:11:06.200 --> 00:11:09.320
+And so it doesn't have this integration with SQL server.
+
+263
+00:11:09.320 --> 00:11:12.160
+It doesn't do seamless joining it comes share directory.
+
+264
+00:11:12.160 --> 00:11:14.170
+So this is something a bit more basic.
+
+265
+00:11:14.170 --> 00:11:16.340
+And hopefully the example will be very clear
+
+266
+00:11:16.340 --> 00:11:20.350
+if you need AD connector that some kind of directory proxy
+
+267
+00:11:20.350 --> 00:11:23.150
+but AD Connector in case the connection goes down,
+
+268
+00:11:23.150 --> 00:11:25.040
+well, it's basically useless.
+
+269
+00:11:25.040 --> 00:11:26.660
+So how does that work?
+
+270
+00:11:26.660 --> 00:11:30.590
+Well, we have our corporate office and the Database Cloud
+
+271
+00:11:30.590 --> 00:11:32.530
+and there will be a VPN or Direct Connect
+
+272
+00:11:32.530 --> 00:11:35.060
+connection between these two,
+
+273
+00:11:35.060 --> 00:11:37.930
+and then therefore we can have our active directory directly
+
+274
+00:11:37.930 --> 00:11:39.700
+within our corporate office
+
+275
+00:11:39.700 --> 00:11:41.510
+but our users who wants to again
+
+276
+00:11:41.510 --> 00:11:43.080
+will happen to do the following flow.
+
+277
+00:11:43.080 --> 00:11:45.710
+So first they will use the credentials
+
+278
+00:11:45.710 --> 00:11:47.900
+onto a custom signing page.
+
+279
+00:11:47.900 --> 00:11:50.930
+This signing page will be connected to the AD Connector
+
+280
+00:11:50.930 --> 00:11:52.320
+which may be multi AZ.
+
+281
+00:11:52.320 --> 00:11:54.860
+So in one AZ, the AD Connector will be used.
+
+282
+00:11:54.860 --> 00:11:57.910
+This AD Connector then will proxy the request
+
+283
+00:11:57.910 --> 00:12:01.030
+all the way through to the active directory
+
+284
+00:12:01.030 --> 00:12:01.990
+on the corporate office
+
+285
+00:12:01.990 --> 00:12:04.220
+and will perform LDAP authentication.
+
+286
+00:12:04.220 --> 00:12:05.330
+And if this is good
+
+287
+00:12:05.330 --> 00:12:09.950
+then the AD Connector will perform the STS assumerole IAM
+
+288
+00:12:09.950 --> 00:12:11.400
+which will get back temporary credentials.
+
+289
+00:12:11.400 --> 00:12:15.157
+And then our user will be authenticated into AWS.
+
+290
+00:12:16.680 --> 00:12:18.090
+Finally, you have Simple AD
+
+291
+00:12:18.090 --> 00:12:20.800
+which is going to be very inexpensive Active Directory
+
+292
+00:12:20.800 --> 00:12:23.290
+and it's going to have the most common directory features.
+
+293
+00:12:23.290 --> 00:12:25.220
+It will support joining of EC2 instances,
+
+294
+00:12:25.220 --> 00:12:26.800
+managing users and groups,
+
+295
+00:12:26.800 --> 00:12:29.010
+but it won't support multifactor authentication.
+
+296
+00:12:29.010 --> 00:12:31.730
+It will not support the integration with RDS SQL server.
+
+297
+00:12:31.730 --> 00:12:34.040
+It will not support SSO
+
+298
+00:12:34.040 --> 00:12:36.580
+and it's only for small amount of users.
+
+299
+00:12:36.580 --> 00:12:39.620
+So, 500 users up to maybe 5,000 users
+
+300
+00:12:39.620 --> 00:12:41.750
+depending on the tier you want to use.
+
+301
+00:12:41.750 --> 00:12:43.890
+It's powered by Samba 4, and it's compatible
+
+302
+00:12:43.890 --> 00:12:46.170
+with Microsoft AD in terms of the API
+
+303
+00:12:46.170 --> 00:12:48.150
+but it's a lower cost, low scale.
+
+304
+00:12:48.150 --> 00:12:51.790
+It's only has basic AD capability or LDAP compatibility
+
+305
+00:12:51.790 --> 00:12:54.650
+and you cannot set up a trust with a on-premise
+
+306
+00:12:54.650 --> 00:12:56.220
+Microsoft AD.
+
+307
+00:12:56.220 --> 00:12:57.053
+So that's it.
+
+308
+00:12:57.053 --> 00:12:58.530
+Obviously the most important one is going to be
+
+309
+00:12:58.530 --> 00:12:59.830
+the first one described
+
+310
+00:12:59.830 --> 00:13:02.900
+but now you have the three options of directory services
+
+311
+00:13:02.900 --> 00:13:05.270
+and hopefully there's a bit more clear which one to choose
+
+312
+00:13:05.270 --> 00:13:07.710
+based on which circumstances at the exam.
+
+313
+00:13:07.710 --> 00:13:08.640
+All right, that's it.
+
+314
+00:13:08.640 --> 00:13:10.390
+I will see you in the next lecture.
+

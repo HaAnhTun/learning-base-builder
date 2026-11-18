@@ -1,0 +1,102 @@
+WEBVTT
+
+1
+00:00:00.270 --> 00:00:03.450
+<v Instructor>Just a quick lecture on reserved instances.</v>
+
+2
+00:00:03.450 --> 00:00:06.480
+So they can be shared in an AWS organization
+
+3
+00:00:06.480 --> 00:00:09.690
+the same way you can share savings plans as well.
+
+4
+00:00:09.690 --> 00:00:14.310
+But if you want to turn off sharing of a reserved instance
+
+5
+00:00:14.310 --> 00:00:16.380
+for a specific account,
+
+6
+00:00:16.380 --> 00:00:19.884
+it has to be done from within the management accounts
+
+7
+00:00:19.884 --> 00:00:21.630
+of an organization.
+
+8
+00:00:21.630 --> 00:00:23.730
+So you will go in the billing dashboard,
+
+9
+00:00:23.730 --> 00:00:26.490
+in the billing console from the management account
+
+10
+00:00:26.490 --> 00:00:30.120
+and you can select which accounts can or cannot share
+
+11
+00:00:30.120 --> 00:00:31.713
+their reserved instances.
+
+12
+00:00:32.700 --> 00:00:34.290
+The other thing you need to know around
+
+13
+00:00:34.290 --> 00:00:37.530
+is the renewal of reserved instances.
+
+14
+00:00:37.530 --> 00:00:39.450
+So you can actually queue,
+
+15
+00:00:39.450 --> 00:00:42.060
+that means schedule and reserved ahead of time,
+
+16
+00:00:42.060 --> 00:00:43.950
+your reserved instances.
+
+17
+00:00:43.950 --> 00:00:46.350
+Therefore, if you want to renew a reserved instance
+
+18
+00:00:46.350 --> 00:00:49.920
+because it is about to expire and come to an end,
+
+19
+00:00:49.920 --> 00:00:50.910
+then all you have to do
+
+20
+00:00:50.910 --> 00:00:53.936
+is just queue a reserve instance purchase
+
+21
+00:00:53.936 --> 00:00:58.770
+at the exact date that when the previous one expires,
+
+22
+00:00:58.770 --> 00:00:59.610
+and that's it.
+
+23
+00:00:59.610 --> 00:01:02.220
+You've effectively performed a renewal.
+
+24
+00:01:02.220 --> 00:01:03.870
+So that's it. Very simple.
+
+25
+00:01:03.870 --> 00:01:06.870
+I hope you liked it, and I will see you in the next lecture.
+

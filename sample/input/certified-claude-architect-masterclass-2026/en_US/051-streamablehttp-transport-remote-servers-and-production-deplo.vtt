@@ -1,0 +1,278 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:07.360
+Streamable HTTP is what happens when stdio falls short. It turns an MCP server into a network
+
+2
+00:00:07.360 --> 00:00:14.159
+accessible HTTP service using server sent events for streaming, and it supports both stateless
+
+3
+00:00:14.159 --> 00:00:19.920
+and session-based state. Here's what you need to know to pick the right transport for any
+
+4
+00:00:19.920 --> 00:00:26.479
+deployment context. The moment a server has to be reachable from another machine, the transport has
+
+5
+00:00:26.479 --> 00:00:33.119
+to become a real network service. That is streamable HTTP transport. It runs the MCP server
+
+6
+00:00:33.119 --> 00:00:39.360
+as an HTTP service and supports both standard request response and streaming, and it's the
+
+7
+00:00:39.360 --> 00:00:44.240
+current standard for remote and production deployments. The streaming half comes from
+
+8
+00:00:44.240 --> 00:00:51.360
+server sent events, or SSE, a unidirectional HTTP protocol where the server pushes a sequence of
+
+9
+00:00:51.360 --> 00:00:58.000
+events to the client over a long-lived connection. Then there's stateless HTTP, the request model
+
+10
+00:00:58.000 --> 00:01:03.759
+where each call carries all the context it needs, so the server stores nothing between calls.
+
+11
+00:01:03.759 --> 00:01:08.480
+Streamable HTTP supports that model and a session-based one, and we'll look at both.
+
+12
+00:01:09.760 --> 00:01:16.720
+Streamable HTTP works by turning the MCP server into a standard HTTP service. The server binds
+
+13
+00:01:16.720 --> 00:01:23.839
+to a port and exposes a single endpoint. To make a tool call, the client sends one HTTP post
+
+14
+00:01:23.839 --> 00:01:30.160
+containing the MCP message. Here's the key detail. The server decides how to respond. It can reply
+
+15
+00:01:30.160 --> 00:01:36.559
+with a plain JSON body, or it can upgrade that same response to a server sent events stream,
+
+16
+00:01:36.559 --> 00:01:42.639
+pushing progress notifications first and then the final result. So the server initiates streaming,
+
+17
+00:01:42.639 --> 00:01:50.080
+not the client. Separately, the client also opens a long-lived HTTP get connection, which gives the
+
+18
+00:01:50.080 --> 00:01:55.599
+server a channel to push its own notifications and requests to the client. One endpoint, both
+
+19
+00:01:55.599 --> 00:02:02.319
+directions covered. Server sent events is the streaming mechanism inside streamable HTTP,
+
+20
+00:02:02.319 --> 00:02:08.880
+and it's worth understanding how it works at the protocol level. The client sends an HTTP request
+
+21
+00:02:08.880 --> 00:02:14.800
+that stays open. Instead of sending a single response and closing the connection, the server
+
+22
+00:02:14.800 --> 00:02:21.039
+keeps writing event frames to the response stream as they become available. Each event frame follows
+
+23
+00:02:21.039 --> 00:02:28.080
+the SSE text format, a data field containing the event payload, terminated by a blank line. The
+
+24
+00:02:28.080 --> 00:02:34.000
+client reads these frames as they arrive. This is unidirectional. The server pushes, the client
+
+25
+00:02:34.000 --> 00:02:41.839
+receives. The client can't send messages over the same connection. For MCP, SSE is used to stream
+
+26
+00:02:41.839 --> 00:02:47.520
+progress notifications back to the client while a long-running tool operation is still executing
+
+27
+00:02:47.520 --> 00:02:54.559
+on the server. Streamable HTTP lets you choose between two state management approaches, and the
+
+28
+00:02:54.559 --> 00:03:02.639
+choice has real scalability implications. Stateless HTTP means each request is completely self-contained.
+
+29
+00:03:02.639 --> 00:03:08.559
+The client sends all the context it needs in the request body, and the server returns a result
+
+30
+00:03:08.559 --> 00:03:15.039
+without storing anything between requests. Because no per-client state exists on the server, any
+
+31
+00:03:15.039 --> 00:03:21.839
+server instance in a load-balanced pool can handle any request. This scales horizontally with no
+
+32
+00:03:21.839 --> 00:03:27.919
+coordination overhead. Session-based state means the client sends a session token, and the server
+
+33
+00:03:27.919 --> 00:03:34.320
+maintains a context store keyed to that token. This supports multi-turn interactions, where the
+
+34
+00:03:34.320 --> 00:03:40.320
+server needs to remember what happened in earlier calls. It works, but it requires sticky sessions
+
+35
+00:03:40.320 --> 00:03:46.800
+or a shared state backend to function correctly behind a load balancer. Three scenarios point
+
+36
+00:03:46.800 --> 00:03:53.600
+clearly to streamable HTTP as the right choice. Remote clients. If the client and server are on
+
+37
+00:03:53.600 --> 00:04:00.240
+different machines, you need an HTTP-based transport. There's no alternative because STDIO
+
+38
+00:04:00.240 --> 00:04:07.600
+can't cross a network. Multi-user deployments. A single streamable HTTP server can handle
+
+39
+00:04:07.600 --> 00:04:13.279
+concurrent connections from multiple clients. There's no need to spawn a dedicated process per
+
+40
+00:04:13.279 --> 00:04:21.200
+user. Production APIs. HTTP gives you the entire production infrastructure stack. TLS for encryption,
+
+41
+00:04:21.200 --> 00:04:27.440
+bearer tokens, or API keys for authentication, and load balancers for traffic distribution.
+
+42
+00:04:28.079 --> 00:04:33.760
+These are things you'd have to build a completely separate layer for if you were using STDIO,
+
+43
+00:04:33.760 --> 00:04:39.440
+and none of them would work remotely anyway. There's a naming point worth flagging here. In
+
+44
+00:04:39.440 --> 00:04:46.880
+the older 2024-11-05 version of the MCP specification, there was a separate transport
+
+45
+00:04:46.880 --> 00:04:54.160
+called HTTP plus SSE that has changed. Current MCP consolidates streaming under the streamable
+
+46
+00:04:54.160 --> 00:05:02.160
+HTTP transport, and the old HTTP plus SSE transport is deprecated. So SSE today is the
+
+47
+00:05:02.160 --> 00:05:09.440
+streaming delivery mechanism inside streamable HTTP, not a standalone peer to it. If you see
+
+48
+00:05:09.440 --> 00:05:16.480
+the deprecated HTTP plus SSE name presented as a current separate option, the correct framing
+
+49
+00:05:16.559 --> 00:05:22.880
+is that it's been folded into streamable HTTP. The transport that supports streaming in current
+
+50
+00:05:22.880 --> 00:05:31.679
+MCP is streamable HTTP, full stop. When you deploy an MCP server over streamable HTTP in production,
+
+51
+00:05:31.679 --> 00:05:39.519
+you take on standard HTTP service responsibilities that don't exist for STDIO. TLS is the first
+
+52
+00:05:39.519 --> 00:05:45.359
+requirement. If the server is reachable over any untrusted network, all traffic should be encrypted.
+
+53
+00:05:45.920 --> 00:05:51.279
+Authentication is the second. Every client request should carry a credential, either a
+
+54
+00:05:51.279 --> 00:05:58.320
+bearer token or an API key, that the server validates before processing the MCP message.
+
+55
+00:05:58.320 --> 00:06:04.320
+Load balancing is the third. A production server handling concurrent clients should be able to
+
+56
+00:06:04.320 --> 00:06:10.799
+distribute load across multiple instances. All of this is standard infrastructure for any HTTP
+
+57
+00:06:10.799 --> 00:06:17.200
+service, but it's a meaningful operational step up from the zero configuration model that STDIO
+
+58
+00:06:17.200 --> 00:06:24.399
+provides. Let's make the transport selection decision concrete. Use STDIO when the server
+
+59
+00:06:24.399 --> 00:06:29.440
+and client are on the same machine, when you're serving exactly one user at a time, and when you
+
+60
+00:06:29.440 --> 00:06:36.000
+want zero network configuration. Local development tools, desktop applications that bundle their own
+
+61
+00:06:36.000 --> 00:06:43.839
+MCP server, and cloud code integrations all fit this pattern. Use streamable HTTP when the client
+
+62
+00:06:43.839 --> 00:06:49.760
+needs to reach the server over a network, when multiple users or multiple client applications
+
+63
+00:06:49.760 --> 00:06:57.279
+need to share the same server, or when you need production infrastructure like TLS and authentication.
+
+64
+00:06:57.279 --> 00:07:02.320
+The decision rule is simple. If the deployment crosses a network boundary or serves more than
+
+65
+00:07:02.320 --> 00:07:11.839
+one user, STDIO is eliminated from consideration. People treat SSE and streamable HTTP as competing
+
+66
+00:07:11.839 --> 00:07:18.399
+options on the same menu. They really aren't. Streamable HTTP is the transport, and server
+
+67
+00:07:18.399 --> 00:07:24.720
+sent events is what the transport uses when a response needs to arrive in pieces rather than
+
+68
+00:07:24.720 --> 00:07:30.559
+all at once. Get that relationship backwards, and you'll go hunting for a setting that was never
+
+69
+00:07:30.559 --> 00:07:36.239
+really a transport to begin with. That's where we'll leave it on this one. I'll see you in the next lesson.
+

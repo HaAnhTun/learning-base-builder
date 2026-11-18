@@ -1,0 +1,338 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:07.000
+This lesson walks through calibration, verifying that a model's confidence scores actually match its real accuracy.
+
+2
+00:00:07.000 --> 00:00:14.000
+We'll cover what calibration means, how to build a labeled validation set, how to run the calibration check,
+
+3
+00:00:14.000 --> 00:00:18.000
+and how to read a reliability diagram to spot miscalibration.
+
+4
+00:00:18.000 --> 00:00:20.000
+Let's get into it.
+
+5
+00:00:20.000 --> 00:00:23.000
+A self-reported number is only worth what it predicts.
+
+6
+00:00:23.000 --> 00:00:29.000
+Calibration is the check that decides whether a model's confidence scores predict anything at all.
+
+7
+00:00:29.000 --> 00:00:37.000
+A validation set is a held-out collection of labeled samples you use to measure how accurate the extractions really are.
+
+8
+00:00:37.000 --> 00:00:43.000
+A reliability diagram plots what the model claims against what it actually delivers.
+
+9
+00:00:43.000 --> 00:00:48.000
+So miscalibration becomes something you can see, rather than something you suspect.
+
+10
+00:00:48.000 --> 00:00:55.000
+And the routing threshold is the cutoff you set from that measured result, instead of from raw model output.
+
+11
+00:00:55.000 --> 00:01:02.000
+Each one depends on the one before it, and together they turn a self-reported score into evidence you can route on.
+
+12
+00:01:02.000 --> 00:01:06.000
+Calibration has a specific meaning worth stating precisely.
+
+13
+00:01:06.000 --> 00:01:11.000
+A calibrated model is one where the score it reports matches its actual accuracy.
+
+14
+00:01:11.000 --> 00:01:19.000
+If the model says 0.9 on a field type, a calibrated model is correct on that field type 90% of the time.
+
+15
+00:01:19.000 --> 00:01:22.000
+That alignment is what you're checking for.
+
+16
+00:01:22.000 --> 00:01:28.000
+An overconfident model says 0.9, but is only correct 60% of the time.
+
+17
+00:01:28.000 --> 00:01:34.000
+It thinks it's doing well, but it's feeding errors into your auto-accept pipeline without any flag.
+
+18
+00:01:34.000 --> 00:01:39.000
+An underconfident model says 0.6, but is actually correct 90% of the time.
+
+19
+00:01:39.000 --> 00:01:44.000
+That wastes reviewer capacity on work that didn't need checking.
+
+20
+00:01:44.000 --> 00:01:49.372
+Both miscalibrations are worth fixing, but overconfidence is the more dangerous failure, because it
+
+21
+00:01:49.372 --> 00:01:50.945
+silently lets errors through.
+
+22
+00:01:52.000 --> 00:01:56.000
+Building a useful validation set requires three things.
+
+23
+00:01:56.000 --> 00:02:03.000
+First, the samples have to be representative of your actual production documents, not cherry-picked easy cases.
+
+24
+00:02:03.000 --> 00:02:09.211
+If your production data includes handwritten forms, scanned invoices, and digital submissions, the
+
+25
+00:02:09.211 --> 00:02:11.936
+validation set should include all of those.
+
+26
+00:02:12.000 --> 00:02:18.000
+Second, every sample needs a ground truth label for each field you are measuring.
+
+27
+00:02:18.000 --> 00:02:23.000
+A human expert creates those labels by checking the correct value against the source document.
+
+28
+00:02:23.000 --> 00:02:26.000
+Third, the set stays held out.
+
+29
+00:02:26.000 --> 00:02:30.972
+You never use it to train the model or adjust the prompt, because that would contaminate the
+
+30
+00:02:30.972 --> 00:02:33.945
+measurement and make the calibration result unreliable.
+
+31
+00:02:34.000 --> 00:02:41.045
+The contrast between an overconfident and a well-calibrated model shows up clearly in what happens
+
+32
+00:02:41.045 --> 00:02:44.928
+downstream, and it's worth walking through both cases.
+
+33
+00:02:45.000 --> 00:02:51.000
+When the model is overconfident, it reports high scores on fields, it frequently gets wrong.
+
+34
+00:02:51.000 --> 00:02:57.508
+The system trusts those scores, auto-accepts the fields, and errors flow into production without
+
+35
+00:02:57.508 --> 00:02:58.932
+anyone catching them.
+
+36
+00:02:59.000 --> 00:03:04.000
+The system looks efficient on paper, but is silently degrading output quality.
+
+37
+00:03:04.000 --> 00:03:12.000
+When the model is well-calibrated, a field scored at 0.85 is correct, roughly 85% of the time.
+
+38
+00:03:12.000 --> 00:03:20.000
+The acceptance threshold you set at 0.9 actually corresponds to 90% accuracy in practice.
+
+39
+00:03:20.000 --> 00:03:27.000
+That alignment is what makes per-field triage genuinely reliable, not just a mechanism for moving work around.
+
+40
+00:03:27.000 --> 00:03:31.000
+Running the calibration check is a four-step process.
+
+41
+00:03:31.000 --> 00:03:36.000
+Start by grouping the validation predictions into buckets, based on their confidence scores.
+
+42
+00:03:36.000 --> 00:03:44.000
+A bucket for 0.0 to 0.1, another for 0.1 to 0.2, and so on up to 1.0.
+
+43
+00:03:44.000 --> 00:03:50.000
+Then for each bucket, measure the fraction of predictions in that range that match the ground truth label.
+
+44
+00:03:50.000 --> 00:03:55.000
+That fraction is the empirical accuracy for that confidence range.
+
+45
+00:03:55.000 --> 00:04:03.000
+Next, plot each bucket's midpoint confidence on the x-axis against its empirical accuracy on the y-axis.
+
+46
+00:04:03.000 --> 00:04:07.000
+Draw a diagonal line from the bottom left corner to the top right.
+
+47
+00:04:07.000 --> 00:04:10.000
+The diagonal represents perfect calibration.
+
+48
+00:04:10.000 --> 00:04:12.000
+Finally, find the gaps.
+
+49
+00:04:12.000 --> 00:04:18.000
+Bins below the diagonal indicate overconfidence, and bins above show underconfidence.
+
+50
+00:04:18.000 --> 00:04:24.485
+The distance from your plotted points to the diagonal tells you how miscalibrated the model is and
+
+51
+00:04:24.485 --> 00:04:26.933
+where threshold adjustment is needed.
+
+52
+00:04:27.000 --> 00:04:35.000
+The reliability diagram is the primary tool for communicating calibration results to anyone who sets routing policy.
+
+53
+00:04:35.000 --> 00:04:40.000
+The x-axis runs from 0 to 1.0 and shows the model's reported confidence.
+
+54
+00:04:40.000 --> 00:04:47.000
+The y-axis runs from 0 to 1.0 and shows the empirical accuracy measured on the validation set.
+
+55
+00:04:47.000 --> 00:04:57.000
+A perfectly calibrated model traces the diagonal exactly, so confidence of 0.7 maps to accuracy of 0.7.
+
+56
+00:04:57.000 --> 00:05:03.000
+When the plotted line curves above the diagonal, the model is underconfident in that range.
+
+57
+00:05:03.000 --> 00:05:06.000
+When it curves below, the model is overconfident.
+
+58
+00:05:06.000 --> 00:05:12.211
+A diagram that hugs the diagonal across all confidence ranges tells you the scores are trustworthy
+
+59
+00:05:12.211 --> 00:05:14.936
+enough to drive routing decisions directly.
+
+60
+00:05:15.000 --> 00:05:20.000
+Once you have the reliability diagram, adjusting the routing threshold is straightforward.
+
+61
+00:05:20.000 --> 00:05:23.000
+Start with your policy's accuracy requirement.
+
+62
+00:05:23.000 --> 00:05:30.245
+If the business needs at least 95% accuracy on auto-accepted fields, find the 0.95 level on the
+
+63
+00:05:30.245 --> 00:05:31.923
+y-axis of the diagram.
+
+64
+00:05:32.000 --> 00:05:37.000
+Trace horizontally to where your calibration curve crosses that accuracy level.
+
+65
+00:05:37.000 --> 00:05:42.000
+Then read down to the x-axis to find the corresponding confidence value.
+
+66
+00:05:42.000 --> 00:05:45.000
+Set that confidence value as your routing threshold.
+
+67
+00:05:45.000 --> 00:05:52.000
+Fields scoring at or above it will achieve roughly 95% accuracy based on the calibration data.
+
+68
+00:05:52.000 --> 00:05:54.000
+Fields below it go to review.
+
+69
+00:05:54.000 --> 00:06:00.000
+The threshold now reflects real performance rather than the model's self-assessment.
+
+70
+00:06:00.000 --> 00:06:03.000
+Calibration results don't stay valid indefinitely.
+
+71
+00:06:03.000 --> 00:06:08.139
+When a team upgrades to a newer model version, the confidence distribution shifts because the new
+
+72
+00:06:08.139 --> 00:06:10.947
+model generates different scores for the same inputs.
+
+73
+00:06:11.000 --> 00:06:19.000
+When a prompt is revised, even a subtle change to phrasing or examples can move scores across the threshold boundary.
+
+74
+00:06:19.000 --> 00:06:24.000
+Both situations require rerunning the calibration check on the same validation set.
+
+75
+00:06:24.000 --> 00:06:28.000
+The validation set itself stays fixed, so the comparison is fair.
+
+76
+00:06:28.000 --> 00:06:35.000
+Treating calibration as a recurring operational task, scheduled alongside model updates and prompt changes,
+
+77
+00:06:35.000 --> 00:06:40.000
+keeps the routing thresholds honest over time rather than slowly drifting out of alignment.
+
+78
+00:06:40.000 --> 00:06:44.000
+Calibration is what makes a confidence score actionable.
+
+79
+00:06:44.000 --> 00:06:48.000
+A validation set supplies labeled ground truth.
+
+80
+00:06:48.000 --> 00:06:55.000
+Binding predictions by score and measuring accuracy reveals where the model is over- or under-confident,
+
+81
+00:06:55.000 --> 00:07:00.000
+and the reliability diagram makes those gaps visible enough to set a threshold against.
+
+82
+00:07:00.000 --> 00:07:05.000
+Because a model upgrade or a prompt revision shifts the score distribution,
+
+83
+00:07:05.000 --> 00:07:10.000
+this is recurring work rather than a one-time setup, so keep that in mind.
+
+84
+00:07:10.000 --> 00:07:14.000
+With that, we'll wrap up this lesson. I'll see you in the next one.
+

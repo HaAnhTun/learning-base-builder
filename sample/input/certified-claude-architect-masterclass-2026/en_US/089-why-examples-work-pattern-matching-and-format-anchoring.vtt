@@ -1,0 +1,458 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.119
+Why do examples anchor model outputs so much more reliably than instructions?
+
+2
+00:00:05.760 --> 00:00:09.359
+That is the question this lesson answers. For the next few minutes,
+
+3
+00:00:09.359 --> 00:00:15.520
+we'll cover what examples communicate simultaneously, how pattern matching works,
+
+4
+00:00:15.520 --> 00:00:21.360
+how format anchoring works in practice, and when to choose zero-shot versus few-shot.
+
+5
+00:00:21.360 --> 00:00:24.239
+These ideas frame everything we'll do in this lesson.
+
+6
+00:00:25.200 --> 00:00:31.040
+Show the model one good example of what you want, and you often get better output than a paragraph describing it.
+
+7
+00:00:31.040 --> 00:00:34.639
+That gap is what few-shot prompting exploits.
+
+8
+00:00:34.639 --> 00:00:40.400
+Few-shot prompting provides more than one input-output example before the task itself.
+
+9
+00:00:40.400 --> 00:00:44.159
+The examples demonstrate format, tone, or reasoning,
+
+10
+00:00:44.159 --> 00:00:49.279
+and high-quality examples are the single biggest lever for output consistency.
+
+11
+00:00:49.279 --> 00:00:53.040
+Zero-shot prompting issues a task with no examples at all.
+
+12
+00:00:53.439 --> 00:00:59.040
+It relies on the model's pre-trained knowledge and how clearly the instruction is written,
+
+13
+00:00:59.040 --> 00:01:04.080
+so it works well for common tasks, but often degrades on novel formats
+
+14
+00:01:04.080 --> 00:01:06.160
+or domain-specific output structures.
+
+15
+00:01:07.040 --> 00:01:10.080
+One-shot prompting provides exactly one example.
+
+16
+00:01:10.080 --> 00:01:12.959
+It's a deliberate choice, not a fallback,
+
+17
+00:01:12.959 --> 00:01:17.839
+and when a single canonical case fully defines the pattern, one example is all you need.
+
+18
+00:01:18.720 --> 00:01:23.919
+A well-designed example carries information that prose instructions struggle to convey.
+
+19
+00:01:23.919 --> 00:01:28.400
+It shows format directly, the exact structure the output should follow,
+
+20
+00:01:28.400 --> 00:01:33.279
+without requiring the model to interpret a written description of that structure.
+
+21
+00:01:33.279 --> 00:01:37.199
+It communicates tone through demonstration rather than instruction,
+
+22
+00:01:37.199 --> 00:01:40.879
+whether that is formal, conversational, terse, or detailed.
+
+23
+00:01:40.879 --> 00:01:45.040
+It shows the reasoning pattern by example, not explanation,
+
+24
+00:01:45.279 --> 00:01:49.360
+and it implicitly scopes the output by showing what's included
+
+25
+00:01:49.360 --> 00:01:51.760
+and what's left out of a correct response.
+
+26
+00:01:52.319 --> 00:01:56.000
+Prose instructions typically address a single dimension at a time
+
+27
+00:01:56.000 --> 00:01:58.239
+and leave the others open to interpretation.
+
+28
+00:01:58.800 --> 00:02:01.919
+An example communicates all four simultaneously,
+
+29
+00:02:01.919 --> 00:02:07.040
+which is why a single high-quality example often outperforms a full paragraph
+
+30
+00:02:07.040 --> 00:02:09.279
+of written guidance on format and style.
+
+31
+00:02:10.559 --> 00:02:14.960
+Pattern matching is a useful way to think about how examples anchor output.
+
+32
+00:02:14.960 --> 00:02:19.279
+When you provide examples, the model doesn't just read them for surface content.
+
+33
+00:02:19.279 --> 00:02:23.839
+It picks up on structural patterns, like the length of responses,
+
+34
+00:02:23.839 --> 00:02:27.199
+the phrasing style, and the sequencing of output elements.
+
+35
+00:02:27.919 --> 00:02:32.960
+Those implicit patterns carry over even when the new input looks different from the examples.
+
+36
+00:02:33.679 --> 00:02:38.880
+With a prose instruction, the model has to work out what your description means for this output,
+
+37
+00:02:38.880 --> 00:02:41.039
+and that leaves more room for variance.
+
+38
+00:02:41.039 --> 00:02:45.440
+Particularly for novel or domain-specific formats, the model hasn't seen often.
+
+39
+00:02:46.000 --> 00:02:50.559
+With an example, the model can mirror a concrete demonstration directly.
+
+40
+00:02:50.559 --> 00:02:54.240
+That tends to transfer format and tone more reliably,
+
+41
+00:02:54.240 --> 00:02:58.800
+which is why consistent output is usually easier to achieve with examples
+
+42
+00:02:58.800 --> 00:03:00.240
+than with instructions alone.
+
+43
+00:03:01.520 --> 00:03:07.119
+Format anchoring is the name for what a worked example does to the shape of your output.
+
+44
+00:03:07.119 --> 00:03:10.559
+A prose description of the format has to be interpreted,
+
+45
+00:03:10.559 --> 00:03:13.679
+and interpretation is where the variance creeps in.
+
+46
+00:03:13.679 --> 00:03:15.279
+A demonstration doesn't.
+
+47
+00:03:15.279 --> 00:03:17.199
+The model can mirror it directly.
+
+48
+00:03:17.759 --> 00:03:21.839
+That difference matters most on structured output tasks,
+
+49
+00:03:21.839 --> 00:03:24.720
+where you need the response to carry a specific element,
+
+50
+00:03:24.720 --> 00:03:27.679
+a JSON object, a table row, a labeled field.
+
+51
+00:03:28.320 --> 00:03:32.399
+Describing that structure in words leaves room for the model
+
+52
+00:03:32.399 --> 00:03:35.039
+to render it a dozen defensible ways,
+
+53
+00:03:35.039 --> 00:03:38.800
+and any of them might be reasonable while still not being what you wanted.
+
+54
+00:03:39.440 --> 00:03:42.399
+Showing it once removes the ambiguity.
+
+55
+00:03:42.399 --> 00:03:46.559
+It's also why examples tend to beat instructions for any format
+
+56
+00:03:46.559 --> 00:03:48.080
+the model hasn't seen often,
+
+57
+00:03:48.080 --> 00:03:51.440
+since there's no common convention for it to fall back on.
+
+58
+00:03:51.440 --> 00:03:53.520
+Your example becomes the convention.
+
+59
+00:03:54.800 --> 00:03:57.759
+Shot count matters, but the returns aren't linear.
+
+60
+00:03:57.759 --> 00:04:00.479
+Zero shot is fastest and simplest.
+
+61
+00:04:00.479 --> 00:04:04.000
+When a task is common and format flexibility is acceptable,
+
+62
+00:04:04.000 --> 00:04:05.679
+you don't need examples at all.
+
+63
+00:04:06.240 --> 00:04:09.759
+One example works well when a single canonical case
+
+64
+00:04:09.759 --> 00:04:11.119
+fully defines the pattern.
+
+65
+00:04:11.679 --> 00:04:14.960
+Three examples is the most broadly useful configuration
+
+66
+00:04:14.960 --> 00:04:16.959
+for structured output tasks
+
+67
+00:04:16.959 --> 00:04:20.320
+because it captures enough format and tone variation
+
+68
+00:04:20.320 --> 00:04:21.920
+without overwhelming the prompt.
+
+69
+00:04:22.559 --> 00:04:25.519
+Beyond three, returns diminish in most cases.
+
+70
+00:04:26.079 --> 00:04:28.799
+Five or more examples are worth the overhead
+
+71
+00:04:28.799 --> 00:04:32.480
+only when your inputs span genuinely different types
+
+72
+00:04:32.480 --> 00:04:35.359
+or edge cases that three examples can't cover.
+
+73
+00:04:36.079 --> 00:04:38.079
+More examples isn't always better.
+
+74
+00:04:38.079 --> 00:04:42.000
+The right count is the minimum that reliably anchors the pattern you need.
+
+75
+00:04:43.200 --> 00:04:46.399
+Zero shot and few shot aren't in competition.
+
+76
+00:04:46.399 --> 00:04:48.480
+They serve different situations.
+
+77
+00:04:48.480 --> 00:04:51.359
+Zero shot works well for summarization,
+
+78
+00:04:51.359 --> 00:04:54.799
+question answering, and common text generation tasks
+
+79
+00:04:54.799 --> 00:04:56.640
+where the format is flexible
+
+80
+00:04:56.640 --> 00:05:00.399
+and the task is well within the model's pre-trained knowledge.
+
+81
+00:05:00.399 --> 00:05:04.000
+Few shot is the right choice when you need structured output,
+
+82
+00:05:04.000 --> 00:05:08.320
+novel formats, or consistent tone across a range of inputs.
+
+83
+00:05:08.320 --> 00:05:10.399
+For well-defined common tasks,
+
+84
+00:05:10.399 --> 00:05:14.399
+zero shot with clear instructions can match few shot performance
+
+85
+00:05:14.399 --> 00:05:16.399
+and it's simpler to maintain.
+
+86
+00:05:16.399 --> 00:05:19.359
+The practical approach is to start with zero shot
+
+87
+00:05:19.359 --> 00:05:22.559
+and add examples only when you observe output variance
+
+88
+00:05:22.559 --> 00:05:25.279
+you can't fix with instruction improvements.
+
+89
+00:05:25.279 --> 00:05:27.279
+Few shot has real overhead,
+
+90
+00:05:27.279 --> 00:05:30.640
+so use it when the consistency payoff justifies it.
+
+91
+00:05:30.959 --> 00:05:34.320
+The relationship between example count and output quality
+
+92
+00:05:34.320 --> 00:05:35.920
+isn't what most people assume.
+
+93
+00:05:36.480 --> 00:05:39.279
+One strong example that covers the target format,
+
+94
+00:05:39.279 --> 00:05:42.079
+edge case behavior, and desired tone
+
+95
+00:05:42.079 --> 00:05:44.079
+will outperform five weak ones.
+
+96
+00:05:44.640 --> 00:05:47.279
+When your examples have inconsistent formatting,
+
+97
+00:05:47.279 --> 00:05:50.799
+off-tone phrasing, or vary in what they include,
+
+98
+00:05:50.799 --> 00:05:53.200
+you're giving the model conflicting signals.
+
+99
+00:05:53.679 --> 00:05:56.000
+The model averages across those signals
+
+100
+00:05:56.000 --> 00:05:59.839
+and the result is output that's muddled rather than consistent.
+
+101
+00:06:01.200 --> 00:06:04.239
+Before adding more examples to a failing prompt,
+
+102
+00:06:04.239 --> 00:06:06.640
+audit the examples you already have.
+
+103
+00:06:06.640 --> 00:06:09.200
+The question isn't how many examples you need,
+
+104
+00:06:09.200 --> 00:06:12.399
+it's whether the examples you have are doing their job.
+
+105
+00:06:12.399 --> 00:06:15.279
+Quality is the lever that moves output the most.
+
+106
+00:06:17.040 --> 00:06:21.679
+There's a real gap between describing the output you want and showing it.
+
+107
+00:06:21.679 --> 00:06:25.440
+A description leaves the model an interpretation step
+
+108
+00:06:25.440 --> 00:06:28.239
+and interpretation is where variance creeps in.
+
+109
+00:06:28.799 --> 00:06:31.200
+A demonstration skips that entirely,
+
+110
+00:06:31.200 --> 00:06:34.000
+which is why structure holds instead of drifting.
+
+111
+00:06:34.640 --> 00:06:37.600
+That difference is also why one clean example
+
+112
+00:06:37.600 --> 00:06:40.959
+beats a handful of sloppy ones, so be specific.
+
+113
+00:06:41.679 --> 00:06:43.040
+That does it for this lesson.
+
+114
+00:06:43.040 --> 00:06:44.559
+I'll see you in the next one.
+

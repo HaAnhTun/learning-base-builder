@@ -1,0 +1,294 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.999
+When you're building any application on Cloud, the system prompt is what shapes every response in the session.
+
+2
+00:00:07.000 --> 00:00:13.000
+For this video, we'll cover what it does, how to structure it, and the practices that make it reliable.
+
+3
+00:00:13.000 --> 00:00:19.250
+It lives before the human turn, it's invisible to end users, and getting it right is one of the
+
+4
+00:00:19.250 --> 00:00:22.934
+highest leveraged things you can do as a Cloud engineer.
+
+5
+00:00:23.000 --> 00:00:28.000
+Everything the model does in a session is shaped by a block of text the end user never sees.
+
+6
+00:00:28.000 --> 00:00:34.466
+That block is the system prompt, passed to the model before any human message, and it establishes
+
+7
+00:00:34.466 --> 00:00:37.933
+role, behavior, constraints, and background context.
+
+8
+00:00:38.000 --> 00:00:44.322
+The user turn is the human message in each exchange. It carries the immediate request and any data
+
+9
+00:00:44.322 --> 00:00:45.935
+specific to that request.
+
+10
+00:00:46.000 --> 00:00:52.428
+Persistent context is information that applies to every exchange in the session, placed once in the
+
+11
+00:00:52.428 --> 00:00:55.935
+system prompt, rather than repeated in each user turn.
+
+12
+00:00:56.000 --> 00:01:01.785
+Getting that boundary right is what makes an application behave the same way on the 100th request as
+
+13
+00:01:01.785 --> 00:01:02.942
+it did on the first.
+
+14
+00:01:03.000 --> 00:01:10.000
+One of the most important architectural decisions is knowing what goes in the system, prompt versus the user turn.
+
+15
+00:01:10.000 --> 00:01:16.329
+The system prompt is for things that stay constant, the model's role, standing behavioral rules,
+
+16
+00:01:16.329 --> 00:01:21.934
+formatting requirements, and background knowledge the model needs for every response.
+
+17
+00:01:22.000 --> 00:01:28.533
+A support bot's policy document is persistent, so it lives there. The user turn is for things that
+
+18
+00:01:28.533 --> 00:01:32.933
+change, the specific request, dynamic data, per request variables.
+
+19
+00:01:33.000 --> 00:01:40.000
+That same customer's account balance changes per user and per query, so it belongs in the user turn.
+
+20
+00:01:40.000 --> 00:01:47.142
+Mixing these two has real consequences. Dynamic data in the system prompt loses cache efficiency and
+
+21
+00:01:47.142 --> 00:01:50.928
+gets resent and reprocessed on every single exchange,
+
+22
+00:01:51.000 --> 00:01:58.236
+driving up token cost. Standing rules in the user turn can be inadvertently overridden or ignored in
+
+23
+00:01:58.236 --> 00:02:01.927
+a multi-turn conversation. Keep the boundary clean.
+
+24
+00:02:02.000 --> 00:02:09.145
+A well-structured system prompt has five sections, each doing a distinct job. Role defines who the
+
+25
+00:02:09.145 --> 00:02:15.927
+model is, what expertise it brings, how it communicates, what professional identity it holds.
+
+26
+00:02:16.000 --> 00:02:22.818
+Context provides the background information the model needs for the whole session. Domain knowledge,
+
+27
+00:02:22.818 --> 00:02:24.931
+company policy, reference data.
+
+28
+00:02:25.000 --> 00:02:31.646
+Instructions specify what the model should do. Task steps, response format, workflow behavior.
+
+29
+00:02:31.646 --> 00:02:38.929
+Constraints define what the model should never do. Prohibited topics, tone restrictions, length limits.
+
+30
+00:02:39.000 --> 00:02:44.862
+Examples show how instructions translate to actual outputs. Each section answers a different
+
+31
+00:02:44.862 --> 00:02:51.936
+question, and when a section is missing, the model fills that gap with defaults that may not match your intent.
+
+32
+00:02:52.000 --> 00:02:58.232
+There is a real tension between writing a thorough system prompt and controlling token cost. A
+
+33
+00:02:58.232 --> 00:03:03.933
+thorough prompt covers edge cases, spells out formatting rules, and includes examples.
+
+34
+00:03:04.000 --> 00:03:10.533
+It reduces ambiguity and produces more consistent responses. But the full system prompt is re-sent
+
+35
+00:03:10.533 --> 00:03:16.933
+with every request. So every additional word adds to your per-request, token count, and latency.
+
+36
+00:03:17.000 --> 00:03:23.125
+A minimal prompt is cheaper and faster. The risk is that the model fills unaddressed gaps with its
+
+37
+00:03:23.125 --> 00:03:26.937
+own defaults, and those defaults may not match what you need.
+
+38
+00:03:27.000 --> 00:03:32.808
+The practical approach is to start with what you need for correctness, then trim language that is
+
+39
+00:03:32.808 --> 00:03:36.940
+redundant or overly prescriptive, measuring consistency at each step.
+
+40
+00:03:37.000 --> 00:03:43.175
+The order of sections inside a system prompt matters more than most people expect, led with role
+
+41
+00:03:43.175 --> 00:03:47.935
+because it frames how the model interprets every instruction that follows.
+
+42
+00:03:48.000 --> 00:03:53.700
+If the model knows it is a financial compliance analyst before it reads the instructions, those
+
+43
+00:03:53.700 --> 00:03:56.940
+instructions land differently than if role comes last.
+
+44
+00:03:57.000 --> 00:04:03.000
+Instructions should come before constraints, so desired behavior is defined before limits are placed on it.
+
+45
+00:04:03.000 --> 00:04:08.898
+Examples should come last, illustrating rules already stated. Rather than front-loading patterns,
+
+46
+00:04:08.898 --> 00:04:11.939
+the model has to reverse engineer into principles.
+
+47
+00:04:13.000 --> 00:04:18.615
+And when you are working with long documents, place that bulk reference material above your query
+
+48
+00:04:18.615 --> 00:04:23.942
+and instructions, because putting the query at the end measurably improves response quality.
+
+49
+00:04:24.000 --> 00:04:29.577
+Conflicting instructions are one of the hardest bugs to catch in a system prompt because they don't
+
+50
+00:04:29.577 --> 00:04:31.943
+always surface on the obvious test inputs.
+
+51
+00:04:32.000 --> 00:04:39.000
+A common example, telling the model to be concise while also instructing it to always explain its reasoning.
+
+52
+00:04:39.000 --> 00:04:45.568
+For simple tasks, these directives coexist fine. For complex tasks, they pull the model in opposite
+
+53
+00:04:45.568 --> 00:04:52.933
+directions, and the output becomes inconsistent depending on which instruction the model weighted more heavily.
+
+54
+00:04:53.000 --> 00:05:00.000
+The fix is to use conditional phrasing. Be concise unless the user explicitly asks for an explanation.
+
+55
+00:05:00.000 --> 00:05:06.000
+That disambiguates the competing rules, rather than leaving the model to resolve them implicitly.
+
+56
+00:05:06.000 --> 00:05:13.000
+Audit your prompt for pairs of rules that could simultaneously apply and rewrite them as conditionals.
+
+57
+00:05:13.000 --> 00:05:17.000
+System prompt testing should be treated as seriously as code testing.
+
+58
+00:05:17.000 --> 00:05:21.000
+The single happy path test case isn't enough.
+
+59
+00:05:21.000 --> 00:05:26.085
+You need to test across diverse phrasings of the same request to confirm that behavior is
+
+60
+00:05:26.085 --> 00:05:28.942
+consistent, regardless of how users phrase things.
+
+61
+00:05:29.000 --> 00:05:36.000
+You need adversarial inputs that directly try to contradict your constraints to verify those constraints hold.
+
+62
+00:05:36.000 --> 00:05:44.000
+You need boundary conditions, very long inputs, empty inputs, sudden topic switches, in the middle of a session.
+
+63
+00:05:44.000 --> 00:05:49.134
+And every time you edit the system prompt, you need a regression pass to confirm that changes
+
+64
+00:05:49.134 --> 00:05:52.944
+improved what you intended and didn't break what was already working.
+
+65
+00:05:54.000 --> 00:05:59.000
+A system prompt that hasn't been tested under pressure is an unknown risk.
+
+66
+00:05:59.000 --> 00:06:06.000
+A system prompt is the standing set of instructions sitting behind every turn in a session.
+
+67
+00:06:06.000 --> 00:06:12.258
+That's what makes it such a cheap place to change behavior, since one edit reaches every response
+
+68
+00:06:12.258 --> 00:06:13.935
+your application produces.
+
+69
+00:06:14.000 --> 00:06:20.236
+Keep in mind, it also gets paid for on every request, and instructions that quietly contradict each
+
+70
+00:06:20.236 --> 00:06:21.937
+other never throw an error.
+
+71
+00:06:22.000 --> 00:06:25.000
+They just make your output less reliable.
+
+72
+00:06:25.000 --> 00:06:27.000
+They show up as inconsistencies.
+
+73
+00:06:27.000 --> 00:06:31.000
+So that brings this one to a close. I'll see you in the next one.
+

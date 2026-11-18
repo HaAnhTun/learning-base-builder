@@ -1,0 +1,330 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.519
+Welcome back. Chain of thought prompting is about instructing the model to show its reasoning,
+
+2
+00:00:05.519 --> 00:00:10.079
+and applied right, it meaningfully improves accuracy on complex tasks.
+
+3
+00:00:10.640 --> 00:00:14.800
+We'll look at zero-shot chain of thought, structured reasoning scaffolds,
+
+4
+00:00:14.800 --> 00:00:18.399
+when this technique actually helps versus when it adds no value,
+
+5
+00:00:18.399 --> 00:00:23.200
+and how to test whether it's earning its overhead for a given task. Let's get into it.
+
+6
+00:00:23.920 --> 00:00:28.159
+A handful of terms anchor this lesson. Chain of thought prompting is a technique
+
+7
+00:00:28.159 --> 00:00:33.200
+where you instruct the model to show its reasoning steps before delivering a final answer.
+
+8
+00:00:33.200 --> 00:00:36.560
+You elicit it through instructions like think step-by-step,
+
+9
+00:00:36.560 --> 00:00:39.759
+or by including worked-out reasoning in your few-shot examples.
+
+10
+00:00:40.479 --> 00:00:45.200
+Zero-shot chain of thought triggers that same visible reasoning without any examples.
+
+11
+00:00:45.200 --> 00:00:50.880
+You just append a phrase like think step-by-step to the prompt. No demonstration required.
+
+12
+00:00:50.880 --> 00:00:55.119
+Structured chain of thought takes it further by providing a reasoning scaffold,
+
+13
+00:00:55.119 --> 00:00:58.319
+which is a template with labeled steps the model follows,
+
+14
+00:00:58.319 --> 00:01:03.520
+rather than generating its own reasoning path. Each technique suits different task types,
+
+15
+00:01:03.520 --> 00:01:07.360
+and knowing when to use which is the practical skill this lesson builds.
+
+16
+00:01:08.720 --> 00:01:13.040
+Zero-shot chain of thought is the simplest way to activate visible reasoning.
+
+17
+00:01:13.040 --> 00:01:17.199
+You append a phrase to your prompt, and the model generates intermediate reasoning before
+
+18
+00:01:17.199 --> 00:01:23.199
+the final answer. Common phrases are think step-by-step, walk me through your reasoning,
+
+19
+00:01:23.199 --> 00:01:28.800
+or explain before answering. No examples are required. That's what makes it zero-shot.
+
+20
+00:01:28.800 --> 00:01:33.040
+It works well for arithmetic, logic puzzles, and multi-step planning tasks,
+
+21
+00:01:33.040 --> 00:01:36.480
+where intermediate steps reduce the chance of accumulating errors.
+
+22
+00:01:37.199 --> 00:01:40.959
+One common mistake is omitting the elicitation phrase entirely,
+
+23
+00:01:40.959 --> 00:01:47.279
+and expecting the model to reason step-by-step on its own. It won't. The phrase is the mechanism.
+
+24
+00:01:47.279 --> 00:01:50.720
+Without it, you get a direct answer rather than visible reasoning.
+
+25
+00:01:51.440 --> 00:01:55.680
+Structured chain of thought gives you more control over how the model reasons.
+
+26
+00:01:55.680 --> 00:02:01.120
+Instead of letting the model choose its own path, you provide a template with labeled stages.
+
+27
+00:02:01.120 --> 00:02:05.919
+For example, a prompt might instruct the model to first identify the key constraints,
+
+28
+00:02:05.919 --> 00:02:09.360
+then analyze the options, then conclude with a recommendation.
+
+29
+00:02:10.000 --> 00:02:14.399
+That structure produces consistent reasoning across many similar tasks,
+
+30
+00:02:14.399 --> 00:02:17.360
+which is useful when you need responses to be comparable,
+
+31
+00:02:17.839 --> 00:02:22.479
+or when you're building a workflow where reasoning steps feed into downstream processes.
+
+32
+00:02:23.119 --> 00:02:27.600
+Freeform chain of thought is better when task types vary too much to fit a template,
+
+33
+00:02:27.600 --> 00:02:31.919
+or when a rigid scaffold would constrain the model's reasoning in unhelpful ways.
+
+34
+00:02:32.559 --> 00:02:37.759
+The choice comes down to whether consistency or flexibility matters more for your use case.
+
+35
+00:02:38.960 --> 00:02:42.399
+The comparison between freeform and structured chain of thought
+
+36
+00:02:42.399 --> 00:02:47.279
+comes down to control versus flexibility. Freeform chain of thought works well when
+
+37
+00:02:47.279 --> 00:02:52.240
+the model needs latitude to reason through problems that differ significantly in structure.
+
+38
+00:02:52.800 --> 00:02:57.279
+You give it the trigger phrase and let it go. Structured chain of thought works well when
+
+39
+00:02:57.279 --> 00:03:02.399
+you need reasoning to follow a consistent shape, such as when you're comparing responses across
+
+40
+00:03:02.399 --> 00:03:07.520
+many inputs, or when the steps in a reasoning process are well-defined enough to specify in
+
+41
+00:03:07.520 --> 00:03:12.240
+advance. Neither is universally better. If your tasks are heterogeneous,
+
+42
+00:03:12.240 --> 00:03:17.199
+freeform gives the model room to reason appropriately. If your tasks share a common
+
+43
+00:03:17.199 --> 00:03:21.679
+structure, a scaffold makes outputs more consistent and easier to evaluate.
+
+44
+00:03:22.960 --> 00:03:26.399
+Chain of thought helps most on tasks where intermediate steps matter.
+
+45
+00:03:27.039 --> 00:03:32.080
+Multi-step arithmetic is the classic example. Errors in early steps compound,
+
+46
+00:03:32.080 --> 00:03:34.880
+and visible work lets you catch where things went wrong.
+
+47
+00:03:35.520 --> 00:03:40.240
+Logic and formal deduction tasks benefit similarly, because each reasoning step is
+
+48
+00:03:40.240 --> 00:03:44.080
+a potential failure point, and making them visible makes them checkable.
+
+49
+00:03:44.720 --> 00:03:49.839
+Planning and sequencing tasks, where you're ordering actions or resolving dependencies,
+
+50
+00:03:49.839 --> 00:03:54.240
+benefit from explicit step-by-step thinking that surfaces conflicts early.
+
+51
+00:03:54.960 --> 00:03:59.039
+Complex instruction following also benefits when there are multiple constraints
+
+52
+00:03:59.039 --> 00:04:04.960
+the model needs to satisfy. Reasoning through each one explicitly reduces the chance of missing
+
+53
+00:04:04.960 --> 00:04:11.039
+or violating a constraint in the final answer. Not every task benefits from chain of thought,
+
+54
+00:04:11.039 --> 00:04:16.399
+and adding it to tasks that don't need it costs latency and tokens without improving accuracy.
+
+55
+00:04:17.119 --> 00:04:22.160
+Simple factual lookups don't need intermediate reasoning. The answer is either known,
+
+56
+00:04:22.160 --> 00:04:27.519
+or it isn't. Straightforward classification tasks with clear signals don't require the
+
+57
+00:04:27.519 --> 00:04:33.519
+model to reason through steps. Short direct answer tasks add generation overhead without
+
+58
+00:04:33.519 --> 00:04:39.200
+gaining anything. Highly creative tasks can actually be constrained by forced step-by-step
+
+59
+00:04:39.200 --> 00:04:45.119
+structure, which can make outputs more rigid than you want. Before applying chain of thought broadly,
+
+60
+00:04:45.119 --> 00:04:49.760
+ask whether the task actually involves multi-step reasoning. If it doesn't,
+
+61
+00:04:49.760 --> 00:04:55.519
+the technique adds cost without benefit. An important clarification. Chain of thought
+
+62
+00:04:55.519 --> 00:05:02.399
+is a prompting technique, not an API feature. The entire mechanism lives in the text of your prompt.
+
+63
+00:05:02.399 --> 00:05:07.519
+You don't set an API flag or enable a special mode. You write an instruction that tells the
+
+64
+00:05:07.519 --> 00:05:13.359
+model to reason visibly, and it does. This applies across any model that follows instructions well.
+
+65
+00:05:13.359 --> 00:05:17.440
+It's also worth being clear that chain of thought is distinct from extended thinking,
+
+66
+00:05:17.440 --> 00:05:23.040
+which is a separate API feature that allocates a dedicated token budget for internal reasoning.
+
+67
+00:05:23.760 --> 00:05:28.480
+Chain of thought puts reasoning in the prompt text. Extended thinking is configured through
+
+68
+00:05:28.480 --> 00:05:35.040
+API parameters. Conflating the two leads to incorrect answers on questions about API design
+
+69
+00:05:35.040 --> 00:05:41.760
+and capability boundaries. Testing. Whether chain of thought actually helps for a given task is an
+
+70
+00:05:41.760 --> 00:05:47.839
+essential step before relying on it. The simplest test is running the same task with and without
+
+71
+00:05:47.839 --> 00:05:53.600
+the elicitation phrase and comparing accuracy across a representative set of inputs. You're
+
+72
+00:05:53.600 --> 00:05:59.279
+looking for cases where visible reasoning produces more correct answers, not just longer ones. Check
+
+73
+00:05:59.279 --> 00:06:04.720
+whether the reasoning steps are coherent and actually support the conclusion. If the model
+
+74
+00:06:04.720 --> 00:06:09.760
+produces plausible-looking reasoning steps that still arrive at wrong answers, chain of thought
+
+75
+00:06:09.760 --> 00:06:15.119
+may not be the right tool for that task type. Testing also reveals tasks where the technique
+
+76
+00:06:15.119 --> 00:06:19.839
+adds latency without improving output quality, which helps you decide where it's worth the
+
+77
+00:06:19.839 --> 00:06:25.359
+overhead and where it isn't. Chain of thought prompting is a prompt text technique that makes
+
+78
+00:06:25.359 --> 00:06:31.200
+reasoning visible and improves accuracy on multi-step problems. Zero-shot chain of thought
+
+79
+00:06:31.200 --> 00:06:37.200
+uses an elicitation phrase with no examples. Structured chain of thought adds a scaffold
+
+80
+00:06:37.200 --> 00:06:43.200
+for consistent reasoning. Both live in the prompt, not in API settings. So that's chain of thought
+
+81
+00:06:43.200 --> 00:06:48.799
+prompting. Coming up, extended thinking, which is a distinct API feature with very different
+
+82
+00:06:48.799 --> 00:06:50.399
+trade-offs. I'll see you there.
+

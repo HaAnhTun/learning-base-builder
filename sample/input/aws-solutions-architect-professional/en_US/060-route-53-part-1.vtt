@@ -1,0 +1,1094 @@
+WEBVTT
+
+1
+00:00:00.090 --> 00:00:02.820
+<v Instructor>Okay, so now let's talk about Route 53.</v>
+
+2
+00:00:02.820 --> 00:00:04.410
+And first, let's talk about the record types
+
+3
+00:00:04.410 --> 00:00:05.700
+that exist within Route 53.
+
+4
+00:00:05.700 --> 00:00:09.720
+So we have the A that maps a hostname to IPv4.
+
+5
+00:00:09.720 --> 00:00:13.470
+Quadruple A which maps the hostname to IPv6.
+
+6
+00:00:13.470 --> 00:00:16.650
+We have CNAME to map a hostname to another hostname
+
+7
+00:00:16.650 --> 00:00:18.840
+in which the target of the hostname
+
+8
+00:00:18.840 --> 00:00:22.020
+is being A or an AAAA record.
+
+9
+00:00:22.020 --> 00:00:24.780
+And you cannot create a CNAME on top of,
+
+10
+00:00:24.780 --> 00:00:28.320
+the top node of the DNS namespace which is the Zone Apex.
+
+11
+00:00:28.320 --> 00:00:31.320
+So, you cannot create a CNAME for example.com.
+
+12
+00:00:31.320 --> 00:00:35.160
+We can create a CNAME for www.example.com,
+
+13
+00:00:35.160 --> 00:00:38.070
+and we'll see how to solve that problem with Alias records.
+
+14
+00:00:38.070 --> 00:00:39.570
+And then finally, NS
+
+15
+00:00:39.570 --> 00:00:41.400
+which are name servers for the hosted zone
+
+16
+00:00:41.400 --> 00:00:44.850
+which control how traffic is rooted to a domain.
+
+17
+00:00:44.850 --> 00:00:46.860
+So, these records are all you need to know
+
+18
+00:00:46.860 --> 00:00:49.110
+for the Solutions Architect professional exam,
+
+19
+00:00:49.110 --> 00:00:51.300
+so, don't worry about the rest.
+
+20
+00:00:51.300 --> 00:00:53.040
+Now, for the A record, how does that work?
+
+21
+00:00:53.040 --> 00:00:55.530
+Well, the client wants to access an EC2 instance
+
+22
+00:00:55.530 --> 00:00:56.790
+that has a public IP,
+
+23
+00:00:56.790 --> 00:01:01.080
+is going to first query for example.com in Amazon Route 53,
+
+24
+00:01:01.080 --> 00:01:04.140
+and then get an IP back, and then thanks to the IP,
+
+25
+00:01:04.140 --> 00:01:06.660
+reach our EC2 instance.
+
+26
+00:01:06.660 --> 00:01:09.990
+So, this is for a very simple A record, okay?
+
+27
+00:01:09.990 --> 00:01:13.200
+Now, let's talk about difference of CNAME and Alias.
+
+28
+00:01:13.200 --> 00:01:15.240
+So, all the resources in AWS,
+
+29
+00:01:15.240 --> 00:01:17.160
+for example Load Balancer, CloudFront, et cetera,
+
+30
+00:01:17.160 --> 00:01:19.530
+they expose an AWS hostname.
+
+31
+00:01:19.530 --> 00:01:24.030
+So, for example, this is the hostname of a Load Balancer,
+
+32
+00:01:24.030 --> 00:01:25.440
+and maybe we want this Load Balancer
+
+33
+00:01:25.440 --> 00:01:29.040
+to be instead myapp.mydomain.com.
+
+34
+00:01:29.040 --> 00:01:29.880
+So, how do we do this?
+
+35
+00:01:29.880 --> 00:01:32.700
+Well, if we have a CNAME, as remembered,
+
+36
+00:01:32.700 --> 00:01:35.130
+it is a hostname that points to any other hostnames.
+
+37
+00:01:35.130 --> 00:01:39.750
+So, it is very possible for us to do app.mydomain.com
+
+38
+00:01:39.750 --> 00:01:41.790
+points to anything.com,
+
+39
+00:01:41.790 --> 00:01:45.000
+and so therefore it would work for the example above,
+
+40
+00:01:45.000 --> 00:01:47.100
+but this only works for non root domain,
+
+41
+00:01:47.100 --> 00:01:50.940
+so, it must be something.mydomain.com.
+
+42
+00:01:50.940 --> 00:01:53.910
+So, for an Alias record though it has difference.
+
+43
+00:01:53.910 --> 00:01:57.990
+It's to point hostname only to a specified AWS resource.
+
+44
+00:01:57.990 --> 00:02:02.990
+So, it's app.mydomain.com into something.amazonaws.com,
+
+45
+00:02:04.140 --> 00:02:06.450
+so, it must be a resource from AWS,
+
+46
+00:02:06.450 --> 00:02:09.600
+and this works for root domain and non root domain.
+
+47
+00:02:09.600 --> 00:02:13.500
+So, it works for mydomain.com and it's free of charge
+
+48
+00:02:13.500 --> 00:02:16.050
+and it has native health check as a feature,
+
+49
+00:02:16.050 --> 00:02:18.840
+so that means that for the Load Balancer in AWS
+
+50
+00:02:18.840 --> 00:02:21.990
+you cannot do a CNAME for mydomain.com,
+
+51
+00:02:21.990 --> 00:02:25.170
+but you can do an Alias record for mydomain.com.
+
+52
+00:02:25.170 --> 00:02:26.880
+In terms of the targets for the Alias records
+
+53
+00:02:26.880 --> 00:02:30.360
+we get Elastic Load Balancers, CloudFront Distribution,
+
+54
+00:02:30.360 --> 00:02:35.070
+API Gateway, Elastic Beanstalk environments, S3 websites,
+
+55
+00:02:35.070 --> 00:02:38.850
+VPC interface endpoints, Global accelerator Accelerator,
+
+56
+00:02:38.850 --> 00:02:41.100
+as well as any other Route 53 record
+
+57
+00:02:41.100 --> 00:02:42.570
+in the same hosted zone.
+
+58
+00:02:42.570 --> 00:02:46.593
+And you cannot set Alias record for an EC2 DNS name.
+
+59
+00:02:47.910 --> 00:02:51.600
+Now each record in Route 53 is going to have a record TTL
+
+60
+00:02:51.600 --> 00:02:53.490
+which is the Time To Live.
+
+61
+00:02:53.490 --> 00:02:54.900
+So here's an example,
+
+62
+00:02:54.900 --> 00:02:58.080
+the client wants to talk to our web server,
+
+63
+00:02:58.080 --> 00:03:01.980
+but we have a DNS request for myapp.example.com.
+
+64
+00:03:01.980 --> 00:03:05.010
+We're going to get a response, for example A record,
+
+65
+00:03:05.010 --> 00:03:06.510
+but this will have a TTL,
+
+66
+00:03:06.510 --> 00:03:08.610
+and this response is going to be cached
+
+67
+00:03:08.610 --> 00:03:11.160
+for the time of the TTL.
+
+68
+00:03:11.160 --> 00:03:14.130
+And then once the TTL expires
+
+69
+00:03:14.130 --> 00:03:15.930
+then the record will be renewed.
+
+70
+00:03:15.930 --> 00:03:17.670
+So while the TTL is still present
+
+71
+00:03:17.670 --> 00:03:21.150
+and the record is saved on the client side,
+
+72
+00:03:21.150 --> 00:03:24.300
+then the requests are going to go to the IP
+
+73
+00:03:24.300 --> 00:03:26.550
+that was refetched from before.
+
+74
+00:03:26.550 --> 00:03:29.430
+So, in case you do a high TTL, for example, 24 hours
+
+75
+00:03:29.430 --> 00:03:31.680
+that means that you're going to get less traffic
+
+76
+00:03:31.680 --> 00:03:33.600
+on the Route 53,
+
+77
+00:03:33.600 --> 00:03:35.850
+but you have possibly updated records,
+
+78
+00:03:35.850 --> 00:03:39.360
+for example, if you update them in DNS side
+
+79
+00:03:39.360 --> 00:03:41.520
+then it will take up to 24 hours
+
+80
+00:03:41.520 --> 00:03:43.740
+for clients to get the new values.
+
+81
+00:03:43.740 --> 00:03:45.540
+Otherwise, if you set a very low TTL,
+
+82
+00:03:45.540 --> 00:03:47.220
+for example 60 seconds
+
+83
+00:03:47.220 --> 00:03:49.860
+that means you're going to get more traffic on the DNS side
+
+84
+00:03:49.860 --> 00:03:51.870
+which is going to cost you some money,
+
+85
+00:03:51.870 --> 00:03:53.460
+but on the flip side,
+
+86
+00:03:53.460 --> 00:03:56.550
+the records are going to be outdated for less time
+
+87
+00:03:56.550 --> 00:03:58.350
+and it's going to be easier to change records,
+
+88
+00:03:58.350 --> 00:04:00.030
+so, it's always a trade off.
+
+89
+00:04:00.030 --> 00:04:02.310
+And except for the Alias record
+
+90
+00:04:02.310 --> 00:04:05.760
+the TTL is mandatory for each DNS record,
+
+91
+00:04:05.760 --> 00:04:07.530
+very important to remember.
+
+92
+00:04:07.530 --> 00:04:09.960
+Okay, now let's look at the routing policy,
+
+93
+00:04:09.960 --> 00:04:12.360
+so we have the simple routing policy
+
+94
+00:04:12.360 --> 00:04:15.750
+which is to route traffic to a single resource
+
+95
+00:04:15.750 --> 00:04:18.180
+and this cannot be associated with the health check
+
+96
+00:04:18.180 --> 00:04:20.130
+and this is the only kind of routing policy
+
+97
+00:04:20.130 --> 00:04:22.380
+that is not associated with the health check.
+
+98
+00:04:22.380 --> 00:04:26.430
+So, here's an example, so client goes to food.example.com
+
+99
+00:04:26.430 --> 00:04:29.460
+and then gets a value back. Super simple.
+
+100
+00:04:29.460 --> 00:04:33.750
+But you can also specify multiple values in the same record,
+
+101
+00:04:33.750 --> 00:04:35.250
+and if that's the case
+
+102
+00:04:35.250 --> 00:04:38.430
+then a random one is going to be chosen by the clients.
+
+103
+00:04:38.430 --> 00:04:41.280
+So the client is asking for a DNS request
+
+104
+00:04:41.280 --> 00:04:43.590
+and then gets multiple values as a result.
+
+105
+00:04:43.590 --> 00:04:46.530
+The client is going to choose a random value.
+
+106
+00:04:46.530 --> 00:04:47.400
+Okay, that's very simple.
+
+107
+00:04:47.400 --> 00:04:48.960
+Next, we have Weighted.
+
+108
+00:04:48.960 --> 00:04:50.340
+So, Weighted gives you the ability
+
+109
+00:04:50.340 --> 00:04:51.960
+to control the percentage of the request
+
+110
+00:04:51.960 --> 00:04:54.000
+that go to a specific resource.
+
+111
+00:04:54.000 --> 00:04:54.833
+So in this example,
+
+112
+00:04:54.833 --> 00:04:59.130
+we have 70% of the request going to my first EC2 instance
+
+113
+00:04:59.130 --> 00:05:01.770
+then 20% to my second EC2 instance
+
+114
+00:05:01.770 --> 00:05:04.350
+and then 10% to my last EC2 instance.
+
+115
+00:05:04.350 --> 00:05:05.670
+So, this kind of record
+
+116
+00:05:05.670 --> 00:05:07.500
+can be associated with the health checks
+
+117
+00:05:07.500 --> 00:05:09.930
+to make sure that we don't send traffic
+
+118
+00:05:09.930 --> 00:05:11.880
+to a resource that is not healthy.
+
+119
+00:05:11.880 --> 00:05:14.340
+The use cases for Weighted records is around
+
+120
+00:05:14.340 --> 00:05:16.020
+load balancing between regions,
+
+121
+00:05:16.020 --> 00:05:18.220
+testing the application versions, and so on.
+
+122
+00:05:19.590 --> 00:05:21.960
+Then we have latency based records
+
+123
+00:05:21.960 --> 00:05:23.610
+which is to redirect resources
+
+124
+00:05:23.610 --> 00:05:26.040
+that have the least latency close to us
+
+125
+00:05:26.040 --> 00:05:29.130
+which is super helpful when latency is a user priority.
+
+126
+00:05:29.130 --> 00:05:33.780
+And the latency is going to be defined on the traffic
+
+127
+00:05:33.780 --> 00:05:37.260
+between the users and the specified AWS region.
+
+128
+00:05:37.260 --> 00:05:39.390
+So, it's further possible for Germany users
+
+129
+00:05:39.390 --> 00:05:42.330
+to be directed to the US, if that's the lowest latency,
+
+130
+00:05:42.330 --> 00:05:44.460
+and for example, your app is in Asia.
+
+131
+00:05:44.460 --> 00:05:46.680
+So, these kind of records can be associated
+
+132
+00:05:46.680 --> 00:05:47.880
+with health checks as well
+
+133
+00:05:47.880 --> 00:05:50.130
+which gives a failover capability.
+
+134
+00:05:50.130 --> 00:05:51.960
+So if we have, for example, two ALB,
+
+135
+00:05:51.960 --> 00:05:55.050
+one in US-East-1 and one in AP-Southeast-1,
+
+136
+00:05:55.050 --> 00:05:56.760
+and our users all around the world
+
+137
+00:05:56.760 --> 00:06:00.090
+it's very possible for these users to go to US-East-1
+
+138
+00:06:00.090 --> 00:06:02.673
+and for the others to go to AP-Southeast-1.
+
+139
+00:06:03.930 --> 00:06:07.020
+Next we have Failover for active-passive type of record.
+
+140
+00:06:07.020 --> 00:06:08.820
+So, we have a primary record
+
+141
+00:06:08.820 --> 00:06:11.970
+and then a secondary disaster recovery record.
+
+142
+00:06:11.970 --> 00:06:13.920
+And so there's going to be a health check performed
+
+143
+00:06:13.920 --> 00:06:15.240
+on the primary one.
+
+144
+00:06:15.240 --> 00:06:17.850
+And then in case the primary fails
+
+145
+00:06:17.850 --> 00:06:21.630
+then we are going to have a failover to the second instance.
+
+146
+00:06:21.630 --> 00:06:23.970
+And this will be characterized by DNS request
+
+147
+00:06:23.970 --> 00:06:27.000
+that either reply with the first EC2 instance
+
+148
+00:06:27.000 --> 00:06:28.803
+or the second EC2 instance.
+
+149
+00:06:29.760 --> 00:06:30.780
+Then we have Geolocation
+
+150
+00:06:30.780 --> 00:06:32.520
+which is different from latency based,
+
+151
+00:06:32.520 --> 00:06:35.610
+so this is to route based on the user location itself.
+
+152
+00:06:35.610 --> 00:06:38.250
+So you can specify by continent, by country
+
+153
+00:06:38.250 --> 00:06:39.960
+or even by US states.
+
+154
+00:06:39.960 --> 00:06:41.100
+And if you have overlapping
+
+155
+00:06:41.100 --> 00:06:43.980
+then the most precise location is going to be selected.
+
+156
+00:06:43.980 --> 00:06:45.360
+So you should create a default record
+
+157
+00:06:45.360 --> 00:06:47.310
+in case you have no match on location.
+
+158
+00:06:47.310 --> 00:06:50.550
+And then use case for geolocation is to be
+
+159
+00:06:50.550 --> 00:06:53.940
+doing website localization, to restrict content distribution
+
+160
+00:06:53.940 --> 00:06:55.350
+or load balancing.
+
+161
+00:06:55.350 --> 00:06:57.480
+And these can be associated with health checks, so,
+
+162
+00:06:57.480 --> 00:06:59.910
+here's an example, we have a map of Europe right here,
+
+163
+00:06:59.910 --> 00:07:02.970
+and some Germany users could be sent to this record,
+
+164
+00:07:02.970 --> 00:07:05.610
+French users could be sent to that record
+
+165
+00:07:05.610 --> 00:07:07.140
+and then anyone else could be sent
+
+166
+00:07:07.140 --> 00:07:09.243
+to the default IP right here.
+
+167
+00:07:10.530 --> 00:07:12.480
+Another one is called Geoproximity
+
+168
+00:07:12.480 --> 00:07:13.920
+which is to route to resources
+
+169
+00:07:13.920 --> 00:07:17.730
+based on the geographic location of users and resources.
+
+170
+00:07:17.730 --> 00:07:19.740
+And thanks to something called the bias
+
+171
+00:07:19.740 --> 00:07:23.700
+you can shift traffic to some resources more or less
+
+172
+00:07:23.700 --> 00:07:25.350
+based on that number.
+
+173
+00:07:25.350 --> 00:07:28.140
+So, you change the specify, you change the bias value
+
+174
+00:07:28.140 --> 00:07:29.940
+to expand traffic to resource,
+
+175
+00:07:29.940 --> 00:07:32.340
+you're going to increase it from one to 99
+
+176
+00:07:32.340 --> 00:07:34.650
+or to shrink you're going to decrease it
+
+177
+00:07:34.650 --> 00:07:37.140
+from minus one to minus 99
+
+178
+00:07:37.140 --> 00:07:39.180
+which is going to send less traffic to the resource.
+
+179
+00:07:39.180 --> 00:07:41.550
+And the resource can be an AWS resource
+
+180
+00:07:41.550 --> 00:07:43.530
+or it could be a non-AWS resource,
+
+181
+00:07:43.530 --> 00:07:45.120
+and in that case, we need to specify
+
+182
+00:07:45.120 --> 00:07:48.420
+a latitude and longitude for the Geoproximity
+
+183
+00:07:48.420 --> 00:07:50.970
+and for it to be effective and to be set up,
+
+184
+00:07:50.970 --> 00:07:55.200
+you need to use the traffic flow feature of Route 53.
+
+185
+00:07:55.200 --> 00:07:57.390
+So, it's better to see where the diagram, how that works.
+
+186
+00:07:57.390 --> 00:08:01.740
+So, if you have US-East-1 and US-East-1
+
+187
+00:08:01.740 --> 00:08:03.960
+then they're going to be bias zero zero,
+
+188
+00:08:03.960 --> 00:08:06.840
+so you're going to get a line in the center of the US
+
+189
+00:08:06.840 --> 00:08:07.830
+geographically.
+
+190
+00:08:07.830 --> 00:08:10.020
+And so half the users are gonna go to West
+
+191
+00:08:10.020 --> 00:08:12.720
+and half the users are gonna go to East.
+
+192
+00:08:12.720 --> 00:08:16.140
+But in case you increase the bias in US-East-1
+
+193
+00:08:16.140 --> 00:08:18.480
+and for example, you set a bias to something much higher,
+
+194
+00:08:18.480 --> 00:08:19.800
+say 50,
+
+195
+00:08:19.800 --> 00:08:22.800
+then if you leave it to zero on US-West-1
+
+196
+00:08:22.800 --> 00:08:25.410
+then the line is going to be closer to US-West-1
+
+197
+00:08:25.410 --> 00:08:28.140
+and therefore more users to the right of that line
+
+198
+00:08:28.140 --> 00:08:30.060
+are gonna go to US-East-1,
+
+199
+00:08:30.060 --> 00:08:33.150
+and the other ones are gonna go still to US-West-1.
+
+200
+00:08:33.150 --> 00:08:35.340
+So with the bias you're able to really
+
+201
+00:08:35.340 --> 00:08:38.730
+manipulate how much proximity you want users to be
+
+202
+00:08:38.730 --> 00:08:40.530
+next to locations.
+
+203
+00:08:40.530 --> 00:08:42.270
+Which brings onto Traffic flow.
+
+204
+00:08:42.270 --> 00:08:45.660
+So traffic flow is a feature of Route 53
+
+205
+00:08:45.660 --> 00:08:47.700
+which allows you to easily create and maintain
+
+206
+00:08:47.700 --> 00:08:49.860
+very complex and large records
+
+207
+00:08:49.860 --> 00:08:52.320
+as well as Geoproximity records.
+
+208
+00:08:52.320 --> 00:08:54.870
+So it's a visual editor and it gives you
+
+209
+00:08:54.870 --> 00:08:57.630
+complex routing decision trees available to you
+
+210
+00:08:57.630 --> 00:08:59.160
+that you can set up easily.
+
+211
+00:08:59.160 --> 00:09:03.180
+And these configurations are saved as Traffic Flow Policies,
+
+212
+00:09:03.180 --> 00:09:04.830
+and they can even be applied
+
+213
+00:09:04.830 --> 00:09:06.810
+to different hosted zones if it needs to,
+
+214
+00:09:06.810 --> 00:09:08.343
+and they support versioning.
+
+215
+00:09:10.290 --> 00:09:12.060
+Finally, we have one last type of record
+
+216
+00:09:12.060 --> 00:09:13.560
+called the Multi-Value record
+
+217
+00:09:13.560 --> 00:09:16.800
+which is to use when routing to multiple resources,
+
+218
+00:09:16.800 --> 00:09:19.320
+and then the Route 53 is going to return
+
+219
+00:09:19.320 --> 00:09:20.820
+multiple values and resources.
+
+220
+00:09:20.820 --> 00:09:24.060
+But because this can be associated with a health check
+
+221
+00:09:24.060 --> 00:09:26.280
+we can only make sure that the return values
+
+222
+00:09:26.280 --> 00:09:28.350
+are full healthy resources.
+
+223
+00:09:28.350 --> 00:09:31.530
+So the Multi-Value returns up to eight healthy records
+
+224
+00:09:31.530 --> 00:09:33.060
+at each query.
+
+225
+00:09:33.060 --> 00:09:34.980
+And a Multi-Value is a good balancer,
+
+226
+00:09:34.980 --> 00:09:38.520
+but it's not a substitute for having a load balancer.
+
+227
+00:09:38.520 --> 00:09:39.390
+So here's an example,
+
+228
+00:09:39.390 --> 00:09:44.390
+We can set up a multi A record to set two multiple IPs,
+
+229
+00:09:44.880 --> 00:09:46.050
+and then if they're all healthy
+
+230
+00:09:46.050 --> 00:09:49.080
+then they will all be returned back to the clients.
+
+231
+00:09:49.080 --> 00:09:51.240
+So now let's talk about another routing policy
+
+232
+00:09:51.240 --> 00:09:52.980
+called the IP-based routing
+
+233
+00:09:52.980 --> 00:09:54.870
+which is very intuitive to think about
+
+234
+00:09:54.870 --> 00:09:56.700
+because you're going to define the routing
+
+235
+00:09:56.700 --> 00:09:59.220
+based on the client IP addresses.
+
+236
+00:09:59.220 --> 00:10:02.340
+In Route 53, you're going to define a list of CIDRs,
+
+237
+00:10:02.340 --> 00:10:04.560
+they are IP ranges for your clients.
+
+238
+00:10:04.560 --> 00:10:07.080
+And you're going to say based on the CIDR
+
+239
+00:10:07.080 --> 00:10:10.530
+which location the traffic should be sent to.
+
+240
+00:10:10.530 --> 00:10:12.570
+So the use cases will be to optimize performance
+
+241
+00:10:12.570 --> 00:10:14.250
+because you know the IP ahead of time
+
+242
+00:10:14.250 --> 00:10:15.510
+or to reduce network costs
+
+243
+00:10:15.510 --> 00:10:18.210
+because you know where the IP is are coming from.
+
+244
+00:10:18.210 --> 00:10:20.070
+So, an example is that if you know
+
+245
+00:10:20.070 --> 00:10:23.370
+that you have a specific internet provider and they have,
+
+246
+00:10:23.370 --> 00:10:26.100
+they are using a specific CIDR of IP addresses.
+
+247
+00:10:26.100 --> 00:10:28.380
+You can route them to a specific endpoint
+
+248
+00:10:28.380 --> 00:10:29.880
+thanks to this strategy.
+
+249
+00:10:29.880 --> 00:10:31.080
+So let's go for an example,
+
+250
+00:10:31.080 --> 00:10:34.740
+in Route 53 I'm going to define two locations
+
+251
+00:10:34.740 --> 00:10:36.660
+with two different CIDR blocks.
+
+252
+00:10:36.660 --> 00:10:38.700
+As you can see, one start with 203
+
+253
+00:10:38.700 --> 00:10:40.800
+and the other one start with 200.
+
+254
+00:10:40.800 --> 00:10:42.960
+And the defined IP ranges.
+
+255
+00:10:42.960 --> 00:10:45.240
+Now, we are going to link these locations
+
+256
+00:10:45.240 --> 00:10:46.350
+to a specific record.
+
+257
+00:10:46.350 --> 00:10:49.680
+So for example.com, we're going to have location one,
+
+258
+00:10:49.680 --> 00:10:53.850
+so the first CIDR block to send to the value 1,2,3,4,
+
+259
+00:10:53.850 --> 00:10:57.450
+and the second location, the block CIDR number two
+
+260
+00:10:57.450 --> 00:10:59.160
+to send to 5,6,7,8,
+
+261
+00:10:59.160 --> 00:11:03.420
+and these represents the public IP of two EC2 instances.
+
+262
+00:11:03.420 --> 00:11:04.380
+Now, as you would expect,
+
+263
+00:11:04.380 --> 00:11:07.230
+if a user comes in with a specific IP
+
+264
+00:11:07.230 --> 00:11:09.930
+that is part of the location one CIDR block,
+
+265
+00:11:09.930 --> 00:11:12.660
+they will be directed to the first EC2 instance
+
+266
+00:11:12.660 --> 00:11:14.970
+of IP 1,2,3,4.
+
+267
+00:11:14.970 --> 00:11:17.760
+And the user B with a second IP address
+
+268
+00:11:17.760 --> 00:11:19.950
+that belongs to the location two,
+
+269
+00:11:19.950 --> 00:11:24.000
+will be redirected and will have a DNS query response
+
+270
+00:11:24.000 --> 00:11:28.500
+to the EC2 instance of IP 5,6,7,8.
+
+271
+00:11:28.500 --> 00:11:31.440
+So that's it for the basics of Route 53,
+
+272
+00:11:31.440 --> 00:11:33.480
+I hope there is nothing new for you,
+
+273
+00:11:33.480 --> 00:11:35.430
+and I will see you in the next lecture.
+

@@ -1,0 +1,586 @@
+WEBVTT
+
+1
+00:00:00.240 --> 00:00:03.150
+<v Stephane>Next we have WAF, the Web Application Firewall,</v>
+
+2
+00:00:03.150 --> 00:00:04.920
+which allows you to protect your web applications
+
+3
+00:00:04.920 --> 00:00:07.740
+from common web exploits at the layer seven.
+
+4
+00:00:07.740 --> 00:00:09.570
+So this is the HTTP layer.
+
+5
+00:00:09.570 --> 00:00:11.850
+You can deploy it on the application load balancer
+
+6
+00:00:11.850 --> 00:00:13.350
+to get localized rules.
+
+7
+00:00:13.350 --> 00:00:15.720
+You can deploy it on the API Gateway
+
+8
+00:00:15.720 --> 00:00:19.290
+to get rules running at the regional or edge level.
+
+9
+00:00:19.290 --> 00:00:20.550
+You can deploy it on CloudFront.
+
+10
+00:00:20.550 --> 00:00:21.930
+And these rules are going to be
+
+11
+00:00:21.930 --> 00:00:24.480
+running globally on all edge locations
+
+12
+00:00:24.480 --> 00:00:26.940
+where CloudFront is, and this could be used for example,
+
+13
+00:00:26.940 --> 00:00:29.340
+if you wanted to have a web application firewall
+
+14
+00:00:29.340 --> 00:00:32.610
+for your classic load balancer, your EC2 instances,
+
+15
+00:00:32.610 --> 00:00:34.620
+custom origins, or S3 websites,
+
+16
+00:00:34.620 --> 00:00:38.010
+you would have CloudFront then deploy WAF on CloudFront.
+
+17
+00:00:38.010 --> 00:00:39.900
+You can also deploy it on AppSync,
+
+18
+00:00:39.900 --> 00:00:41.220
+and this is going to allow you
+
+19
+00:00:41.220 --> 00:00:44.190
+to protect your GraphQL APIs directly.
+
+20
+00:00:44.190 --> 00:00:47.160
+So remember that WAF is not used for DDoS protection.
+
+21
+00:00:47.160 --> 00:00:48.360
+For this we have SHIELD.
+
+22
+00:00:48.360 --> 00:00:52.140
+WAF is used for layer seven type of exploits.
+
+23
+00:00:52.140 --> 00:00:54.450
+So for this you're going to define web ACL.
+
+24
+00:00:54.450 --> 00:00:56.700
+So the Web Access Control List,
+
+25
+00:00:56.700 --> 00:00:59.850
+and the rules can include IP addresses filtering,
+
+26
+00:00:59.850 --> 00:01:02.340
+HTTP headers, HTTP body, URL strings.
+
+27
+00:01:02.340 --> 00:01:04.200
+You can have common attacks protections
+
+28
+00:01:04.200 --> 00:01:08.640
+such as SQL injection, or cross-site scripting, XXS.
+
+29
+00:01:08.640 --> 00:01:10.537
+You can have size constraints to say,
+
+30
+00:01:10.537 --> 00:01:13.920
+"Hey, any request bigger than 20 megabytes I don't want."
+
+31
+00:01:13.920 --> 00:01:15.300
+You can have geomatch to block
+
+32
+00:01:15.300 --> 00:01:17.220
+or allow a specific country,
+
+33
+00:01:17.220 --> 00:01:18.780
+and you can have rate-based rules.
+
+34
+00:01:18.780 --> 00:01:20.737
+So to count occurrences of events and say,
+
+35
+00:01:20.737 --> 00:01:23.100
+"Hey, if this happened more than five seconds,
+
+36
+00:01:23.100 --> 00:01:26.550
+five times per second, this looks fishy, block it."
+
+37
+00:01:26.550 --> 00:01:28.590
+And the rule actions can be,
+
+38
+00:01:28.590 --> 00:01:29.580
+allow or block,
+
+39
+00:01:29.580 --> 00:01:32.010
+as we know to allow or to block traffic.
+
+40
+00:01:32.010 --> 00:01:33.960
+They could be count, and that's an interesting one.
+
+41
+00:01:33.960 --> 00:01:37.320
+It is to see if a rule would be in effect or not.
+
+42
+00:01:37.320 --> 00:01:40.110
+So this allows you to detect false positives ahead of time.
+
+43
+00:01:40.110 --> 00:01:41.850
+So you would just counter occurrences,
+
+44
+00:01:41.850 --> 00:01:44.550
+and analyze the result of a count operation,
+
+45
+00:01:44.550 --> 00:01:46.650
+but the traffic is still allowed through.
+
+46
+00:01:46.650 --> 00:01:49.230
+So you do counts before Block, or CAPTCHA,
+
+47
+00:01:49.230 --> 00:01:50.880
+or silent challenges to make sure
+
+48
+00:01:50.880 --> 00:01:52.980
+that the traffic is not coming from bots
+
+49
+00:01:52.980 --> 00:01:54.600
+but actually from humans.
+
+50
+00:01:54.600 --> 00:01:57.030
+So something super important for you to know is
+
+51
+00:01:57.030 --> 00:01:58.620
+that WAF has managed rules,
+
+52
+00:01:58.620 --> 00:01:59.640
+and you need to know it for the exam.
+
+53
+00:01:59.640 --> 00:02:02.460
+So there are over 190 managed rules,
+
+54
+00:02:02.460 --> 00:02:04.470
+and I'll give you some of the most important.
+
+55
+00:02:04.470 --> 00:02:07.560
+They are ready to use manage rules that will be from AWS,
+
+56
+00:02:07.560 --> 00:02:09.120
+or the marketplace sellers,
+
+57
+00:02:09.120 --> 00:02:12.390
+and they'll allow you to just power up WAF very quickly.
+
+58
+00:02:12.390 --> 00:02:13.890
+So you get baseline rule groups,
+
+59
+00:02:13.890 --> 00:02:16.410
+which is general protection from common threats,
+
+60
+00:02:16.410 --> 00:02:19.500
+and this include the managed rule, common rule set,
+
+61
+00:02:19.500 --> 00:02:21.900
+the managed rules admin protection rule set and so on.
+
+62
+00:02:21.900 --> 00:02:24.510
+So they're just baseline for common protection.
+
+63
+00:02:24.510 --> 00:02:27.150
+Then you have use-case specific rule groups.
+
+64
+00:02:27.150 --> 00:02:30.090
+And they give you protection for many use cases,
+
+65
+00:02:30.090 --> 00:02:33.960
+such as the SQL rule sets, the Windows rule sets.
+
+66
+00:02:33.960 --> 00:02:36.030
+The PHP rule sets, the WordPress rule sets,
+
+67
+00:02:36.030 --> 00:02:39.000
+to protect this kind of application.
+
+68
+00:02:39.000 --> 00:02:41.550
+Then you get IP reputation rule groups,
+
+69
+00:02:41.550 --> 00:02:45.120
+and this is to block request based on the source IP.
+
+70
+00:02:45.120 --> 00:02:47.460
+So for example, you have a malicious IP,
+
+71
+00:02:47.460 --> 00:02:49.260
+and there is this very important rule called
+
+72
+00:02:49.260 --> 00:02:52.440
+the Managed Rules Amazon IP Reputation List,
+
+73
+00:02:52.440 --> 00:02:55.470
+which is a list of all the IPs that are trusted by AWS,
+
+74
+00:02:55.470 --> 00:02:57.300
+and those that are not trusted by AWS.
+
+75
+00:02:57.300 --> 00:03:00.420
+And this can help you block spams very quickly.
+
+76
+00:03:00.420 --> 00:03:04.500
+You can also get anonymous IP list as a rule, and so on.
+
+77
+00:03:04.500 --> 00:03:07.950
+And finally there's block bot control manage rule group
+
+78
+00:03:07.950 --> 00:03:10.110
+to block and manage requests from bots.
+
+79
+00:03:10.110 --> 00:03:11.220
+So this includes, for example,
+
+80
+00:03:11.220 --> 00:03:14.370
+the AWS manage rule bots control rule sets.
+
+81
+00:03:14.370 --> 00:03:15.203
+So as you can see,
+
+82
+00:03:15.203 --> 00:03:18.180
+we have four kinds of managed rule buckets,
+
+83
+00:03:18.180 --> 00:03:21.360
+baseline use case specific IP reputation and above control.
+
+84
+00:03:21.360 --> 00:03:24.000
+And the thing that can come up in exam is one of these,
+
+85
+00:03:24.000 --> 00:03:26.400
+including the Amazon IP Reputation List.
+
+86
+00:03:26.400 --> 00:03:28.530
+Okay, so what about logging for WAF?
+
+87
+00:03:28.530 --> 00:03:30.660
+This is also something that can come up in the exam.
+
+88
+00:03:30.660 --> 00:03:34.170
+So while WAF can send logs to Amazon CloudWatch log groups,
+
+89
+00:03:34.170 --> 00:03:37.980
+and you get a debit of five megabytes per second maximum,
+
+90
+00:03:37.980 --> 00:03:39.960
+you can also send it to Amazon S3 bucket,
+
+91
+00:03:39.960 --> 00:03:42.990
+and the logs will be sent every five minutes.
+
+92
+00:03:42.990 --> 00:03:44.790
+Or if you want to have more control,
+
+93
+00:03:44.790 --> 00:03:46.520
+well you can send it directly from WAF
+
+94
+00:03:46.520 --> 00:03:47.910
+to Kinesis Data Firehose,
+
+95
+00:03:47.910 --> 00:03:51.630
+in which case you are only limited by the Firehose quotas.
+
+96
+00:03:51.630 --> 00:03:52.560
+Well, why would you do this?
+
+97
+00:03:52.560 --> 00:03:54.780
+Well, for example, if you have very high traffic,
+
+98
+00:03:54.780 --> 00:03:56.880
+very high logging capacity requirements,
+
+99
+00:03:56.880 --> 00:03:59.670
+then using KDF could be a very good thing.
+
+100
+00:03:59.670 --> 00:04:01.170
+And then from Kinesis Data Firehose,
+
+101
+00:04:01.170 --> 00:04:04.680
+you can send it to any destination supported by Kinesis,
+
+102
+00:04:04.680 --> 00:04:08.943
+such as Amazon S3, Redshift, OpenSearch, and so on.
+
+103
+00:04:09.990 --> 00:04:13.320
+So using WAF, there is a solution architecture, you know,
+
+104
+00:04:13.320 --> 00:04:16.080
+which is to enhance CloudFront Origin Security.
+
+105
+00:04:16.080 --> 00:04:18.300
+So let's say we have CloudFront in front
+
+106
+00:04:18.300 --> 00:04:21.870
+of an application balancer talking to EC2 instances,
+
+107
+00:04:21.870 --> 00:04:23.010
+and we want to make sure
+
+108
+00:04:23.010 --> 00:04:26.880
+that only the traffic coming from Amazon CloudFront is
+
+109
+00:04:26.880 --> 00:04:29.220
+allowed into the application balancer,
+
+110
+00:04:29.220 --> 00:04:31.170
+and not, for example, site traffic.
+
+111
+00:04:31.170 --> 00:04:35.100
+If we were to have the URL of the application balancer.
+
+112
+00:04:35.100 --> 00:04:36.390
+So how would we do this?
+
+113
+00:04:36.390 --> 00:04:38.280
+Well, using WAF, we can already set up
+
+114
+00:04:38.280 --> 00:04:41.400
+some web ACLs on the CloudFront level.
+
+115
+00:04:41.400 --> 00:04:43.650
+This is not going to help us with the application balancer,
+
+116
+00:04:43.650 --> 00:04:45.450
+but at least we control some level
+
+117
+00:04:45.450 --> 00:04:48.180
+of security on the clients.
+
+118
+00:04:48.180 --> 00:04:50.430
+Okay, next, what's going to happen is that
+
+119
+00:04:50.430 --> 00:04:51.750
+on Amazon CloudFront,
+
+120
+00:04:51.750 --> 00:04:55.530
+you can create what's called a custom HTP header.
+
+121
+00:04:55.530 --> 00:04:59.310
+And you have it for example, set to X Origin Verify
+
+122
+00:04:59.310 --> 00:05:01.380
+and then a secret string.
+
+123
+00:05:01.380 --> 00:05:04.140
+And so this will be added to every request that goes
+
+124
+00:05:04.140 --> 00:05:06.030
+through Amazon CloudFront.
+
+125
+00:05:06.030 --> 00:05:08.880
+The result of which is that we can also set up WAF
+
+126
+00:05:08.880 --> 00:05:11.170
+on the application load balancer,
+
+127
+00:05:11.170 --> 00:05:14.700
+and we create a filtering rule that says that any traffic
+
+128
+00:05:14.700 --> 00:05:18.990
+that has this header, the X Origin verify
+
+129
+00:05:18.990 --> 00:05:20.670
+and the value will be allowed
+
+130
+00:05:20.670 --> 00:05:23.370
+and anything else will be rejected.
+
+131
+00:05:23.370 --> 00:05:24.600
+So that means that someone,
+
+132
+00:05:24.600 --> 00:05:28.170
+a user trying to access directly the ALB.
+
+133
+00:05:28.170 --> 00:05:30.810
+Of course they don't know about the fact you're using custom
+
+134
+00:05:30.810 --> 00:05:33.060
+HTP headers because they're hidden from the users,
+
+135
+00:05:33.060 --> 00:05:35.610
+therefore they cannot access the ALB
+
+136
+00:05:35.610 --> 00:05:39.900
+because they will be blocked by WAF directly on top of it.
+
+137
+00:05:39.900 --> 00:05:43.470
+You can set up other rotation of this HTP header
+
+138
+00:05:43.470 --> 00:05:45.390
+to have maximum security.
+
+139
+00:05:45.390 --> 00:05:48.000
+So using Secrets Manager, we can have a secret
+
+140
+00:05:48.000 --> 00:05:51.300
+that is automatically rotated using a Lambda function.
+
+141
+00:05:51.300 --> 00:05:54.450
+And the Lambda function will update once in a while,
+
+142
+00:05:54.450 --> 00:05:58.920
+the custom HTP header value with a new value in CloudFront,
+
+143
+00:05:58.920 --> 00:06:02.943
+and of course update the filtering rule in AWS WAF.
+
+144
+00:06:04.290 --> 00:06:05.430
+So that's it for this lecture.
+
+145
+00:06:05.430 --> 00:06:06.263
+I hope you liked it,
+
+146
+00:06:06.263 --> 00:06:08.643
+and I will see you in the next lecture.
+

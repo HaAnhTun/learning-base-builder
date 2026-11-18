@@ -106,6 +106,10 @@ class UdemyClient:
             results.extend(data.get("results", []))
         return results
 
+    def check_token(self) -> None:
+        """One cheap authenticated call; raises AuthError when Udemy rejects the token."""
+        self._get_json("/users/me/subscribed-courses/", {"page_size": "1"})
+
     def list_courses(self) -> list[dict]:
         return self._paginate(
             "/users/me/subscribed-courses/",

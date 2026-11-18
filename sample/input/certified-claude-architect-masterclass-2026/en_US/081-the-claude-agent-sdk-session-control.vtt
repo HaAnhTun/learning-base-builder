@@ -1,0 +1,250 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.679
+This lesson walks through the Cloud Agent SDK, formerly called the Cloud Code SDK,
+
+2
+00:00:06.480 --> 00:00:12.000
+the programmatic interface for controlling sessions from your own code. We'll look at
+
+3
+00:00:12.000 --> 00:00:17.840
+what it can provide, how to create and manage sessions, how to stream output and tool events,
+
+4
+00:00:17.840 --> 00:00:22.079
+and when to pick it over a direct API call. Let's get into it.
+
+5
+00:00:23.120 --> 00:00:28.959
+What changes when the thing driving a Cloud Code session isn't a person at a keyboard? That's what
+
+6
+00:00:28.959 --> 00:00:35.599
+the Cloud Agent SDK is for. It used to be called the Cloud Code SDK, and it's the programmatic
+
+7
+00:00:35.599 --> 00:00:41.200
+interface that lets you integrate Cloud Code into custom applications, scripts, and pipelines.
+
+8
+00:00:41.200 --> 00:00:47.360
+Instead of typing commands into a terminal, you call SDK methods from your code to start sessions,
+
+9
+00:00:47.360 --> 00:00:53.360
+inject prompts, and handle output. A programmatic session is one you create and manage that way
+
+10
+00:00:53.360 --> 00:00:59.680
+rather than through the interactive CLI. Your application decides when sessions start and stop
+
+11
+00:00:59.680 --> 00:01:05.360
+and how their output is processed. Session streaming is the capability to receive tool
+
+12
+00:01:05.360 --> 00:01:11.040
+call events and output incrementally as the session runs, giving you visibility into every
+
+13
+00:01:11.040 --> 00:01:17.680
+step without waiting for a complete response. The SDK and the command line interface expose
+
+14
+00:01:17.680 --> 00:01:24.480
+the same underlying Cloud Code capabilities. The difference is who or what is driving the session.
+
+15
+00:01:24.480 --> 00:01:30.720
+With the CLI, a developer types commands into a terminal and reads results interactively. That
+
+16
+00:01:30.720 --> 00:01:37.120
+works well for one-off tasks and exploratory work. With the SDK, your code calls methods,
+
+17
+00:01:37.120 --> 00:01:43.360
+passes prompts programmatically, and processes results however your application needs. There's
+
+18
+00:01:43.360 --> 00:01:49.760
+no terminal involved at all. Use the CLI when a human is in the loop and driving the work.
+
+19
+00:01:49.760 --> 00:01:54.879
+Switch to the SDK when your code needs to be in the driver's seat, whether that's a script, a
+
+20
+00:01:54.879 --> 00:02:01.120
+pipeline step, or a long-running background service. This is the decision that trips up a lot of
+
+21
+00:02:01.120 --> 00:02:07.919
+developers. When do you use the SDK versus calling the Cloud API directly? The SDK is for agentic
+
+22
+00:02:07.919 --> 00:02:14.080
+sessions. It manages the full agent loop, meaning multi-step tool use, file edits, shell commands,
+
+23
+00:02:14.080 --> 00:02:20.399
+and streaming output. You give it a prompt and it handles everything in between. The direct API is
+
+24
+00:02:20.399 --> 00:02:26.320
+for model calls. Send a prompt, get a completion. There's no session state and no built-in tool
+
+25
+00:02:26.320 --> 00:02:32.320
+orchestration unless you build it yourself. If you need the agent loop or you need real-time visibility
+
+26
+00:02:32.320 --> 00:02:38.000
+into what the agent is doing, use the SDK. If you need a single model call or you're building
+
+27
+00:02:38.000 --> 00:02:44.320
+your own agent framework and want to own the orchestration, use the API. Creating a session
+
+28
+00:02:44.320 --> 00:02:49.279
+programmatically starts with instantiating a session object in your code. You configure it
+
+29
+00:02:49.279 --> 00:02:54.960
+with the model you want to use, the tool categories you're allowing, the working directory, and any
+
+30
+00:02:54.960 --> 00:03:01.839
+environment variables the session needs to access. Once configured, you pass prompts as plain strings.
+
+31
+00:03:01.919 --> 00:03:07.919
+There's no terminal, no interactive input, no manual step. The SDK handles the session loop
+
+32
+00:03:07.919 --> 00:03:13.279
+from there. This approach makes it straightforward to embed cloud code in Python scripts,
+
+33
+00:03:13.279 --> 00:03:20.720
+Node.js services, CI runners, or any other runtime environment that can call the SDK libraries.
+
+34
+00:03:20.720 --> 00:03:26.559
+The session behaves the same way regardless of how it's invoked. Once a session is running, you can
+
+35
+00:03:26.559 --> 00:03:32.000
+shape its behavior by injecting context and instructions at different points. At creation time,
+
+36
+00:03:32.000 --> 00:03:38.160
+you pass a system prompt to establish role, tone, and behavioral constraints before any user turn
+
+37
+00:03:38.160 --> 00:03:43.759
+begins. You can also inject file contents or directory listings, so the session starts with
+
+38
+00:03:43.759 --> 00:03:50.559
+relevant code-based knowledge already loaded. Tool permissions are set at creation too, letting you
+
+39
+00:03:50.559 --> 00:03:56.960
+explicitly allow or restrict read, write, and shell access to enforce safety boundaries.
+
+40
+00:03:56.960 --> 00:04:02.639
+And you can append follow-up prompts mid-session to redirect the agent without restarting,
+
+41
+00:04:02.639 --> 00:04:09.279
+so it keeps the context it's already accumulated. Streaming is one of the most useful SDK features
+
+42
+00:04:09.279 --> 00:04:14.639
+for production applications. Instead of blocking until the session completes, your code receives
+
+43
+00:04:14.639 --> 00:04:20.959
+events as they happen in real time. Tool call events fire each time the agent reads a file,
+
+44
+00:04:20.959 --> 00:04:26.640
+writes output, or runs a shell command. That lets you log exactly what the agent is doing
+
+45
+00:04:26.640 --> 00:04:31.440
+without waiting for the session to finish. Output chunks arrive incrementally,
+
+46
+00:04:31.440 --> 00:04:37.359
+so you can display live progress or pipe results downstream. Error events surface failures
+
+47
+00:04:37.359 --> 00:04:43.760
+immediately, giving your code a chance to react, retry, or alert an operator. For long-running
+
+48
+00:04:43.760 --> 00:04:49.679
+sessions, streaming isn't a nice-to-have. It's the difference between a responsive application
+
+49
+00:04:49.679 --> 00:04:56.640
+and one that hangs silently waiting for a final result. The SDK's primary use case is embedding
+
+50
+00:04:56.640 --> 00:05:03.119
+clawed code capabilities into automated systems your team already owns. Code review bots can
+
+51
+00:05:03.119 --> 00:05:09.519
+trigger SDK sessions when a pull request opens, stream the analysis, and post results directly
+
+52
+00:05:09.519 --> 00:05:14.880
+into GitHub comments without any human intervention. Documentation generators
+
+53
+00:05:14.880 --> 00:05:22.640
+can pass source files into a session and receive updated docs in return. CI and CD pipelines can
+
+54
+00:05:22.640 --> 00:05:29.279
+launch clawed code sessions as explicit pipeline steps, with structured exit codes that let the
+
+55
+00:05:29.279 --> 00:05:35.119
+rest of the pipeline react to what happened. Any workflow that benefits from agentic code
+
+56
+00:05:35.119 --> 00:05:41.200
+understanding but needs to run inside a larger automated system is a strong candidate for SDK
+
+57
+00:05:41.200 --> 00:05:48.799
+integration. The Clawed Agent SDK gives you full programmatic control over agentic sessions,
+
+58
+00:05:48.799 --> 00:05:54.160
+from creation and context injection through streaming output and tool event handling.
+
+59
+00:05:54.799 --> 00:06:00.480
+It runs the whole agent loop for you, which is the line that separates it from a direct API call.
+
+60
+00:06:01.119 --> 00:06:06.640
+Reach for it when your code, not a human, needs to drive a multi-step workflow,
+
+61
+00:06:06.640 --> 00:06:10.799
+and reach for the API when a single completion is all the job requires.
+
+62
+00:06:11.600 --> 00:06:14.480
+That's it for this lesson. I'll see you in the next one.
+

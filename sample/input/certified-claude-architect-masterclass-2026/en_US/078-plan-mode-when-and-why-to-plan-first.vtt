@@ -1,0 +1,278 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.000
+In this lesson, we're looking at plan mode in Cloud Code. Plan mode separates the thinking
+
+2
+00:00:06.000 --> 00:00:12.560
+phase from execution. Before Cloud touches a single file, it produces a structured proposal
+
+3
+00:00:12.560 --> 00:00:18.399
+you can review and approve if you use plan mode. We'll cover when plan mode earns its place,
+
+4
+00:00:18.399 --> 00:00:26.079
+how to trigger it, and what to look for before you say yes. Let's go. Plan mode is a read-only
+
+5
+00:00:26.079 --> 00:00:30.959
+thinking phase. Cloud inspects your code base, reasons about what needs to happen,
+
+6
+00:00:30.959 --> 00:00:36.479
+and hands you an ordered proposal without writing a single file. The approval gate is the checkpoint
+
+7
+00:00:36.479 --> 00:00:42.560
+where you decide whether that proposal is correct. You can accept it, edit it, or reject it outright,
+
+8
+00:00:42.560 --> 00:00:49.119
+and no file writes happen until you pass through. Re-planning is what happens when partial execution
+
+9
+00:00:49.119 --> 00:00:55.439
+exposes something the original proposal got wrong. Cloud regenerates or amends the plan before
+
+10
+00:00:55.439 --> 00:01:00.479
+continuing rather than improvising around the problem. Plan mode, the approval gate,
+
+11
+00:01:00.479 --> 00:01:05.440
+and re-planning together form the backbone of a controlled, reversible workflow.
+
+12
+00:01:06.639 --> 00:01:11.919
+So what does plan mode actually do under the hood? Cloud enters a read-only thinking phase.
+
+13
+00:01:12.559 --> 00:01:18.080
+It explores the code base, reading the files it thinks are relevant, reasons through the task,
+
+14
+00:01:18.080 --> 00:01:23.599
+and produces a structured proposal. That proposal isn't a commitment. It is a draft
+
+15
+00:01:23.599 --> 00:01:29.440
+Cloud is handing to you for review. The proposal includes the steps it plans to take, the files it
+
+16
+00:01:29.440 --> 00:01:35.519
+expects to read or write, and any risks or assumptions it is making explicit. What it
+
+17
+00:01:35.519 --> 00:01:42.080
+doesn't do is touch any of those files. The moment you approve the plan, Cloud exits read-only mode
+
+18
+00:01:42.080 --> 00:01:48.639
+and starts executing. That transition is the key thing to internalize. Thinking and doing
+
+19
+00:01:48.639 --> 00:01:55.440
+are kept separate intentionally. There are two ways to enter plan mode, and both are deliberate.
+
+20
+00:01:55.440 --> 00:02:02.080
+The first is the shift plus tab toggle. Plan mode is a permission mode, and shift plus tab cycles
+
+21
+00:02:02.080 --> 00:02:08.559
+through them. Default, then accept edits, then plan. When you land on plan, the whole session
+
+22
+00:02:08.559 --> 00:02:13.600
+stays in plan mode until you cycle back out. That's what you want when a longer piece of work
+
+23
+00:02:13.600 --> 00:02:20.080
+should stay in review first mode. The second way is the slash plan prefix. You put slash plan in
+
+24
+00:02:20.080 --> 00:02:25.679
+front of a single request, and Cloud plans just that one prompt before returning to whatever mode
+
+25
+00:02:25.679 --> 00:02:31.279
+the session was in. Use the toggle when you want to stay in plan mode. Use the prefix when you want
+
+26
+00:02:31.279 --> 00:02:37.520
+one plan without flipping the session. Here's a framing that clears up a lot of confusion.
+
+27
+00:02:37.520 --> 00:02:43.279
+Plan mode isn't a separate tool you launch. It's one of the permission modes the session can be in.
+
+28
+00:02:43.279 --> 00:02:48.960
+Right alongside the default mode and accept edits mode. That's why both entry paths we just covered
+
+29
+00:02:48.960 --> 00:02:54.320
+are really just ways of setting the permission mode. Shift plus tab cycles through the modes
+
+30
+00:02:54.320 --> 00:02:59.759
+interactively until you land on plan. If you'd rather start a session already in plan mode,
+
+31
+00:02:59.759 --> 00:03:05.839
+you pass permission mode plan on the command line when you launch Cloud. Once you're in plan mode
+
+32
+00:03:05.839 --> 00:03:11.520
+and Cloud hands you a proposal, you have three choices. You can approve it, you can edit it before
+
+33
+00:03:11.520 --> 00:03:17.199
+approving, or you can reject it and ask for a different approach. Approving is the specific
+
+34
+00:03:17.199 --> 00:03:23.279
+action that flips the session out of plan mode and lets Cloud start making changes. What does a
+
+35
+00:03:23.279 --> 00:03:28.639
+well-formed plan actually look like? There are three components you should expect every time.
+
+36
+00:03:28.639 --> 00:03:34.399
+First, ordered steps. The plan should be a numbered sequence of discrete actions, not a paragraph of
+
+37
+00:03:34.399 --> 00:03:41.039
+intentions. Second, files touched. Cloud should name every file it expects to read or write.
+
+38
+00:03:41.039 --> 00:03:47.839
+If a file is missing from this list, ask for it explicitly before approving. Third, risks called
+
+39
+00:03:47.839 --> 00:03:53.600
+out. A good plan flags its own assumptions. Things like, I'm assuming this interface isn't used
+
+40
+00:03:53.600 --> 00:04:00.639
+elsewhere, or this depends on the migration having run. If any are missing, push back and ask Cloud
+
+41
+00:04:00.639 --> 00:04:06.080
+to fill in the gaps. That back and forth is iterative refinement and it costs far less
+
+42
+00:04:06.080 --> 00:04:13.679
+than fixing code afterward. When does plan mode actually earn its keep? Cross-file refactors are
+
+43
+00:04:13.679 --> 00:04:20.079
+the clearest case. If you're renaming a type used across dozens of files, a plan surfaces every
+
+44
+00:04:20.079 --> 00:04:26.720
+touchpoint before execution starts. Schema changes are equally risky. Modifying a database schema
+
+45
+00:04:26.720 --> 00:04:33.359
+or an API contract ripples through models, validators, and tests, and a plan lets you verify
+
+46
+00:04:33.359 --> 00:04:39.200
+that all affected layers are accounted for. Ambiguous requests are the third case. When the
+
+47
+00:04:39.200 --> 00:04:44.880
+right approach is genuinely unclear, plan mode externalizes Cloud's interpretation so you can
+
+48
+00:04:44.880 --> 00:04:50.959
+correct it before any damage is done. And on complex work, plan mode pairing helps. Plan
+
+49
+00:04:50.959 --> 00:04:56.720
+mode combined with a sub-agent that investigates first, or a hook that validates steps before they
+
+50
+00:04:56.720 --> 00:05:03.679
+run, raises reliability further. Plan mode isn't the right tool for every task. There are cases
+
+51
+00:05:03.679 --> 00:05:08.640
+where the overhead of planning adds more friction than it prevents. A single file change with a
+
+52
+00:05:08.640 --> 00:05:15.519
+clear mechanical fix doesn't need a plan. If you're renaming one variable or correcting a typo, just
+
+53
+00:05:15.519 --> 00:05:22.160
+do it. Exploratory work in a REPL, where reversibility is trivially easy, doesn't benefit from a formal
+
+54
+00:05:22.160 --> 00:05:28.720
+proposal either. The useful heuristic is use plan mode when the work is hard to reverse or when it
+
+55
+00:05:28.720 --> 00:05:35.040
+spans multiple modules. If you can undo a mistake in 10 seconds, the approval gate isn't adding much.
+
+56
+00:05:35.040 --> 00:05:41.440
+If a mistake would take 30 minutes to unwind, the plan is worth it. Before you approve any plan,
+
+57
+00:05:41.440 --> 00:05:46.559
+you need to read it critically. This sounds obvious, but approving without reading defeats
+
+58
+00:05:46.640 --> 00:05:52.399
+the whole purpose. There are three things to check. First, does the scope match your intent?
+
+59
+00:05:52.399 --> 00:05:58.480
+Claude sometimes interprets a request more broadly than you meant, and a plan that touches 10 files
+
+60
+00:05:58.480 --> 00:06:05.040
+when you expected two is a signal to narrow the task before proceeding. Second, are the file paths
+
+61
+00:06:05.040 --> 00:06:10.160
+correct for your actual project layout? Claude's assumptions about directory structure aren't
+
+62
+00:06:10.160 --> 00:06:16.799
+always accurate. Third, does the plan flag risks you can already resolve from domain knowledge?
+
+63
+00:06:16.799 --> 00:06:22.399
+Catching a wrong assumption at the review stage costs seconds. Catching it after half the files
+
+64
+00:06:22.399 --> 00:06:30.079
+are rewritten costs much more. People treat plan mode like a politeness setting, a way of asking
+
+65
+00:06:30.079 --> 00:06:35.920
+Claude to explain itself before diving in. It really isn't that. It's a permission boundary,
+
+66
+00:06:35.920 --> 00:06:38.959
+and nothing gets written to disk until you approve the plan.
+
+67
+00:06:39.679 --> 00:06:44.880
+That difference is why the proposal is worth reading carefully. If it's just a courtesy,
+
+68
+00:06:44.880 --> 00:06:50.640
+skimming costs you nothing. If it's the gate, careful review is the whole point.
+
+69
+00:06:51.200 --> 00:06:54.239
+That does it for this lesson. I'll see you in the next video.
+

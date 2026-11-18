@@ -1,0 +1,266 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.880
+Error classification is what happens when an agentic system fails and you need to know what
+
+2
+00:00:04.880 --> 00:00:10.880
+to do next. There are three distinct error categories. Tool errors, reasoning errors,
+
+3
+00:00:10.880 --> 00:00:17.280
+and environment errors. Each requires a different recovery strategy. Misclassifying an error leads
+
+4
+00:00:17.280 --> 00:00:22.159
+to either retrying something that will never succeed or escalating when a simple retry
+
+5
+00:00:22.159 --> 00:00:28.559
+would have worked. An agent fails and the log hands you one line of text. Where that failure
+
+6
+00:00:28.559 --> 00:00:34.959
+originated decides everything you do next. A tool error means an external API or service
+
+7
+00:00:34.959 --> 00:00:41.360
+returned an error, produced unexpected output, or timed out so the failure sits outside the model.
+
+8
+00:00:41.360 --> 00:00:46.479
+A reasoning error means the model produced an incorrect plan, chose the wrong tool,
+
+9
+00:00:46.479 --> 00:00:51.919
+or misread a result even though it had enough information to do better so the failure sits
+
+10
+00:00:51.919 --> 00:00:58.080
+inside the model. An environment error means the infrastructure underneath gave out the network,
+
+11
+00:00:58.159 --> 00:01:04.480
+the database, the file system. The tool's logic is sound and the plan is sound but the environment
+
+12
+00:01:04.480 --> 00:01:10.319
+can't execute the step. Error classification matters because each category has a different
+
+13
+00:01:10.319 --> 00:01:17.199
+correct recovery path. Tool errors may respond to a retry with back off or they may require a fall
+
+14
+00:01:17.199 --> 00:01:23.360
+back to a different tool. Reasoning errors require modifying the prompt or correcting the context
+
+15
+00:01:23.360 --> 00:01:28.480
+provided to the model. A simple retry of a reasoning error just gets you the same wrong
+
+16
+00:01:28.480 --> 00:01:34.080
+answer again. Environment errors are often resolved by waiting and retrying after a delay.
+
+17
+00:01:34.720 --> 00:01:40.800
+Applying the wrong strategy wastes time and resources. Retrying a reasoning error over and
+
+18
+00:01:40.800 --> 00:01:46.879
+over doesn't fix anything. Escalating an environment error when a short wait would have resolved it
+
+19
+00:01:46.879 --> 00:01:52.000
+creates unnecessary noise. Classification first, then recovery. That's the rule.
+
+20
+00:01:53.279 --> 00:01:58.879
+Tool errors split into two subtypes and the distinction is critical. Transient tool errors
+
+21
+00:01:58.879 --> 00:02:04.639
+are retryable. A network timeout, a rate limit hit, a service that's temporarily unavailable.
+
+22
+00:02:05.199 --> 00:02:11.279
+The same call can succeed if you wait and try again. Permanent tool errors aren't retryable.
+
+23
+00:02:11.279 --> 00:02:17.520
+Invalid input, permission denied, resource not found. The call will fail every single time
+
+24
+00:02:17.520 --> 00:02:23.919
+regardless of how many times you retry it. The HTTP status code often signals the category.
+
+25
+00:02:23.919 --> 00:02:30.800
+500 level errors are usually transient.400 level errors are usually permanent. The exam trap is
+
+26
+00:02:30.800 --> 00:02:36.960
+straightforward. Retrying a permanent tool error wastes tokens and delays getting to a fallback
+
+27
+00:02:36.960 --> 00:02:42.720
+or escalation path that might actually work. Acting on that split is a separate design problem.
+
+28
+00:02:42.720 --> 00:02:48.880
+Back off, retry budgets, win to abort, and it gets a lesson of its own. For now, what matters
+
+29
+00:02:48.880 --> 00:02:54.880
+is being able to tell the two apart. Three of the most common transient tool errors are worth
+
+30
+00:02:54.880 --> 00:03:00.720
+naming explicitly. A network timeout means the API didn't respond within the allowed window.
+
+31
+00:03:01.279 --> 00:03:06.559
+It's usually worth retrying with a short wait. A rate limit means you sent too many requests
+
+32
+00:03:06.559 --> 00:03:12.559
+in a given window. The correct response is to wait for the back off period the service specifies,
+
+33
+00:03:12.559 --> 00:03:18.399
+then retry. Temporary unavailability means the service itself is momentarily down.
+
+34
+00:03:18.399 --> 00:03:23.360
+Exponential back off with a maximum retry count is the standard recovery pattern here.
+
+35
+00:03:23.919 --> 00:03:29.600
+All three of these share the same trait. The failure is circumstantial, not structural.
+
+36
+00:03:29.600 --> 00:03:35.520
+The same request sent again after a delay can succeed. That's what makes them transient and
+
+37
+00:03:35.520 --> 00:03:40.320
+distinguishes them from permanent errors that require a fundamentally different response.
+
+38
+00:03:41.520 --> 00:03:46.399
+Reasoning errors are the category where the model itself is the failure point.
+
+39
+00:03:46.399 --> 00:03:51.679
+The tool ran correctly. The infrastructure was available, but the model produced an incorrect
+
+40
+00:03:51.679 --> 00:03:58.080
+plan, selected the wrong tool, or misread a result. The key characteristic, retrying with
+
+41
+00:03:58.080 --> 00:04:04.000
+identical input, will produce the same error. The model state hasn't changed. Its context is the
+
+42
+00:04:04.000 --> 00:04:09.919
+same. It will make the same mistake again. Recovery requires changing something about the input,
+
+43
+00:04:09.919 --> 00:04:15.440
+modifying the prompt, adding missing context, correcting a hallucinated assumption,
+
+44
+00:04:15.440 --> 00:04:21.760
+or escalating to a human when the model can't self-correct. Common causes include ambiguous
+
+45
+00:04:21.760 --> 00:04:27.200
+instructions, missing context about the current state of the world, and the model filling gaps
+
+46
+00:04:27.200 --> 00:04:33.200
+in its context with plausible sounding but incorrect information. Environment errors
+
+47
+00:04:33.200 --> 00:04:39.040
+occupy the layer below both the agent and its tools. The model's plan is correct. The tool's
+
+48
+00:04:39.040 --> 00:04:45.519
+logic is correct. But the environment that the tool depends on is unavailable. A network partition,
+
+49
+00:04:45.519 --> 00:04:50.239
+a database that can't be reached, a file system that returns permission errors.
+
+50
+00:04:50.239 --> 00:04:54.799
+These are environment errors. They're often transient. The network comes back up. The
+
+51
+00:04:54.799 --> 00:05:00.559
+database recovers. The key to classifying them correctly is asking where the failure originated.
+
+52
+00:05:00.559 --> 00:05:05.600
+If the tool itself reported the error, it's a tool error. If the tool couldn't even reach its
+
+53
+00:05:05.600 --> 00:05:10.480
+own dependencies, it's an environment error. That distinction matters because it changes
+
+54
+00:05:10.480 --> 00:05:15.920
+the recovery path. Environment errors often resolve on their own. Tool errors may not.
+
+55
+00:05:17.119 --> 00:05:22.720
+The classification rule is a single question. Where did the failure originate? If the tool
+
+56
+00:05:22.720 --> 00:05:28.720
+or API reported the failure, it's a tool error. If the tool ran but the plan or interpretation
+
+57
+00:05:28.720 --> 00:05:33.440
+was wrong, it's a reasoning error. If the tool couldn't reach its own dependencies,
+
+58
+00:05:33.440 --> 00:05:39.040
+it's an environment error. Each classification leads directly to a recovery strategy.
+
+59
+00:05:39.040 --> 00:05:45.839
+Tool errors check for transient versus permanent, then retry or fall back accordingly. Reasoning
+
+60
+00:05:45.839 --> 00:05:53.600
+errors modify the prompt or context, never just retry blindly. Environment errors wait, retry after
+
+61
+00:05:53.600 --> 00:05:59.359
+a delay, and monitor for resolution. Applying this rule consistently prevents misclassification
+
+62
+00:05:59.359 --> 00:06:05.839
+and the wasted effort that follows. Picture an agent hammering a retry loop against a plan that
+
+63
+00:06:05.839 --> 00:06:12.640
+was wrong from the beginning. It'll be wrong the 15th time too, and you'll pay for every attempt.
+
+64
+00:06:13.279 --> 00:06:19.279
+That's what misclassifying a failure can cost you. Asking where the error originated, outside the
+
+65
+00:06:19.279 --> 00:06:24.399
+model, inside it, or underneath a tool, is the cheapest question in the recovery path.
+
+66
+00:06:24.959 --> 00:06:28.000
+And that wraps up this lesson. I'll see you in the next one.
+

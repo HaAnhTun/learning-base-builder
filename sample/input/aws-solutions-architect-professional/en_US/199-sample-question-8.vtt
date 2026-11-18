@@ -1,0 +1,590 @@
+WEBVTT
+
+1
+00:00:00.210 --> 00:00:01.230
+<v Instructor>Question eight.</v>
+
+2
+00:00:01.230 --> 00:00:03.990
+A company operates an eCommerce application
+
+3
+00:00:03.990 --> 00:00:05.610
+on Amazon EC2 instances
+
+4
+00:00:05.610 --> 00:00:08.820
+behind an ELB Application Load Balancer.
+
+5
+00:00:08.820 --> 00:00:12.180
+The instances run in an Amazon EC2 Auto Scaling group
+
+6
+00:00:12.180 --> 00:00:14.070
+across multiple AZ.
+
+7
+00:00:14.070 --> 00:00:16.380
+After an order is successfully processed,
+
+8
+00:00:16.380 --> 00:00:18.870
+the application immediately posts orders data
+
+9
+00:00:18.870 --> 00:00:21.540
+to an external third-party affiliate tracking system
+
+10
+00:00:21.540 --> 00:00:24.660
+that pays sales commission for order referrals.
+
+11
+00:00:24.660 --> 00:00:27.360
+During a highly successful marketing campaign,
+
+12
+00:00:27.360 --> 00:00:31.020
+the number of EC2 instances increased from two to 20
+
+13
+00:00:31.020 --> 00:00:33.570
+and the application continued to work correctly,
+
+14
+00:00:33.570 --> 00:00:35.190
+but the increased requests
+
+15
+00:00:35.190 --> 00:00:37.260
+overwhelmed the third-party affiliate
+
+16
+00:00:37.260 --> 00:00:39.750
+and resulted in failed requests.
+
+17
+00:00:39.750 --> 00:00:42.720
+Which combination of architectural changes
+
+18
+00:00:42.720 --> 00:00:45.060
+could ensure that the entire process
+
+19
+00:00:45.060 --> 00:00:46.650
+functions correctly under load?
+
+20
+00:00:46.650 --> 00:00:48.090
+Select two.
+
+21
+00:00:48.090 --> 00:00:50.880
+So this is a very interesting question that I really like.
+
+22
+00:00:50.880 --> 00:00:55.290
+So we have an ALB and an ASG that has 20 instances
+
+23
+00:00:55.290 --> 00:00:57.180
+when we have a big load
+
+24
+00:00:57.180 --> 00:01:01.290
+and then they all will send stuff to an external API.
+
+25
+00:01:01.290 --> 00:01:03.240
+So from this diagram, it's pretty clear
+
+26
+00:01:03.240 --> 00:01:05.910
+that now that we get 20 instances,
+
+27
+00:01:05.910 --> 00:01:10.140
+they will request too many times onto the external API
+
+28
+00:01:10.140 --> 00:01:12.930
+and that could overwhelm the target system.
+
+29
+00:01:12.930 --> 00:01:14.790
+So the goal really is how do we make sure
+
+30
+00:01:14.790 --> 00:01:17.760
+that even when we have a large number of EC2 instances,
+
+31
+00:01:17.760 --> 00:01:21.060
+we don't overwhelm the external API.
+
+32
+00:01:21.060 --> 00:01:22.590
+So we have two options to select,
+
+33
+00:01:22.590 --> 00:01:24.060
+so we'll group them together.
+
+34
+00:01:24.060 --> 00:01:27.420
+Option A is to move the code that calls the affiliate
+
+35
+00:01:27.420 --> 00:01:30.330
+to a new Lambda function and modify the application
+
+36
+00:01:30.330 --> 00:01:33.300
+to invoke the Lambda function asynchronously.
+
+37
+00:01:33.300 --> 00:01:36.360
+So we have our EC2 instances that will be invoking
+
+38
+00:01:36.360 --> 00:01:39.060
+asynchronously our Lambda function,
+
+39
+00:01:39.060 --> 00:01:40.350
+and then the Lambda function
+
+40
+00:01:40.350 --> 00:01:43.230
+will be invoking the external API.
+
+41
+00:01:43.230 --> 00:01:46.470
+And option B is to move the code that calls the affiliate
+
+42
+00:01:46.470 --> 00:01:49.080
+to a new Lambda function and modify the application
+
+43
+00:01:49.080 --> 00:01:51.810
+to place the order data in an SQS queue.
+
+44
+00:01:51.810 --> 00:01:53.850
+Trigger the lender function from the queue.
+
+45
+00:01:53.850 --> 00:01:56.730
+So application goes into SQS, goes into Lambda,
+
+46
+00:01:56.730 --> 00:01:59.040
+goes into the external API.
+
+47
+00:01:59.040 --> 00:02:02.220
+Now, they look similar, but there is a big difference.
+
+48
+00:02:02.220 --> 00:02:05.820
+So in the first case, let's see what is happening.
+
+49
+00:02:05.820 --> 00:02:09.120
+We invoke the Lambda function asynchronously.
+
+50
+00:02:09.120 --> 00:02:12.150
+So number one is we don't get a reply back
+
+51
+00:02:12.150 --> 00:02:13.890
+from the Lambda function.
+
+52
+00:02:13.890 --> 00:02:16.410
+So if somehow the Lambda function fails
+
+53
+00:02:16.410 --> 00:02:18.960
+and fails three times after doing three retries
+
+54
+00:02:18.960 --> 00:02:21.570
+because it's been invoked asynchronously,
+
+55
+00:02:21.570 --> 00:02:24.420
+then the message will be lost and will not be invoked.
+
+56
+00:02:24.420 --> 00:02:28.020
+So there's the first problem with this option A
+
+57
+00:02:28.020 --> 00:02:30.180
+is that if somehow something goes wrong,
+
+58
+00:02:30.180 --> 00:02:33.420
+then we will completely lose that API call.
+
+59
+00:02:33.420 --> 00:02:35.970
+Number two is that every EC2 instance
+
+60
+00:02:35.970 --> 00:02:37.920
+is going to invoke Lambda functions
+
+61
+00:02:37.920 --> 00:02:39.750
+and Lambda functions are meant to scale,
+
+62
+00:02:39.750 --> 00:02:42.090
+so this will not have any scaling issues,
+
+63
+00:02:42.090 --> 00:02:45.120
+but that means we'll have the same number of requests
+
+64
+00:02:45.120 --> 00:02:47.700
+done at the same time onto the external API.
+
+65
+00:02:47.700 --> 00:02:49.050
+And actually there's a chance
+
+66
+00:02:49.050 --> 00:02:51.900
+that we even have more external API's called
+
+67
+00:02:51.900 --> 00:02:52.733
+in that same time
+
+68
+00:02:52.733 --> 00:02:55.260
+because we invoke the Lambda function asynchronously
+
+69
+00:02:55.260 --> 00:02:57.330
+so we can invoke it way faster.
+
+70
+00:02:57.330 --> 00:03:00.270
+So all in all, option A, I don't like it
+
+71
+00:03:00.270 --> 00:03:01.830
+because we can lose requests
+
+72
+00:03:01.830 --> 00:03:05.070
+and we can overwhelm the external API even more.
+
+73
+00:03:05.070 --> 00:03:07.170
+So what's happening with option B?
+
+74
+00:03:07.170 --> 00:03:10.170
+Well, the option B, we place the order data
+
+75
+00:03:10.170 --> 00:03:11.880
+into an SQS queue.
+
+76
+00:03:11.880 --> 00:03:15.060
+And so this SQS queue will contain a buffer
+
+77
+00:03:15.060 --> 00:03:17.160
+of all the things that need to be sent
+
+78
+00:03:17.160 --> 00:03:20.640
+into an external API, and they're in the queue,
+
+79
+00:03:20.640 --> 00:03:24.960
+so if they get read and then they somehow have a failure
+
+80
+00:03:24.960 --> 00:03:27.990
+into being processed, they will be put back into the queue,
+
+81
+00:03:27.990 --> 00:03:29.580
+waiting to be processed again.
+
+82
+00:03:29.580 --> 00:03:32.220
+So as such, we have a lot more safety
+
+83
+00:03:32.220 --> 00:03:34.260
+because we are using SQS.
+
+84
+00:03:34.260 --> 00:03:37.590
+Now the Lambda function can read off an SQS queue
+
+85
+00:03:37.590 --> 00:03:39.540
+and send to an external API.
+
+86
+00:03:39.540 --> 00:03:41.940
+So this solves a stability issue.
+
+87
+00:03:41.940 --> 00:03:45.150
+Here we're making sure that we don't lose any requests,
+
+88
+00:03:45.150 --> 00:03:47.400
+but in this example, if we have 1000 messages
+
+89
+00:03:47.400 --> 00:03:50.340
+into our SQS queue, maybe we'll get 1000 Lambda functions
+
+90
+00:03:50.340 --> 00:03:52.710
+and we can overwhelm our external API.
+
+91
+00:03:52.710 --> 00:03:55.860
+So still in this option group one,
+
+92
+00:03:55.860 --> 00:03:58.290
+the best answer is option B.
+
+93
+00:03:58.290 --> 00:04:00.030
+So we'll go with option B.
+
+94
+00:04:00.030 --> 00:04:01.980
+Now we have an option group two.
+
+95
+00:04:01.980 --> 00:04:05.190
+So now we have the SQS function that has many messages in it
+
+96
+00:04:05.190 --> 00:04:07.050
+and many of the functions are created
+
+97
+00:04:07.050 --> 00:04:10.020
+and we are invoking the external API.
+
+98
+00:04:10.020 --> 00:04:12.570
+So option C is increase the timeout
+
+99
+00:04:12.570 --> 00:04:14.160
+of the new Lambda function.
+
+100
+00:04:14.160 --> 00:04:16.440
+D is to adjust the concurrency limit
+
+101
+00:04:16.440 --> 00:04:18.570
+and E is to increase the memory.
+
+102
+00:04:18.570 --> 00:04:21.000
+So if you increase the timeout of the Lambda function,
+
+103
+00:04:21.000 --> 00:04:23.820
+that means the Lambda function has more time to execute.
+
+104
+00:04:23.820 --> 00:04:27.750
+So probably we could, for example, wait and do some retries
+
+105
+00:04:27.750 --> 00:04:31.200
+onto the external API and that would be working
+
+106
+00:04:31.200 --> 00:04:33.090
+but we would still trigger some errors
+
+107
+00:04:33.090 --> 00:04:34.560
+onto the external API.
+
+108
+00:04:34.560 --> 00:04:36.300
+We would just be handling these errors
+
+109
+00:04:36.300 --> 00:04:38.103
+on the side of Lambda.
+
+110
+00:04:39.000 --> 00:04:41.520
+Option D is to increase the concurrency limit,
+
+111
+00:04:41.520 --> 00:04:44.670
+so that means that this time, or sorry, adjust it, sorry,
+
+112
+00:04:44.670 --> 00:04:46.320
+so that means that for example, we're saying, okay,
+
+113
+00:04:46.320 --> 00:04:48.330
+the maximum amount of Lambda functions
+
+114
+00:04:48.330 --> 00:04:51.180
+that can go and make calls to our external API
+
+115
+00:04:51.180 --> 00:04:52.320
+is going to be five.
+
+116
+00:04:52.320 --> 00:04:54.090
+And so we have the guarantee that we'll never get
+
+117
+00:04:54.090 --> 00:04:57.270
+more than five Lambda executions running at the same time,
+
+118
+00:04:57.270 --> 00:05:00.840
+and so therefore, this places a limit into how many requests
+
+119
+00:05:00.840 --> 00:05:04.020
+we're going to do onto our external API at the same time.
+
+120
+00:05:04.020 --> 00:05:06.270
+And so that means that obviously some requests
+
+121
+00:05:06.270 --> 00:05:10.140
+are going to take more time to be sent to the external API
+
+122
+00:05:10.140 --> 00:05:12.210
+but that means the external API is going to have
+
+123
+00:05:12.210 --> 00:05:15.150
+a much better way to handle the load.
+
+124
+00:05:15.150 --> 00:05:17.580
+So I like that answer a lot.
+
+125
+00:05:17.580 --> 00:05:19.620
+And option E is to increase the memory
+
+126
+00:05:19.620 --> 00:05:21.000
+of the new Lambda function.
+
+127
+00:05:21.000 --> 00:05:23.670
+So by increasing the memory, we also increase the CPU
+
+128
+00:05:23.670 --> 00:05:26.340
+automatically, so that means that our Lambda function
+
+129
+00:05:26.340 --> 00:05:27.780
+could run a little bit faster,
+
+130
+00:05:27.780 --> 00:05:31.080
+so it could even hit our external API even faster
+
+131
+00:05:31.080 --> 00:05:32.880
+and this is not a good answer.
+
+132
+00:05:32.880 --> 00:05:35.970
+So of all these answers in option group two,
+
+133
+00:05:35.970 --> 00:05:37.530
+we have to adjust the concurrency.
+
+134
+00:05:37.530 --> 00:05:40.470
+And so by using an SQS queue, we've managed to make sure
+
+135
+00:05:40.470 --> 00:05:43.170
+we decoupled our processing order
+
+136
+00:05:43.170 --> 00:05:45.240
+and the one sending it to the external API.
+
+137
+00:05:45.240 --> 00:05:47.280
+So we make sure that we don't lose any requests
+
+138
+00:05:47.280 --> 00:05:50.340
+and SQS is meant to scale greatly, so this is perfect.
+
+139
+00:05:50.340 --> 00:05:53.040
+And by adjusting the concurrency of the Lambda function,
+
+140
+00:05:53.040 --> 00:05:56.940
+we've made sure that we can make a limited load
+
+141
+00:05:56.940 --> 00:05:59.040
+onto the external API, which is perfect
+
+142
+00:05:59.040 --> 00:06:02.220
+because we're never going to overload our target system,
+
+143
+00:06:02.220 --> 00:06:06.660
+even though we have many more requests made into SQS
+
+144
+00:06:06.660 --> 00:06:09.540
+due to a big scaling of the auto scaling group.
+
+145
+00:06:09.540 --> 00:06:10.500
+So this is great.
+
+146
+00:06:10.500 --> 00:06:13.260
+I like this question a lot and hope you like it too.
+
+147
+00:06:13.260 --> 00:06:15.210
+And I will see you in the next lecture.
+

@@ -1,0 +1,314 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.440
+In this lesson we'll go through the reviewer queue as an operational system. We'll look at
+
+2
+00:00:05.440 --> 00:00:11.520
+how low confidence outputs get routed in, what the reviewer interface should show, how approve,
+
+3
+00:00:11.520 --> 00:00:17.600
+edit, and reject actions feed back into model improvement, and how to handle latency constraints
+
+4
+00:00:17.600 --> 00:00:24.159
+and bypass scenarios. Let's get into it. A low confidence output has to go somewhere,
+
+5
+00:00:24.159 --> 00:00:29.120
+and that somewhere is a review queue. It is a dedicated work surface, separate from your
+
+6
+00:00:29.120 --> 00:00:34.959
+production pipeline, where flagged outputs land for human inspection. It isn't just a list of
+
+7
+00:00:34.959 --> 00:00:41.360
+items. It is a system with priority ordering, context presentation, and action capture. The
+
+8
+00:00:41.360 --> 00:00:47.680
+reviewer action set is what people do once they see an item, and it is deliberately narrow. Approve
+
+9
+00:00:47.680 --> 00:00:54.400
+the output as correct, reject it entirely, or edit it into the correct answer. Ambiguous actions set
+
+10
+00:00:54.400 --> 00:01:00.560
+slow reviewers down and produce inconsistent records. The bypass policy is the rule that lets
+
+11
+00:01:00.560 --> 00:01:07.120
+certain outputs skip the queue, because not every situation can wait for a reviewer. Let's look at
+
+12
+00:01:07.120 --> 00:01:13.040
+the queue architecture from the top. The queue sits between the model and whatever uses its output,
+
+13
+00:01:13.040 --> 00:01:19.279
+whether that's an end user, a downstream system, or an automated process. When the model produces
+
+14
+00:01:19.279 --> 00:01:24.800
+an output, a routing layer checks the confidence score against your stratification policy. If the
+
+15
+00:01:24.800 --> 00:01:30.639
+output falls below threshold or hits a high stakes classification, it goes to the queue instead of
+
+16
+00:01:30.639 --> 00:01:37.199
+being released. High confidence, low stakes outputs continue downstream without interruption.
+
+17
+00:01:37.199 --> 00:01:42.480
+The queue holds flagged items in a prioritized list, with the lowest confidence and highest
+
+18
+00:01:42.480 --> 00:01:48.160
+stakes outputs surfacing first. Items stay in the queue until a reviewer acts on them.
+
+19
+00:01:48.800 --> 00:01:53.919
+The two operational metrics you track from day one are queue depth, how many items are waiting,
+
+20
+00:01:53.919 --> 00:02:00.480
+and queue latency, how long items wait before review. The reviewer interface is where the system
+
+21
+00:02:00.480 --> 00:02:06.480
+either succeeds or fails in practice. If reviewers have to hunt for context, they'll make faster
+
+22
+00:02:06.480 --> 00:02:12.080
+decisions with less information, and the quality of those decisions will suffer. A well-designed
+
+23
+00:02:12.080 --> 00:02:17.199
+interface puts everything on one screen. The original input that generated the model's output
+
+24
+00:02:17.199 --> 00:02:23.360
+appears on the left or top. The model's output and its confidence score appear alongside it.
+
+25
+00:02:23.360 --> 00:02:29.039
+If a secondary system or rule engine has generated a suggested correction, that shows up too. The
+
+26
+00:02:29.039 --> 00:02:34.399
+reviewer reads the input, evaluates the output against it, considers the suggestion, and makes
+
+27
+00:02:34.399 --> 00:02:40.160
+a decision, all without navigating away. That single screen constraint keeps reviews fast
+
+28
+00:02:40.160 --> 00:02:46.080
+and keeps decision quality high. Anything that forces a tab switch or a search adds friction
+
+29
+00:02:46.080 --> 00:02:52.080
+and degrades throughput. Each reviewer action carries a distinct meaning in the system's record.
+
+30
+00:02:52.639 --> 00:02:58.720
+Approve means the reviewer has confirmed the output is correct and it can be released downstream.
+
+31
+00:02:58.720 --> 00:03:03.759
+The approval is logged with a timestamp and reviewer identity. Edit means the output was
+
+32
+00:03:03.759 --> 00:03:09.520
+wrong or incomplete and the reviewer has provided the correct version. The edited output gets
+
+33
+00:03:09.520 --> 00:03:15.119
+released and the original plus correction pair goes into a data set for future training or
+
+34
+00:03:15.119 --> 00:03:21.759
+calibration. Reject means the output is wrong and no corrected version should be released. Maybe the
+
+35
+00:03:21.759 --> 00:03:26.399
+input itself was ambiguous or the correct answer requires information the reviewer doesn't have.
+
+36
+00:03:27.039 --> 00:03:33.039
+Reject discards the item from the release path and flags the input type for further analysis.
+
+37
+00:03:33.039 --> 00:03:38.240
+All three actions close the loop differently, but all three generate a logged record.
+
+38
+00:03:39.199 --> 00:03:45.600
+Four design principles separate a functional review queue from one that reviewers game or ignore.
+
+39
+00:03:45.600 --> 00:03:52.479
+The first is a single action surface. Reviewers should be able to approve, edit, or reject without
+
+40
+00:03:52.479 --> 00:03:58.639
+opening another tool, searching a knowledge base, or switching context. Every additional step adds
+
+41
+00:03:58.639 --> 00:04:06.479
+latency and introduces inconsistency. The second is context first. Input, output, and confidence score
+
+42
+00:04:07.119 --> 00:04:13.119
+all need to be visible before the reviewer takes any action. Don't bury the confidence score in a
+
+43
+00:04:13.119 --> 00:04:19.359
+metadata panel. Put it where reviewers see it immediately. The third is queue priority. High
+
+44
+00:04:19.359 --> 00:04:24.959
+stakes and low confidence items should surface at the top of the reviewers list automatically.
+
+45
+00:04:25.519 --> 00:04:31.200
+Reviewers should never have to sort their own queue. The fourth is the audit trail. Every action
+
+46
+00:04:31.200 --> 00:04:38.160
+logs who reviewed the item, what changed, and when. The most underused feature of a review queue is the
+
+47
+00:04:38.160 --> 00:04:44.799
+feedback loop it creates for model improvement. Every reviewer action is a labeled data point.
+
+48
+00:04:44.799 --> 00:04:49.679
+When a reviewer approves an output, you've confirmed the model's behavior on that specific
+
+49
+00:04:49.679 --> 00:04:55.760
+input type at that confidence level. That's a positive training signal. When a reviewer edits
+
+50
+00:04:55.760 --> 00:05:02.559
+an output, you've captured the correct input-output pair. Edit corrections are high value training data
+
+51
+00:05:02.559 --> 00:05:08.399
+because they come from real production inputs, not from curated data sets, and they're labeled by a
+
+52
+00:05:08.399 --> 00:05:14.640
+domain expert who examined the specific failure. When a reviewer rejects an output, you've identified
+
+53
+00:05:14.640 --> 00:05:21.040
+an input class the model handles poorly. Aggregated rejects point directly at the areas where the model
+
+54
+00:05:21.040 --> 00:05:26.720
+needs additional training or where the input pre-processing needs rethinking. The queue pays
+
+55
+00:05:26.720 --> 00:05:32.720
+for itself through the data it generates. Adding a review step creates latency, and you need to
+
+56
+00:05:32.720 --> 00:05:38.640
+decide how to handle that before the system goes to production. Synchronous review means the
+
+57
+00:05:38.640 --> 00:05:44.799
+downstream consumer waits for a reviewer decision before receiving the output. This is appropriate
+
+58
+00:05:44.799 --> 00:05:50.559
+when the downstream process can tolerate variable response times, but it creates a hard dependency
+
+59
+00:05:50.640 --> 00:05:57.519
+on reviewer availability. If no reviewer is active, the pipeline stalls. Asynchronous review returns a
+
+60
+00:05:57.519 --> 00:06:03.359
+placeholder to the downstream consumer immediately and fulfills the actual output once a review
+
+61
+00:06:03.359 --> 00:06:08.799
+decision is made. This keeps the pipeline moving, but requires the downstream system to handle
+
+62
+00:06:08.799 --> 00:06:15.200
+deferred fulfillment. Some use cases work well with async, others don't. A medical documentation
+
+63
+00:06:15.200 --> 00:06:20.480
+system that needs the correct output before a clinician signs off can't use a placeholder.
+
+64
+00:06:21.040 --> 00:06:27.040
+Design the latency model explicitly and early before downstream integrations are built around
+
+65
+00:06:27.040 --> 00:06:33.200
+assumptions. The bypass policy handles the cases where waiting for a reviewer isn't possible.
+
+66
+00:06:33.200 --> 00:06:38.320
+There are three main scenarios where bypass is appropriate. Emergency override applies when a
+
+67
+00:06:38.320 --> 00:06:43.920
+time-critical situation means that review delay causes more harm than the risk of an unreviewed
+
+68
+00:06:43.920 --> 00:06:50.320
+output. This should be rare and tightly defined. A high confidence floor bypass allows outputs above
+
+69
+00:06:50.320 --> 00:06:56.320
+a validated confidence floor to skip the queue automatically. The threshold has to be validated
+
+70
+00:06:56.320 --> 00:07:02.959
+empirically, not set arbitrarily, and every bypass should still be logged. The third scenario is
+
+71
+00:07:02.959 --> 00:07:08.399
+reviewer unavailability. If the queue has no active reviewers and the business needs continuity,
+
+72
+00:07:08.399 --> 00:07:14.000
+a fallback rule can release outputs with a warning flag. In all three cases, the bypass
+
+73
+00:07:14.000 --> 00:07:20.000
+action gets logged with the same completeness as a normal review decision. Bypass isn't an escape
+
+74
+00:07:20.000 --> 00:07:26.160
+from accountability. A review queue is the infrastructure that makes human oversight
+
+75
+00:07:26.160 --> 00:07:33.119
+scalable, auditable, and genuinely useful for model improvement. Routing, the reviewer interface,
+
+76
+00:07:33.119 --> 00:07:38.880
+the action set, and the bypass policy all have to work together for the system to hold up under
+
+77
+00:07:38.880 --> 00:07:44.799
+production load. Get any of these wrong and the queue becomes a delay rather than a quality
+
+78
+00:07:44.799 --> 00:07:49.040
+control. That wraps up this lesson. I'll see you in the next one.
+

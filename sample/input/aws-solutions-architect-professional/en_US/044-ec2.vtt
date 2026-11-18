@@ -1,0 +1,1046 @@
+WEBVTT
+
+1
+00:00:00.120 --> 00:00:03.300
+<v Instructor>So first let's do a deep dive into EC2.</v>
+
+2
+00:00:03.300 --> 00:00:05.310
+EC2 is a very, very big topic,
+
+3
+00:00:05.310 --> 00:00:07.320
+but hopefully this is something that you already know
+
+4
+00:00:07.320 --> 00:00:10.470
+at a very high level based on your previous experience.
+
+5
+00:00:10.470 --> 00:00:11.880
+And I will try to summarize everything
+
+6
+00:00:11.880 --> 00:00:14.220
+that's going to be important going into the exam.
+
+7
+00:00:14.220 --> 00:00:15.770
+So first, when you have an EC2, you need to choose
+
+8
+00:00:15.770 --> 00:00:18.780
+an instance type and they have different families.
+
+9
+00:00:18.780 --> 00:00:21.960
+You have R, which is for example, R5X.
+
+10
+00:00:21.960 --> 00:00:24.030
+That is usually for applications that need a lot of RAM.
+
+11
+00:00:24.030 --> 00:00:26.490
+So for example, in-memory caches would be great.
+
+12
+00:00:26.490 --> 00:00:28.650
+C, for applications that need a good amount
+
+13
+00:00:28.650 --> 00:00:30.090
+of CPU for computations.
+
+14
+00:00:30.090 --> 00:00:32.100
+So they are great for databases as well.
+
+15
+00:00:32.100 --> 00:00:33.810
+M, which is sharp balance.
+
+16
+00:00:33.810 --> 00:00:35.880
+So M is for something like medium,
+
+17
+00:00:35.880 --> 00:00:38.250
+which is for general web applications.
+
+18
+00:00:38.250 --> 00:00:41.010
+I, which is when you need very good local I/O.
+
+19
+00:00:41.010 --> 00:00:42.750
+So this is when you have an instance store
+
+20
+00:00:42.750 --> 00:00:44.130
+attached to your instance.
+
+21
+00:00:44.130 --> 00:00:46.770
+And this is great for high performance databases.
+
+22
+00:00:46.770 --> 00:00:49.350
+G, when you need to have a GPU.
+
+23
+00:00:49.350 --> 00:00:50.910
+So this is when you're doing machine learning
+
+24
+00:00:50.910 --> 00:00:52.290
+or video rendering.
+
+25
+00:00:52.290 --> 00:00:54.600
+And then you have different kind of smaller instances
+
+26
+00:00:54.600 --> 00:00:57.870
+or T2 and T3, which are burstable up to certain capacities.
+
+27
+00:00:57.870 --> 00:01:00.300
+So they are instances that need to react very quickly
+
+28
+00:01:00.300 --> 00:01:02.250
+and get good performance in case on spikes
+
+29
+00:01:02.250 --> 00:01:04.560
+but gets a baseline performance that's average
+
+30
+00:01:04.560 --> 00:01:05.700
+in the meantime.
+
+31
+00:01:05.700 --> 00:01:08.610
+And then if you have T2 or T3 unlimited,
+
+32
+00:01:08.610 --> 00:01:09.990
+you can get unlimited burst
+
+33
+00:01:09.990 --> 00:01:12.480
+if you have a very specific type of workload.
+
+34
+00:01:12.480 --> 00:01:15.060
+Finally, if you need to find the right instances for you,
+
+35
+00:01:15.060 --> 00:01:17.880
+you have this website called ec2instances.info,
+
+36
+00:01:17.880 --> 00:01:19.140
+which is great to understand
+
+37
+00:01:19.140 --> 00:01:21.270
+which instance type is right for you.
+
+38
+00:01:21.270 --> 00:01:24.630
+Okay, so now we know that based on the EC2 we have,
+
+39
+00:01:24.630 --> 00:01:25.710
+we have different kind of families
+
+40
+00:01:25.710 --> 00:01:27.120
+and each family is appropriate
+
+41
+00:01:27.120 --> 00:01:29.520
+for different kind of workloads in terms of
+
+42
+00:01:29.520 --> 00:01:32.550
+if the institution type is optimized for that workload,
+
+43
+00:01:32.550 --> 00:01:34.440
+then the workload will finish faster
+
+44
+00:01:34.440 --> 00:01:37.200
+and we are probably going to pay a lot less.
+
+45
+00:01:37.200 --> 00:01:39.870
+Next, when you launch these EC2 instances
+
+46
+00:01:39.870 --> 00:01:42.450
+you have to place them and by default
+
+47
+00:01:42.450 --> 00:01:44.460
+when you launch an EC2 instance
+
+48
+00:01:44.460 --> 00:01:47.820
+it's placed randomly in AWS's data center
+
+49
+00:01:47.820 --> 00:01:49.890
+and you just have it right away.
+
+50
+00:01:49.890 --> 00:01:52.800
+But you can tell or hint to AWS
+
+51
+00:01:52.800 --> 00:01:54.600
+where you want your instance to be placed.
+
+52
+00:01:54.600 --> 00:01:56.910
+And that is the purpose of placement group.
+
+53
+00:01:56.910 --> 00:01:58.590
+So you have multiple strategies.
+
+54
+00:01:58.590 --> 00:02:01.320
+The first one is cluster where you want all your instances
+
+55
+00:02:01.320 --> 00:02:04.830
+to be within the same AZ into a cluster
+
+56
+00:02:04.830 --> 00:02:07.050
+that will give it a low-latency group.
+
+57
+00:02:07.050 --> 00:02:08.760
+This is great when you want to perform
+
+58
+00:02:08.760 --> 00:02:11.490
+some high performance computing, so HPC.
+
+59
+00:02:11.490 --> 00:02:13.680
+Next you have spread where you want your instances
+
+60
+00:02:13.680 --> 00:02:15.840
+to be spread across the underlying hardware.
+
+61
+00:02:15.840 --> 00:02:17.370
+So you don't want it to be on the same rack.
+
+62
+00:02:17.370 --> 00:02:21.030
+And so it's maximum of seven instances per group per AZ.
+
+63
+00:02:21.030 --> 00:02:23.100
+And these are for the applications
+
+64
+00:02:23.100 --> 00:02:26.160
+that needs to not have a hardware failure
+
+65
+00:02:26.160 --> 00:02:28.920
+that is spread to different instances.
+
+66
+00:02:28.920 --> 00:02:31.590
+So by having a spread instance group,
+
+67
+00:02:31.590 --> 00:02:32.820
+instead of placement group
+
+68
+00:02:32.820 --> 00:02:34.830
+you will have your instances very far away from each other,
+
+69
+00:02:34.830 --> 00:02:35.940
+they're spread out
+
+70
+00:02:35.940 --> 00:02:38.190
+and therefore they won't fail all at once.
+
+71
+00:02:38.190 --> 00:02:39.990
+And then partition is when you have
+
+72
+00:02:39.990 --> 00:02:41.940
+a higher number of EC2 instances
+
+73
+00:02:41.940 --> 00:02:44.520
+that you need to place them across different partitions.
+
+74
+00:02:44.520 --> 00:02:46.050
+And this is when you have, for example,
+
+75
+00:02:46.050 --> 00:02:48.750
+something like Hadoop, Cassandra, or Kafka.
+
+76
+00:02:48.750 --> 00:02:51.870
+These are great for a partition placement group strategy.
+
+77
+00:02:51.870 --> 00:02:54.420
+Okay, it is possible and you need to know this,
+
+78
+00:02:54.420 --> 00:02:58.530
+to move an instance into or out of a placement group.
+
+79
+00:02:58.530 --> 00:03:01.080
+First, you need to stop that instance,
+
+80
+00:03:01.080 --> 00:03:02.580
+then, you need to use the CLI
+
+81
+00:03:02.580 --> 00:03:04.860
+to modify the instance placement.
+
+82
+00:03:04.860 --> 00:03:06.900
+So you're saying in this placement group
+
+83
+00:03:06.900 --> 00:03:08.580
+or out of this placement group.
+
+84
+00:03:08.580 --> 00:03:10.980
+And then you can start your instance
+
+85
+00:03:10.980 --> 00:03:13.320
+and it will be in the placement group you need.
+
+86
+00:03:13.320 --> 00:03:15.540
+It's very important that you know this.
+
+87
+00:03:15.540 --> 00:03:18.360
+Next, we have the placement group of type cluster
+
+88
+00:03:18.360 --> 00:03:19.590
+that we need to do a deep dive on.
+
+89
+00:03:19.590 --> 00:03:21.960
+So this is what a cluster looks like.
+
+90
+00:03:21.960 --> 00:03:24.270
+All the instances are going to be on the same rack
+
+91
+00:03:24.270 --> 00:03:26.220
+in the same availability zone.
+
+92
+00:03:26.220 --> 00:03:29.070
+And the idea is that we get a great network.
+
+93
+00:03:29.070 --> 00:03:31.260
+So we get 10 gigabytes per second bandwidth
+
+94
+00:03:31.260 --> 00:03:32.310
+between these instances.
+
+95
+00:03:32.310 --> 00:03:36.030
+So they can communicate very, very fast with a low latency.
+
+96
+00:03:36.030 --> 00:03:37.590
+The concept that if the rack fails,
+
+97
+00:03:37.590 --> 00:03:40.710
+so if the underlying hardware fails, then all the instances,
+
+98
+00:03:40.710 --> 00:03:42.750
+because they're placed next to each other
+
+99
+00:03:42.750 --> 00:03:44.940
+they will all fail at the same time.
+
+100
+00:03:44.940 --> 00:03:47.250
+And when we have such a cluster placement group,
+
+101
+00:03:47.250 --> 00:03:48.960
+it's great to choose an instance type
+
+102
+00:03:48.960 --> 00:03:51.750
+that has enhanced networking because they will have
+
+103
+00:03:51.750 --> 00:03:54.210
+faster networking capability between each other.
+
+104
+00:03:54.210 --> 00:03:56.460
+So the use case for a cluster placement group
+
+105
+00:03:56.460 --> 00:03:59.130
+would be a big data job that needs to complete very fast,
+
+106
+00:03:59.130 --> 00:04:00.480
+high performance computing
+
+107
+00:04:00.480 --> 00:04:02.640
+or applications that need extremely low-latency
+
+108
+00:04:02.640 --> 00:04:04.170
+and high network throughput,
+
+109
+00:04:04.170 --> 00:04:07.023
+but at the risk of failing all at once.
+
+110
+00:04:08.010 --> 00:04:10.860
+So spread, here it looks like, we have different hardware
+
+111
+00:04:10.860 --> 00:04:13.590
+across different AZ and each EC2 will be placed
+
+112
+00:04:13.590 --> 00:04:17.130
+on a different hardware up to seven EC2 per AZ.
+
+113
+00:04:17.130 --> 00:04:18.930
+And that gives us some good pros.
+
+114
+00:04:18.930 --> 00:04:21.360
+The first is that you can span across multiple AZ
+
+115
+00:04:21.360 --> 00:04:23.520
+and the reduced risk of simultaneous failure
+
+116
+00:04:23.520 --> 00:04:25.230
+is really, really low.
+
+117
+00:04:25.230 --> 00:04:28.470
+EC2 instances are on a different physical hardware.
+
+118
+00:04:28.470 --> 00:04:31.680
+Now for the cons, it's up to only seven instances per AZ
+
+119
+00:04:31.680 --> 00:04:33.930
+per placement groups so you're limited in scale.
+
+120
+00:04:33.930 --> 00:04:35.520
+And the use case would be for an application
+
+121
+00:04:35.520 --> 00:04:37.740
+that needs to maximize high availability
+
+122
+00:04:37.740 --> 00:04:40.590
+or critical applications where each instance failure
+
+123
+00:04:40.590 --> 00:04:43.080
+must be isolated from each other.
+
+124
+00:04:43.080 --> 00:04:44.970
+So this is the safest kind of deployment
+
+125
+00:04:44.970 --> 00:04:46.590
+for your application.
+
+126
+00:04:46.590 --> 00:04:48.960
+And partition is a little bit different.
+
+127
+00:04:48.960 --> 00:04:52.200
+So your AZ will be divided in multiple partitions
+
+128
+00:04:52.200 --> 00:04:54.300
+and then your EC2 instances will be spread
+
+129
+00:04:54.300 --> 00:04:56.070
+across all these partitions
+
+130
+00:04:56.070 --> 00:04:58.590
+and you get up to seven partitions per AZ
+
+131
+00:04:58.590 --> 00:05:00.900
+and that gives you hundreds of EC2 instances
+
+132
+00:05:00.900 --> 00:05:03.360
+for the partition kind of placement group.
+
+133
+00:05:03.360 --> 00:05:06.090
+And the instances in the partition do not share racks
+
+134
+00:05:06.090 --> 00:05:07.890
+with the instances in other partitions.
+
+135
+00:05:07.890 --> 00:05:11.310
+So you have, again, some separation of hardware.
+
+136
+00:05:11.310 --> 00:05:13.860
+A partition failure can affect many EC2
+
+137
+00:05:13.860 --> 00:05:16.830
+but it won't affect other partitions.
+
+138
+00:05:16.830 --> 00:05:19.170
+And EC2 instances can get access
+
+139
+00:05:19.170 --> 00:05:20.790
+to which partition they belong to
+
+140
+00:05:20.790 --> 00:05:23.460
+thanks to the EC2 metadata service.
+
+141
+00:05:23.460 --> 00:05:25.920
+So the use cases for this would be HDFS, HBase,
+
+142
+00:05:25.920 --> 00:05:27.840
+Cassandra, Kafka.
+
+143
+00:05:27.840 --> 00:05:31.830
+Next, we have several ways of launching an EC2 instance.
+
+144
+00:05:31.830 --> 00:05:33.540
+So we have on demand instances
+
+145
+00:05:33.540 --> 00:05:35.730
+and this is when you have a short workload
+
+146
+00:05:35.730 --> 00:05:37.710
+and you're going to get predictable pricing
+
+147
+00:05:37.710 --> 00:05:40.170
+and you wanna have reliability.
+
+148
+00:05:40.170 --> 00:05:43.620
+Instead, if you wanna go for very cheap instances
+
+149
+00:05:43.620 --> 00:05:47.250
+for short workloads as well, you can use spot instances.
+
+150
+00:05:47.250 --> 00:05:49.560
+In that case, you're going to get a deep discount
+
+151
+00:05:49.560 --> 00:05:52.260
+but you run the chance of losing instances
+
+152
+00:05:52.260 --> 00:05:55.560
+meaning you cannot run reliable long workloads
+
+153
+00:05:55.560 --> 00:05:56.850
+on spot instances.
+
+154
+00:05:56.850 --> 00:05:59.550
+But if it's resilient to failure, it's a great choice.
+
+155
+00:06:00.540 --> 00:06:01.950
+Next, we have reserved instances.
+
+156
+00:06:01.950 --> 00:06:03.750
+The minimum period is one year.
+
+157
+00:06:03.750 --> 00:06:06.360
+So the reserved instances are for long workloads
+
+158
+00:06:06.360 --> 00:06:08.940
+and you want to get big discount
+
+159
+00:06:08.940 --> 00:06:10.110
+because you know, for example,
+
+160
+00:06:10.110 --> 00:06:13.140
+you're going to run an EC2 instances for three years.
+
+161
+00:06:13.140 --> 00:06:15.360
+You also have convertible reserved instances.
+
+162
+00:06:15.360 --> 00:06:17.490
+So this time, again, you workload is long
+
+163
+00:06:17.490 --> 00:06:20.250
+but you wanna convert the instance type over time.
+
+164
+00:06:20.250 --> 00:06:22.050
+Therefore, it's a bit more flexible
+
+165
+00:06:22.050 --> 00:06:23.970
+with a bit less discounts.
+
+166
+00:06:23.970 --> 00:06:26.490
+You have different level of payments.
+
+167
+00:06:26.490 --> 00:06:28.680
+So if you pay everything upfront,
+
+168
+00:06:28.680 --> 00:06:30.900
+you're going to get a deeper discount.
+
+169
+00:06:30.900 --> 00:06:32.730
+If you pay partial upfront,
+
+170
+00:06:32.730 --> 00:06:35.040
+you're going to get less discounts,
+
+171
+00:06:35.040 --> 00:06:37.770
+and no upfront even less discounts.
+
+172
+00:06:37.770 --> 00:06:40.530
+So your payment plan really impacts as well
+
+173
+00:06:40.530 --> 00:06:42.120
+the amount of discount you're going to get
+
+174
+00:06:42.120 --> 00:06:43.413
+for these instances.
+
+175
+00:06:44.460 --> 00:06:47.520
+Dedicated instances will provide you the guarantee
+
+176
+00:06:47.520 --> 00:06:50.490
+that no other customers will share your hardware,
+
+177
+00:06:50.490 --> 00:06:54.510
+and dedicated host, books you an entire physical server
+
+178
+00:06:54.510 --> 00:06:57.480
+on which you can control the instance placements.
+
+179
+00:06:57.480 --> 00:07:00.030
+The use case for them is software licenses
+
+180
+00:07:00.030 --> 00:07:03.120
+that operate at a core or CPU socket level.
+
+181
+00:07:03.120 --> 00:07:05.160
+And you can define host affinity
+
+182
+00:07:05.160 --> 00:07:09.273
+so that the instances reboots are kept on the same host.
+
+183
+00:07:10.350 --> 00:07:12.320
+You also need to know what is Graviton.
+
+184
+00:07:12.320 --> 00:07:14.580
+So Graviton processors deliver you
+
+185
+00:07:14.580 --> 00:07:17.490
+the best price performance for your EC2 instances
+
+186
+00:07:17.490 --> 00:07:20.880
+and that is for newer generation kind of instances.
+
+187
+00:07:20.880 --> 00:07:24.120
+So this supports Linux OS, Amazon Linux 2,
+
+188
+00:07:24.120 --> 00:07:27.120
+RedHat, SUSE, Ubuntu, and so on.
+
+189
+00:07:27.120 --> 00:07:29.940
+And it is not available for Windows instances,
+
+190
+00:07:29.940 --> 00:07:31.200
+remember this.
+
+191
+00:07:31.200 --> 00:07:33.030
+You have Graviton2 which gives you
+
+192
+00:07:33.030 --> 00:07:35.160
+40% better price performance
+
+193
+00:07:35.160 --> 00:07:39.480
+over comparable fifth generation x86-based instances.
+
+194
+00:07:39.480 --> 00:07:41.460
+And Graviton3 which gives you
+
+195
+00:07:41.460 --> 00:07:44.430
+three times better performance compared to Graviton2.
+
+196
+00:07:44.430 --> 00:07:46.770
+So the use case is, is that you wanna have good performance
+
+197
+00:07:46.770 --> 00:07:47.730
+at a better price.
+
+198
+00:07:47.730 --> 00:07:50.070
+So this could be app servers, microservices,
+
+199
+00:07:50.070 --> 00:07:52.350
+high performance computing, machine learning,
+
+200
+00:07:52.350 --> 00:07:56.610
+video encoding, gaming, in-memory caches, and so on.
+
+201
+00:07:56.610 --> 00:07:59.610
+Okay, now for including metrics in EC2,
+
+202
+00:07:59.610 --> 00:08:01.830
+we know there is CPU where you get digitalization
+
+203
+00:08:01.830 --> 00:08:05.040
+as well as the credit usage and balance for T2 Micros.
+
+204
+00:08:05.040 --> 00:08:06.780
+The network, network in/network out,
+
+205
+00:08:06.780 --> 00:08:09.390
+the status checks will be very important to know them.
+
+206
+00:08:09.390 --> 00:08:11.190
+So you have instance status where you can check
+
+207
+00:08:11.190 --> 00:08:13.530
+the EC2 VM and system status where you check
+
+208
+00:08:13.530 --> 00:08:14.520
+the underlying hardware.
+
+209
+00:08:14.520 --> 00:08:17.310
+And this is AWS that provides these metrics for us.
+
+210
+00:08:17.310 --> 00:08:19.980
+The disk where we can look at read/write for Ops and bytes
+
+211
+00:08:19.980 --> 00:08:21.420
+and this is only when you have an EC2
+
+212
+00:08:21.420 --> 00:08:22.440
+with an instance store,
+
+213
+00:08:22.440 --> 00:08:24.390
+otherwise you can get these metrics
+
+214
+00:08:24.390 --> 00:08:26.250
+for the EBS volumes directly.
+
+215
+00:08:26.250 --> 00:08:27.510
+And something extremely important
+
+216
+00:08:27.510 --> 00:08:30.030
+that I think I've said all the time in all my courses,
+
+217
+00:08:30.030 --> 00:08:32.910
+which is that RAM is not included in the EC2 metrics
+
+218
+00:08:32.910 --> 00:08:34.710
+and you need to push them directly
+
+219
+00:08:34.710 --> 00:08:36.750
+from the EC2 instance into CloudWatch
+
+220
+00:08:36.750 --> 00:08:39.060
+as a custom metric if you need it.
+
+221
+00:08:39.060 --> 00:08:42.510
+Okay, now let's talk about EC2 instance recovery in detail
+
+222
+00:08:42.510 --> 00:08:44.280
+because it is something you need to know.
+
+223
+00:08:44.280 --> 00:08:46.470
+The status checks we have, we have two as I said.
+
+224
+00:08:46.470 --> 00:08:48.000
+The first one is the instance status
+
+225
+00:08:48.000 --> 00:08:49.800
+and then we have the system status.
+
+226
+00:08:49.800 --> 00:08:53.100
+And so something we may want to do is to recover an instance
+
+227
+00:08:53.100 --> 00:08:55.830
+in case these status checks are failing.
+
+228
+00:08:55.830 --> 00:08:57.120
+So here's what it looks like.
+
+229
+00:08:57.120 --> 00:08:59.640
+Our EC2 instance is going to be monitored
+
+230
+00:08:59.640 --> 00:09:00.810
+by a CloudWatch alarm.
+
+231
+00:09:00.810 --> 00:09:03.900
+And this CloudWatch alarm currently is set up
+
+232
+00:09:03.900 --> 00:09:07.350
+to be checking the status of the system status check.
+
+233
+00:09:07.350 --> 00:09:09.840
+And so in case it fails,
+
+234
+00:09:09.840 --> 00:09:13.140
+you can use your CloudWatch alarm to define an action
+
+235
+00:09:13.140 --> 00:09:15.300
+called the EC2 instance recovery
+
+236
+00:09:15.300 --> 00:09:17.700
+to recover your EC2 instance.
+
+237
+00:09:17.700 --> 00:09:20.190
+The action of using an EC2 instance recovery
+
+238
+00:09:20.190 --> 00:09:22.920
+is that you will remain, obviously some things will be lost
+
+239
+00:09:22.920 --> 00:09:26.820
+but you will keep the same private IP, the same public IP,
+
+240
+00:09:26.820 --> 00:09:29.100
+the same elastic IP, the same metadata,
+
+241
+00:09:29.100 --> 00:09:30.660
+and the same placement group.
+
+242
+00:09:30.660 --> 00:09:31.770
+So this is something quite nice
+
+243
+00:09:31.770 --> 00:09:33.720
+if you have an instance and it's critical
+
+244
+00:09:33.720 --> 00:09:35.190
+and you want to make sure you can recover it
+
+245
+00:09:35.190 --> 00:09:37.590
+in case anything goes wrong at the instance level
+
+246
+00:09:37.590 --> 00:09:38.790
+or the system level,
+
+247
+00:09:38.790 --> 00:09:40.740
+in which case setting up a CloudWatch alarm
+
+248
+00:09:40.740 --> 00:09:43.620
+that will perform an EC2 instance recovery action
+
+249
+00:09:43.620 --> 00:09:46.020
+is a great way to do it.
+
+250
+00:09:46.020 --> 00:09:48.030
+Finally, because it's a CloudWatch alarm
+
+251
+00:09:48.030 --> 00:09:50.790
+it can alert an SNS topic and you can chain it up
+
+252
+00:09:50.790 --> 00:09:51.810
+with other kind of actions,
+
+253
+00:09:51.810 --> 00:09:53.910
+for example, for notifying a Slack channel
+
+254
+00:09:53.910 --> 00:09:55.080
+in case you need to be aware
+
+255
+00:09:55.080 --> 00:09:56.980
+that your instance has been recovered.
+
+256
+00:09:57.960 --> 00:10:00.870
+Okay, so that's all you need to know for EC2,
+
+257
+00:10:00.870 --> 00:10:01.830
+very, very important.
+
+258
+00:10:01.830 --> 00:10:04.170
+Hopefully this is not too much new stuff for you,
+
+259
+00:10:04.170 --> 00:10:06.690
+but remember, it's all really important
+
+260
+00:10:06.690 --> 00:10:09.090
+going into the exam that you know all the details.
+
+261
+00:10:09.090 --> 00:10:11.933
+All right, that's it, I will see you in the next lecture.
+

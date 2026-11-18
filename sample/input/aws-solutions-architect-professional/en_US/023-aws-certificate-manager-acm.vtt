@@ -1,0 +1,370 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:00.833
+<v Instructor>So now, let's talk</v>
+
+2
+00:00:00.833 --> 00:00:03.990
+about AWS Certificate Manager or ACM.
+
+3
+00:00:03.990 --> 00:00:06.970
+So, in case you wanna host public SSL certificates in AWS,
+
+4
+00:00:06.970 --> 00:00:08.370
+you can have two ways.
+
+5
+00:00:08.370 --> 00:00:12.120
+You can buy your own and upload them to ACM using the CLI,
+
+6
+00:00:12.120 --> 00:00:14.860
+or you can have ACM provision the certificates itself,
+
+7
+00:00:14.860 --> 00:00:16.930
+and renew it for you for free,
+
+8
+00:00:16.930 --> 00:00:19.130
+free of cost and automatically.
+
+9
+00:00:19.130 --> 00:00:20.920
+So, ACM will load SSL certificates
+
+10
+00:00:20.920 --> 00:00:23.260
+onto some following integrations.
+
+11
+00:00:23.260 --> 00:00:24.900
+Number one is load balancers,
+
+12
+00:00:24.900 --> 00:00:26.160
+including the one you can,
+
+13
+00:00:26.160 --> 00:00:29.470
+that you would create using Elastic Beanstalk,
+
+14
+00:00:29.470 --> 00:00:33.060
+CloudFront distributions, APIs on API's Gateways.
+
+15
+00:00:33.060 --> 00:00:34.700
+So, anywhere, really, there is a need
+
+16
+00:00:34.700 --> 00:00:35.970
+for SSL certificates,
+
+17
+00:00:35.970 --> 00:00:39.140
+there is going to be an integration with ACM for it.
+
+18
+00:00:39.140 --> 00:00:40.270
+So, how does it work?
+
+19
+00:00:40.270 --> 00:00:42.317
+We have our user, and he's going to talk to you
+
+20
+00:00:42.317 --> 00:00:44.010
+in ALB for this instance,
+
+21
+00:00:44.010 --> 00:00:46.300
+and he will go through HTTPS,
+
+22
+00:00:46.300 --> 00:00:48.460
+and the ALB would provide SSL termination.
+
+23
+00:00:48.460 --> 00:00:50.370
+That means that the connection will be terminated,
+
+24
+00:00:50.370 --> 00:00:53.530
+and a new one will be opened to the backend instances.
+
+25
+00:00:53.530 --> 00:00:56.290
+So, ACM will be on the left-hand side
+
+26
+00:00:56.290 --> 00:00:58.960
+to provision and maintain the SSL certificates
+
+27
+00:00:58.960 --> 00:01:01.460
+on to the ALB, so we don't have to worry
+
+28
+00:01:01.460 --> 00:01:03.200
+about that part any more.
+
+29
+00:01:03.200 --> 00:01:06.480
+And then, finally, the ALB will be forwarding
+
+30
+00:01:06.480 --> 00:01:09.490
+private, HTTP requests to your EC2 instance,
+
+31
+00:01:09.490 --> 00:01:11.540
+if you set up HTP integration,
+
+32
+00:01:11.540 --> 00:01:13.360
+and your EC2 instance will not
+
+33
+00:01:13.360 --> 00:01:15.780
+have to perform SSL encryption or decryption,
+
+34
+00:01:15.780 --> 00:01:17.660
+so that means that you have less CPU cost
+
+35
+00:01:17.660 --> 00:01:19.060
+on your EC2 instance,
+
+36
+00:01:19.060 --> 00:01:21.456
+thanks to the SSL termination
+
+37
+00:01:21.456 --> 00:01:23.950
+that happens at the load-balancer level.
+
+38
+00:01:23.950 --> 00:01:26.120
+So, overall, ACM is amazing,
+
+39
+00:01:26.120 --> 00:01:28.040
+because, from my personal experience,
+
+40
+00:01:28.040 --> 00:01:31.610
+SSL certificates are very difficult to maintain manually,
+
+41
+00:01:31.610 --> 00:01:33.770
+and so, having this integration with ACM,
+
+42
+00:01:33.770 --> 00:01:36.100
+this automated provisioning, and this integration
+
+43
+00:01:36.100 --> 00:01:38.230
+with AWS services, makes it really, really easy
+
+44
+00:01:38.230 --> 00:01:40.660
+to deal with SSL certificates in AWS,
+
+45
+00:01:40.660 --> 00:01:43.560
+and so, you have no reason not to use them nowadays.
+
+46
+00:01:43.560 --> 00:01:44.540
+Okay.
+
+47
+00:01:44.540 --> 00:01:47.280
+So, good to know going into the exam.
+
+48
+00:01:47.280 --> 00:01:49.417
+First of all, you can create your own public certificates,
+
+49
+00:01:49.417 --> 00:01:52.113
+and you need to verify the public DNS,
+
+50
+00:01:52.113 --> 00:01:53.920
+and you must be issued
+
+51
+00:01:53.920 --> 00:01:57.020
+by a trusted public certificate authority.
+
+52
+00:01:57.020 --> 00:01:59.050
+You can create some private certificates.
+
+53
+00:01:59.050 --> 00:02:00.520
+That's for your internal applications,
+
+54
+00:02:00.520 --> 00:02:02.870
+so you can have your own private CA,
+
+55
+00:02:02.870 --> 00:02:04.970
+and your applications must be set up
+
+56
+00:02:04.970 --> 00:02:06.860
+to trust your private CA.
+
+57
+00:02:06.860 --> 00:02:09.190
+So, the definition of a private CA is that it's not public.
+
+58
+00:02:09.190 --> 00:02:11.572
+So it's yours, it's not widely known.
+
+59
+00:02:11.572 --> 00:02:15.387
+And so, for your application to trust any SSL certificates
+
+60
+00:02:15.387 --> 00:02:17.082
+that is created outside of your,
+
+61
+00:02:17.082 --> 00:02:19.750
+from your private CA,
+
+62
+00:02:19.750 --> 00:02:21.750
+that means that your application need to trust
+
+63
+00:02:21.750 --> 00:02:24.680
+the certificate of the CA itself.
+
+64
+00:02:24.680 --> 00:02:26.150
+For the certificate renewal,
+
+65
+00:02:26.150 --> 00:02:29.940
+in case you provision the certificate using ACM,
+
+66
+00:02:29.940 --> 00:02:32.580
+it's automatically done by ACM,
+
+67
+00:02:32.580 --> 00:02:36.210
+or, if you have manually uploaded a certificate into ACM,
+
+68
+00:02:36.210 --> 00:02:38.310
+you will need to be performing the renewal
+
+69
+00:02:38.310 --> 00:02:39.340
+of that certificates manually,
+
+70
+00:02:39.340 --> 00:02:41.660
+so a bit more maintenance on your side.
+
+71
+00:02:41.660 --> 00:02:45.070
+Finally, very, very, very, very important,
+
+72
+00:02:45.070 --> 00:02:47.610
+ACM is a regional service.
+
+73
+00:02:47.610 --> 00:02:49.770
+That means that if you have a global application,
+
+74
+00:02:49.770 --> 00:02:52.070
+with multiple ALB all around the world
+
+75
+00:02:52.070 --> 00:02:53.740
+in different AWS regions,
+
+76
+00:02:53.740 --> 00:02:57.561
+you will need to issue an SSL certificate in each region
+
+77
+00:02:57.561 --> 00:03:00.340
+where your application is deployed.
+
+78
+00:03:00.340 --> 00:03:03.210
+So, you cannot use ACM as a global service.
+
+79
+00:03:03.210 --> 00:03:04.460
+It's a regional service.
+
+80
+00:03:04.460 --> 00:03:07.330
+And you cannot copy certificates across regions.
+
+81
+00:03:07.330 --> 00:03:10.530
+So, you will have to have ACM provision a certificate
+
+82
+00:03:10.530 --> 00:03:13.620
+in every single region where you have load-balancers,
+
+83
+00:03:13.620 --> 00:03:15.740
+for example, for this to work.
+
+84
+00:03:15.740 --> 00:03:17.433
+Obviously, if you use CloudFront,
+
+85
+00:03:17.433 --> 00:03:18.740
+CloudFront is a global distribution,
+
+86
+00:03:18.740 --> 00:03:20.430
+so you don't need to do this, right?
+
+87
+00:03:20.430 --> 00:03:22.820
+But if you have an ALB deployed in multiple regions,
+
+88
+00:03:22.820 --> 00:03:25.800
+then you need to remember that ACM is a regional service
+
+89
+00:03:25.800 --> 00:03:27.910
+and so, you need to have multiple SSL certificates,
+
+90
+00:03:27.910 --> 00:03:30.300
+all around the globe, for this to work.
+
+91
+00:03:30.300 --> 00:03:31.610
+All right, that's it for ACM.
+
+92
+00:03:31.610 --> 00:03:33.360
+I will see you in the next lecture.
+

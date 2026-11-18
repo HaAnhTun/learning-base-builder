@@ -1,0 +1,258 @@
+WEBVTT
+
+1
+00:00:00.270 --> 00:00:02.310
+<v Narrator>Okay, so we reached the end of this section</v>
+
+2
+00:00:02.310 --> 00:00:03.990
+and I wanna give you a quick summary.
+
+3
+00:00:03.990 --> 00:00:06.000
+Now, I know this is quite a heavy section,
+
+4
+00:00:06.000 --> 00:00:07.560
+but you need to know everything in it
+
+5
+00:00:07.560 --> 00:00:09.030
+and this is why I like to start with it
+
+6
+00:00:09.030 --> 00:00:10.770
+because if you're not confident,
+
+7
+00:00:10.770 --> 00:00:11.603
+then at the end
+
+8
+00:00:11.603 --> 00:00:13.110
+of this course, you can revisit the section
+
+9
+00:00:13.110 --> 00:00:15.660
+and hopefully it should make a lot more sense to you.
+
+10
+00:00:15.660 --> 00:00:18.390
+So let's summarize for Identity and Federation.
+
+11
+00:00:18.390 --> 00:00:20.670
+So we have users and accounts
+
+12
+00:00:20.670 --> 00:00:22.320
+that we can manage within AWS,
+
+13
+00:00:22.320 --> 00:00:25.710
+but we can also create these accounts using a organizations.
+
+14
+00:00:25.710 --> 00:00:26.940
+If we wanna go one step deeper,
+
+15
+00:00:26.940 --> 00:00:28.260
+we can use Control Tower
+
+16
+00:00:28.260 --> 00:00:31.470
+to set up securing compliant multi-accounts environments
+
+17
+00:00:31.470 --> 00:00:33.120
+and using guardrails to prevent
+
+18
+00:00:33.120 --> 00:00:35.880
+or to tag non-compliance of some accounts.
+
+19
+00:00:35.880 --> 00:00:37.230
+We can do Federation in many ways.
+
+20
+00:00:37.230 --> 00:00:40.200
+The first one and the older one is using SAML 2.0.
+
+21
+00:00:40.200 --> 00:00:43.131
+But if you don't have SAML 2.0,
+
+22
+00:00:43.131 --> 00:00:45.060
+then you can use a custom identity provider,
+
+23
+00:00:45.060 --> 00:00:48.450
+a broker with GetFederation Token API for STS.
+
+24
+00:00:48.450 --> 00:00:51.060
+And then we have IAM Identity Center to connect
+
+25
+00:00:51.060 --> 00:00:53.150
+to multiple accounts within your organization
+
+26
+00:00:53.150 --> 00:00:56.610
+and also to connect your SAML apps.
+
+27
+00:00:56.610 --> 00:00:58.650
+If you want to do Web Identity Federation
+
+28
+00:00:58.650 --> 00:00:59.483
+the old way you can,
+
+29
+00:00:59.483 --> 00:01:00.870
+but it's not recommended
+
+30
+00:01:00.870 --> 00:01:03.420
+or you can do it the new way using Cognito,
+
+31
+00:01:03.420 --> 00:01:06.000
+that will allow you to also get new features
+
+32
+00:01:06.000 --> 00:01:08.520
+such as Anonymous Mode and MFA.
+
+33
+00:01:08.520 --> 00:01:10.830
+You can also use Directory Services
+
+34
+00:01:10.830 --> 00:01:12.870
+to manage your Microsoft Active Directory.
+
+35
+00:01:12.870 --> 00:01:15.354
+So we have Managed Microsoft AD as a standalone
+
+36
+00:01:15.354 --> 00:01:18.960
+or we can set up a trust with the AD on premises.
+
+37
+00:01:18.960 --> 00:01:20.340
+We'll have MFA, seamless join,
+
+38
+00:01:20.340 --> 00:01:21.810
+and RDS integration.
+
+39
+00:01:21.810 --> 00:01:23.430
+With AD Connector, that allows us
+
+40
+00:01:23.430 --> 00:01:26.100
+to simply proxy request on premises
+
+41
+00:01:26.100 --> 00:01:28.200
+or Simple AD to set up a standalone
+
+42
+00:01:28.200 --> 00:01:30.390
+and cheap AD compatible with AWS.
+
+43
+00:01:30.390 --> 00:01:33.360
+There's no MFA or no advanced capabilities.
+
+44
+00:01:33.360 --> 00:01:35.910
+And finally, if you need to share all the resources within
+
+45
+00:01:35.910 --> 00:01:38.460
+your accounts, then think of using
+
+46
+00:01:38.460 --> 00:01:40.800
+the Resource Access Manager service or RAM.
+
+47
+00:01:40.800 --> 00:01:42.739
+Okay, so to summarize this lecture,
+
+48
+00:01:42.739 --> 00:01:44.970
+what you want to get out is that usually AWS
+
+49
+00:01:44.970 --> 00:01:47.970
+will try to make you lean towards the more modern
+
+50
+00:01:47.970 --> 00:01:49.110
+way of doing things.
+
+51
+00:01:49.110 --> 00:01:51.840
+So SSO is always going to be preferred
+
+52
+00:01:51.840 --> 00:01:53.880
+to doing Federation with SAML 2.0
+
+53
+00:01:53.880 --> 00:01:55.080
+or Cognito is always going
+
+54
+00:01:55.080 --> 00:01:57.360
+to be preferred than doing Raw Web Identity
+
+55
+00:01:57.360 --> 00:01:58.890
+Federation and so on.
+
+56
+00:01:58.890 --> 00:02:01.050
+So it's important for you to understand all the points in
+
+57
+00:02:01.050 --> 00:02:02.070
+there because the options
+
+58
+00:02:02.070 --> 00:02:04.710
+we'll talk about SAML 2.0 Federation,
+
+59
+00:02:04.710 --> 00:02:06.750
+we'll talk about Web Identity Federation,
+
+60
+00:02:06.750 --> 00:02:09.630
+but also we'll talk about Single Sign On or Cognito.
+
+61
+00:02:09.630 --> 00:02:12.870
+And for you, it's super important to master these services
+
+62
+00:02:12.870 --> 00:02:15.660
+to answer the question correctly, okay?
+
+63
+00:02:15.660 --> 00:02:17.580
+So that's it for this lecture and this section.
+
+64
+00:02:17.580 --> 00:02:20.453
+I hope you liked it and I will see you in the next lecture.
+

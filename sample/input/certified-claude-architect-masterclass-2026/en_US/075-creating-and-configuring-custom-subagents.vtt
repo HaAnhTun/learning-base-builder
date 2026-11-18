@@ -1,0 +1,546 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.800
+Cloud Code can spawn a separate agent instance to take on a piece of work on its own.
+
+2
+00:00:05.800 --> 00:00:09.439
+This lesson covers creating and configuring those subagents.
+
+3
+00:00:09.439 --> 00:00:11.960
+We'll look at what a subagent actually is,
+
+4
+00:00:11.960 --> 00:00:13.479
+how you can spawn one,
+
+5
+00:00:13.479 --> 00:00:15.680
+how context isolation works,
+
+6
+00:00:15.680 --> 00:00:17.959
+how to scope its tools and permissions,
+
+7
+00:00:17.959 --> 00:00:21.120
+and when spawning is the right architecture call.
+
+8
+00:00:21.120 --> 00:00:25.479
+Let's jump in. A subagent isn't another chat window.
+
+9
+00:00:25.479 --> 00:00:27.920
+It's a separate agent instance spawned by
+
+10
+00:00:27.920 --> 00:00:30.239
+a parent through the agent tool inside
+
+11
+00:00:30.239 --> 00:00:34.799
+the same Cloud Code session and handed one delegated subtask.
+
+12
+00:00:34.799 --> 00:00:39.799
+It runs in its own isolated context window and reports its results back.
+
+13
+00:00:39.799 --> 00:00:43.200
+Context isolation is the part people underestimate.
+
+14
+00:00:43.200 --> 00:00:47.419
+Each subagent starts fresh with an empty context window,
+
+15
+00:00:47.419 --> 00:00:50.759
+and nothing passes from the parent automatically.
+
+16
+00:00:50.759 --> 00:00:52.959
+Every piece of information the subagent
+
+17
+00:00:52.959 --> 00:00:55.520
+needs has to be included in the handoff.
+
+18
+00:00:55.520 --> 00:00:58.799
+The orchestrator is the parent that decomposes the goal,
+
+19
+00:00:58.799 --> 00:01:02.639
+delegates the work, and synthesizes what comes back.
+
+20
+00:01:02.639 --> 00:01:06.760
+It doesn't share its context window with anything it spawns.
+
+21
+00:01:06.760 --> 00:01:09.279
+Subagent, context isolation,
+
+22
+00:01:09.279 --> 00:01:12.279
+and orchestrator carry the rest of this lesson.
+
+23
+00:01:12.279 --> 00:01:15.040
+Cloud Code subagents are different from
+
+24
+00:01:15.040 --> 00:01:18.559
+multi-agent patterns you'd build directly with the API.
+
+25
+00:01:18.559 --> 00:01:20.120
+In the API context,
+
+26
+00:01:20.120 --> 00:01:23.760
+a multi-agent system is usually a set of API completions,
+
+27
+00:01:23.800 --> 00:01:26.879
+you're orchestrating yourself in application code.
+
+28
+00:01:26.879 --> 00:01:31.800
+Cloud Code subagents are separate agent instances inside one session.
+
+29
+00:01:31.800 --> 00:01:34.040
+They're not API calls you're managing.
+
+30
+00:01:34.040 --> 00:01:37.720
+They're spawned via the agent tool within the same session,
+
+31
+00:01:37.720 --> 00:01:40.879
+each running with its own isolated context window
+
+32
+00:01:40.879 --> 00:01:43.739
+and its own configured tools and permissions.
+
+33
+00:01:43.739 --> 00:01:45.440
+This distinction matters.
+
+34
+00:01:45.440 --> 00:01:48.080
+Subagents in Cloud Code aren't
+
+35
+00:01:48.080 --> 00:01:51.919
+the same thing as agent orchestration using the API.
+
+36
+00:01:52.000 --> 00:01:54.400
+They operate at a different level and have
+
+37
+00:01:54.400 --> 00:01:56.599
+different characteristics around context,
+
+38
+00:01:56.599 --> 00:01:59.199
+isolation, and tool access.
+
+39
+00:01:59.199 --> 00:02:02.279
+Two paths exist for creating a subagent.
+
+40
+00:02:02.279 --> 00:02:04.919
+The first is a markdown definition file.
+
+41
+00:02:04.919 --> 00:02:08.119
+Custom subagents are defined as markdown files,
+
+42
+00:02:08.119 --> 00:02:11.320
+either in a .cloudagents folder in your project
+
+43
+00:02:11.320 --> 00:02:14.479
+or a .cloudagents folder in your home directory.
+
+44
+00:02:14.479 --> 00:02:18.119
+You create one by asking Cloud to write the file for you,
+
+45
+00:02:18.119 --> 00:02:21.100
+or by editing it directly to define the subagents,
+
+46
+00:02:21.100 --> 00:02:23.619
+identity, tools, and scope.
+
+47
+00:02:23.619 --> 00:02:26.380
+The agent tool is the programmatic path.
+
+48
+00:02:26.380 --> 00:02:29.179
+When a parent agent is running an agentic workflow,
+
+49
+00:02:29.179 --> 00:02:31.660
+it can invoke the agent tool to spawn
+
+50
+00:02:31.660 --> 00:02:34.899
+a subagent dynamically as part of that workflow.
+
+51
+00:02:34.899 --> 00:02:37.559
+This is how delegation happens in code.
+
+52
+00:02:37.559 --> 00:02:39.059
+The markdown file gives you
+
+53
+00:02:39.059 --> 00:02:41.899
+a named reusable subagent definition.
+
+54
+00:02:41.899 --> 00:02:44.100
+The agent tool is how subagents get
+
+55
+00:02:44.100 --> 00:02:47.380
+spawned during execution of a larger workflow.
+
+56
+00:02:47.380 --> 00:02:51.259
+Four things get configured on a per subagent basis.
+
+57
+00:02:51.259 --> 00:02:54.779
+Tool access controls which tools the subagent can invoke.
+
+58
+00:02:54.779 --> 00:02:56.740
+Bash, file reads,
+
+59
+00:02:56.740 --> 00:02:59.740
+file writes, web access, or others.
+
+60
+00:02:59.740 --> 00:03:01.580
+Isolation is the next lever.
+
+61
+00:03:01.580 --> 00:03:03.740
+A work tree gives the subagent
+
+62
+00:03:03.740 --> 00:03:06.460
+its own copy of the repository to work in,
+
+63
+00:03:06.460 --> 00:03:08.020
+and permission rules scope how
+
+64
+00:03:08.020 --> 00:03:09.860
+far it can reach on the file system.
+
+65
+00:03:09.860 --> 00:03:12.539
+Permissions control what the subagent is
+
+66
+00:03:12.539 --> 00:03:15.339
+allowed to do within its configured scope.
+
+67
+00:03:15.380 --> 00:03:19.059
+Subagents can have narrower permissions than the parent.
+
+68
+00:03:19.059 --> 00:03:21.500
+The task description is the explicit set of
+
+69
+00:03:21.500 --> 00:03:24.380
+instructions defining what the subagent should do.
+
+70
+00:03:24.380 --> 00:03:27.460
+All four of these are intentional design choices.
+
+71
+00:03:27.460 --> 00:03:29.259
+You're not just spawning a session,
+
+72
+00:03:29.259 --> 00:03:33.779
+you're defining a scoped permissioned agent with a specific job.
+
+73
+00:03:33.779 --> 00:03:35.940
+Context isolation is one of
+
+74
+00:03:35.940 --> 00:03:39.179
+the most important things to internalize about subagents.
+
+75
+00:03:39.179 --> 00:03:41.059
+When a subagent is spawned,
+
+76
+00:03:41.059 --> 00:03:42.339
+it starts fresh.
+
+77
+00:03:42.339 --> 00:03:44.259
+There's no automatic inheritance.
+
+78
+00:03:44.300 --> 00:03:46.139
+The parent's conversation history,
+
+79
+00:03:46.139 --> 00:03:47.619
+already read files,
+
+80
+00:03:47.619 --> 00:03:50.059
+and prior work don't carry over.
+
+81
+00:03:50.059 --> 00:03:53.419
+If the subagent needs information from the parent's session,
+
+82
+00:03:53.419 --> 00:03:57.660
+the parent has to explicitly include it in the handoff instructions.
+
+83
+00:03:57.660 --> 00:04:00.500
+The subagent's results are returned to the parent,
+
+84
+00:04:00.500 --> 00:04:02.339
+which then synthesizes them.
+
+85
+00:04:02.339 --> 00:04:04.820
+Isolation is actually a feature here.
+
+86
+00:04:04.820 --> 00:04:07.740
+It prevents the subagent from being influenced by
+
+87
+00:04:07.740 --> 00:04:10.860
+context that isn't relevant to its task.
+
+88
+00:04:10.860 --> 00:04:13.020
+It keeps the subagent focused,
+
+89
+00:04:13.020 --> 00:04:16.940
+but it means the handoff has to be deliberate and complete.
+
+90
+00:04:16.940 --> 00:04:22.019
+By default, a subagent inherits the parent's tools and permission context,
+
+91
+00:04:22.019 --> 00:04:25.899
+but you can configure it with a narrower set than the parent holds.
+
+92
+00:04:25.899 --> 00:04:30.660
+A subagent that's inspecting files can be configured as read-only,
+
+93
+00:04:30.660 --> 00:04:33.299
+meaning it can look but not write.
+
+94
+00:04:33.299 --> 00:04:37.100
+A subagent working on a specific service can be scoped to
+
+95
+00:04:37.100 --> 00:04:41.019
+that directory only with no access to adjacent paths.
+
+96
+00:04:41.019 --> 00:04:43.339
+Restricting tool access reduces
+
+97
+00:04:43.339 --> 00:04:47.019
+the blast radius if the subagent does something unexpected.
+
+98
+00:04:47.019 --> 00:04:51.339
+This is the principle of least privilege applied at the subagent level.
+
+99
+00:04:51.339 --> 00:04:55.779
+Give the subagent exactly the access it needs for its task,
+
+100
+00:04:55.779 --> 00:04:57.459
+and nothing beyond that.
+
+101
+00:04:57.459 --> 00:05:02.660
+Restricting below the parent is the intentional opt-in step.
+
+102
+00:05:02.660 --> 00:05:05.420
+Knowing when to spawn a subagent and when to
+
+103
+00:05:05.420 --> 00:05:08.019
+stay in line is a practical design decision.
+
+104
+00:05:08.059 --> 00:05:12.940
+Subagents make sense when tasks are truly independent and can run in parallel.
+
+105
+00:05:12.940 --> 00:05:16.859
+When a task needs a different tool set than the parent is using,
+
+106
+00:05:16.859 --> 00:05:18.779
+or when scope isolation prevents
+
+107
+00:05:18.779 --> 00:05:21.700
+context contamination between separate work streams.
+
+108
+00:05:21.700 --> 00:05:26.540
+Staying in line makes sense when the task needs full parent context to complete,
+
+109
+00:05:26.540 --> 00:05:31.339
+when the work is sequential and depends on prior steps in the same session,
+
+110
+00:05:31.339 --> 00:05:35.940
+or when the task is simple enough that delegation overhead exceeds the value.
+
+111
+00:05:35.940 --> 00:05:39.140
+The overhead of spawning a subagent is real.
+
+112
+00:05:39.140 --> 00:05:44.579
+Don't spawn one unless the isolation or parallelism actually buys you something.
+
+113
+00:05:44.579 --> 00:05:48.660
+The handoff is a design artifact, not an afterthought.
+
+114
+00:05:48.660 --> 00:05:50.220
+When you spawn a subagent,
+
+115
+00:05:50.220 --> 00:05:53.260
+you're writing the only instructions it will ever have.
+
+116
+00:05:53.260 --> 00:05:55.140
+There's no shared context.
+
+117
+00:05:55.140 --> 00:05:59.220
+There's no ability to ask a follow-up question from the parent mid-task.
+
+118
+00:05:59.220 --> 00:06:02.820
+The handoff needs to include a precise task description,
+
+119
+00:06:02.899 --> 00:06:04.940
+defining what done looks like,
+
+120
+00:06:04.940 --> 00:06:06.739
+the necessary context,
+
+121
+00:06:06.739 --> 00:06:09.380
+only what the subagent actually needs,
+
+122
+00:06:09.380 --> 00:06:10.899
+and the output format,
+
+123
+00:06:10.899 --> 00:06:15.140
+exactly what structure you expect the subagent to return.
+
+124
+00:06:15.140 --> 00:06:17.779
+If any of these three are underspecified,
+
+125
+00:06:17.779 --> 00:06:20.739
+the results will be ambiguous or unusable.
+
+126
+00:06:20.739 --> 00:06:26.100
+Designing the handoff is the most important part of deploying a subagent effectively.
+
+127
+00:06:26.100 --> 00:06:30.820
+People hear isolated and they picture complete isolation.
+
+128
+00:06:30.820 --> 00:06:33.299
+That's not quite what we're talking about here.
+
+129
+00:06:33.299 --> 00:06:34.739
+Context is walled off,
+
+130
+00:06:34.739 --> 00:06:38.660
+so the parent's conversation and open files don't carry over.
+
+131
+00:06:38.660 --> 00:06:44.500
+But tools and permissions come down from the parent unless you narrow them yourself.
+
+132
+00:06:44.500 --> 00:06:46.739
+Those are separate dials.
+
+133
+00:06:46.739 --> 00:06:48.500
+Once you see them as separate,
+
+134
+00:06:48.500 --> 00:06:53.380
+the choice of what to configure on each one stops feeling arbitrary.
+
+135
+00:06:53.380 --> 00:06:55.059
+That brings this one to a close.
+
+136
+00:06:55.059 --> 00:06:56.660
+I'll see you in the next video.
+

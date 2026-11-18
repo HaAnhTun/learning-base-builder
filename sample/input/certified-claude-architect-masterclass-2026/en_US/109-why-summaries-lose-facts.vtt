@@ -1,0 +1,362 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.000
+In this lesson, we're looking at why history summarization loses facts and what you can do about it.
+
+2
+00:00:06.000 --> 00:00:12.000
+We'll cover which categories of information are most at risk, how loss compounds across turns,
+
+3
+00:00:12.000 --> 00:00:16.000
+and the extract-first pattern that breaks the cycle.
+
+4
+00:00:16.000 --> 00:00:19.000
+By the end, you'll know exactly what gets dropped and why.
+
+5
+00:00:19.000 --> 00:00:21.000
+Let's get into it.
+
+6
+00:00:21.000 --> 00:00:27.984
+Picture a session where the user set a rate limit at turn 4, and by turn 30, the model is quietly
+
+7
+00:00:27.984 --> 00:00:29.927
+ignoring it. Nothing erred.
+
+8
+00:00:30.000 --> 00:00:33.000
+What happened is history summarization.
+
+9
+00:00:33.000 --> 00:00:39.000
+The API doesn't do this for you, and left unmanaged an overlong request simply fails.
+
+10
+00:00:39.000 --> 00:00:46.000
+When history approaches the context window, your application condenses prior turns into a shorter narrative
+
+11
+00:00:46.000 --> 00:00:51.000
+that preserves the gist and drops the specifics, and it does that silently.
+
+12
+00:00:51.000 --> 00:00:53.000
+You don't get a warning.
+
+13
+00:00:53.000 --> 00:01:00.000
+The fix is a persistent fact block, a structured region of the prompt that holds extracted facts
+
+14
+00:01:00.000 --> 00:01:03.000
+and survives the compression pass intact.
+
+15
+00:01:03.000 --> 00:01:07.000
+Getting facts into that block is the job of fact extraction,
+
+16
+00:01:07.000 --> 00:01:12.000
+a step that runs against the raw turn before the summarizer can consume it.
+
+17
+00:01:12.000 --> 00:01:16.000
+Everything else in this lesson builds on that arrangement.
+
+18
+00:01:16.000 --> 00:01:19.000
+Summarization exists for a good reason.
+
+19
+00:01:19.000 --> 00:01:26.000
+Long conversations accumulate more tokens than the context window can hold, so something has to give.
+
+20
+00:01:26.000 --> 00:01:30.000
+Your application compresses older turns into a shorter narrative.
+
+21
+00:01:30.000 --> 00:01:35.000
+The tradeoff is that fluency improves and specificity drops.
+
+22
+00:01:35.000 --> 00:01:41.000
+The compressed version reads naturally and preserves the overall flow of the conversation.
+
+23
+00:01:41.000 --> 00:01:45.000
+What it loses are the exact values, the specific number you mentioned,
+
+24
+00:01:45.000 --> 00:01:49.000
+the exact name of the tool you chose, the precise threshold you set.
+
+25
+00:01:49.000 --> 00:01:52.000
+And here's what makes this particularly tricky.
+
+26
+00:01:52.000 --> 00:01:56.000
+A home-rolled summarizer doesn't flag what it dropped.
+
+27
+00:01:56.000 --> 00:02:00.000
+The conversation just continues as if everything is still intact.
+
+28
+00:02:00.000 --> 00:02:07.000
+Claude does offer an opt-in server-side compaction feature, and that one returns a visible compaction block.
+
+29
+00:02:07.000 --> 00:02:13.000
+Silent loss is what we design around, and it causes most long-session reliability failures.
+
+30
+00:02:13.000 --> 00:02:16.000
+Let's make the tradeoff concrete with a comparison.
+
+31
+00:02:16.000 --> 00:02:23.000
+On the fluency side, the compressed summary reads cleanly, and the model can continue responding coherently.
+
+32
+00:02:23.000 --> 00:02:29.000
+Relationships between ideas stay intact, and the overall arc of the conversation is preserved.
+
+33
+00:02:29.000 --> 00:02:31.000
+That's genuinely useful.
+
+34
+00:02:31.000 --> 00:02:35.000
+On the specificity side, the exact number you entered for a rate limit is gone.
+
+35
+00:02:35.000 --> 00:02:39.000
+The name of the specific data set you referenced is gone.
+
+36
+00:02:39.000 --> 00:02:43.000
+The decision you made three turns ago about which approach to use is gone.
+
+37
+00:02:43.000 --> 00:02:50.462
+The model has no way to distinguish between a token budget of $512 and one of $8,192 if the specific
+
+38
+00:02:50.462 --> 00:02:52.925
+value was dropped in compression.
+
+39
+00:02:53.000 --> 00:02:58.520
+That distinction matters enormously when your application depends on it, and the model won't tell
+
+40
+00:02:58.520 --> 00:02:59.943
+you the value is missing.
+
+41
+00:03:00.000 --> 00:03:04.000
+Not all information is equally vulnerable to summarization loss.
+
+42
+00:03:04.000 --> 00:03:07.000
+Think in four categories. Identifiers go first.
+
+43
+00:03:07.000 --> 00:03:12.609
+User IDs, ticket numbers, version strings, and session tokens look like opaque strings to a
+
+44
+00:03:12.609 --> 00:03:15.938
+summarizer, but they're critical to application logic.
+
+45
+00:03:16.000 --> 00:03:18.000
+Numeric limits are next.
+
+46
+00:03:18.000 --> 00:03:24.389
+Token budgets, rate limits, retry thresholds, and cost caps frequently get compressed down to
+
+47
+00:03:24.389 --> 00:03:26.931
+something like a limit was mentioned.
+
+48
+00:03:27.000 --> 00:03:35.000
+Named entities, meaning specific people, tools, data sets, and services get generalized or dropped entirely.
+
+49
+00:03:35.000 --> 00:03:41.106
+And decisions, the choices that constrain later steps, get softened into a vague narrative about the
+
+50
+00:03:41.106 --> 00:03:42.938
+direction of the conversation.
+
+51
+00:03:43.000 --> 00:03:48.907
+These four categories are where you should focus your extraction logic, because they're what the
+
+52
+00:03:48.907 --> 00:03:50.938
+summarizer consistently discards.
+
+53
+00:03:51.000 --> 00:03:56.000
+You can recognize fact loss from its symptoms even before you know the root cause.
+
+54
+00:03:56.000 --> 00:04:04.000
+Constraint amnesia is when a rule the user stated early in the session gets silently ignored several turns later.
+
+55
+00:04:04.000 --> 00:04:09.000
+The model doesn't say it forgot the rule, it just stops applying it.
+
+56
+00:04:09.000 --> 00:04:11.000
+Entity confusion is subtler.
+
+57
+00:04:11.000 --> 00:04:17.000
+The model substitutes a plausible name or number for the one the user actually provided.
+
+58
+00:04:17.000 --> 00:04:19.000
+It sounds confident, and it's wrong.
+
+59
+00:04:19.000 --> 00:04:25.000
+Decision drift is when a committed choice gets reopened as if it were still under discussion.
+
+60
+00:04:25.000 --> 00:04:33.000
+The user said, we're using approach A, and three turns later, the model is evaluating approach B again.
+
+61
+00:04:33.000 --> 00:04:36.000
+All three symptoms trace back to the same root cause.
+
+62
+00:04:36.000 --> 00:04:42.000
+Facts that weren't extracted before summarization consumed them.
+
+63
+00:04:42.000 --> 00:04:46.000
+Here's what makes this problem worse over time.
+
+64
+00:04:46.000 --> 00:04:50.000
+Each summarization pass starts from the output of the previous one.
+
+65
+00:04:50.000 --> 00:04:54.000
+The first pass compresses raw turns and drops minor details.
+
+66
+00:04:54.000 --> 00:04:58.000
+The second pass compresses a summary and drops a bit more.
+
+67
+00:04:58.000 --> 00:05:01.000
+The third pass compresses a summary of a summary.
+
+68
+00:05:01.000 --> 00:05:04.000
+By that point, only the broadest narrative survives.
+
+69
+00:05:04.000 --> 00:05:10.000
+This is compounding loss, and it accelerates faster than most developers expect.
+
+70
+00:05:10.000 --> 00:05:15.000
+A constraint stated clearly at turn 5 might be completely gone by turn 20.
+
+71
+00:05:15.000 --> 00:05:20.872
+Not because any single pass was careless, but because each pass had a little less to work with than
+
+72
+00:05:20.872 --> 00:05:21.940
+the one before it.
+
+73
+00:05:22.000 --> 00:05:24.000
+Long sessions don't just get longer.
+
+74
+00:05:24.000 --> 00:05:30.000
+They behave qualitatively differently from short ones, and you need to design for that explicitly.
+
+75
+00:05:30.000 --> 00:05:36.000
+The extract first pattern is a simple reordering of operations that breaks the loss cycle entirely.
+
+76
+00:05:36.000 --> 00:05:42.000
+Instead of summarizing a turn and then trying to recover what was lost, you extract first.
+
+77
+00:05:42.000 --> 00:05:50.000
+Step 1. As a new turn arrives, run a fact extraction pass against the raw turn text before anything else happens.
+
+78
+00:05:50.000 --> 00:05:54.000
+Step 2. Write the extracted facts into the persistent block.
+
+79
+00:05:54.000 --> 00:05:58.000
+Step 3. Summarize the turn for the rolling history.
+
+80
+00:05:58.000 --> 00:06:04.250
+How the block absorbs each new fact is a separate update strategy decision, and that is exactly what
+
+81
+00:06:04.250 --> 00:06:05.937
+the next lesson builds out.
+
+82
+00:06:06.000 --> 00:06:08.000
+What matters here is the ordering.
+
+83
+00:06:08.000 --> 00:06:12.000
+Extraction runs against the raw turn before compression touches it,
+
+84
+00:06:12.000 --> 00:06:18.000
+so the summarizer no longer has sole custody of the facts your application depends on.
+
+85
+00:06:18.000 --> 00:06:25.000
+Extract first, summarize second is the ordering that survives every long session you'll ever build.
+
+86
+00:06:25.000 --> 00:06:27.000
+Sequence is the whole trick.
+
+87
+00:06:27.000 --> 00:06:34.000
+The moment a summarizer runs, it optimizes for reading well, and specifics are the cheapest thing to drop.
+
+88
+00:06:34.000 --> 00:06:40.000
+Pull the facts out before that happens, and compression can be as aggressive as it needs to be,
+
+89
+00:06:40.000 --> 00:06:43.000
+because the details are already saved.
+
+90
+00:06:43.000 --> 00:06:46.000
+That's where we'll leave this lesson. I'll see you in the next one.
+

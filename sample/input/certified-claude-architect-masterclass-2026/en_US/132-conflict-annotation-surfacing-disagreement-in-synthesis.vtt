@@ -1,0 +1,430 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.680
+In this lesson, we're looking at what happens when your source documents disagree.
+
+2
+00:00:04.239 --> 00:00:09.039
+A well-designed synthesis pipeline doesn't just pick one source and move on.
+
+3
+00:00:09.039 --> 00:00:14.079
+It detects the conflict, annotates it, and applies an explicit resolution strategy.
+
+4
+00:00:14.720 --> 00:00:18.639
+We'll cover detection, annotation patterns, resolution rules,
+
+5
+00:00:18.639 --> 00:00:22.719
+and logging disagreements even after they're resolved. Let's get into it.
+
+6
+00:00:23.360 --> 00:00:26.000
+Your sources disagree. What does the output say?
+
+7
+00:00:26.559 --> 00:00:31.920
+Conflict annotation is the practice of surfacing that disagreement rather than hiding it.
+
+8
+00:00:31.920 --> 00:00:38.080
+When sources contradict each other, an annotated synthesis tells the reader a conflict exists
+
+9
+00:00:38.080 --> 00:00:41.119
+instead of pretending only one source ever spoke.
+
+10
+00:00:41.680 --> 00:00:46.479
+A resolution strategy is the explicit rule you use to decide between them.
+
+11
+00:00:46.479 --> 00:00:51.200
+Prefer newer, prefer authoritative, and escalate to human are the main options,
+
+12
+00:00:51.200 --> 00:00:53.279
+and we'll walk through each one.
+
+13
+00:00:53.279 --> 00:00:57.759
+The averaging anti-pattern is the failure mode all of this guards against.
+
+14
+00:00:57.759 --> 00:01:01.759
+It's what happens when a system silently blends conflicting sources
+
+15
+00:01:01.759 --> 00:01:03.759
+or picks one without logging the choice.
+
+16
+00:01:04.319 --> 00:01:08.879
+The reader gets a confident-sounding claim with no indication that another source
+
+17
+00:01:08.879 --> 00:01:09.839
+said something different.
+
+18
+00:01:11.120 --> 00:01:15.680
+The averaging anti-pattern is subtle because the output still looks good.
+
+19
+00:01:15.680 --> 00:01:18.800
+The prose is fluent, the claim sounds certain,
+
+20
+00:01:18.800 --> 00:01:23.040
+and there's nothing in the text to suggest that another source disagreed.
+
+21
+00:01:23.360 --> 00:01:24.959
+Here's what actually happened.
+
+22
+00:01:24.959 --> 00:01:28.239
+The model encountered two incompatible claims.
+
+23
+00:01:28.239 --> 00:01:32.800
+Instead of flagging the conflict, it either averaged them into a vague middle claim
+
+24
+00:01:32.800 --> 00:01:37.519
+that neither source actually supports, or it chose one, discarded the other,
+
+25
+00:01:37.519 --> 00:01:40.319
+and presented that choice as settled fact.
+
+26
+00:01:40.319 --> 00:01:43.440
+The reader has no way to know a choice was made.
+
+27
+00:01:43.440 --> 00:01:46.639
+They can't evaluate whether the right source was selected,
+
+28
+00:01:46.639 --> 00:01:51.519
+and the discarded source may have been more accurate, more recent, or more authoritative.
+
+29
+00:01:52.239 --> 00:01:56.480
+Downstream decisions get made on a foundation of false certainty.
+
+30
+00:01:56.480 --> 00:02:00.480
+This is why conflict annotation isn't optional in high-stakes synthesis.
+
+31
+00:02:01.040 --> 00:02:04.800
+The cost of hidden disagreement is higher than the cost of surfacing it.
+
+32
+00:02:06.080 --> 00:02:10.320
+Conflict detection is the upstream step that makes annotation possible.
+
+33
+00:02:10.880 --> 00:02:15.600
+Before your pipeline synthesizes anything, it needs a mechanism to identify
+
+34
+00:02:15.600 --> 00:02:19.360
+when two sources make incompatible claims about the same fact.
+
+35
+00:02:19.919 --> 00:02:22.960
+The practical approach combines two techniques.
+
+36
+00:02:22.960 --> 00:02:25.119
+First, semantic similarity.
+
+37
+00:02:25.119 --> 00:02:29.279
+You find passages from different sources that are discussing the same topic.
+
+38
+00:02:29.279 --> 00:02:32.160
+High similarity means they're making claims about the same thing.
+
+39
+00:02:32.800 --> 00:02:35.119
+Second, entailment checking.
+
+40
+00:02:35.119 --> 00:02:40.800
+You test whether one passage contradicts the other, supports it, or is simply unrelated.
+
+41
+00:02:41.440 --> 00:02:43.839
+When two passages are semantically similar,
+
+42
+00:02:43.839 --> 00:02:48.880
+but entailment scoring says they contradict each other, you have a detected conflict.
+
+43
+00:02:48.880 --> 00:02:53.759
+The key insight is that detection should happen before synthesis, not after.
+
+44
+00:02:53.759 --> 00:02:56.320
+If you wait until the output is already written,
+
+45
+00:02:56.320 --> 00:02:58.479
+you're auditing a problem that's already been hidden.
+
+46
+00:02:59.679 --> 00:03:03.039
+The comparison between detected and undetected conflicts
+
+47
+00:03:03.039 --> 00:03:05.600
+comes down to what the reader is allowed to know.
+
+48
+00:03:05.600 --> 00:03:10.800
+When a conflict is detected and annotated, the output tells the reader something like this.
+
+49
+00:03:10.800 --> 00:03:14.240
+Source A reports that the policy was updated in 2022.
+
+50
+00:03:14.800 --> 00:03:18.639
+Source B shows the policy was last revised in 2019.
+
+51
+00:03:18.639 --> 00:03:20.639
+That difference hasn't been resolved.
+
+52
+00:03:20.639 --> 00:03:23.119
+The reader now knows uncertainty exists.
+
+53
+00:03:23.119 --> 00:03:27.919
+They can investigate, escalate, or accept the ambiguity with full knowledge.
+
+54
+00:03:27.919 --> 00:03:30.880
+When a conflict goes undetected or unannounced,
+
+55
+00:03:30.880 --> 00:03:34.000
+the reader sees a confident assertion with no indication
+
+56
+00:03:34.000 --> 00:03:35.919
+that another source said something different.
+
+57
+00:03:36.479 --> 00:03:40.399
+One of those two reading experiences produces informed decisions.
+
+58
+00:03:40.399 --> 00:03:42.720
+The other produces confident mistakes.
+
+59
+00:03:42.720 --> 00:03:47.119
+Conflict annotation is the difference between an honest synthesis and a misleading one.
+
+60
+00:03:47.520 --> 00:03:52.639
+Once a conflict is detected, your pipeline needs a rule for resolving it.
+
+61
+00:03:52.639 --> 00:03:54.320
+There are three main strategies.
+
+62
+00:03:54.320 --> 00:03:59.039
+PreferNewer says that when two sources conflict, the more recent one wins.
+
+63
+00:03:59.759 --> 00:04:02.960
+This works well for domains where facts evolve over time.
+
+64
+00:04:03.520 --> 00:04:08.559
+Regulatory requirements, software versions, and pricing data all fit this pattern.
+
+65
+00:04:09.360 --> 00:04:15.279
+PreferAuthoritative says that designated high-trust sources outrank secondary ones.
+
+66
+00:04:16.239 --> 00:04:21.359
+You need to define an authority hierarchy for your source corpus in advance.
+
+67
+00:04:21.359 --> 00:04:24.640
+Authoritative sources might be official standards, bodies,
+
+68
+00:04:24.640 --> 00:04:27.279
+regulatory agencies, or primary research.
+
+69
+00:04:27.920 --> 00:04:30.559
+EscalateToHuman is the third option.
+
+70
+00:04:30.559 --> 00:04:36.239
+When neither PreferNewer nor PreferAuthoritative can cleanly resolve a conflict,
+
+71
+00:04:36.239 --> 00:04:39.040
+you route the decision to a human reviewer.
+
+72
+00:04:39.040 --> 00:04:42.640
+This is expensive but appropriate when the stakes are high enough
+
+73
+00:04:42.640 --> 00:04:44.720
+that an automated rule could get it wrong.
+
+74
+00:04:46.000 --> 00:04:48.000
+Here's a rule that's easy to overlook.
+
+75
+00:04:48.000 --> 00:04:54.160
+When you resolve a conflict, you should log it, even though the conflict is now closed.
+
+76
+00:04:54.160 --> 00:04:57.760
+The resolution trail needs to be preserved for future reference.
+
+77
+00:04:57.760 --> 00:05:03.200
+Your conflict log should record the conflicting claims and their source identifiers,
+
+78
+00:05:03.200 --> 00:05:06.079
+the resolution strategy that was applied,
+
+79
+00:05:06.079 --> 00:05:10.239
+and which claim was selected alongside the one that was discarded.
+
+80
+00:05:10.239 --> 00:05:12.720
+Why does this matter after the fact?
+
+81
+00:05:12.799 --> 00:05:16.720
+Because future reviewers need to know that a choice was made.
+
+82
+00:05:16.720 --> 00:05:21.839
+If the conflict log doesn't exist, a reviewer reading the final output three months later
+
+83
+00:05:21.839 --> 00:05:25.519
+will see a confident claim and assume there was consensus.
+
+84
+00:05:26.160 --> 00:05:29.760
+With the log, they see that two sources disagreed,
+
+85
+00:05:29.760 --> 00:05:33.600
+a rule was applied, and a specific choice was recorded.
+
+86
+00:05:33.600 --> 00:05:37.040
+That's the difference between an auditable system and an opaque one.
+
+87
+00:05:38.239 --> 00:05:42.480
+Conflict annotation is only useful if readers actually engage with it.
+
+88
+00:05:42.480 --> 00:05:46.959
+That means the presentation has to be calibrated to the stakes and the audience.
+
+89
+00:05:46.959 --> 00:05:51.519
+For high stakes claims, like legal conclusions or clinical findings,
+
+90
+00:05:51.519 --> 00:05:53.679
+surface the conflict inline.
+
+91
+00:05:53.679 --> 00:05:56.160
+Put it right next to the claim it affects.
+
+92
+00:05:56.160 --> 00:06:01.119
+For medium risk conflicts, use a footnote or a collapsible detail block.
+
+93
+00:06:01.119 --> 00:06:05.440
+The main body stays readable, but the detail is available one click away.
+
+94
+00:06:06.079 --> 00:06:10.640
+For full document review, generate a conflict summary at the end.
+
+95
+00:06:10.640 --> 00:06:15.440
+This gives senior reviewers a consolidated list of all detected disagreements
+
+96
+00:06:15.440 --> 00:06:18.480
+without forcing them to read the entire document.
+
+97
+00:06:18.480 --> 00:06:21.679
+The goal across all of these approaches is the same.
+
+98
+00:06:22.239 --> 00:06:27.040
+Readers who need to know about a conflict should be able to find it without digging,
+
+99
+00:06:27.040 --> 00:06:30.079
+and readers who don't need it shouldn't be buried in noise.
+
+100
+00:06:31.760 --> 00:06:35.519
+Synthesis that hides disagreements makes a choice the reader can't see.
+
+101
+00:06:36.160 --> 00:06:39.679
+Detection catches the conflict before the output is written.
+
+102
+00:06:39.679 --> 00:06:41.440
+Annotation surfaces it.
+
+103
+00:06:41.440 --> 00:06:45.519
+An explicit resolution strategy decides between the competing claims.
+
+104
+00:06:45.519 --> 00:06:48.399
+And the conflict log preserves the trail,
+
+105
+00:06:48.399 --> 00:06:52.880
+so a later reviewer knows a choice was made rather than assuming consensus.
+
+106
+00:06:53.600 --> 00:06:57.679
+Surfaced conflict beats invisible certainty every single time.
+
+107
+00:06:58.399 --> 00:07:01.279
+That wraps up this lesson. Let's move on.
+

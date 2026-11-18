@@ -1,0 +1,138 @@
+WEBVTT
+
+1
+00:00:00.480 --> 00:00:01.590
+<v Instructor>So now let's talk about</v>
+
+2
+00:00:01.590 --> 00:00:03.090
+another kind of policy
+
+3
+00:00:03.090 --> 00:00:06.780
+you can have on your organization, called a tag policy.
+
+4
+00:00:06.780 --> 00:00:09.000
+So it looks like this and the idea
+
+5
+00:00:09.000 --> 00:00:11.760
+is to standardize the tags across the resources
+
+6
+00:00:11.760 --> 00:00:14.640
+in a specific AWS organization.
+
+7
+00:00:14.640 --> 00:00:17.100
+So it is used to ensure consistent tagging,
+
+8
+00:00:17.100 --> 00:00:18.660
+to audit tagged resources,
+
+9
+00:00:18.660 --> 00:00:21.780
+to maintain proper resources categorization, and so on.
+
+10
+00:00:21.780 --> 00:00:25.650
+So you define the tag keys and their allowed values,
+
+11
+00:00:25.650 --> 00:00:28.650
+and then you're going to be able to ascend them directly
+
+12
+00:00:28.650 --> 00:00:31.050
+to resources or have restrictions on how they're assigned
+
+13
+00:00:31.050 --> 00:00:33.090
+to resources across all your accounts.
+
+14
+00:00:33.090 --> 00:00:35.100
+So really to maintain consistency.
+
+15
+00:00:35.100 --> 00:00:38.190
+Of course, when you want to do cost allocation tags
+
+16
+00:00:38.190 --> 00:00:40.470
+and attributes-based access control,
+
+17
+00:00:40.470 --> 00:00:41.820
+this is a great combination
+
+18
+00:00:41.820 --> 00:00:44.340
+because you restrict what the accounts can do
+
+19
+00:00:44.340 --> 00:00:46.917
+and so you maintain your consistency across your account,
+
+20
+00:00:46.917 --> 00:00:49.320
+and so therefore, you can do cost accounting
+
+21
+00:00:49.320 --> 00:00:52.710
+based on tags and also access control based on tags.
+
+22
+00:00:52.710 --> 00:00:55.860
+You can also prevent any non-compliant tagging operations
+
+23
+00:00:55.860 --> 00:00:58.470
+on specified services and resources,
+
+24
+00:00:58.470 --> 00:01:00.960
+but it doesn't have an effect on resources without tags.
+
+25
+00:01:00.960 --> 00:01:03.360
+And you can generate a list and a report
+
+26
+00:01:03.360 --> 00:01:05.790
+that lists all the tagged and non-tagged
+
+27
+00:01:05.790 --> 00:01:07.650
+or non-compliant resources.
+
+28
+00:01:07.650 --> 00:01:11.370
+In case you also want to look for non-compliant tags,
+
+29
+00:01:11.370 --> 00:01:13.140
+you can use EventBridge, okay?
+
+30
+00:01:13.140 --> 00:01:15.030
+so if you get a question at the exam
+
+31
+00:01:15.030 --> 00:01:19.260
+around how to maintain tags consistent across accounts,
+
+32
+00:01:19.260 --> 00:01:22.980
+think about tag policies in AWS organizations.
+
+33
+00:01:22.980 --> 00:01:23.813
+All right, that's it.
+
+34
+00:01:23.813 --> 00:01:26.500
+I hope you liked it and I will see you in the next lecture.
+

@@ -1,0 +1,354 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:07.000
+Here's the framing to get straight first. Temperature, Top P, and Top K are the classic sampling parameters.
+
+2
+00:00:07.000 --> 00:00:12.000
+But current CLOD models like OPUS 4.8 no longer let you tune them.
+
+3
+00:00:12.000 --> 00:00:16.000
+Passing a non-default value returns a 400 error.
+
+4
+00:00:16.000 --> 00:00:23.000
+So we'll cover what they mean as legacy background, then how you steer current models through prompting and effort.
+
+5
+00:00:23.000 --> 00:00:30.000
+Before we go further, let's lock in the three parameters conceptually, keeping in mind they are legacy knobs.
+
+6
+00:00:30.000 --> 00:00:34.000
+Current models reject once you pass a non-default value.
+
+7
+00:00:34.000 --> 00:00:39.000
+Temperature is a scalar applied to the logit distribution over tokens before sampling.
+
+8
+00:00:39.000 --> 00:00:43.000
+Lower values concentrate probability on the most likely tokens.
+
+9
+00:00:43.000 --> 00:00:45.000
+Higher values spread it out.
+
+10
+00:00:45.000 --> 00:00:51.818
+Top P, also called nucleus sampling, builds a candidate token set dynamically by accumulating tokens
+
+11
+00:00:51.818 --> 00:00:56.931
+in descending probability order until the cumulative probability reaches P.
+
+12
+00:00:57.000 --> 00:01:00.000
+Tokens outside that set are dropped.
+
+13
+00:01:00.000 --> 00:01:06.000
+Top K is simpler. It applies a hard cap on the number of candidate tokens, keeping only the Top K.
+
+14
+00:01:06.000 --> 00:01:11.532
+These were the primary tuning tools on older models, and understanding them still helps you reason
+
+15
+00:01:11.532 --> 00:01:12.943
+about how sampling works.
+
+16
+00:01:14.000 --> 00:01:18.000
+Here's what temperature meant at the math level on the older models that accepted it.
+
+17
+00:01:18.000 --> 00:01:22.000
+The model produces a vector of logit scores over the vocabulary.
+
+18
+00:01:22.000 --> 00:01:28.000
+Temperature divides those logits before the softmax step that converts them to probabilities.
+
+19
+00:01:28.000 --> 00:01:35.000
+A temperature below 1.0 sharpens the distribution, pulling probability mass toward the top-ranked tokens.
+
+20
+00:01:35.000 --> 00:01:41.533
+On those models, a temperature approaching 1.0 kept the full distribution intact, and values above
+
+21
+00:01:41.533 --> 00:01:42.933
+1.0 weren't accepted.
+
+22
+00:01:43.000 --> 00:01:48.723
+At temperature 0, the model strongly favored the highest probability token, though even then,
+
+23
+00:01:48.723 --> 00:01:50.938
+results weren't fully deterministic.
+
+24
+00:01:51.000 --> 00:01:56.000
+The key intuition still holds. Temperature doesn't change which tokens are possible.
+
+25
+00:01:56.000 --> 00:02:00.000
+It changes how likely each one is relative to the others.
+
+26
+00:02:00.000 --> 00:02:05.797
+On models that accepted temperature, the practical split was between tasks with a single best answer
+
+27
+00:02:05.797 --> 00:02:07.942
+and tasks where variety was valuable.
+
+28
+00:02:08.000 --> 00:02:16.000
+Low temperature, roughly 0.0 to 0.3, was the right range when you needed consistent, predictable output.
+
+29
+00:02:16.000 --> 00:02:23.000
+Classification, entity extraction, structured data generation, and factual question answering all favored
+
+30
+00:02:23.000 --> 00:02:28.000
+a sharp distribution where the model confidently committed to the most probable output.
+
+31
+00:02:28.000 --> 00:02:37.000
+High temperature, roughly 0.7 to 1.0, suited diverse outputs, creative writing, generating multiple brainstorm options,
+
+32
+00:02:37.000 --> 00:02:42.000
+or deliberately exploring the output space rather than converging on one answer.
+
+33
+00:02:42.000 --> 00:02:48.030
+On current models, you can no longer reach for this dial, so you shape that same range of behavior
+
+34
+00:02:48.030 --> 00:02:49.938
+through how you prompt instead.
+
+35
+00:02:50.000 --> 00:02:57.000
+A useful lesson from the legacy parameter era is that temperature 0 was never a universal safe default.
+
+36
+00:02:57.000 --> 00:03:02.061
+It was a common assumption that lower temperature always meant better, safer, or more correct
+
+37
+00:03:02.061 --> 00:03:04.945
+output, and that was wrong for a wide range of tasks.
+
+38
+00:03:05.000 --> 00:03:11.062
+At temperature 0, creative writing came out repetitive and flat because the model always took the
+
+39
+00:03:11.062 --> 00:03:12.937
+same highest probability path,
+
+40
+00:03:13.000 --> 00:03:19.000
+and conversational replies felt rigid. The right behavior depended entirely on the task.
+
+41
+00:03:19.000 --> 00:03:24.664
+That principle still matters today. You still want sharp, consistent behavior for extraction, and
+
+42
+00:03:24.664 --> 00:03:26.941
+more varied behavior for creative work.
+
+43
+00:03:27.000 --> 00:03:33.000
+You just achieve it now by describing what you want in the prompt rather than turning a sampling dial.
+
+44
+00:03:33.000 --> 00:03:40.000
+Top p-nucleus sampling takes a different approach. Rather than scaling the distribution, it builds a candidate set
+
+45
+00:03:40.000 --> 00:03:47.000
+by walking down the probability-ranked token list and adding tokens until the running total reaches p.
+
+46
+00:03:47.000 --> 00:03:53.000
+At that point, the remaining tokens are excluded and the model samples only from within this nucleus.
+
+47
+00:03:53.000 --> 00:03:58.072
+What makes this interesting is that the pool size is dynamic. When the model is confident and one or
+
+48
+00:03:58.072 --> 00:03:59.949
+two tokens dominate the distribution,
+
+49
+00:04:00.000 --> 00:04:07.000
+the nucleus might contain only three or four tokens, even with top p set to 0.9.
+
+50
+00:04:07.000 --> 00:04:14.000
+When probability is spread more evenly across many plausible tokens, the nucleus expands to include more options.
+
+51
+00:04:14.000 --> 00:04:20.000
+The parameter adapts to the shape of the distribution rather than applying a fixed cutoff.
+
+52
+00:04:20.000 --> 00:04:25.750
+Top k is a simpler mechanism than nucleus sampling. It sets a hard ceiling on how many token
+
+53
+00:04:25.750 --> 00:04:27.937
+candidates the model can draw from.
+
+54
+00:04:28.000 --> 00:04:36.000
+If top k is 40, the model samples only from the 40 most probable tokens, and everything else is excluded.
+
+55
+00:04:36.000 --> 00:04:41.913
+At top k of 1, you constrain to the single most probable token, called greedy decoding, comparable
+
+56
+00:04:41.913 --> 00:04:42.939
+to temperature 0.
+
+57
+00:04:43.000 --> 00:04:49.000
+The trade-off with top k is that it ignores the actual probability gaps in the distribution.
+
+58
+00:04:49.000 --> 00:04:55.169
+If you set top k to 40 and the distribution is flat, you might be including tokens that are
+
+59
+00:04:55.169 --> 00:04:56.932
+genuinely low probability,
+
+60
+00:04:57.000 --> 00:05:00.000
+just because they happen to rank in the top 40.
+
+61
+00:05:00.000 --> 00:05:07.000
+Nucleus sampling avoids this by using cumulative probability as the cutoff criterion instead of a fixed count.
+
+62
+00:05:08.000 --> 00:05:15.000
+On older models, temperature, top p, and top k interacted in ways that compounded and were hard to predict.
+
+63
+00:05:15.000 --> 00:05:20.000
+When you applied both temperature and top p, the temperature reshaped the distribution first,
+
+64
+00:05:20.000 --> 00:05:25.000
+and then the nucleus sampling step restricted the pool based on that reshaped distribution.
+
+65
+00:05:25.000 --> 00:05:32.000
+The interaction wasn't additive in any clean way, and the same was true for temperature and top k together.
+
+66
+00:05:32.000 --> 00:05:37.085
+That is why the old guidance was to alter one parameter at a time, so you could attribute any
+
+67
+00:05:37.085 --> 00:05:38.945
+quality change to a specific knob.
+
+68
+00:05:39.000 --> 00:05:41.000
+Here is the important part for today.
+
+69
+00:05:41.000 --> 00:05:47.000
+On current models, none of this applies, because these parameters are simply not accepted.
+
+70
+00:05:47.000 --> 00:05:49.000
+You don't tune sampling anymore.
+
+71
+00:05:49.000 --> 00:05:56.000
+You shape output through the prompt and the effort setting instead, which sidesteps the whole interaction problem.
+
+72
+00:05:56.000 --> 00:06:01.000
+So how do you actually control output on current models, if the sampling knobs are gone?
+
+73
+00:06:01.000 --> 00:06:03.000
+This is the practical heart of the lesson.
+
+74
+00:06:03.000 --> 00:06:10.918
+On models like OPUS 4.8 and 4.7, passing a non-default temperature, top p or top k, returns a 400
+
+75
+00:06:10.918 --> 00:06:14.918
+error, so there is no sampling dial to reach for.
+
+76
+00:06:15.000 --> 00:06:19.000
+Instead, you shape behavior through the prompt itself.
+
+77
+00:06:19.000 --> 00:06:25.000
+If you want consistent, deterministic output, you ask for it plainly and constrain the format.
+
+78
+00:06:25.000 --> 00:06:29.000
+If you want variety or creativity, you describe that in the instructions.
+
+79
+00:06:29.000 --> 00:06:34.000
+For reasoning depth, you use the effort parameter rather than a sampling setting.
+
+80
+00:06:34.000 --> 00:06:37.000
+The workflow is the same discipline as before.
+
+81
+00:06:37.000 --> 00:06:41.000
+Design the behavior you want, then validate it against real outputs.
+
+82
+00:06:41.000 --> 00:06:46.000
+You just express it through prompting now, not through parameter tuning. Quick recap.
+
+83
+00:06:46.000 --> 00:06:52.867
+Temperature, top p, and top k are the classic sampling parameters, and the biggest takeaway is that
+
+84
+00:06:52.867 --> 00:06:57.930
+current models like OPUS 4.8 reject a non-default value with a 400 error.
+
+85
+00:06:58.000 --> 00:07:02.000
+It's important to recognize them as legacy values.
+
+86
+00:07:02.000 --> 00:07:07.000
+Temperature scaled the distribution, and top p and top k trimmed the candidate pool.
+
+87
+00:07:07.000 --> 00:07:12.000
+On current models, you steer output through prompting, and the effort setting instead.
+
+88
+00:07:12.000 --> 00:07:15.000
+That wraps up this lesson. I'll see you in the next one.
+

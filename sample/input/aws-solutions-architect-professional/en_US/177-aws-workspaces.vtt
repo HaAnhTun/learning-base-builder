@@ -1,0 +1,586 @@
+WEBVTT
+
+1
+00:00:00.360 --> 00:00:01.980
+<v ->So workspaces is going to give you a</v>
+
+2
+00:00:01.980 --> 00:00:05.100
+managed secure Cloud desktop.
+
+3
+00:00:05.100 --> 00:00:07.470
+This is a great way to eliminate management
+
+4
+00:00:07.470 --> 00:00:09.233
+of on-premise VDI.
+
+5
+00:00:09.233 --> 00:00:12.150
+And VDI means virtual desktop infrastructure.
+
+6
+00:00:12.150 --> 00:00:13.320
+The idea with workspaces is that,
+
+7
+00:00:13.320 --> 00:00:14.970
+for example you want to get access to
+
+8
+00:00:14.970 --> 00:00:16.800
+Windows machine on the cloud
+
+9
+00:00:16.800 --> 00:00:18.630
+and you want to get into it,
+
+10
+00:00:18.630 --> 00:00:20.670
+then you would use workspaces to create
+
+11
+00:00:20.670 --> 00:00:22.200
+that virtual desktop.
+
+12
+00:00:22.200 --> 00:00:23.340
+That is going to be a Windows
+
+13
+00:00:23.340 --> 00:00:24.810
+and then you will get into that Windows,
+
+14
+00:00:24.810 --> 00:00:27.360
+and you can operate your desktop from there.
+
+15
+00:00:27.360 --> 00:00:30.060
+You can even pay per hour, which is on demand pricing
+
+16
+00:00:30.060 --> 00:00:32.970
+or have a monthly subscription for unlimited usage.
+
+17
+00:00:32.970 --> 00:00:34.410
+It's going to be secure, encrypted
+
+18
+00:00:34.410 --> 00:00:35.880
+and get Network isolation.
+
+19
+00:00:35.880 --> 00:00:38.520
+It is integrated with Microsoft Active Directory
+
+20
+00:00:38.520 --> 00:00:40.620
+so all your machines can join your directory domain
+
+21
+00:00:40.620 --> 00:00:41.940
+if you needed to.
+
+22
+00:00:41.940 --> 00:00:45.030
+The user are going to get into a virtual desktop
+
+23
+00:00:45.030 --> 00:00:47.190
+and that could be Linux or Windows.
+
+24
+00:00:47.190 --> 00:00:48.540
+And then securely,
+
+25
+00:00:48.540 --> 00:00:50.460
+this virtual desktop can access, for example
+
+26
+00:00:50.460 --> 00:00:53.820
+your corporate data center or can access your virtual cloud.
+
+27
+00:00:53.820 --> 00:00:55.410
+So there's a good way, for example,
+
+28
+00:00:55.410 --> 00:00:58.050
+to give you reserves access to an environment you trust,
+
+29
+00:00:58.050 --> 00:01:01.380
+where you know the network security is going to be optimal.
+
+30
+00:01:01.380 --> 00:01:03.630
+Now, workspaces has something called
+
+31
+00:01:03.630 --> 00:01:06.300
+Workspaces Application Manager or WAM
+
+32
+00:01:06.300 --> 00:01:07.710
+and this is important you know.
+
+33
+00:01:07.710 --> 00:01:10.380
+So this is to deploy and manage applications
+
+34
+00:01:10.380 --> 00:01:12.780
+as visualized application containers.
+
+35
+00:01:12.780 --> 00:01:14.280
+The idea is that you're going to containerize
+
+36
+00:01:14.280 --> 00:01:15.113
+this application
+
+37
+00:01:15.113 --> 00:01:17.520
+and deploy them onto all your workspaces.
+
+38
+00:01:17.520 --> 00:01:19.320
+You can provision them at scale,
+
+39
+00:01:19.320 --> 00:01:23.610
+and you keep the application updated using WAM.
+
+40
+00:01:23.610 --> 00:01:26.280
+This is different from Windows updates.
+
+41
+00:01:26.280 --> 00:01:30.480
+So Workspaces Applications manager is just for applications
+
+42
+00:01:30.480 --> 00:01:32.220
+whereas Windows updates is going to be
+
+43
+00:01:32.220 --> 00:01:34.620
+well for the updates of your Windows machine.
+
+44
+00:01:34.620 --> 00:01:37.770
+So by default, Amazon workspaces are configured
+
+45
+00:01:37.770 --> 00:01:41.040
+to install software updates and by default,
+
+46
+00:01:41.040 --> 00:01:43.680
+any workspace that you create that has Windows installed,
+
+47
+00:01:43.680 --> 00:01:46.380
+will also have Windows update turned on.
+
+48
+00:01:46.380 --> 00:01:48.930
+And then you have full control over how often
+
+49
+00:01:48.930 --> 00:01:51.150
+you want Windows update to run,
+
+50
+00:01:51.150 --> 00:01:53.550
+but it runs during maintenance windows.
+
+51
+00:01:53.550 --> 00:01:55.110
+So during this maintenance windows,
+
+52
+00:01:55.110 --> 00:01:57.000
+the updates are going to be installed
+
+53
+00:01:57.000 --> 00:01:59.460
+and you define the maintenance window that you want.
+
+54
+00:01:59.460 --> 00:02:02.310
+So you have always on workspaces, and by default
+
+55
+00:02:02.310 --> 00:02:04.740
+the maintenance window is going to be between midnight
+
+56
+00:02:04.740 --> 00:02:06.690
+and 4:00 AM on Sunday morning,
+
+57
+00:02:06.690 --> 00:02:08.340
+or we get auto stop workspaces,
+
+58
+00:02:08.340 --> 00:02:09.930
+which are the workspaces that stop
+
+59
+00:02:09.930 --> 00:02:11.490
+when the users don't use them.
+
+60
+00:02:11.490 --> 00:02:14.760
+And in this case, the users don't use them often enough,
+
+61
+00:02:14.760 --> 00:02:18.090
+then these workspaces are automatically started once a month
+
+62
+00:02:18.090 --> 00:02:19.980
+to install the windows updates,
+
+63
+00:02:19.980 --> 00:02:21.120
+whereas for always on,
+
+64
+00:02:21.120 --> 00:02:23.069
+well, because the workspaces always on
+
+65
+00:02:23.069 --> 00:02:25.530
+this is for sure going to happen between midnight
+
+66
+00:02:25.530 --> 00:02:27.330
+and 4:00 AM on Sunday mornings.
+
+67
+00:02:27.330 --> 00:02:30.180
+Finally, you can also define a manual maintenance window
+
+68
+00:02:30.180 --> 00:02:31.309
+and you define your windows,
+
+69
+00:02:31.309 --> 00:02:35.490
+the instances of workspace will be offline for a moment
+
+70
+00:02:35.490 --> 00:02:36.323
+for your users,
+
+71
+00:02:36.323 --> 00:02:38.100
+and you can perform the maintenance you want
+
+72
+00:02:38.100 --> 00:02:39.720
+on these workspaces.
+
+73
+00:02:39.720 --> 00:02:43.440
+Next we have cross region redirection for Amazon workspaces.
+
+74
+00:02:43.440 --> 00:02:46.440
+So the idea is that we want to run workspaces directories
+
+75
+00:02:46.440 --> 00:02:47.670
+in multiple regions.
+
+76
+00:02:47.670 --> 00:02:49.290
+So we have a primary region and then we have
+
+77
+00:02:49.290 --> 00:02:50.850
+a failover region.
+
+78
+00:02:50.850 --> 00:02:52.170
+So the idea is that
+
+79
+00:02:52.170 --> 00:02:55.050
+when the users connect into the primary region,
+
+80
+00:02:55.050 --> 00:02:57.030
+the workspace directory is going to be connected,
+
+81
+00:02:57.030 --> 00:03:00.000
+for example, to AWS Managed Microsoft AD
+
+82
+00:03:00.000 --> 00:03:01.110
+to store these users
+
+83
+00:03:01.110 --> 00:03:04.860
+and allow them to open sessions on workspaces.
+
+84
+00:03:04.860 --> 00:03:06.840
+And if you want to have a failover region,
+
+85
+00:03:06.840 --> 00:03:08.550
+what you need to create is you need to create
+
+86
+00:03:08.550 --> 00:03:11.340
+an AD connector in that failover region.
+
+87
+00:03:11.340 --> 00:03:13.200
+So why an AD connector
+
+88
+00:03:13.200 --> 00:03:16.800
+and not a multi-region managed Microsoft AD?
+
+89
+00:03:16.800 --> 00:03:18.990
+Well, the documentation says that right now
+
+90
+00:03:18.990 --> 00:03:21.990
+the multi-region manage Microsoft AD is not supported.
+
+91
+00:03:21.990 --> 00:03:24.210
+So you have to use an AD connector.
+
+92
+00:03:24.210 --> 00:03:26.190
+So now we have two regions
+
+93
+00:03:26.190 --> 00:03:28.350
+and we need to set up connection aliases.
+
+94
+00:03:28.350 --> 00:03:30.420
+So you sub condition aliases
+
+95
+00:03:30.420 --> 00:03:33.420
+and then you create a record in Route 53.
+
+96
+00:03:33.420 --> 00:03:36.630
+And this record is for desktop.example.com,
+
+97
+00:03:36.630 --> 00:03:40.470
+and it's a text kind of record with type failover.
+
+98
+00:03:40.470 --> 00:03:41.970
+So the idea now is that
+
+99
+00:03:41.970 --> 00:03:44.700
+your workspace is going to have a connection alias
+
+100
+00:03:44.700 --> 00:03:47.070
+in the primary region and a connection alias
+
+101
+00:03:47.070 --> 00:03:49.470
+in the secondary region, the failover region.
+
+102
+00:03:49.470 --> 00:03:51.900
+And we point both of them into
+
+103
+00:03:51.900 --> 00:03:56.670
+the Route 53 text record for deskstop.example.com.
+
+104
+00:03:56.670 --> 00:04:01.320
+And that means that if the primary region is up,
+
+105
+00:04:01.320 --> 00:04:05.550
+then when users enter the desktop.example.com to connect
+
+106
+00:04:05.550 --> 00:04:08.520
+to workspaces, the text record is going to be corresponding
+
+107
+00:04:08.520 --> 00:04:11.010
+to the one of the region that is primary,
+
+108
+00:04:11.010 --> 00:04:12.930
+and then if we set up a health check and an alarm
+
+109
+00:04:12.930 --> 00:04:15.480
+to failover to the secondary region,
+
+110
+00:04:15.480 --> 00:04:17.190
+then in case we have failover,
+
+111
+00:04:17.190 --> 00:04:20.310
+then Route 53 will respond to desktop.example.com
+
+112
+00:04:20.310 --> 00:04:21.570
+for a text record,
+
+113
+00:04:21.570 --> 00:04:24.300
+to the region code of the failover region.
+
+114
+00:04:24.300 --> 00:04:26.400
+Therefore, our users can correctly connect
+
+115
+00:04:26.400 --> 00:04:28.170
+to the primary region and in case
+
+116
+00:04:28.170 --> 00:04:30.540
+connect to the secondary region.
+
+117
+00:04:30.540 --> 00:04:33.630
+Now, when they connect to one region or the other one,
+
+118
+00:04:33.630 --> 00:04:35.760
+the user data is not persistent
+
+119
+00:04:35.760 --> 00:04:38.310
+because the user data is region specific
+
+120
+00:04:38.310 --> 00:04:40.680
+and the workspaces are region specific.
+
+121
+00:04:40.680 --> 00:04:43.620
+And so therefore, if you wanted to have data being shared
+
+122
+00:04:43.620 --> 00:04:46.620
+between the two regions that the users actually don't see
+
+123
+00:04:46.620 --> 00:04:49.080
+that they're being failed over to another region
+
+124
+00:04:49.080 --> 00:04:51.510
+then you can use, for example, Amazon workDocs,
+
+125
+00:04:51.510 --> 00:04:54.753
+which is going to give you persistence for the user data.
+
+126
+00:04:55.950 --> 00:04:58.620
+Another thing you need to know for Amazon workspaces
+
+127
+00:04:58.620 --> 00:05:00.960
+is IP access control groups
+
+128
+00:05:00.960 --> 00:05:02.190
+which is very simple.
+
+129
+00:05:02.190 --> 00:05:06.060
+It's basically security groups for Amazon workspaces.
+
+130
+00:05:06.060 --> 00:05:09.210
+So it's a list of IP addresses and CIDR address ranges
+
+131
+00:05:09.210 --> 00:05:11.940
+that users are authorized to connect from.
+
+132
+00:05:11.940 --> 00:05:14.280
+So for example, if you have a corporate data center
+
+133
+00:05:14.280 --> 00:05:15.150
+and you have a user
+
+134
+00:05:15.150 --> 00:05:18.450
+and has a public IP from a CIDR that's owned
+
+135
+00:05:18.450 --> 00:05:20.850
+by the data center from a public CIDR,
+
+136
+00:05:20.850 --> 00:05:23.460
+then you can set up an IP access control group
+
+137
+00:05:23.460 --> 00:05:26.460
+to make sure that only this CIDR is allowed to access your
+
+138
+00:05:26.460 --> 00:05:27.690
+workspace directory,
+
+139
+00:05:27.690 --> 00:05:29.850
+and therefore your users to use workspaces.
+
+140
+00:05:29.850 --> 00:05:33.060
+So it's an extra security, just like security groups.
+
+141
+00:05:33.060 --> 00:05:35.640
+In case your users are accessing workspaces
+
+142
+00:05:35.640 --> 00:05:37.500
+through a VPN or a NAT.
+
+143
+00:05:37.500 --> 00:05:39.810
+Then of course the IP access control group
+
+144
+00:05:39.810 --> 00:05:44.810
+must allow the public IP of the VPN or the NAT connection.
+
+145
+00:05:45.420 --> 00:05:47.310
+Okay, so that's it for workspaces,
+
+146
+00:05:47.310 --> 00:05:50.260
+I hope you liked it and I will see you in the next lecture.
+

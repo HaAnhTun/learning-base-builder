@@ -1,0 +1,182 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.159
+Before we dive into the course, I want to explain a few things so you get the most out of this course.
+
+2
+00:00:05.320 --> 00:00:08.279
+Take some time to listen to these. They might save you some headache.
+
+3
+00:00:09.319 --> 00:00:13.520
+First, I want to be clear that this is a certification preparation course.
+
+4
+00:00:13.920 --> 00:00:19.840
+Every lesson is built against the official exam blueprint. This exam is concept and scenario driven,
+
+5
+00:00:19.840 --> 00:00:21.920
+and that's exactly how I teach these lessons.
+
+6
+00:00:22.239 --> 00:00:28.780
+This is not a code along, and it's not a project build. If you're looking for a hands-on lab series, this is not it.
+
+7
+00:00:29.219 --> 00:00:35.109
+What you will get is the mental models and the judgment the exam actually tests in the least amount
+
+8
+00:00:35.109 --> 00:00:36.120
+of time possible.
+
+9
+00:00:36.459 --> 00:00:40.860
+We didn't fill this course with a bunch of demos and industry examples, and that's on purpose.
+
+10
+00:00:41.419 --> 00:00:47.419
+Ladies and gentlemen, AI is a race, and we want you to get certified as quickly as possible.
+
+11
+00:00:47.540 --> 00:00:51.020
+So there's no filler, just what you need for exam day.
+
+12
+00:00:52.259 --> 00:00:57.659
+Secondly, this course is made for people at varying experience levels. The most common feedback
+
+13
+00:00:57.659 --> 00:01:03.099
+I hear is that the course either moves too fast or seems repetitive at times. Both are true,
+
+14
+00:01:03.099 --> 00:01:06.459
+but they're usually about background, not the material itself.
+
+15
+00:01:06.739 --> 00:01:13.819
+You see, most people watching this have five or more years of professional experience, but from different angles.
+
+16
+00:01:14.180 --> 00:01:19.417
+Maybe you're a project manager, and the planning sections feel like old news, or maybe you've been
+
+17
+00:01:19.417 --> 00:01:20.646
+writing code for years,
+
+18
+00:01:20.699 --> 00:01:23.220
+and some of the methodology feels repetitive.
+
+19
+00:01:23.540 --> 00:01:29.030
+I just ask for a little patience with that. Imagine yourself in a room with a big, diverse group of
+
+20
+00:01:29.030 --> 00:01:30.804
+people with varying backgrounds.
+
+21
+00:01:31.059 --> 00:01:36.500
+That's who this course is built for, and we worked hard to make it approachable and useful for all of you.
+
+22
+00:01:36.900 --> 00:01:40.819
+This course will fill your knowledge gaps and have you prepared for exam day,
+
+23
+00:01:40.980 --> 00:01:45.660
+but the cost is that you might hear one or two things that you already knew coming in.
+
+24
+00:01:46.819 --> 00:01:51.019
+A quick note on the slide decks. We do use shorthand phrasing on the slides.
+
+25
+00:01:51.059 --> 00:01:56.029
+They're meant as a visual anchor. I don't read from the slides either, since they're just an
+
+26
+00:01:56.029 --> 00:01:57.325
+overview of the content.
+
+27
+00:01:57.379 --> 00:02:02.819
+That's intentional. The slide anchors the idea, and my narration explains the idea.
+
+28
+00:02:03.220 --> 00:02:08.484
+Focus on what I'm explaining, and let the slide be your visual reference, not a script to read along
+
+29
+00:02:08.484 --> 00:02:10.327
+with. If you do like reading along,
+
+30
+00:02:10.580 --> 00:02:13.779
+use the closed caption feature, and you'll get the best of both worlds.
+
+31
+00:02:14.539 --> 00:02:17.539
+Another one that won't surprise you, I'm not perfect.
+
+32
+00:02:18.220 --> 00:02:23.860
+Sometimes I make a mistake on a slide, or you'll hit a practice question where you're convinced the answer is wrong.
+
+33
+00:02:24.380 --> 00:02:30.580
+Either way, help me and help your fellow students out. Send me a direct message and tell me what you saw.
+
+34
+00:02:30.740 --> 00:02:35.706
+I'll verify it against the official documentation, and the confirmed fixes will go back into the
+
+35
+00:02:35.706 --> 00:02:37.568
+course for everyone to benefit from.
+
+36
+00:02:38.979 --> 00:02:43.619
+Another quick note. Check the resources section of this lecture before you go any further.
+
+37
+00:02:44.020 --> 00:02:48.820
+We attach a lot of resources, either to this lesson or to the final lesson of the course.
+
+38
+00:02:49.220 --> 00:02:55.820
+This course ships with multiple downloads, a condensed review of the entire course that we call the study companion,
+
+39
+00:02:56.100 --> 00:03:01.740
+a key terms cram sheet for quick reference, a 30-day study plan to structure your prep, and more.
+
+40
+00:03:01.740 --> 00:03:06.976
+If you don't see what you're looking for attached to this lesson, check the final lesson of the
+
+41
+00:03:06.976 --> 00:03:08.684
+course to find those resources.
+
+42
+00:03:09.699 --> 00:03:15.100
+And one final thing about pace. Some people tell me that I talk too slowly.
+
+43
+00:03:15.580 --> 00:03:21.139
+Others tell me I move too fast. Both are easy to fix using the speed controls in the video player.
+
+44
+00:03:21.500 --> 00:03:23.940
+Just set the pace where it's comfortable for you.
+
+45
+00:03:24.500 --> 00:03:31.020
+Okay, that's it on this stuff. Let's get started on the actual course content. I'll see you in the first lesson.
+

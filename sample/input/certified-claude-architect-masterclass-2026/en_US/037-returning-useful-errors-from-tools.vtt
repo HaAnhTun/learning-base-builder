@@ -1,0 +1,282 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.960
+When a tool breaks, what it sends back matters as much as what it does when it works.
+
+2
+00:00:05.599 --> 00:00:11.439
+Claude reads that response to decide whether to retry, ask you directly, or try something else.
+
+3
+00:00:12.159 --> 00:00:17.040
+In this video, we'll design tool errors that carry real information,
+
+4
+00:00:17.040 --> 00:00:21.280
+and cover why anything a tool returns deserves a measure of suspicion.
+
+5
+00:00:22.399 --> 00:00:27.040
+A tool that fails and returns the word error has told Claude almost nothing.
+
+6
+00:00:27.040 --> 00:00:33.680
+A tool error response is a structured reply that says execution failed and explains why,
+
+7
+00:00:33.680 --> 00:00:40.319
+carrying an error type, a human-readable message, and optional metadata Claude can reason over.
+
+8
+00:00:40.319 --> 00:00:43.919
+That structure is what turns a dead end into an actionable signal.
+
+9
+00:00:44.479 --> 00:00:51.439
+Inside it, the error code is a short, stable string that code and models can act on without
+
+10
+00:00:51.439 --> 00:00:56.080
+reading the message text. The suggested action tells Claude what to do next,
+
+11
+00:00:56.080 --> 00:01:02.080
+whether that's retry, ask the user, or escalate. Together, these pieces give Claude a complete
+
+12
+00:01:02.080 --> 00:01:08.319
+picture of what went wrong and how to respond. It helps to know what the tool result block
+
+13
+00:01:08.319 --> 00:01:13.760
+actually looks like when Claude sends it back, because it's leaner than people expect. It
+
+14
+00:01:13.760 --> 00:01:20.800
+carries just three fields. The tool use ID matches the result back to the specific call Claude made.
+
+15
+00:01:20.800 --> 00:01:26.319
+The content field holds the result itself, and when the tool fails, that same field holds your
+
+16
+00:01:26.319 --> 00:01:33.120
+error message. And the is error flag set to true tells Claude the execution failed rather than
+
+17
+00:01:33.120 --> 00:01:38.239
+succeeded. There's no dedicated error code field, no separate context field, nothing else in the
+
+18
+00:01:38.239 --> 00:01:45.440
+block. So any richer error, shape you design, a code, a reason, a suggested action lives inside
+
+19
+00:01:45.519 --> 00:01:51.440
+the content field as text. Claude reads it there. Keep that in mind. The structure you invent is a
+
+20
+00:01:51.440 --> 00:01:57.360
+convention inside content, not extra fields on the block itself. One of the most useful
+
+21
+00:01:57.360 --> 00:02:02.160
+distinctions in error handling is whether the failure is a user error or a system error.
+
+22
+00:02:02.800 --> 00:02:08.880
+User errors mean the caller sent bad data, the wrong format, a missing required field,
+
+23
+00:02:08.880 --> 00:02:15.360
+or a value that's out of range. For these, retrying won't help. Claude should surface the
+
+24
+00:02:15.360 --> 00:02:21.360
+problem to the user and ask for a correction. System errors are different. A timeout, a service
+
+25
+00:02:21.360 --> 00:02:27.679
+that's temporarily unavailable, or an unexpected upstream response are all things the user didn't
+
+26
+00:02:27.679 --> 00:02:34.559
+cause and can't fix. For these, Claude can retry, wait, or try an alternative path without involving
+
+27
+00:02:34.559 --> 00:02:40.880
+the user at all. Your error code should make this distinction explicit. When you write error
+
+28
+00:02:40.880 --> 00:02:46.880
+messages, keep in mind that Claude is the primary consumer, not a developer reading logs. Codes need
+
+29
+00:02:46.880 --> 00:02:52.479
+to stay stable across versions, so any routing logic built on them doesn't break when you ship
+
+30
+00:02:52.479 --> 00:02:58.080
+an update. Include the input value that triggered the error in the context field, because the same
+
+31
+00:02:58.080 --> 00:03:04.080
+code can mean different things depending on which parameter failed. And avoid raw stack traces as
+
+32
+00:03:04.080 --> 00:03:10.479
+the main message. A stack trace is useful in a log file, but it's noise in a tool response. Replace
+
+33
+00:03:10.479 --> 00:03:16.160
+it with a clean message and put the technical details somewhere else. The goal is an error
+
+34
+00:03:16.160 --> 00:03:23.039
+that Claude can act on, not just read. These four fields form the skeleton of a well-designed error
+
+35
+00:03:23.039 --> 00:03:29.440
+response. The error code is the stable, machine-readable string that never changes across
+
+36
+00:03:29.440 --> 00:03:34.240
+versions. The message is the human-readable description you'd be comfortable surfacing
+
+37
+00:03:34.240 --> 00:03:40.080
+directly in a chat reply without editing. The context block carries the key value pairs that
+
+38
+00:03:40.080 --> 00:03:46.960
+identify what failed and why, so debugging doesn't require guessing. And the suggested action is the
+
+39
+00:03:46.960 --> 00:03:52.320
+explicit hint about what Claude should do next, which saves it from having to infer the right path
+
+40
+00:03:52.320 --> 00:03:59.279
+on its own. Each field serves a different consumer. The code serves routing logic. The message serves
+
+41
+00:03:59.279 --> 00:04:06.000
+users. The context serves debugging. The suggested action serves Claude's decision engine. Design
+
+42
+00:04:06.000 --> 00:04:12.479
+each one with its consumer in mind. The suggested action field is optional but valuable, because it
+
+43
+00:04:12.479 --> 00:04:18.720
+points Claude toward either recovery or escalation. Recovery means Claude handles the problem on its
+
+44
+00:04:18.720 --> 00:04:24.720
+own. It tries again with a different value, reformats its input, or switches to an alternative
+
+45
+00:04:24.720 --> 00:04:30.640
+tool. Escalation means Claude brings a human into the loop. Because the problem needs judgment,
+
+46
+00:04:30.640 --> 00:04:37.760
+the model can't provide. A rate-limited error should say to retry after a short delay. An
+
+47
+00:04:37.760 --> 00:04:44.640
+incorrect input error should say to ask the user to correct the value. A service-unavailable error
+
+48
+00:04:44.640 --> 00:04:50.799
+might say to try an alternative tool or escalate. Error routing is what ties this together,
+
+49
+00:04:50.880 --> 00:04:56.480
+using the error code to pick the right path automatically. A well-designed set of codes
+
+50
+00:04:56.480 --> 00:05:01.359
+lets you define those routing rules once and apply them across every tool you own.
+
+51
+00:05:02.640 --> 00:05:08.959
+A few mistakes show up repeatedly in tool error design. The first is returning a success status
+
+52
+00:05:08.959 --> 00:05:14.320
+with an error buried somewhere in the response body. Claude may not look for it, and the model
+
+53
+00:05:14.320 --> 00:05:20.480
+will proceed as if the call succeeded. The second is using vague codes like failed or error with no
+
+54
+00:05:20.480 --> 00:05:26.320
+subtype, which forces Claude to parse the message to understand what happened. The third is leaving
+
+55
+00:05:26.320 --> 00:05:32.079
+out context, when the same code can mean different things depending on which input failed. Each of
+
+56
+00:05:32.079 --> 00:05:36.959
+these mistakes adds friction to recovery and increases the chance that Claude makes the wrong
+
+57
+00:05:36.959 --> 00:05:44.160
+next move. Specific, context-rich errors are worth the extra effort. There's one more thing to
+
+58
+00:05:44.160 --> 00:05:50.160
+internalize, and it's a security point, not a formatting one. A tool result often carries content
+
+59
+00:05:50.160 --> 00:05:56.720
+from sources you don't control. A fetched web page, an inbound email, a user upload, a third-party
+
+60
+00:05:56.720 --> 00:06:03.679
+service response. You have to treat all of that as untrusted input. An attacker who can influence it
+
+61
+00:06:03.679 --> 00:06:10.000
+may bury instructions in the text that try to redirect Claude, telling it to ignore its task
+
+62
+00:06:10.000 --> 00:06:16.880
+or leak data. That's indirect prompt injection, and it turns your tool into a confused deputy
+
+63
+00:06:16.880 --> 00:06:22.880
+acting on someone else's orders. The guardrail Anthropic recommends is to keep that untrusted
+
+64
+00:06:22.880 --> 00:06:29.760
+content inside tool result blocks. Never promote it into the system prompt or a plain user message,
+
+65
+00:06:29.760 --> 00:06:34.079
+so the model always knows it came from a tool and treats it with appropriate suspicion.
+
+66
+00:06:35.200 --> 00:06:41.040
+Here's the big picture. A useful tool error combines a stable error code, a clear message,
+
+67
+00:06:41.040 --> 00:06:47.040
+enough context to know what failed, and an explicit suggested action. Distinguish user
+
+68
+00:06:47.040 --> 00:06:54.160
+errors from system errors so Claude retries only when retrying can actually help, and treat whatever
+
+69
+00:06:54.160 --> 00:07:00.640
+a tool hands back as untrusted content. Get those pieces right and Claude recovers or escalates
+
+70
+00:07:00.640 --> 00:07:04.880
+without guessing. That wraps up this one. I'll see you in the next lesson.
+

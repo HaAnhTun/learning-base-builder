@@ -1,0 +1,378 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.719
+If your extraction pipeline fails silently, the cost shows up in production.
+
+2
+00:00:04.719 --> 00:00:08.079
+We're covering validation loops and hallucination prevention,
+
+3
+00:00:08.079 --> 00:00:11.279
+the full loop pattern from extraction through re-prompt,
+
+4
+00:00:11.279 --> 00:00:15.920
+the layers of validation that matter, how to design effective re-prompts on failure,
+
+5
+00:00:15.920 --> 00:00:20.799
+and the grounding techniques that reduce confabulation in extraction pipelines.
+
+6
+00:00:22.000 --> 00:00:27.280
+A validation loop is a programmatic pattern where extracted or generated structured output
+
+7
+00:00:27.280 --> 00:00:31.040
+is validated against a schema or business rules after generation.
+
+8
+00:00:31.680 --> 00:00:37.520
+On failure, the error is fed back into a follow-up prompt asking the model to correct its output.
+
+9
+00:00:37.520 --> 00:00:42.080
+The loop continues until the output passes or a retry limit is reached.
+
+10
+00:00:42.080 --> 00:00:45.599
+Hallucination prevention is a set of techniques that reduce the model's
+
+11
+00:00:45.599 --> 00:00:48.799
+tendency to generate plausible but incorrect information.
+
+12
+00:00:49.439 --> 00:00:52.959
+The techniques include grounding, citation instructions,
+
+13
+00:00:52.959 --> 00:00:55.200
+schema constraints, and temperature settings.
+
+14
+00:00:55.919 --> 00:00:58.319
+No single technique covers all failure modes.
+
+15
+00:00:58.880 --> 00:01:04.559
+Grounding is the third concept, injecting source material or retrieved context into the prompt
+
+16
+00:01:04.559 --> 00:01:08.720
+so the model is extracting from evidence rather than generating from memory,
+
+17
+00:01:08.720 --> 00:01:11.279
+which is the most direct way to reduce confabulation.
+
+18
+00:01:12.400 --> 00:01:16.160
+The validation loop pattern has four steps, and they matter in sequence.
+
+19
+00:01:16.720 --> 00:01:22.239
+Step one, extract structured output using a tool call or the structured outputs feature,
+
+20
+00:01:22.239 --> 00:01:25.760
+which constrains the response with an output config format schema.
+
+21
+00:01:26.319 --> 00:01:31.440
+Step two, validate the output programmatically against your schema and business rules.
+
+22
+00:01:32.000 --> 00:01:38.239
+Step three, if validation fails, construct a reprompt that includes the specific error details,
+
+23
+00:01:38.239 --> 00:01:41.599
+the original source text, and a constrained correction instruction.
+
+24
+00:01:42.160 --> 00:01:46.080
+Step four, send the reprompt and validate the new output.
+
+25
+00:01:46.080 --> 00:01:48.879
+Repeat until it passes or the retry limit is hit.
+
+26
+00:01:49.440 --> 00:01:53.519
+The key principle is that one-shot extraction without a retry path is
+
+27
+00:01:53.519 --> 00:01:58.319
+insufficient for any pipeline where extraction errors have real downstream consequences.
+
+28
+00:01:58.879 --> 00:02:03.440
+The exam tests this full loop sequence because it's common to see systems that
+
+29
+00:02:03.440 --> 00:02:08.080
+add validation at the end without a reprompt path for when that validation fails.
+
+30
+00:02:09.360 --> 00:02:12.960
+What you validate after extraction breaks into three layers,
+
+31
+00:02:12.960 --> 00:02:15.520
+and each layer catches a different category of failure.
+
+32
+00:02:16.080 --> 00:02:19.919
+Schema compliance is the first. All required fields are present,
+
+33
+00:02:19.919 --> 00:02:23.600
+types are correct, and enum values are within the declared set.
+
+34
+00:02:24.320 --> 00:02:29.119
+This layer is deterministic and automated. Business rule validation is the second.
+
+35
+00:02:29.679 --> 00:02:33.919
+Values satisfy domain logic, such as dates falling within valid ranges,
+
+36
+00:02:34.479 --> 00:02:40.320
+referenced identifiers existing in known sets, and numeric fields passing reasonableness thresholds.
+
+37
+00:02:40.960 --> 00:02:46.000
+Schema validation can't catch these because a structurally valid value can still be semantically
+
+38
+00:02:46.000 --> 00:02:52.080
+wrong. Semantic correctness is the third layer. The extracted values are consistent with the
+
+39
+00:02:52.080 --> 00:02:58.080
+source text. Cross-field consistency checks belong here too, verifying that related fields don't
+
+40
+00:02:58.080 --> 00:03:03.199
+contradict each other. Pipelines that only validate schema compliance miss the failures
+
+41
+00:03:03.199 --> 00:03:08.720
+that matter most in production. The distinction between schema validation and business rule
+
+42
+00:03:08.720 --> 00:03:14.320
+validation is the one that most extraction pipelines under-invest in. Schema validation
+
+43
+00:03:14.320 --> 00:03:20.399
+is automated and deterministic. Does the output match the declared structure? It catches structural
+
+44
+00:03:20.399 --> 00:03:25.679
+failures but can't tell you whether the values are meaningful. A date field typed as a string
+
+45
+00:03:25.679 --> 00:03:31.759
+passes schema validation, whether it contains a real date or a hallucinated one. Business rule
+
+46
+00:03:31.759 --> 00:03:36.720
+validation requires domain knowledge. Does the date fall within the valid range for this document
+
+47
+00:03:36.720 --> 00:03:42.399
+type? Does the referenced identifier appear in the authoritative list? Are the numeric values
+
+48
+00:03:42.399 --> 00:03:47.679
+within the range that is physically possible for this measurement? These checks require you to
+
+49
+00:03:47.679 --> 00:03:52.559
+codify domain logic explicitly, but they are the layer that catches the failures that schema
+
+50
+00:03:52.559 --> 00:03:58.000
+validation passes through. The combination of both layers is what makes a validation loop
+
+51
+00:03:58.000 --> 00:04:04.399
+genuinely reliable. When validation fails, the reprompt design determines whether the next
+
+52
+00:04:04.399 --> 00:04:10.000
+extraction attempt succeeds or continues to fail. Three principles make reprompts effective.
+
+53
+00:04:10.559 --> 00:04:16.079
+First, include the specific validation error in the reprompt. Telling the model exactly what failed
+
+54
+00:04:16.079 --> 00:04:21.440
+and what the expected value should be gives it precise guidance. A vague instruction like
+
+55
+00:04:21.440 --> 00:04:26.399
+please correct the output without specifying the error gives the model no more information
+
+56
+00:04:26.399 --> 00:04:32.559
+than the original prompt. Second, re-include the relevant source text so the model is re-extracting
+
+57
+00:04:32.559 --> 00:04:38.559
+from evidence rather than attempting to correct its prior output from memory. Third, instruct the
+
+58
+00:04:38.559 --> 00:04:44.880
+model to correct only the failing fields rather than regenerating the entire output. Full regeneration
+
+59
+00:04:44.880 --> 00:04:49.359
+can fix the failing field but introduce new errors in fields that were previously correct.
+
+60
+00:04:49.920 --> 00:04:54.480
+Targeted correction keeps the scope of the retry narrow and the risk of new errors low.
+
+61
+00:04:55.760 --> 00:05:00.799
+Hallucination prevention requires multiple techniques because hallucinations arise from
+
+62
+00:05:00.799 --> 00:05:05.839
+different failure modes. Grounding addresses the most common cause, the model generating
+
+63
+00:05:05.839 --> 00:05:10.239
+plausible values from memory when the source text doesn't contain the needed information.
+
+64
+00:05:10.959 --> 00:05:15.760
+Injecting the source document and instructing the model to extract only from it directly
+
+65
+00:05:15.760 --> 00:05:21.679
+addresses this failure mode. Citation instructions make grounding violations auditable. When the
+
+66
+00:05:21.679 --> 00:05:26.959
+model is asked to cite the specific source passage for each extracted field, unsupported
+
+67
+00:05:26.959 --> 00:05:33.200
+extractions become visible. Schema constraints at the enum level eliminate out-of-vocabulary output
+
+68
+00:05:33.200 --> 00:05:39.279
+by restricting the field to known valid values. Temperature reduction lowers output variance,
+
+69
+00:05:39.279 --> 00:05:44.480
+which helps with consistency, but it doesn't address grounding gaps. No single technique
+
+70
+00:05:44.480 --> 00:05:48.079
+is sufficient on its own because each one addresses a different failure mode.
+
+71
+00:05:49.359 --> 00:05:54.799
+Grounding is the single most effective technique for reducing confabulation in extraction pipelines.
+
+72
+00:05:54.799 --> 00:05:59.839
+The mechanism is straightforward. Inject the specific source document or retrieved passage
+
+73
+00:05:59.839 --> 00:06:05.040
+into the prompt and instruct the model to extract only from that text rather than from general
+
+74
+00:06:05.040 --> 00:06:10.959
+knowledge. When the model is operating on provided evidence rather than drawing on training data,
+
+75
+00:06:10.959 --> 00:06:17.359
+the rate of fabricated values drops substantially. Citation instructions extend grounding by making
+
+76
+00:06:17.359 --> 00:06:23.519
+the connection between extracted fields and source text explicit and auditable. For multi-document
+
+77
+00:06:23.519 --> 00:06:28.799
+extraction, labeling each source with an identifier so the model's citations are traceable
+
+78
+00:06:28.799 --> 00:06:34.559
+to specific documents is essential for downstream verification. The conceptual shift grounding
+
+79
+00:06:34.559 --> 00:06:40.640
+enables is real. Extraction moves from memory-based generation, where the model fills gaps with
+
+80
+00:06:40.640 --> 00:06:46.399
+plausible content, to evidence-based retrieval, where absence of evidence in the source produces
+
+81
+00:06:46.399 --> 00:06:53.679
+an empty field rather than a fabricated value. Validation loops add latency and cost to every
+
+82
+00:06:53.679 --> 00:06:59.600
+extraction pipeline, so the decision to use them should be intentional. For high-stakes output that
+
+83
+00:06:59.600 --> 00:07:05.679
+feeds legal, financial, or compliance decisions, the error reduction that a validation loop provides
+
+84
+00:07:05.679 --> 00:07:11.200
+justifies the additional overhead. For large-scale automated extraction running on thousands of
+
+85
+00:07:11.200 --> 00:07:17.119
+documents without human review, a retry path catches systematic failures before they propagate
+
+86
+00:07:17.119 --> 00:07:22.880
+into downstream systems where correction is expensive. For exploratory or interactive use
+
+87
+00:07:22.880 --> 00:07:28.559
+cases where a human is reviewing each extraction result, the overhead of a full validation loop
+
+88
+00:07:28.559 --> 00:07:34.640
+may not be warranted, and light validation with human correction can be sufficient. The threshold
+
+89
+00:07:34.640 --> 00:07:40.079
+is primarily about whether extraction errors have real downstream consequences that outweigh the
+
+90
+00:07:40.079 --> 00:07:45.200
+cost of the retry infrastructure. Reliable extraction combines structured loops with
+
+91
+00:07:45.200 --> 00:07:52.559
+multi-layer validation and deliberate hallucination prevention. The loop sequence is extract, validate,
+
+92
+00:07:52.559 --> 00:07:58.799
+re-prompt on failure, not just validate at the end. Re-prompts include the specific error and
+
+93
+00:07:58.799 --> 00:08:04.399
+source text. Grounding, citations, and schema constraints address distinct confabulation
+
+94
+00:08:04.399 --> 00:08:09.359
+failure modes. And that wraps up validation loops. I'll see you in the next lesson.
+

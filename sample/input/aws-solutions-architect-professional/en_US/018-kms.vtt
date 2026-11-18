@@ -1,0 +1,826 @@
+WEBVTT
+
+1
+00:00:00.570 --> 00:00:02.730
+<v Instructor>Okay, so now let's talk about AWS KMS,</v>
+
+2
+00:00:02.730 --> 00:00:04.680
+which is the key management service.
+
+3
+00:00:04.680 --> 00:00:06.477
+So anytime you hear encryption in AWS,
+
+4
+00:00:06.477 --> 00:00:08.880
+you have to think about KMS, obviously,
+
+5
+00:00:08.880 --> 00:00:11.610
+and it's a way to easily control access to our data,
+
+6
+00:00:11.610 --> 00:00:14.160
+and AWS will manage the encryption keys for us.
+
+7
+00:00:14.160 --> 00:00:16.680
+It's fully integrated with IAM for authorization,
+
+8
+00:00:16.680 --> 00:00:17.880
+and it has seamless integration
+
+9
+00:00:17.880 --> 00:00:19.920
+into all the AWS services pretty much,
+
+10
+00:00:19.920 --> 00:00:24.920
+so EBS, S3, Redshift, RDS, SSM, et cetera, et cetera.
+
+11
+00:00:25.140 --> 00:00:27.870
+You should know and remember that KMS keys are regional
+
+12
+00:00:27.870 --> 00:00:30.807
+and they can only be used in the region they're created in,
+
+13
+00:00:30.807 --> 00:00:32.970
+and that can come up in the exam a lot.
+
+14
+00:00:32.970 --> 00:00:35.190
+So in KMS you have two types of key.
+
+15
+00:00:35.190 --> 00:00:38.310
+You have the symmetric keys and the asymmetric keys.
+
+16
+00:00:38.310 --> 00:00:41.100
+So the symmetric keys were the first offering of KMS.
+
+17
+00:00:41.100 --> 00:00:43.320
+It's a single encryption key that will be used
+
+18
+00:00:43.320 --> 00:00:45.480
+to encrypt and decrypt information.
+
+19
+00:00:45.480 --> 00:00:47.610
+And then all the services that are integrated
+
+20
+00:00:47.610 --> 00:00:51.420
+with AWS KMS use symmetric KMS keys.
+
+21
+00:00:51.420 --> 00:00:54.030
+It's necessary if you wanna do envelope encryption,
+
+22
+00:00:54.030 --> 00:00:55.740
+and you never actually get access
+
+23
+00:00:55.740 --> 00:00:58.170
+to the KMS key itself or unencrypted.
+
+24
+00:00:58.170 --> 00:01:00.780
+You must just send data into KMS
+
+25
+00:01:00.780 --> 00:01:03.390
+with a KMS API call to use it.
+
+26
+00:01:03.390 --> 00:01:05.670
+Now, the asymmetric key are new,
+
+27
+00:01:05.670 --> 00:01:09.060
+and they can allow you to have two kind of public keys,
+
+28
+00:01:09.060 --> 00:01:12.360
+it's a key pair, so it's a public key and a private key.
+
+29
+00:01:12.360 --> 00:01:14.400
+The public key will be used to encrypt,
+
+30
+00:01:14.400 --> 00:01:16.650
+and the private key will be used to decrypt.
+
+31
+00:01:16.650 --> 00:01:18.480
+Now, this is very helpful when you want to have
+
+32
+00:01:18.480 --> 00:01:20.700
+encrypt/decrypt or sign/verify operations,
+
+33
+00:01:20.700 --> 00:01:22.140
+and you can download the public key.
+
+34
+00:01:22.140 --> 00:01:24.450
+That means that you can encrypt stuff
+
+35
+00:01:24.450 --> 00:01:26.310
+from anywhere with a public key,
+
+36
+00:01:26.310 --> 00:01:28.560
+and you can send the public key to people
+
+37
+00:01:28.560 --> 00:01:30.840
+that you don't trust in untrusted environments.
+
+38
+00:01:30.840 --> 00:01:33.990
+But once the data is encrypted with the public key,
+
+39
+00:01:33.990 --> 00:01:35.580
+only the private key has the power
+
+40
+00:01:35.580 --> 00:01:37.410
+to decrypt your information.
+
+41
+00:01:37.410 --> 00:01:39.480
+You still cannot use the private key unencrypted though.
+
+42
+00:01:39.480 --> 00:01:42.090
+You have to use the KMS API calls.
+
+43
+00:01:42.090 --> 00:01:45.180
+So the use case for an asymmetric key
+
+44
+00:01:45.180 --> 00:01:47.820
+is to have encryptions outside of AWS by users
+
+45
+00:01:47.820 --> 00:01:52.230
+who cannot directly call the KMS API for whatever reason.
+
+46
+00:01:52.230 --> 00:01:54.660
+Now, you have different types of KMS keys.
+
+47
+00:01:54.660 --> 00:01:57.510
+The first type is a customer-managed key,
+
+48
+00:01:57.510 --> 00:01:59.580
+and this is a key you create directly in KMS.
+
+49
+00:01:59.580 --> 00:02:01.410
+So you can create, manage, and use them.
+
+50
+00:02:01.410 --> 00:02:03.120
+You can enable, disable them.
+
+51
+00:02:03.120 --> 00:02:04.890
+You can enable a rotation policy
+
+52
+00:02:04.890 --> 00:02:06.840
+to rotate the key every year
+
+53
+00:02:06.840 --> 00:02:09.060
+while the old key is still preserved, of course.
+
+54
+00:02:09.060 --> 00:02:11.640
+And you can add a key policy, which is a resource policy
+
+55
+00:02:11.640 --> 00:02:15.420
+for KMS keys, and you can audit the key usage in CloudTrail.
+
+56
+00:02:15.420 --> 00:02:16.710
+This is the kind of keys you will leverage
+
+57
+00:02:16.710 --> 00:02:18.750
+for envelope encryption, so these are the kind of keys
+
+58
+00:02:18.750 --> 00:02:20.190
+that you manage yourself.
+
+59
+00:02:20.190 --> 00:02:23.400
+Therefore, they're called customer-managed keys.
+
+60
+00:02:23.400 --> 00:02:26.910
+But a second kind of key is the AWS-managed keys.
+
+61
+00:02:26.910 --> 00:02:30.510
+So these ones are used exclusively by AWS services,
+
+62
+00:02:30.510 --> 00:02:35.130
+such as aws/s3, aws/ebs, and so on.
+
+63
+00:02:35.130 --> 00:02:36.363
+And this is what you see in the UI
+
+64
+00:02:36.363 --> 00:02:40.110
+when you use the AWS-managed keys.
+
+65
+00:02:40.110 --> 00:02:41.760
+So they are managed by AWS
+
+66
+00:02:41.760 --> 00:02:44.280
+and they're automatically rotated every year.
+
+67
+00:02:44.280 --> 00:02:46.830
+You can view the key policy and you can audit in CloudTrail,
+
+68
+00:02:46.830 --> 00:02:48.300
+but you cannot leverage them
+
+69
+00:02:48.300 --> 00:02:50.760
+for your own encryption operations.
+
+70
+00:02:50.760 --> 00:02:53.580
+And finally, you have AWS-owned keys,
+
+71
+00:02:53.580 --> 00:02:56.310
+and these are created and managed by AWS,
+
+72
+00:02:56.310 --> 00:02:59.070
+used by some services to protect your resources,
+
+73
+00:02:59.070 --> 00:03:01.590
+and they can be used across multiple AWS accounts,
+
+74
+00:03:01.590 --> 00:03:03.000
+but they're not in your accounts.
+
+75
+00:03:03.000 --> 00:03:05.580
+They're used by AWS internally,
+
+76
+00:03:05.580 --> 00:03:08.460
+and you cannot view, use, track or audit these keys.
+
+77
+00:03:08.460 --> 00:03:11.820
+But AWS tells you that these keys actually exist.
+
+78
+00:03:11.820 --> 00:03:14.400
+Okay, so now if we want to have a summary
+
+79
+00:03:14.400 --> 00:03:16.410
+of the different types of KMS keys,
+
+80
+00:03:16.410 --> 00:03:18.630
+for the customer-managed keys, you can manage metadata,
+
+81
+00:03:18.630 --> 00:03:20.430
+you can view metadata,
+
+82
+00:03:20.430 --> 00:03:21.263
+and you can manage it,
+
+83
+00:03:21.263 --> 00:03:23.070
+and you can also use for your accounts,
+
+84
+00:03:23.070 --> 00:03:26.520
+and you can have an automatic rotation every one year.
+
+85
+00:03:26.520 --> 00:03:30.090
+The AWS managed key can be used in your accounts, okay?
+
+86
+00:03:30.090 --> 00:03:31.380
+But you cannot manage them,
+
+87
+00:03:31.380 --> 00:03:33.780
+and they're required to be rotated every one year.
+
+88
+00:03:33.780 --> 00:03:34.650
+This is automatic.
+
+89
+00:03:34.650 --> 00:03:36.780
+And then the owned keys, you just know they exist,
+
+90
+00:03:36.780 --> 00:03:39.030
+but you cannot use them or see them.
+
+91
+00:03:39.030 --> 00:03:39.863
+Okay.
+
+92
+00:03:39.863 --> 00:03:41.670
+Now, how do you create a KMS key?
+
+93
+00:03:41.670 --> 00:03:45.120
+So you have what's called a key material origin,
+
+94
+00:03:45.120 --> 00:03:46.710
+and it cannot be changed after creation,
+
+95
+00:03:46.710 --> 00:03:48.840
+so you have to define it as creation time.
+
+96
+00:03:48.840 --> 00:03:52.920
+So you have the KMS, which is the AWS_KMS key material,
+
+97
+00:03:52.920 --> 00:03:55.710
+which means that you are going to have KMS
+
+98
+00:03:55.710 --> 00:03:58.860
+automatically create, generate, and manage the key
+
+99
+00:03:58.860 --> 00:04:00.210
+in its own key store
+
+100
+00:04:00.210 --> 00:04:01.890
+to see what happens when you go into KMS
+
+101
+00:04:01.890 --> 00:04:03.540
+and start to create a key.
+
+102
+00:04:03.540 --> 00:04:06.210
+But you have a second option called external.
+
+103
+00:04:06.210 --> 00:04:07.170
+In that case,
+
+104
+00:04:07.170 --> 00:04:11.010
+while you import the key material directly into the KMS key
+
+105
+00:04:11.010 --> 00:04:12.960
+and you are responsible for securing
+
+106
+00:04:12.960 --> 00:04:15.960
+and managing this key material outside of AWS, okay?
+
+107
+00:04:15.960 --> 00:04:17.940
+So maybe you just wanna create it outside
+
+108
+00:04:17.940 --> 00:04:19.500
+and then import it into this KMS
+
+109
+00:04:19.500 --> 00:04:21.450
+and then be done and delete it on your end,
+
+110
+00:04:21.450 --> 00:04:24.000
+or you just also wanna keep a copy in KMS,
+
+111
+00:04:24.000 --> 00:04:25.560
+and therefore you're responsible, obviously,
+
+112
+00:04:25.560 --> 00:04:28.020
+for the copy outside of KMS.
+
+113
+00:04:28.020 --> 00:04:29.250
+Now, the last option
+
+114
+00:04:29.250 --> 00:04:32.670
+is to use a custom key store called AWS_CLOUDHSM.
+
+115
+00:04:32.670 --> 00:04:34.770
+And this allows you to create the key material
+
+116
+00:04:34.770 --> 00:04:37.320
+directly within your HSM cluster
+
+117
+00:04:37.320 --> 00:04:39.990
+and manage the key material there.
+
+118
+00:04:39.990 --> 00:04:41.730
+So let's consider how it works
+
+119
+00:04:41.730 --> 00:04:42.870
+when you have a custom key store
+
+120
+00:04:42.870 --> 00:04:44.610
+which is backed by CloudHSM.
+
+121
+00:04:44.610 --> 00:04:47.160
+So you create your CloudHSM cluster as a custom key store,
+
+122
+00:04:47.160 --> 00:04:49.530
+and there is a integration with KMS.
+
+123
+00:04:49.530 --> 00:04:51.810
+That means that when KMS creates key,
+
+124
+00:04:51.810 --> 00:04:53.490
+well, the key materials are going to be stored
+
+125
+00:04:53.490 --> 00:04:55.950
+in your HSM cluster that you own and manage.
+
+126
+00:04:55.950 --> 00:04:58.950
+That means that the keys live within your HSM cluster.
+
+127
+00:04:58.950 --> 00:05:02.370
+They are only managed by KMS and used by KMS,
+
+128
+00:05:02.370 --> 00:05:04.500
+and all the cryptographic operations
+
+129
+00:05:04.500 --> 00:05:07.290
+will be directly performed in the HSMs, okay?
+
+130
+00:05:07.290 --> 00:05:08.820
+So this is the architecture.
+
+131
+00:05:08.820 --> 00:05:11.280
+You have your CloudHSM cluster with two AZs,
+
+132
+00:05:11.280 --> 00:05:14.280
+and it is directly connected to KMS.
+
+133
+00:05:14.280 --> 00:05:17.250
+So once you have at least two HSMs for high availability,
+
+134
+00:05:17.250 --> 00:05:18.600
+then you can integrate with KMS,
+
+135
+00:05:18.600 --> 00:05:21.480
+and then the users can still use the KMS API
+
+136
+00:05:21.480 --> 00:05:23.370
+to view, create, and manage keys.
+
+137
+00:05:23.370 --> 00:05:25.200
+But behind the scenes, you know for sure
+
+138
+00:05:25.200 --> 00:05:28.260
+that KMS will be using your CloudHSM cluster
+
+139
+00:05:28.260 --> 00:05:29.850
+for all the cryptographic operations
+
+140
+00:05:29.850 --> 00:05:31.950
+and for storing and retrieving these keys.
+
+141
+00:05:31.950 --> 00:05:32.850
+So why we do this?
+
+142
+00:05:32.850 --> 00:05:34.530
+Well, the use case is that you need
+
+143
+00:05:34.530 --> 00:05:36.570
+to have direct control over the HSMs
+
+144
+00:05:36.570 --> 00:05:40.230
+for higher security or for security requirements at least,
+
+145
+00:05:40.230 --> 00:05:41.370
+or you have a requirement
+
+146
+00:05:41.370 --> 00:05:45.960
+to store the KMS keys in a dedicated HSM environment.
+
+147
+00:05:45.960 --> 00:05:48.450
+Now, if you choose to have an external KMS key source,
+
+148
+00:05:48.450 --> 00:05:51.420
+then you can bring your own key using your own key material,
+
+149
+00:05:51.420 --> 00:05:53.040
+and you are really going to be responsible
+
+150
+00:05:53.040 --> 00:05:54.750
+for the key material's security,
+
+151
+00:05:54.750 --> 00:05:57.630
+availability, and durability outside of AWS.
+
+152
+00:05:57.630 --> 00:06:02.100
+There is support for both symmetric and asymmetric KMS keys,
+
+153
+00:06:02.100 --> 00:06:04.050
+and it cannot be used with custom key store.
+
+154
+00:06:04.050 --> 00:06:05.940
+It has to be used on its own.
+
+155
+00:06:05.940 --> 00:06:09.240
+For this, if you want to have KMS key rotation, of course,
+
+156
+00:06:09.240 --> 00:06:11.700
+because the key source is external,
+
+157
+00:06:11.700 --> 00:06:13.440
+then you have to rotate it on your own.
+
+158
+00:06:13.440 --> 00:06:15.870
+So automatic rotation is not supported.
+
+159
+00:06:15.870 --> 00:06:16.703
+So how does that work?
+
+160
+00:06:16.703 --> 00:06:19.680
+Well, the user will create a KMS key in KMS
+
+161
+00:06:19.680 --> 00:06:22.020
+and say that it's a symmetric type of key,
+
+162
+00:06:22.020 --> 00:06:24.540
+and that the source is external.
+
+163
+00:06:24.540 --> 00:06:26.130
+Now, the key envelope is created,
+
+164
+00:06:26.130 --> 00:06:27.630
+but the key material is not.
+
+165
+00:06:27.630 --> 00:06:31.740
+So then you download the public key and an import token,
+
+166
+00:06:31.740 --> 00:06:35.550
+and you're going to use the public key with your internal,
+
+167
+00:06:35.550 --> 00:06:38.280
+okay, your externally generated key material
+
+168
+00:06:38.280 --> 00:06:41.700
+to create an encryption thanks to the public key.
+
+169
+00:06:41.700 --> 00:06:43.350
+Now, this public key,
+
+170
+00:06:43.350 --> 00:06:45.390
+this private key that has been encrypted
+
+171
+00:06:45.390 --> 00:06:47.730
+can be sent back to the KMS service
+
+172
+00:06:47.730 --> 00:06:49.710
+using also the import token.
+
+173
+00:06:49.710 --> 00:06:52.920
+And then KMS will use some decryption mechanism
+
+174
+00:06:52.920 --> 00:06:54.270
+to get the key material
+
+175
+00:06:54.270 --> 00:06:57.600
+and store it in your KMS key in there.
+
+176
+00:06:57.600 --> 00:07:02.600
+So this is the process to import external keys in KMS, okay?
+
+177
+00:07:02.880 --> 00:07:05.550
+Lastly, so you need to know about KMS multi-region key,
+
+178
+00:07:05.550 --> 00:07:07.680
+so it's possible for you to create a key,
+
+179
+00:07:07.680 --> 00:07:09.210
+for example, in us-east-1
+
+180
+00:07:09.210 --> 00:07:12.540
+and have it replicated across multiple regions.
+
+181
+00:07:12.540 --> 00:07:14.850
+So they will have the same key material
+
+182
+00:07:14.850 --> 00:07:17.130
+and actually the same key ID,
+
+183
+00:07:17.130 --> 00:07:19.680
+but they will be in different regions.
+
+184
+00:07:19.680 --> 00:07:21.060
+So the use cases are amazing
+
+185
+00:07:21.060 --> 00:07:22.980
+because thanks to this, well,
+
+186
+00:07:22.980 --> 00:07:25.050
+you have the same key in multiple regions,
+
+187
+00:07:25.050 --> 00:07:26.850
+and that means that you can encrypt in one region
+
+188
+00:07:26.850 --> 00:07:30.660
+and decrypt in the other regions using the same KMS key ID.
+
+189
+00:07:30.660 --> 00:07:32.340
+So you don't need to re-encrypt data
+
+190
+00:07:32.340 --> 00:07:34.590
+or make cross-region API calls.
+
+191
+00:07:34.590 --> 00:07:37.620
+So they will have the same key ID, the same key material,
+
+192
+00:07:37.620 --> 00:07:39.660
+the same automatic rotation, and so on.
+
+193
+00:07:39.660 --> 00:07:41.880
+But these keys are not global keys, okay?
+
+194
+00:07:41.880 --> 00:07:44.190
+It's this principle that there is a primary key
+
+195
+00:07:44.190 --> 00:07:47.040
+in one region, and all the others are replicas.
+
+196
+00:07:47.040 --> 00:07:49.440
+Each key can be managed independently,
+
+197
+00:07:49.440 --> 00:07:52.680
+and although you can only have one primary key at a time,
+
+198
+00:07:52.680 --> 00:07:54.060
+it's possible for you
+
+199
+00:07:54.060 --> 00:07:57.450
+to promote one replica into their own primary key.
+
+200
+00:07:57.450 --> 00:07:59.520
+So the use cases for multi-region keys
+
+201
+00:07:59.520 --> 00:08:02.400
+is going to be disaster recovery, global data management,
+
+202
+00:08:02.400 --> 00:08:04.530
+for example, for DynamoDB global tables,
+
+203
+00:08:04.530 --> 00:08:07.050
+active-active application that span multiple region,
+
+204
+00:08:07.050 --> 00:08:10.260
+or distributing signing applications, and so on.
+
+205
+00:08:10.260 --> 00:08:11.580
+So that's it for this lecture.
+
+206
+00:08:11.580 --> 00:08:14.580
+I hope you liked it, and I will see you in the next lecture.
+

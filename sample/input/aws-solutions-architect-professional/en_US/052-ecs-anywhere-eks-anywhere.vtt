@@ -1,0 +1,326 @@
+WEBVTT
+
+1
+00:00:00.120 --> 00:00:02.125
+<v ->So now let's talk about the integration</v>
+
+2
+00:00:02.125 --> 00:00:05.349
+between the container services of AWS
+
+3
+00:00:05.349 --> 00:00:08.040
+and your on-premises deployments.
+
+4
+00:00:08.040 --> 00:00:10.580
+So the first one is Amazon ECS Anywhere
+
+5
+00:00:10.580 --> 00:00:13.080
+which allows you to easily run containers
+
+6
+00:00:13.080 --> 00:00:14.738
+on customer-managed infrastructure,
+
+7
+00:00:14.738 --> 00:00:18.240
+so that means your on-premises servers, your VMs, and so on.
+
+8
+00:00:18.240 --> 00:00:21.758
+And so that allows you to deploy any Amazon ECS task
+
+9
+00:00:21.758 --> 00:00:23.781
+in any environment.
+
+10
+00:00:23.781 --> 00:00:27.270
+So we have the Cloud and our Corporate Data Center
+
+11
+00:00:27.270 --> 00:00:29.594
+and we're going to leverage the ECS Service,
+
+12
+00:00:29.594 --> 00:00:34.370
+the ECS Control Plane to manage our containers on-premises.
+
+13
+00:00:34.370 --> 00:00:37.199
+So for this, we need to install the ECS Container Agent
+
+14
+00:00:37.199 --> 00:00:41.070
+and the SSM Agent on-premises on our servers,
+
+15
+00:00:41.070 --> 00:00:43.851
+and then we will specify the external launch type
+
+16
+00:00:43.851 --> 00:00:46.362
+for our services and our tasks.
+
+17
+00:00:46.362 --> 00:00:47.580
+And so therefore,
+
+18
+00:00:47.580 --> 00:00:50.160
+the ECS Agent will register with the ECS Cluster.
+
+19
+00:00:50.160 --> 00:00:53.111
+The SSM agent will register with the SSM Service,
+
+20
+00:00:53.111 --> 00:00:56.400
+and then from there, we can use the ECS Service directly
+
+21
+00:00:56.400 --> 00:01:00.660
+from the console on AWS to launch our containers.
+
+22
+00:01:00.660 --> 00:01:01.650
+So as you can see,
+
+23
+00:01:01.650 --> 00:01:04.257
+there is a tight connection and an internet connection
+
+24
+00:01:04.257 --> 00:01:08.017
+between your Cloud and your On-Premises Data Center
+
+25
+00:01:08.017 --> 00:01:11.168
+which allows you to use the ECS Service to connect
+
+26
+00:01:11.168 --> 00:01:15.240
+and launch containers on your corporate data center.
+
+27
+00:01:15.240 --> 00:01:16.944
+So you must have a stable connection
+
+28
+00:01:16.944 --> 00:01:20.729
+to your designated AWS region.
+
+29
+00:01:20.729 --> 00:01:23.216
+So the use cases for Amazon ECS Anywhere
+
+30
+00:01:23.216 --> 00:01:27.146
+is to meet compliance, regulatory, and latency requirements
+
+31
+00:01:27.146 --> 00:01:30.237
+and to run apps outside of AWS Regions
+
+32
+00:01:30.237 --> 00:01:32.124
+and closer to other services
+
+33
+00:01:32.124 --> 00:01:34.200
+which allows you to perform, for example,
+
+34
+00:01:34.200 --> 00:01:35.880
+some on-premises machine learning,
+
+35
+00:01:35.880 --> 00:01:39.069
+videos processing, data processing, and so on.
+
+36
+00:01:39.069 --> 00:01:42.761
+So here we bring the benefits of ECS on-premises
+
+37
+00:01:42.761 --> 00:01:46.273
+and we need an internet connection between the two.
+
+38
+00:01:46.273 --> 00:01:48.304
+Now for Amazon EKS Anywhere,
+
+39
+00:01:48.304 --> 00:01:49.865
+even though the name is similar,
+
+40
+00:01:49.865 --> 00:01:52.650
+the concepts are a little bit different.
+
+41
+00:01:52.650 --> 00:01:55.965
+So here, we want to create and operate Kubernetes Cluster
+
+42
+00:01:55.965 --> 00:01:57.944
+created outside of AWS.
+
+43
+00:01:57.944 --> 00:02:00.007
+So you're on your On-Premises Data Center,
+
+44
+00:02:00.007 --> 00:02:02.868
+you're going to create an EKS Cluster.
+
+45
+00:02:02.868 --> 00:02:06.417
+For this, we will leverage the Amazon EKS Distro,
+
+46
+00:02:06.417 --> 00:02:10.075
+which is the Amazon's flavor of Kubernetes,
+
+47
+00:02:10.075 --> 00:02:13.233
+that's their own release with a bit more tools on top of it,
+
+48
+00:02:13.233 --> 00:02:16.484
+and that's the one they use to run Amazon EKS Service.
+
+49
+00:02:16.484 --> 00:02:18.317
+So you can install the same Distro
+
+50
+00:02:18.317 --> 00:02:21.568
+that they use to run EKS on-premises.
+
+51
+00:02:21.568 --> 00:02:24.863
+And the reason why you would use the Amazon EKS Distro
+
+52
+00:02:24.863 --> 00:02:26.935
+is to reduce support costs
+
+53
+00:02:26.935 --> 00:02:30.415
+and avoid maintaining redundant third-party tools.
+
+54
+00:02:30.415 --> 00:02:35.154
+So as you can see, this works without any connection to AWS.
+
+55
+00:02:35.154 --> 00:02:39.317
+So to get this EKS Cluster started on-premises,
+
+56
+00:02:39.317 --> 00:02:43.047
+you must use the EKS Anywhere installer.
+
+57
+00:02:43.047 --> 00:02:46.254
+Then, if you somehow, but this is optional,
+
+58
+00:02:46.254 --> 00:02:48.846
+wanted to connect the EKS Cluster,
+
+59
+00:02:48.846 --> 00:02:52.184
+the EKS Anywhere Cluster into AWS,
+
+60
+00:02:52.184 --> 00:02:54.451
+you could use the EKS Connector,
+
+61
+00:02:54.451 --> 00:02:56.272
+and using the EKS Connector,
+
+62
+00:02:56.272 --> 00:03:00.600
+now, Amazon EKS can manage your EKS Cluster on-premises,
+
+63
+00:03:00.600 --> 00:03:02.042
+which gives you different modes.
+
+64
+00:03:02.042 --> 00:03:03.480
+So you have to define a mode,
+
+65
+00:03:03.480 --> 00:03:05.507
+and you can be either in fully connected
+
+66
+00:03:05.507 --> 00:03:07.698
+or partially disconnected mode.
+
+67
+00:03:07.698 --> 00:03:09.759
+That means that there is a connection
+
+68
+00:03:09.759 --> 00:03:13.025
+between your On-Premises Data Center and Amazon EKS,
+
+69
+00:03:13.025 --> 00:03:15.480
+and therefore, we can use the EKS Console
+
+70
+00:03:15.480 --> 00:03:19.761
+to manage our Amazon EKS Cluster on-premises.
+
+71
+00:03:19.761 --> 00:03:22.675
+The other mode is a fully disconnected mode
+
+72
+00:03:22.675 --> 00:03:26.509
+in which case, we don't have a connection to AWS,
+
+73
+00:03:26.509 --> 00:03:28.540
+we just install the EKS Distro
+
+74
+00:03:28.540 --> 00:03:31.341
+and then we leverage open-source tools on-premises
+
+75
+00:03:31.341 --> 00:03:33.358
+to manage your clusters.
+
+76
+00:03:33.358 --> 00:03:35.130
+So this gives you different modes,
+
+77
+00:03:35.130 --> 00:03:36.855
+but nonetheless, with a fully disconnected mode,
+
+78
+00:03:36.855 --> 00:03:40.128
+we can get the benefits of an EKS cluster on-premises
+
+79
+00:03:40.128 --> 00:03:43.980
+without having a connection into AWS.
+
+80
+00:03:43.980 --> 00:03:45.289
+Okay, so that's it for this lecture.
+
+81
+00:03:45.289 --> 00:03:48.933
+I hope you liked it, and I will see you in the next lecture.
+

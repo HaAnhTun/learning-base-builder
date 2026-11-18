@@ -1,0 +1,510 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.350
+<v Instructor>Question five,</v>
+
+2
+00:00:01.350 --> 00:00:04.020
+a company is launching a new web service
+
+3
+00:00:04.020 --> 00:00:06.480
+on an Amazon ECS cluster.
+
+4
+00:00:06.480 --> 00:00:09.330
+The company policy requires that the security group
+
+5
+00:00:09.330 --> 00:00:13.590
+on the cluster instances block all inbound traffic
+
+6
+00:00:13.590 --> 00:00:17.400
+but the port HTTPS, which is the port 443.
+
+7
+00:00:17.400 --> 00:00:21.900
+The cluster consists of Amazon, 100 Amazon EC2 instances
+
+8
+00:00:21.900 --> 00:00:24.360
+and security engineers are responsible
+
+9
+00:00:24.360 --> 00:00:27.120
+for managing and updating the cluster instances.
+
+10
+00:00:27.120 --> 00:00:28.950
+The security engineering team is small
+
+11
+00:00:28.950 --> 00:00:31.770
+so any management efforts must be minimized.
+
+12
+00:00:31.770 --> 00:00:34.380
+So here we have a requirement as a company policy
+
+13
+00:00:34.380 --> 00:00:36.990
+that the security group cannot allow anything
+
+14
+00:00:36.990 --> 00:00:39.120
+but inbound HTTPS.
+
+15
+00:00:39.120 --> 00:00:42.570
+And then we have 100 EC2 instances in an ECS cluster.
+
+16
+00:00:42.570 --> 00:00:45.390
+So let's see how we can go ahead to manage and update
+
+17
+00:00:45.390 --> 00:00:47.070
+the cluster instances.
+
+18
+00:00:47.070 --> 00:00:49.560
+So the architecture is, our ECS cluster
+
+19
+00:00:49.560 --> 00:00:51.690
+has a bunch of EC2 instances in it
+
+20
+00:00:51.690 --> 00:00:55.050
+and the client is able to access our EC2 instances
+
+21
+00:00:55.050 --> 00:00:57.330
+only through going through a security group
+
+22
+00:00:57.330 --> 00:01:00.420
+that is allowing inbound access on 443.
+
+23
+00:01:00.420 --> 00:01:04.200
+So presumably this is how we access our HTTPS application
+
+24
+00:01:04.200 --> 00:01:05.910
+onto our ECS cluster.
+
+25
+00:01:05.910 --> 00:01:08.850
+And now we want to be able to go ahead in these instances
+
+26
+00:01:08.850 --> 00:01:10.230
+and manage them.
+
+27
+00:01:10.230 --> 00:01:13.980
+But again, the company policy is to have
+
+28
+00:01:13.980 --> 00:01:17.370
+only the port 443 incoming into these instances.
+
+29
+00:01:17.370 --> 00:01:19.230
+So if you follow closely to the course,
+
+30
+00:01:19.230 --> 00:01:20.730
+originally the answer to the question,
+
+31
+00:01:20.730 --> 00:01:23.010
+but let's look at the different options.
+
+32
+00:01:23.010 --> 00:01:26.370
+Change the SSH port to 2222
+
+33
+00:01:26.370 --> 00:01:30.150
+on the cluster instances with a user data script.
+
+34
+00:01:30.150 --> 00:01:34.650
+Log into each instance using SSH over port 2222.
+
+35
+00:01:34.650 --> 00:01:37.500
+So it is definitely possible to,
+
+36
+00:01:37.500 --> 00:01:41.460
+using a user data script to change the SSH port
+
+37
+00:01:41.460 --> 00:01:43.260
+to another port 2222.
+
+38
+00:01:43.260 --> 00:01:45.840
+And that is a common thing to do if you're
+
+39
+00:01:45.840 --> 00:01:47.070
+want to enhance security
+
+40
+00:01:47.070 --> 00:01:50.001
+to have a non-standard port for ssh.
+
+41
+00:01:50.001 --> 00:01:53.430
+But the thing here is, here we cannot SSH
+
+42
+00:01:53.430 --> 00:01:56.580
+into our instances because we would need to allow
+
+43
+00:01:56.580 --> 00:01:59.640
+port 2222 into our security group,
+
+44
+00:01:59.640 --> 00:02:01.950
+but that is against the company policy.
+
+45
+00:02:01.950 --> 00:02:05.520
+So this would be a feasible solution, 100% for sure
+
+46
+00:02:05.520 --> 00:02:08.610
+but the company policy would disable us
+
+47
+00:02:08.610 --> 00:02:12.900
+from using the port 2222 to get into our EC2 instances.
+
+48
+00:02:12.900 --> 00:02:15.150
+And so therefore, this option A
+
+49
+00:02:15.150 --> 00:02:17.910
+looked like a viable solution, but it is not a good one
+
+50
+00:02:17.910 --> 00:02:19.590
+because it violates the company policy.
+
+51
+00:02:19.590 --> 00:02:21.870
+So we have to roll that out.
+
+52
+00:02:21.870 --> 00:02:25.020
+Option B is to change yet again the SSH port
+
+53
+00:02:25.020 --> 00:02:28.560
+using a user data script and then we use trusted advisor
+
+54
+00:02:28.560 --> 00:02:32.850
+to remotely manage the cluster instances of our port 2222.
+
+55
+00:02:32.850 --> 00:02:36.840
+So now we have trusted advisor that will be using that part.
+
+56
+00:02:36.840 --> 00:02:38.670
+So two problems with this question.
+
+57
+00:02:38.670 --> 00:02:41.340
+Number one, again, we have an incoming port
+
+58
+00:02:41.340 --> 00:02:44.250
+into our security group that is against the company policy.
+
+59
+00:02:44.250 --> 00:02:47.430
+So we can rule that out again for our option B.
+
+60
+00:02:47.430 --> 00:02:51.030
+But trusted advisor is, if we remember correctly what it is,
+
+61
+00:02:51.030 --> 00:02:56.030
+a service to help us get recommendations about our accounts.
+
+62
+00:02:56.250 --> 00:02:59.010
+But in no way it is a service that would allow us
+
+63
+00:02:59.010 --> 00:03:01.830
+to manage our EC2 instances actively.
+
+64
+00:03:01.830 --> 00:03:03.780
+So Trusted Advisor is definitely
+
+65
+00:03:03.780 --> 00:03:05.190
+not the right service for this.
+
+66
+00:03:05.190 --> 00:03:07.380
+It would give us cost recommendations
+
+67
+00:03:07.380 --> 00:03:10.200
+security recommendations, performance recommendations
+
+68
+00:03:10.200 --> 00:03:11.400
+all these kind of things
+
+69
+00:03:11.400 --> 00:03:14.430
+but it would not help us to manage our instances
+
+70
+00:03:14.430 --> 00:03:18.810
+and use actively, ports to SSH into our instances.
+
+71
+00:03:18.810 --> 00:03:22.290
+So we have to rule out that answer for two reasons.
+
+72
+00:03:22.290 --> 00:03:24.870
+Option C, launch the cluster instances
+
+73
+00:03:24.870 --> 00:03:26.640
+with no SSH key pairs.
+
+74
+00:03:26.640 --> 00:03:29.970
+That is definitely an option in AWS.
+
+75
+00:03:29.970 --> 00:03:33.780
+And then we use the Amazon EC2 systems manager run command
+
+76
+00:03:33.780 --> 00:03:36.660
+to remotely manage the cluster instances.
+
+77
+00:03:36.660 --> 00:03:37.493
+So let's have a look,
+
+78
+00:03:37.493 --> 00:03:39.540
+I just made an instance a little bit bigger.
+
+79
+00:03:39.540 --> 00:03:41.460
+So we have our ECS cluster security group
+
+80
+00:03:41.460 --> 00:03:44.850
+and our EC2 instance accessible of the port 443.
+
+81
+00:03:44.850 --> 00:03:49.080
+And we use the SSM agent inside of our EC2 instance
+
+82
+00:03:49.080 --> 00:03:53.880
+and use the SSM run command to access our EC2 instances.
+
+83
+00:03:53.880 --> 00:03:57.300
+So that is 100% a viable option.
+
+84
+00:03:57.300 --> 00:04:00.060
+I wish this option was a bit more clear
+
+85
+00:04:00.060 --> 00:04:02.820
+because to use the systems manager run command
+
+86
+00:04:02.820 --> 00:04:07.200
+we need to make sure before that two things are there.
+
+87
+00:04:07.200 --> 00:04:10.110
+Number one, we need to make sure the SSM agent is running
+
+88
+00:04:10.110 --> 00:04:11.730
+onto our EC2 instance
+
+89
+00:04:11.730 --> 00:04:13.680
+which is not the case for every EC2 instance.
+
+90
+00:04:13.680 --> 00:04:16.140
+You need to install it most of the time.
+
+91
+00:04:16.140 --> 00:04:17.760
+Or if you use Amazon Linux 2
+
+92
+00:04:17.760 --> 00:04:19.140
+then it's already installed for you
+
+93
+00:04:19.140 --> 00:04:20.010
+but you would need to install it
+
+94
+00:04:20.010 --> 00:04:21.990
+if you are using other operating systems.
+
+95
+00:04:21.990 --> 00:04:23.850
+So that's number one, the big problem.
+
+96
+00:04:23.850 --> 00:04:25.050
+And number two is,
+
+97
+00:04:25.050 --> 00:04:28.170
+for your EC2 instance running the SSM agent
+
+98
+00:04:28.170 --> 00:04:31.800
+to be managed by SSM, the service itself,
+
+99
+00:04:31.800 --> 00:04:33.840
+you would need to make sure your EC2 instance
+
+100
+00:04:33.840 --> 00:04:37.230
+has an instance role that allows us to access the EC2,
+
+101
+00:04:37.230 --> 00:04:40.350
+the EC2 systems manager service.
+
+102
+00:04:40.350 --> 00:04:43.470
+So there are two things missing in that option.
+
+103
+00:04:43.470 --> 00:04:46.650
+So this is the correct option for this question
+
+104
+00:04:46.650 --> 00:04:48.360
+but I think it's really incomplete.
+
+105
+00:04:48.360 --> 00:04:50.760
+Now that is something that does happen in the exam.
+
+106
+00:04:50.760 --> 00:04:52.560
+Sometimes answer are incomplete,
+
+107
+00:04:52.560 --> 00:04:54.720
+I would say most often not they're not incomplete,
+
+108
+00:04:54.720 --> 00:04:56.370
+but sometimes that can happen.
+
+109
+00:04:56.370 --> 00:04:59.790
+So here this is the right answer, but slightly incomplete.
+
+110
+00:04:59.790 --> 00:05:02.130
+But here, using the run commands
+
+111
+00:05:02.130 --> 00:05:04.950
+we can manage a fleet of EC2 instances
+
+112
+00:05:04.950 --> 00:05:08.610
+and update them all at once without getting the need
+
+113
+00:05:08.610 --> 00:05:11.310
+to open up any port on our instances.
+
+114
+00:05:11.310 --> 00:05:14.580
+And the reason is the SSM agent will be pulling
+
+115
+00:05:14.580 --> 00:05:18.090
+the systems manager service and not the other way.
+
+116
+00:05:18.090 --> 00:05:20.040
+So this is the correct option.
+
+117
+00:05:20.040 --> 00:05:23.670
+Now, option D, launch the cluster instances with no SSH key
+
+118
+00:05:23.670 --> 00:05:26.970
+and use trusted advisor to manage the instance,
+
+119
+00:05:26.970 --> 00:05:27.960
+that makes no sense.
+
+120
+00:05:27.960 --> 00:05:30.720
+We cannot use trusted advisor to manage instances
+
+121
+00:05:30.720 --> 00:05:32.460
+so we rule out that answer.
+
+122
+00:05:32.460 --> 00:05:35.580
+So remember the correct answer here is option C,
+
+123
+00:05:35.580 --> 00:05:39.300
+with the little asterisk that we would need an IAM role
+
+124
+00:05:39.300 --> 00:05:41.790
+and also the SSM agent properly configured
+
+125
+00:05:41.790 --> 00:05:43.650
+and running for this to work.
+
+126
+00:05:43.650 --> 00:05:44.483
+But that's it.
+
+127
+00:05:44.483 --> 00:05:47.380
+I hope you liked it and I will see you in the next lecture.
+

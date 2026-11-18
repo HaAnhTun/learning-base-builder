@@ -1,0 +1,290 @@
+WEBVTT
+
+1
+00:00:00.540 --> 00:00:03.060
+<v Instructor>So now let's talk about Amazon ECR.</v>
+
+2
+00:00:03.060 --> 00:00:05.940
+So the Elastic Container Registry is used to store
+
+3
+00:00:05.940 --> 00:00:09.000
+and manage Docker images on AWS.
+
+4
+00:00:09.000 --> 00:00:10.890
+And you have two kind of repositories,
+
+5
+00:00:10.890 --> 00:00:14.310
+you have the Private and the Public repositories.
+
+6
+00:00:14.310 --> 00:00:16.200
+By the way, there is a whole repository you
+
+7
+00:00:16.200 --> 00:00:18.990
+can see called gallery.ecr.aws,
+
+8
+00:00:18.990 --> 00:00:21.510
+it has public images you can get.
+
+9
+00:00:21.510 --> 00:00:23.790
+So you have an ECR repository, and for example,
+
+10
+00:00:23.790 --> 00:00:26.670
+you have two Docker images, A and B
+
+11
+00:00:26.670 --> 00:00:28.710
+and then you have an ECS cluster.
+
+12
+00:00:28.710 --> 00:00:31.140
+And the Instance is going to have a role
+
+13
+00:00:31.140 --> 00:00:34.800
+that allows it to pull images from the ECR repository
+
+14
+00:00:34.800 --> 00:00:37.380
+and therefore start containers on it.
+
+15
+00:00:37.380 --> 00:00:40.560
+So the ECR is fully integrated ECS
+
+16
+00:00:40.560 --> 00:00:43.560
+in terms of pulling Docker images
+
+17
+00:00:43.560 --> 00:00:46.530
+and the access to ECR is controlled through IAM.
+
+18
+00:00:46.530 --> 00:00:48.270
+So in case you have any permission errors,
+
+19
+00:00:48.270 --> 00:00:50.790
+you need to check the policies.
+
+20
+00:00:50.790 --> 00:00:53.700
+Now, ECR has many features. We'll see those in a bit.
+
+21
+00:00:53.700 --> 00:00:56.550
+We have vulnerability scanning, versioning,
+
+22
+00:00:56.550 --> 00:00:59.160
+image tags, image lifecycle, and so on.
+
+23
+00:00:59.160 --> 00:01:00.720
+So some features you must know, for example,
+
+24
+00:01:00.720 --> 00:01:02.940
+is the cross-Region replication.
+
+25
+00:01:02.940 --> 00:01:04.800
+So it both supports cross-Region
+
+26
+00:01:04.800 --> 00:01:07.020
+and cross-account replication in ECR.
+
+27
+00:01:07.020 --> 00:01:07.950
+So let's take an example.
+
+28
+00:01:07.950 --> 00:01:12.024
+Say you have a pipeline to build images from CodeBuild.
+
+29
+00:01:12.024 --> 00:01:14.760
+So CodeBuild will run container, will build images
+
+30
+00:01:14.760 --> 00:01:19.050
+and will register and push these images to Amazon ECR.
+
+31
+00:01:19.050 --> 00:01:22.590
+Then from ECR, if you've set up cross-Region replication
+
+32
+00:01:22.590 --> 00:01:25.230
+these images are going to be replicated directly
+
+33
+00:01:25.230 --> 00:01:26.940
+into other regions.
+
+34
+00:01:26.940 --> 00:01:29.760
+The advantage that you don't have to rebuild these images
+
+35
+00:01:29.760 --> 00:01:31.110
+into other regions
+
+36
+00:01:31.110 --> 00:01:34.380
+and you can start launching, for example, your task on ECS
+
+37
+00:01:34.380 --> 00:01:38.163
+from other regions as well, giving you a global application.
+
+38
+00:01:39.420 --> 00:01:42.240
+Another feature is the image scanning.
+
+39
+00:01:42.240 --> 00:01:44.430
+So Amazon ECR creates containers
+
+40
+00:01:44.430 --> 00:01:46.980
+and it's important to scan these containers
+
+41
+00:01:46.980 --> 00:01:49.500
+to look for vulnerabilities.
+
+42
+00:01:49.500 --> 00:01:51.840
+So they can be either manual scan
+
+43
+00:01:51.840 --> 00:01:54.120
+or automatic scan with scan on push.
+
+44
+00:01:54.120 --> 00:01:58.140
+So whenever you push an image into your ECR repository
+
+45
+00:01:58.140 --> 00:02:00.150
+then the image is going to be scanned.
+
+46
+00:02:00.150 --> 00:02:01.380
+Now you have two types of scan.
+
+47
+00:02:01.380 --> 00:02:03.660
+You have the basic scanning that looks
+
+48
+00:02:03.660 --> 00:02:06.120
+for common vulnerability.
+
+49
+00:02:06.120 --> 00:02:08.310
+So we push an image into ECR.
+
+50
+00:02:08.310 --> 00:02:12.570
+ECR is going to scan the image through its service itself
+
+51
+00:02:12.570 --> 00:02:14.550
+and then the results in case, for example,
+
+52
+00:02:14.550 --> 00:02:16.320
+you have vulnerabilities.
+
+53
+00:02:16.320 --> 00:02:17.430
+They can be triggered
+
+54
+00:02:17.430 --> 00:02:20.670
+and sent as events into EventBridge.
+
+55
+00:02:20.670 --> 00:02:22.290
+That's for the basic scanning.
+
+56
+00:02:22.290 --> 00:02:24.240
+And then you have enhanced scanning,
+
+57
+00:02:24.240 --> 00:02:27.210
+and that actually leverages the Amazon Inspector Service,
+
+58
+00:02:27.210 --> 00:02:28.860
+and it's going to do more than just looking
+
+59
+00:02:28.860 --> 00:02:31.050
+for common CVE is going to look
+
+60
+00:02:31.050 --> 00:02:34.500
+for operating system and programming language vulnerability.
+
+61
+00:02:34.500 --> 00:02:37.050
+So it's a deeper scan, it's enhanced scanning.
+
+62
+00:02:37.050 --> 00:02:39.390
+So again, we push an image into ECR
+
+63
+00:02:39.390 --> 00:02:41.940
+but this time the inspector service is going
+
+64
+00:02:41.940 --> 00:02:43.500
+to scan our image.
+
+65
+00:02:43.500 --> 00:02:46.830
+And then in case we have any results of that scan,
+
+66
+00:02:46.830 --> 00:02:48.660
+it's going to be in EventBridge.
+
+67
+00:02:48.660 --> 00:02:51.780
+But this time the trigger service is inspector,
+
+68
+00:02:51.780 --> 00:02:53.430
+it's not ECR.
+
+69
+00:02:53.430 --> 00:02:55.860
+Also, you can view the scan results directly
+
+70
+00:02:55.860 --> 00:03:00.480
+from the AWS console for both types of scanning.
+
+71
+00:03:00.480 --> 00:03:02.730
+Okay, so that's it for Amazon ECR.
+
+72
+00:03:02.730 --> 00:03:05.680
+I hope you liked it and I will see you in the next lecture.
+

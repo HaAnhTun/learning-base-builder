@@ -1,0 +1,274 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.440
+When you're managing a codebase with multiple distinct layers,
+
+2
+00:00:03.440 --> 00:00:09.199
+directory-scoped clod.md files are how you scope rules precisely to each layer.
+
+3
+00:00:09.199 --> 00:00:12.479
+For the next few minutes, we'll look at how these files
+
+4
+00:00:12.479 --> 00:00:18.159
+lazy load when clod reads inside a folder, how they interact with the parent configuration,
+
+5
+00:00:18.159 --> 00:00:23.120
+and practical use cases for directories like frontend, tests, and infrastructure.
+
+6
+00:00:24.479 --> 00:00:28.639
+A repository with a frontend, a test suite, and a pile of terraform
+
+7
+00:00:28.639 --> 00:00:35.520
+doesn't want a single set of rules, it wants several. A subdirectory config is a clod.md file
+
+8
+00:00:35.520 --> 00:00:42.400
+placed inside a specific subfolder rather than the project root. Clod code lazy loads it when
+
+9
+00:00:42.400 --> 00:00:47.840
+it reads a file inside that directory. No registration step, no manifest entry.
+
+10
+00:00:47.840 --> 00:00:54.319
+That's what we mean by a directory-scoped clod.md instructions are scoped to a directory by virtue
+
+11
+00:00:54.319 --> 00:01:00.639
+of where the file lives, so the file location is the scope boundary. And the clod.md hierarchy
+
+12
+00:01:00.639 --> 00:01:07.360
+describes how project level and subdirectory configs interact. Subdirectory files add
+
+13
+00:01:07.360 --> 00:01:13.519
+rules, they don't erase or replace the parent instructions. That augment rather than replace
+
+14
+00:01:13.519 --> 00:01:19.599
+behavior is the single most misunderstood thing about scoped configuration, so hold on to it.
+
+15
+00:01:20.559 --> 00:01:26.959
+Placement sets the scope, but the trigger is a read. Drop a clod.md file inside any subfolder,
+
+16
+00:01:26.959 --> 00:01:33.199
+and clod code lazy loads it the moment it reads a file inside that directory. This is the subtle
+
+17
+00:01:33.199 --> 00:01:38.559
+part worth getting right. Simply being in the folder or having it in your path isn't what
+
+18
+00:01:38.559 --> 00:01:44.720
+activates the rules. The read is, until clod actually reads a file in that subdirectory,
+
+19
+00:01:44.959 --> 00:01:50.879
+the subdirectory clod.md isn't loaded. So if you read a file in the front-end folder,
+
+20
+00:01:50.879 --> 00:01:56.800
+the front-end clod.md loads on demand. If you then read a file in the tests folder,
+
+21
+00:01:56.800 --> 00:02:04.239
+the tests clod.md loads. There's no registration step and no manifest. This makes scoping intuitive
+
+22
+00:02:04.239 --> 00:02:10.479
+and easy to audit. You know which rules can apply by looking at where the clod.md files live,
+
+23
+00:02:10.479 --> 00:02:13.839
+and they come into effect as clod reads into those directories.
+
+24
+00:02:15.039 --> 00:02:20.160
+The relationship between a subdirectory config and the parent config is additive,
+
+25
+00:02:20.160 --> 00:02:26.479
+not replacement. When clod code is working inside a subdirectory, the parent instructions are still
+
+26
+00:02:26.479 --> 00:02:33.279
+active. The subdirectory file adds folder-specific rules on top of that baseline. Parent rules
+
+27
+00:02:33.279 --> 00:02:38.720
+remain in effect, and since the files are concatenated root to leaf, the subdirectory
+
+28
+00:02:38.720 --> 00:02:44.960
+file is simply read last. There's no guaranteed override winner, so it's best not to write direct
+
+29
+00:02:44.960 --> 00:02:51.600
+contradictions at all. Think of it as layering. Each level of the directory tree adds rules to
+
+30
+00:02:51.600 --> 00:02:58.399
+the stack. The root config provides the baseline everyone inherits. Subdirectory configs narrow
+
+31
+00:02:58.399 --> 00:03:04.160
+and extend that baseline for specific contexts. The question people get wrong is whether a
+
+32
+00:03:04.160 --> 00:03:09.839
+subdirectory clod.md cancels the parent config. It doesn't. It adds to it.
+
+33
+00:03:10.960 --> 00:03:18.000
+Four directory patterns show how scoped config works in practice. A slash frontend clod.md
+
+34
+00:03:18.000 --> 00:03:23.520
+holds the react hooks rules, the pascal case component naming, and the import ordering
+
+35
+00:03:23.520 --> 00:03:28.320
+that only matter inside that framework. None of it is meaningful anywhere else,
+
+36
+00:03:28.320 --> 00:03:32.880
+and in the root file it would be noise for everyone working. Outside the frontend,
+
+37
+00:03:32.880 --> 00:03:39.119
+a slash tests clod.md holds pytest fixture patterns, test naming conventions, and the
+
+38
+00:03:39.119 --> 00:03:45.919
+coverage thresholds the suite enforces. A slash infrastructure clod.md carries the constraints
+
+39
+00:03:45.919 --> 00:03:51.919
+that protect live cloud resources, which we'll open up next, and a slash generated clod.md
+
+40
+00:03:51.919 --> 00:03:57.759
+contains a single directive. Never modify these files because they are regenerated and any edit
+
+41
+00:03:57.759 --> 00:04:02.880
+is overwritten on the next run. Precision without pollution is the whole design goal.
+
+42
+00:04:04.080 --> 00:04:09.440
+The infrastructure directory pattern carries higher stakes than most. Terraform manages live
+
+43
+00:04:09.440 --> 00:04:15.039
+cloud resources. A wrong edit can delete things that are hard to recover. The infrastructure
+
+44
+00:04:15.039 --> 00:04:21.839
+clod.md is the right place for explicit never delete rules about specific resource types,
+
+45
+00:04:21.839 --> 00:04:26.160
+naming conventions that are required to be followed to keep automation working,
+
+46
+00:04:26.160 --> 00:04:32.320
+and state file handling instructions that differ from normal code. Placing these rules close to
+
+47
+00:04:32.320 --> 00:04:37.839
+the code they protect has a practical benefit. Anyone reviewing the infrastructure directory
+
+48
+00:04:37.839 --> 00:04:42.559
+sees the constraints immediately. They don't have to remember that the root config
+
+49
+00:04:42.559 --> 00:04:47.440
+has special rules for this folder. The constraints live where the risk lives.
+
+50
+00:04:48.720 --> 00:04:55.119
+Root and subdirectory configs serve different purposes. The root clod.md applies across the
+
+51
+00:04:55.119 --> 00:05:00.959
+entire project. It holds baseline style rules, global security constraints, and cross-cutting
+
+52
+00:05:00.959 --> 00:05:07.760
+conventions that every directory inherits. A subdirectory clod.md applies only within that
+
+53
+00:05:07.760 --> 00:05:14.320
+folder. It holds framework-specific rules, local conventions, and constraints tied to that code's
+
+54
+00:05:14.320 --> 00:05:19.920
+specific purpose. The layering means both are active simultaneously when you're inside a
+
+55
+00:05:19.920 --> 00:05:27.760
+subdirectory. Root rules set the floor. Subdirectory rules add specificity. If you need a rule to apply
+
+56
+00:05:27.760 --> 00:05:33.920
+everywhere, it belongs in the root config. If a rule only makes sense in a specific context,
+
+57
+00:05:33.920 --> 00:05:40.959
+it belongs in that directory's config. Verifying that scoped rules fire correctly is a real part
+
+58
+00:05:40.959 --> 00:05:46.959
+of setting up subdirectory configuration. You want to confirm that working inside each subdirectory
+
+59
+00:05:46.959 --> 00:05:52.640
+actually activates the folder-specific rules you placed there. You also want to confirm that
+
+60
+00:05:52.640 --> 00:05:57.839
+parent rules are still active, not silently dropped. And if you've written any explicit
+
+61
+00:05:57.839 --> 00:06:03.440
+contradictions between a subdirectory config and the parent config, you want to verify they resolve
+
+62
+00:06:03.440 --> 00:06:08.559
+the way you intended. Scoped configuration is only reliable if it's been validated.
+
+63
+00:06:08.559 --> 00:06:15.519
+A clod.md you've never tested in context might not be loading at all, or might be overriding
+
+64
+00:06:15.519 --> 00:06:22.959
+something you didn't mean to override. Test it explicitly. Where you put a clod.md file is the
+
+65
+00:06:22.959 --> 00:06:29.519
+whole scoping decision. That matters because a repo with a front end, a test suite, and terraform
+
+66
+00:06:29.519 --> 00:06:35.119
+doesn't want one shared rulebook. Keep in mind that these files stack onto the parent instead
+
+67
+00:06:35.119 --> 00:06:41.760
+of replacing it, so a local rule never quietly cancels a project-wide rule. That wraps up this
+
+68
+00:06:41.760 --> 00:06:44.000
+one. I'll see you in the next lesson.
+

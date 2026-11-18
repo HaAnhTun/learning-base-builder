@@ -1,0 +1,286 @@
+WEBVTT
+
+1
+00:00:00.570 --> 00:00:04.050
+<v Instructor>So now let's talk about the AWS Client VPN.</v>
+
+2
+00:00:04.050 --> 00:00:06.510
+So this allows you to connect from your computer
+
+3
+00:00:06.510 --> 00:00:10.050
+using OpenVPN to your private network in AWS
+
+4
+00:00:10.050 --> 00:00:11.400
+and on-premises.
+
+5
+00:00:11.400 --> 00:00:12.233
+So how does that work?
+
+6
+00:00:12.233 --> 00:00:14.850
+Well, you install the software on your computer
+
+7
+00:00:14.850 --> 00:00:18.450
+and then you're going to directly use a connection
+
+8
+00:00:18.450 --> 00:00:22.230
+over the public internet into your VPC,
+
+9
+00:00:22.230 --> 00:00:25.110
+but now you can access your EC2 instances
+
+10
+00:00:25.110 --> 00:00:27.300
+using a private IP.
+
+11
+00:00:27.300 --> 00:00:29.280
+And on top of it, if you've enabled, for example,
+
+12
+00:00:29.280 --> 00:00:32.400
+a site-to-site VPC, then it's possible for you to access
+
+13
+00:00:32.400 --> 00:00:35.520
+your corporate data center through the site-to-site VPC
+
+14
+00:00:35.520 --> 00:00:36.360
+through the client VPN
+
+15
+00:00:36.360 --> 00:00:39.000
+and therefore making your computer access
+
+16
+00:00:39.000 --> 00:00:42.450
+your internal resources within your corporate data center.
+
+17
+00:00:42.450 --> 00:00:45.030
+So just to give you a bunch of possible
+
+18
+00:00:45.030 --> 00:00:47.100
+network architecture this enables.
+
+19
+00:00:47.100 --> 00:00:49.080
+So say you have VPC peering,
+
+20
+00:00:49.080 --> 00:00:52.290
+well, all you need to do is to create one
+
+21
+00:00:52.290 --> 00:00:55.290
+Client VPN connection into one of these VPCs.
+
+22
+00:00:55.290 --> 00:00:57.030
+And then thanks to VPC peering,
+
+23
+00:00:57.030 --> 00:01:01.140
+you can access resources in the VPC-B through the VPC-A
+
+24
+00:01:01.140 --> 00:01:04.500
+through your Client VPN endpoint.
+
+25
+00:01:04.500 --> 00:01:05.670
+Same for on-premises.
+
+26
+00:01:05.670 --> 00:01:08.160
+So again, if you've enabled site-to-site VPN
+
+27
+00:01:08.160 --> 00:01:12.330
+or Direct Connect, then getting a Client VPN endpoint
+
+28
+00:01:12.330 --> 00:01:16.530
+in VPC-A allows you to access any resources on-premises.
+
+29
+00:01:16.530 --> 00:01:19.680
+So that means that the traffic has to go through AWS
+
+30
+00:01:19.680 --> 00:01:21.530
+to get to your corporate data center.
+
+31
+00:01:22.830 --> 00:01:25.590
+You can also get internet access from Client VPN,
+
+32
+00:01:25.590 --> 00:01:28.140
+so this gives you one endpoint for everything.
+
+33
+00:01:28.140 --> 00:01:30.090
+So say you have a VPC
+
+34
+00:01:30.090 --> 00:01:33.030
+and you've enabled it with two public subnets
+
+35
+00:01:33.030 --> 00:01:34.500
+and an internet gateway,
+
+36
+00:01:34.500 --> 00:01:36.930
+well, you create a Client VPN endpoint
+
+37
+00:01:36.930 --> 00:01:38.790
+and this endpoint is going to be connected
+
+38
+00:01:38.790 --> 00:01:40.860
+to the two public subnets.
+
+39
+00:01:40.860 --> 00:01:42.540
+That means that thanks to this,
+
+40
+00:01:42.540 --> 00:01:44.160
+there is a route to the internet
+
+41
+00:01:44.160 --> 00:01:45.660
+through the internet gateway.
+
+42
+00:01:45.660 --> 00:01:46.620
+So that means that users
+
+43
+00:01:46.620 --> 00:01:50.070
+can both access your resources on your VPC
+
+44
+00:01:50.070 --> 00:01:53.820
+thanks to the VPN connection, but also access the internet
+
+45
+00:01:53.820 --> 00:01:56.613
+through your VPC to the internet gateway.
+
+46
+00:01:57.570 --> 00:02:00.090
+You can also do the same if you have, for example,
+
+47
+00:02:00.090 --> 00:02:02.070
+private subnets and public subnets,
+
+48
+00:02:02.070 --> 00:02:04.560
+but this time, of course, you need to use a NAT device,
+
+49
+00:02:04.560 --> 00:02:06.360
+so a NAT gateway, for example,
+
+50
+00:02:06.360 --> 00:02:09.213
+and the architecture is going to be quite similar.
+
+51
+00:02:10.230 --> 00:02:11.400
+What if you have a Transit Gateway?
+
+52
+00:02:11.400 --> 00:02:12.450
+Well, everything is possible.
+
+53
+00:02:12.450 --> 00:02:15.420
+So we've seen that we can do VPC peering
+
+54
+00:02:15.420 --> 00:02:19.080
+to access VPC-A and VPC-B through a Client VPN,
+
+55
+00:02:19.080 --> 00:02:21.810
+but also if you had set up other VPCs
+
+56
+00:02:21.810 --> 00:02:24.360
+and they're connected through a Transit Gateway,
+
+57
+00:02:24.360 --> 00:02:25.800
+it is totally possible for you
+
+58
+00:02:25.800 --> 00:02:29.490
+to use your Client VPN connection to access VPC-B and C
+
+59
+00:02:29.490 --> 00:02:31.590
+through the Transit Gateway.
+
+60
+00:02:31.590 --> 00:02:33.960
+And of course, Transit Gateway can also connect
+
+61
+00:02:33.960 --> 00:02:35.550
+to corporate data centers.
+
+62
+00:02:35.550 --> 00:02:37.530
+So if you have a Direct Connect connection
+
+63
+00:02:37.530 --> 00:02:39.420
+or a site-to-site VPN connection,
+
+64
+00:02:39.420 --> 00:02:42.060
+it's definitely possible to access everything
+
+65
+00:02:42.060 --> 00:02:45.420
+through Client VPN through Transit Gateway and so on.
+
+66
+00:02:45.420 --> 00:02:48.060
+So that's it, hopefully that makes sense for Client VPN.
+
+67
+00:02:48.060 --> 00:02:50.640
+It just enables you to get a private connection into AWS,
+
+68
+00:02:50.640 --> 00:02:53.520
+and therefore, any network architecture on AWS
+
+69
+00:02:53.520 --> 00:02:55.170
+should work with Client VPN.
+
+70
+00:02:55.170 --> 00:02:56.070
+So I hope you liked it
+
+71
+00:02:56.070 --> 00:02:58.020
+and I will see you in the next lecture.
+

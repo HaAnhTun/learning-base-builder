@@ -1,0 +1,234 @@
+WEBVTT
+
+1
+00:00:00.110 --> 00:00:02.870
+<v Narrator>So now let's talk about AWS Cloud Map.</v>
+
+2
+00:00:02.870 --> 00:00:06.130
+So Cloud Map is a fully managed resource discovery service
+
+3
+00:00:06.130 --> 00:00:07.410
+and just that you know at
+
+4
+00:00:07.410 --> 00:00:09.920
+from a high level going into the exam.
+
+5
+00:00:09.920 --> 00:00:10.753
+So how does that work?
+
+6
+00:00:10.753 --> 00:00:12.600
+Well when you don't have Cloud Map
+
+7
+00:00:12.600 --> 00:00:14.310
+and you have for example two services,
+
+8
+00:00:14.310 --> 00:00:17.350
+a frontend and a backend service then the backend service
+
+9
+00:00:17.350 --> 00:00:20.100
+will have a version one of it running and the frontend
+
+10
+00:00:20.100 --> 00:00:22.700
+is meant to be connecting to that version one.
+
+11
+00:00:22.700 --> 00:00:24.590
+But the day you are deploying a new version
+
+12
+00:00:24.590 --> 00:00:26.520
+of your backend service for example version two
+
+13
+00:00:26.520 --> 00:00:28.940
+and you want your frontend service to connect to it,
+
+14
+00:00:28.940 --> 00:00:31.270
+you first need to disconnect it from version one,
+
+15
+00:00:31.270 --> 00:00:33.120
+operate a code change in your frontend service,
+
+16
+00:00:33.120 --> 00:00:35.270
+redeploy it and then your frontend service
+
+17
+00:00:35.270 --> 00:00:37.610
+can be connecting to the version two
+
+18
+00:00:37.610 --> 00:00:39.280
+of your backend service.
+
+19
+00:00:39.280 --> 00:00:40.750
+Now this is not really good because there's a lot
+
+20
+00:00:40.750 --> 00:00:44.060
+of coaches required and manual things happening.
+
+21
+00:00:44.060 --> 00:00:46.460
+So Cloud Map instead allows you to create a map
+
+22
+00:00:46.460 --> 00:00:48.040
+of the backend services and resources
+
+23
+00:00:48.040 --> 00:00:49.620
+that your applications depend on.
+
+24
+00:00:49.620 --> 00:00:52.210
+And then you can add them with their attributes,
+
+25
+00:00:52.210 --> 00:00:54.710
+their location and also register the health status all
+
+26
+00:00:54.710 --> 00:00:55.820
+within Cloud Map.
+
+27
+00:00:55.820 --> 00:00:57.020
+So with Cloud Map,
+
+28
+00:00:57.020 --> 00:00:59.320
+what happens at a frontend service and the backend service
+
+29
+00:00:59.320 --> 00:01:00.910
+will also connect through Cloud Map.
+
+30
+00:01:00.910 --> 00:01:02.190
+So how does that work?
+
+31
+00:01:02.190 --> 00:01:05.460
+Well the frontend service will be performing a request,
+
+32
+00:01:05.460 --> 00:01:06.917
+a query on Cloud Map to say,
+
+33
+00:01:06.917 --> 00:01:09.910
+"Hey where can I find the backend service?"
+
+34
+00:01:09.910 --> 00:01:11.690
+And here is the version one of the backend service
+
+35
+00:01:11.690 --> 00:01:13.350
+you can find so the frontend service
+
+36
+00:01:13.350 --> 00:01:15.870
+knows how you connect to the backend service.
+
+37
+00:01:15.870 --> 00:01:18.990
+Now when we create a version two of our backend service
+
+38
+00:01:18.990 --> 00:01:20.940
+what's going to happen is that we are going to do
+
+39
+00:01:20.940 --> 00:01:24.430
+an API call against Cloud Map to update the end points
+
+40
+00:01:24.430 --> 00:01:26.510
+from version one to version two.
+
+41
+00:01:26.510 --> 00:01:28.140
+And the next time the frontend service we'll do
+
+42
+00:01:28.140 --> 00:01:29.960
+a look up on Cloud Map.
+
+43
+00:01:29.960 --> 00:01:32.490
+Then we'll find the location of the version two
+
+44
+00:01:32.490 --> 00:01:33.497
+of the backend service
+
+45
+00:01:33.497 --> 00:01:36.080
+and then we'll be able to connect to version two.
+
+46
+00:01:36.080 --> 00:01:37.320
+The differences is up here.
+
+47
+00:01:37.320 --> 00:01:39.700
+We didn't do any code change and all the changes
+
+48
+00:01:39.700 --> 00:01:42.300
+were registered from within Cloud Map okay?
+
+49
+00:01:42.300 --> 00:01:43.830
+So this is really cool.
+
+50
+00:01:43.830 --> 00:01:45.800
+It also has integration with health checking
+
+51
+00:01:45.800 --> 00:01:48.280
+to stop sending traffic to unhealthy endpoints.
+
+52
+00:01:48.280 --> 00:01:50.890
+And then your application can use Cloud Map using
+
+53
+00:01:50.890 --> 00:01:54.260
+for example the SDK, API or DNS queries because Cloud Map
+
+54
+00:01:54.260 --> 00:01:57.997
+is tightly integrated with route 53 okay?
+
+55
+00:01:57.997 --> 00:02:00.470
+So that's it just a high level overview of Cloud Map
+
+56
+00:02:00.470 --> 00:02:01.303
+is all you need to know.
+
+57
+00:02:01.303 --> 00:02:03.620
+Okay it's a way for you to do service discovery.
+
+58
+00:02:03.620 --> 00:02:06.570
+I hope you liked it and I will see you in the next lecture.
+

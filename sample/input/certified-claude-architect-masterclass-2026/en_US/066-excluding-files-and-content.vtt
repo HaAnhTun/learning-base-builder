@@ -1,0 +1,390 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.599
+Let's get into a question that every serious user hits, eventually.
+
+2
+00:00:04.599 --> 00:00:07.920
+Some files should never reach clogged code.
+
+3
+00:00:07.920 --> 00:00:12.760
+Your .env, your private keys, a folder of customer secrets.
+
+4
+00:00:12.760 --> 00:00:15.960
+Get this wrong and a credential can slip into context.
+
+5
+00:00:15.960 --> 00:00:21.000
+This lesson walks through the real exclusion mechanism, how setting precedent decides what
+
+6
+00:00:21.000 --> 00:00:24.120
+wins, and the myths worth retiring.
+
+7
+00:00:24.120 --> 00:00:26.600
+Let's get into it.
+
+8
+00:00:26.600 --> 00:00:33.319
+A single deny rule decides whether your .env stays private or lands in the model's context.
+
+9
+00:00:33.319 --> 00:00:38.720
+A deny rule is a read entry in the permissions block of settings.json.
+
+10
+00:00:38.720 --> 00:00:45.520
+It tells clogged code not to read a matching path, and it is the real mechanism for excluding files.
+
+11
+00:00:45.520 --> 00:00:50.000
+The settings hierarchy is how your settings files layer together.
+
+12
+00:00:50.000 --> 00:00:56.459
+Managed local, project, and user settings each contribute rules, and higher precedence files win.
+
+13
+00:00:56.459 --> 00:01:00.599
+The glob pattern is a path expression with wildcards.
+
+14
+00:01:00.599 --> 00:01:03.360
+One star matches a single segment of a path.
+
+15
+00:01:03.360 --> 00:01:09.040
+Two stars match across directories, so you can name one file or an entire tree.
+
+16
+00:01:09.040 --> 00:01:14.199
+Every rule you write combines all three, and the way they interact decides exactly which
+
+17
+00:01:14.199 --> 00:01:18.180
+files clogged code can and can't open.
+
+18
+00:01:18.180 --> 00:01:20.360
+So here is the actual mechanism.
+
+19
+00:01:20.360 --> 00:01:26.319
+File exclusion lives in the permissions block of settings.json as read deny entries.
+
+20
+00:01:26.319 --> 00:01:32.459
+You write an entry like read of .env, and clogged code will refuse to read that path.
+
+21
+00:01:32.459 --> 00:01:36.580
+The patterns use glob syntax borrowed from .getignore.
+
+22
+00:01:36.580 --> 00:01:39.019
+One star matches a single path segment.
+
+23
+00:01:39.019 --> 00:01:44.180
+Two stars cross directory boundaries, so you can match a whole nested tree.
+
+24
+00:01:44.180 --> 00:01:45.300
+Anchors set the base.
+
+25
+00:01:45.300 --> 00:01:48.940
+A bare path resolves relative to the working directory.
+
+26
+00:01:48.940 --> 00:01:53.620
+A leading slash anchors to the directory of the settings file holding the rule, so it
+
+27
+00:01:53.620 --> 00:01:59.480
+is the project root for a project file and your home clogged directory for a user file.
+
+28
+00:01:59.480 --> 00:02:02.919
+A double slash gives you a truly absolute path.
+
+29
+00:02:02.919 --> 00:02:04.839
+Only the syntax is borrowed, though.
+
+30
+00:02:04.839 --> 00:02:10.679
+There is no separate ignore file, just entries inside settings.json.
+
+31
+00:02:10.679 --> 00:02:15.860
+Credential protection is the highest value reason to write deny rules, so start there.
+
+32
+00:02:15.860 --> 00:02:23.039
+For environment files, deny read of .env, and deny read of .env.* to catch variants
+
+33
+00:02:23.039 --> 00:02:25.580
+like .env.local.
+
+34
+00:02:25.580 --> 00:02:31.699
+For secret directories, deny read of a secrets folder, followed by a two star wildcard, which
+
+35
+00:02:31.699 --> 00:02:34.600
+blocks everything nested inside it.
+
+36
+00:02:34.600 --> 00:02:40.500
+For home credentials, deny read of your ssh folder and your cloud credential folders,
+
+37
+00:02:40.500 --> 00:02:43.259
+using a tilde to anchor at home.
+
+38
+00:02:43.259 --> 00:02:48.619
+These files hold API keys, database passwords, and private keys.
+
+39
+00:02:48.619 --> 00:02:54.919
+If they never enter context, they can never leak into generated code or a suggestion.
+
+40
+00:02:54.919 --> 00:02:59.960
+Writing a handful of deny rules for these paths is the single highest impact configuration
+
+41
+00:02:59.960 --> 00:03:04.360
+step for keeping secrets out of clod code.
+
+42
+00:03:04.360 --> 00:03:06.600
+Now where do these rules live?
+
+43
+00:03:06.600 --> 00:03:11.360
+Settings come from four layers, and it helps to know them highest first.
+
+44
+00:03:11.360 --> 00:03:14.240
+Managed settings are organization-enforced policy.
+
+45
+00:03:14.240 --> 00:03:17.679
+They sit at the top and can't be overridden locally.
+
+46
+00:03:17.740 --> 00:03:24.860
+Local settings are your git-ignored local file for personal overrides that stay off the repository.
+
+47
+00:03:24.860 --> 00:03:31.059
+Project settings are the committed file that ships with the repo, so they are shared team rules.
+
+48
+00:03:31.059 --> 00:03:37.619
+And user settings live in your home directory as personal defaults that apply across every project.
+
+49
+00:03:37.619 --> 00:03:40.220
+The same deny rule can appear in any of these.
+
+50
+00:03:40.220 --> 00:03:44.380
+For ordinary settings, a higher layer overrides a lower one.
+
+51
+00:03:44.380 --> 00:03:46.639
+But permission rules work differently.
+
+52
+00:03:46.639 --> 00:03:52.300
+They merge across all four layers, and we'll see next why a deny in any layer wins over
+
+53
+00:03:52.300 --> 00:03:54.679
+an allow in any other.
+
+54
+00:03:54.679 --> 00:03:58.919
+Precedence works differently for permission rules than for ordinary settings, and it is
+
+55
+00:03:58.919 --> 00:04:00.740
+worth being precise.
+
+56
+00:04:00.740 --> 00:04:05.759
+For ordinary non-permission settings, a higher layer simply overrides a lower one.
+
+57
+00:04:05.759 --> 00:04:09.679
+So managed beats local beats project beats user.
+
+58
+00:04:09.679 --> 00:04:14.800
+But permission rules, the allow, ask, and deny entries, don't work that way.
+
+59
+00:04:14.800 --> 00:04:17.359
+They merge across all four layers.
+
+60
+00:04:17.359 --> 00:04:22.200
+Every deny from every layer is collected, and deny is evaluated before allow.
+
+61
+00:04:22.200 --> 00:04:28.820
+So a deny in any layer, even your user file, blocks an allow in a higher layer, like managed.
+
+62
+00:04:28.820 --> 00:04:32.600
+If a path matches any deny rule anywhere, it is blocked.
+
+63
+00:04:32.600 --> 00:04:35.239
+And no allow rule can reopen it.
+
+64
+00:04:35.239 --> 00:04:36.720
+That is the key idea.
+
+65
+00:04:36.720 --> 00:04:38.640
+Deny beats allow across layers.
+
+66
+00:04:38.640 --> 00:04:43.720
+That tells you exactly why a given file is blocked or open.
+
+67
+00:04:43.720 --> 00:04:47.380
+Deny rules are powerful, but you should know their boundary.
+
+68
+00:04:47.380 --> 00:04:50.399
+Deny blocks Claude Code's built-in tools.
+
+69
+00:04:50.399 --> 00:04:56.899
+That means read, edit, and shell, reads like cat or head are all stopped for a denied path.
+
+70
+00:04:56.899 --> 00:04:59.160
+It also blocks indirect access.
+
+71
+00:04:59.160 --> 00:05:03.679
+So an at mention of the file and an editor selection are covered too.
+
+72
+00:05:03.679 --> 00:05:07.279
+What deny doesn't block is an arbitrary subprocess.
+
+73
+00:05:07.279 --> 00:05:12.880
+If Claude Code runs a Python script, that script can still open a denied file, because
+
+74
+00:05:12.880 --> 00:05:18.200
+deny governs the tools Claude Code drives, not the operating system underneath.
+
+75
+00:05:18.200 --> 00:05:20.880
+That is a real gap to understand.
+
+76
+00:05:20.880 --> 00:05:27.239
+When you need the file to be unreadable, no matter what runs, deny rules alone aren't enough.
+
+77
+00:05:27.239 --> 00:05:32.399
+You reach for sandboxing, which enforces access at the file system level, and stops the shell
+
+78
+00:05:32.399 --> 00:05:35.119
+itself from succeeding.
+
+79
+00:05:35.119 --> 00:05:40.000
+Let's retire three myths, because they all come up constantly, and they are all wrong.
+
+80
+00:05:40.000 --> 00:05:42.739
+The first is the .claudeignore file.
+
+81
+00:05:42.739 --> 00:05:44.119
+There is no such file.
+
+82
+00:05:44.119 --> 00:05:46.339
+It has never existed as a feature.
+
+83
+00:05:46.339 --> 00:05:50.739
+If you see advice telling you to create one, that advice is fabricated.
+
+84
+00:05:50.739 --> 00:05:52.940
+The real answer is a deny rule.
+
+85
+00:05:52.940 --> 00:05:58.260
+The second myth is that a .gitignore controls what Claude Code can read. It doesn't.
+
+86
+00:05:58.260 --> 00:06:03.700
+A file being ignored by git says nothing about whether Claude Code can read it.
+
+87
+00:06:03.700 --> 00:06:07.059
+Ignored files are still fully readable unless you deny them.
+
+88
+00:06:07.059 --> 00:06:11.220
+There is also no magicignore environment variable that hides files.
+
+89
+00:06:11.220 --> 00:06:16.019
+If you want a path excluded, there is exactly one supported path to it.
+
+90
+00:06:16.019 --> 00:06:19.940
+You write a read-deny rule in settings.json.
+
+91
+00:06:19.940 --> 00:06:23.739
+Everything else is a misconception.
+
+92
+00:06:23.739 --> 00:06:29.500
+Exclusion is really a permission decision, not a hidden list sitting somewhere in your repo.
+
+93
+00:06:29.500 --> 00:06:36.660
+What makes the whole model work is that deny always wins, no matter which settings layer it comes from.
+
+94
+00:06:36.660 --> 00:06:41.140
+Hold on to that, and the myths stop being tempting and confusing, and your credentials
+
+95
+00:06:41.140 --> 00:06:43.540
+stay where you need them to be.
+
+96
+00:06:43.540 --> 00:06:44.660
+That's it for this lesson.
+
+97
+00:06:44.660 --> 00:06:45.940
+I'll see you in the next video.
+

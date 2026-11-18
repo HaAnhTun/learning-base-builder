@@ -1,0 +1,390 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.025
+[Instructor] - Now let's talk about solution
+
+2
+00:00:01.025 --> 00:00:03.582
+architecture on AWS.
+
+3
+00:00:03.582 --> 00:00:05.580
+At a very high level, because there are so many
+
+4
+00:00:05.580 --> 00:00:09.420
+combinations, but it all looks a little bit similar if you
+
+5
+00:00:09.420 --> 00:00:10.800
+look at it from a high level.
+
+6
+00:00:10.800 --> 00:00:13.590
+So we have our users, and they need to get access
+
+7
+00:00:13.590 --> 00:00:16.750
+to our application, so the first thing they do is talk
+
+8
+00:00:16.750 --> 00:00:17.800
+to a DNS.
+
+9
+00:00:17.800 --> 00:00:21.660
+And the DNS layer is usually going to be your route 53.
+
+10
+00:00:21.660 --> 00:00:24.770
+Then they have two possible routes from there.
+
+11
+00:00:24.770 --> 00:00:27.600
+They have to find some static content and some
+
+12
+00:00:27.600 --> 00:00:28.990
+dynamic content.
+
+13
+00:00:28.990 --> 00:00:31.830
+Usually the static content is going to be spread all around
+
+14
+00:00:31.830 --> 00:00:34.450
+the world, it's going to be cached by having a CDN
+
+15
+00:00:34.450 --> 00:00:37.769
+layer, a content delivery network, and usually that
+
+16
+00:00:37.769 --> 00:00:39.220
+is going to be CloudFront.
+
+17
+00:00:39.220 --> 00:00:42.870
+And CloudFront is going to source this data, usually
+
+18
+00:00:44.395 --> 00:00:47.548
+in a static form from S3 or Glacier, but we all know that
+
+19
+00:00:47.548 --> 00:00:50.360
+CDN of CloudFront can also get it from custom sources
+
+20
+00:00:50.360 --> 00:00:52.900
+and we'll learn all these topics one by one.
+
+21
+00:00:52.900 --> 00:00:55.320
+What I want to expose to you right now is all the
+
+22
+00:00:55.320 --> 00:00:57.390
+plus switches we have and the kind of architectures
+
+23
+00:00:57.390 --> 00:01:00.180
+we have to get into and the choices we have to make.
+
+24
+00:01:00.180 --> 00:01:01.013
+Okay.
+
+25
+00:01:01.013 --> 00:01:04.070
+So, on a static asset layer surge, we have S3, which is
+
+26
+00:01:04.070 --> 00:01:07.310
+going to be perfect for CloudFront, or Glacier for
+
+27
+00:01:07.310 --> 00:01:09.900
+archives and it doesn't work directly with CloudFront.
+
+28
+00:01:09.900 --> 00:01:12.850
+Okay, on the web layer now, which is the more dynamic
+
+29
+00:01:12.850 --> 00:01:16.580
+content, we have to set up a load balancer or a gateway.
+
+30
+00:01:16.580 --> 00:01:19.330
+So we have classic load balancer, application load
+
+31
+00:01:19.330 --> 00:01:22.580
+balancer, network load balancer, API gateway, or even
+
+32
+00:01:22.580 --> 00:01:26.030
+an elastic IP, if we don't need that amount of layer,
+
+33
+00:01:26.030 --> 00:01:28.120
+for example if you have a very simple solution in the
+
+34
+00:01:28.120 --> 00:01:29.390
+backup.
+
+35
+00:01:29.390 --> 00:01:33.090
+Then that web layer has to talk to a compute side,
+
+36
+00:01:33.090 --> 00:01:37.060
+and that compute side may be something like EC2, or
+
+37
+00:01:37.060 --> 00:01:42.060
+an auto scaling group, AWS Lambda, ECS, Fargate, Batch or
+
+38
+00:01:43.030 --> 00:01:46.610
+EMR, and obviously you cannot connect EMR with a web layer
+
+39
+00:01:46.610 --> 00:01:48.940
+but what I wanna show you is that if there's no web layer,
+
+40
+00:01:48.940 --> 00:01:50.980
+then we can still have a compute layer that does some
+
+41
+00:01:50.980 --> 00:01:52.140
+batch computations.
+
+42
+00:01:52.140 --> 00:01:54.150
+It's really hard to represent all the solutions
+
+43
+00:01:54.150 --> 00:01:56.610
+architecture and AWS into one slide, but I want to be able
+
+44
+00:01:56.610 --> 00:01:59.020
+to divide to you the different categories so you get
+
+45
+00:01:59.020 --> 00:02:01.080
+a better understanding of all the kind of things we're
+
+46
+00:02:01.080 --> 00:02:03.699
+going to do a deep dive on in the future lectures.
+
+47
+00:02:03.699 --> 00:02:04.920
+Okay.
+
+48
+00:02:04.920 --> 00:02:08.080
+By the way, the platform layer can also be in front of
+
+49
+00:02:08.080 --> 00:02:09.896
+your web layer, as you can see in the arrow from the
+
+50
+00:02:09.896 --> 00:02:12.550
+CDN to the web layer so it is possible to get
+
+51
+00:02:12.550 --> 00:02:14.330
+different directions as well.
+
+52
+00:02:14.330 --> 00:02:18.030
+Okay, next your data needs to be somewhere so usually
+
+53
+00:02:18.030 --> 00:02:20.380
+you have a database, and that database can have multiple
+
+54
+00:02:20.380 --> 00:02:24.990
+forms, it can be RDS, Aurora, DynamoDB, ElasticSearch,
+
+55
+00:02:24.990 --> 00:02:28.080
+S3 is considered a database as well, or Redshift if you have
+
+56
+00:02:28.080 --> 00:02:30.360
+more analytical type of workloads.
+
+57
+00:02:30.360 --> 00:02:32.635
+It's also very possible that you will need a caching layer,
+
+58
+00:02:32.635 --> 00:02:36.465
+and so you can cache stuff or it can have a section layer
+
+59
+00:02:36.465 --> 00:02:39.220
+for cashing your section data, so it could be Elastic cache,
+
+60
+00:02:39.220 --> 00:02:43.220
+DAX if you have infinite of DynamoDB, DynamoDB itself can
+
+61
+00:02:43.220 --> 00:02:47.350
+also be a session layer, and RDS, it's very possible to put
+
+62
+00:02:47.350 --> 00:02:50.940
+your sessions in RDS, even though ElactiCache is probably
+
+63
+00:02:50.940 --> 00:02:54.330
+going to be a little bit more scalable and faster.
+
+64
+00:02:54.330 --> 00:02:57.470
+Okay, next there's possible that your instances will need
+
+65
+00:02:57.470 --> 00:03:01.607
+to fetch static data as well, so this data can be on EBS,
+
+66
+00:03:01.607 --> 00:03:03.740
+EFS or directly on the instance stores.
+
+67
+00:03:03.740 --> 00:03:05.810
+Again, it depends on the kind of requirements you are going
+
+68
+00:03:05.810 --> 00:03:08.915
+to have for your solution architecture and you need to be
+
+69
+00:03:08.915 --> 00:03:12.100
+able to decouple your solutions if you have a micro services
+
+70
+00:03:12.100 --> 00:03:13.620
+type of architecture.
+
+71
+00:03:13.620 --> 00:03:17.800
+And so it could be using SQS, SNS, Kinesis where they have
+
+72
+00:03:17.800 --> 00:03:20.600
+streams of data, Amazon MQ, Step Functions
+
+73
+00:03:20.600 --> 00:03:23.390
+for orchestration, and so on.
+
+74
+00:03:23.390 --> 00:03:25.790
+Finally, it is possible that your compute layer also needs
+
+75
+00:03:25.790 --> 00:03:28.555
+to be accessing some static assets, so S3 Englisher
+
+76
+00:03:28.555 --> 00:03:30.560
+is a definite option.
+
+77
+00:03:30.560 --> 00:03:33.700
+So these are all some kind of combinations, and if you
+
+78
+00:03:33.700 --> 00:03:36.770
+try to permit all of them, you can get really an infinite
+
+79
+00:03:36.770 --> 00:03:39.250
+number of solution architecture, but what I want you
+
+80
+00:03:39.250 --> 00:03:41.660
+to realize at this high level is that as we get into
+
+81
+00:03:41.660 --> 00:03:44.500
+solution architecture discussions based on what you choose
+
+82
+00:03:44.500 --> 00:03:46.320
+for your database, your computer caching, your
+
+83
+00:03:46.320 --> 00:03:48.620
+orchestration, your storage, your static, your web layer,
+
+84
+00:03:48.620 --> 00:03:51.980
+your CDN, everything, it will have some impact into the
+
+85
+00:03:51.980 --> 00:03:54.910
+cost, into the availability, the durability,
+
+86
+00:03:54.910 --> 00:03:58.600
+the scalability, and so on, so it's really up to you as a
+
+87
+00:03:58.600 --> 00:04:01.770
+solution architect to understand which type of technology
+
+88
+00:04:01.770 --> 00:04:04.970
+is going to be the best for which moment, and this is what
+
+89
+00:04:04.970 --> 00:04:06.890
+the exam will be testing you on.
+
+90
+00:04:06.890 --> 00:04:09.870
+Now in this section, we're going to do a deep dive into
+
+91
+00:04:09.870 --> 00:04:12.450
+everything in this slide, so don't worry, there will be
+
+92
+00:04:12.450 --> 00:04:14.680
+specific solution architectures for each of these
+
+93
+00:04:14.680 --> 00:04:17.710
+components, and we'll get a better discussion to which one
+
+94
+00:04:17.710 --> 00:04:20.100
+is more appropriate and when and why.
+
+95
+00:04:20.100 --> 00:04:21.720
+Okay, so that's it for a small introduction.
+
+96
+00:04:21.720 --> 00:04:23.270
+I hope you're all excited, and I will see you
+
+97
+00:04:23.270 --> 00:04:24.270
+in the next lecture.
+

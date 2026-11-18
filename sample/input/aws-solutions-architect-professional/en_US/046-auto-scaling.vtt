@@ -1,0 +1,802 @@
+WEBVTT
+
+1
+00:00:01.200 --> 00:00:02.600
+<v Instructor>Okay, so now let us talk about</v>
+
+2
+00:00:02.600 --> 00:00:03.470
+Auto Scaling Groups.
+
+3
+00:00:03.470 --> 00:00:05.730
+And the first kind of policy we're going to see
+
+4
+00:00:05.730 --> 00:00:07.730
+is Dynamic Scaling Policies.
+
+5
+00:00:07.730 --> 00:00:08.640
+So we have three kinds.
+
+6
+00:00:08.640 --> 00:00:10.540
+We have the Target Tracking Scaling,
+
+7
+00:00:10.540 --> 00:00:13.930
+and this is by far the most simple and easy to set up
+
+8
+00:00:13.930 --> 00:00:16.260
+because all you have to say is take a metric.
+
+9
+00:00:16.260 --> 00:00:19.840
+For example, the average ASG CPU and give it a target.
+
+10
+00:00:19.840 --> 00:00:21.140
+For example, you want it to stay
+
+11
+00:00:21.140 --> 00:00:23.850
+at around 40% across your ASG.
+
+12
+00:00:23.850 --> 00:00:26.490
+Well, in that case, in case the CPU is too high,
+
+13
+00:00:26.490 --> 00:00:28.720
+then the ASG will add instances
+
+14
+00:00:28.720 --> 00:00:30.280
+and in case the CPU is too low,
+
+15
+00:00:30.280 --> 00:00:33.570
+then the ASG will terminate instances for you.
+
+16
+00:00:33.570 --> 00:00:35.660
+If you wanted to go back in complexity
+
+17
+00:00:35.660 --> 00:00:36.560
+and add more complexity,
+
+18
+00:00:36.560 --> 00:00:38.640
+so you can set up a CloudWatch alarm,
+
+19
+00:00:38.640 --> 00:00:40.480
+and for example, that CloudWatch alarm could say,
+
+20
+00:00:40.480 --> 00:00:44.020
+hey, if it's triggered because the CPU is more than 70%,
+
+21
+00:00:44.020 --> 00:00:47.350
+then add to units, this is what's called step scaling.
+
+22
+00:00:47.350 --> 00:00:49.150
+And if your CloudWatch alarm, for example,
+
+23
+00:00:49.150 --> 00:00:51.740
+is triggered because the CPU is less than 30%,
+
+24
+00:00:51.740 --> 00:00:52.573
+then remove your units.
+
+25
+00:00:52.573 --> 00:00:53.880
+This is again, step scaling.
+
+26
+00:00:53.880 --> 00:00:54.960
+So it's a bit more involved
+
+27
+00:00:54.960 --> 00:00:57.940
+because you need to set up these rules yourself,
+
+28
+00:00:57.940 --> 00:00:59.060
+but it gives you more control as well
+
+29
+00:00:59.060 --> 00:01:02.070
+into how the auto scaling group is scaling.
+
+30
+00:01:02.070 --> 00:01:03.530
+And then finally you have scheduled actions.
+
+31
+00:01:03.530 --> 00:01:05.160
+For example, you know that
+
+32
+00:01:05.160 --> 00:01:06.810
+something is going to happen in advance.
+
+33
+00:01:06.810 --> 00:01:09.770
+For example, you know that on Fridays at 5:00 PM,
+
+34
+00:01:09.770 --> 00:01:11.610
+you're going to have a big increase in usage
+
+35
+00:01:11.610 --> 00:01:12.630
+because I don't know,
+
+36
+00:01:12.630 --> 00:01:14.560
+you're running a promotion every Friday at 5:00 PM
+
+37
+00:01:14.560 --> 00:01:17.860
+and so therefore, maybe you want to know that by in advance
+
+38
+00:01:17.860 --> 00:01:19.720
+you should increase the minimum capacity
+
+39
+00:01:19.720 --> 00:01:22.470
+to 10 instances to sustain that load.
+
+40
+00:01:22.470 --> 00:01:25.050
+On the opposite side, you have predictive scaling
+
+41
+00:01:25.050 --> 00:01:27.760
+and this is to continuously forecast load
+
+42
+00:01:27.760 --> 00:01:30.620
+and then you are going to schedule scaling ahead.
+
+43
+00:01:30.620 --> 00:01:33.850
+So AWS will analyze your historical load
+
+44
+00:01:33.850 --> 00:01:36.740
+and then generate a forecast based on your load
+
+45
+00:01:36.740 --> 00:01:40.400
+and then set up automatically scaling actions in advance
+
+46
+00:01:40.400 --> 00:01:44.200
+to predict the right of amount of instances you need
+
+47
+00:01:44.200 --> 00:01:46.800
+to sustain that load.
+
+48
+00:01:46.800 --> 00:01:47.633
+So it's going to be good
+
+49
+00:01:47.633 --> 00:01:50.720
+especially if you have like patterns in your load
+
+50
+00:01:50.720 --> 00:01:53.470
+from week to week or from day to day.
+
+51
+00:01:53.470 --> 00:01:55.100
+Now, good metrics to scale on ASG
+
+52
+00:01:55.100 --> 00:01:57.840
+is CPU utilization, Request Count Per Target.
+
+53
+00:01:57.840 --> 00:01:59.890
+So to ensure that the number of requests
+
+54
+00:01:59.890 --> 00:02:02.960
+per EC2 instances is stable and they're not overloaded
+
+55
+00:02:02.960 --> 00:02:06.410
+in terms of network request per ports,
+
+56
+00:02:06.410 --> 00:02:07.760
+and so this is how it goes.
+
+57
+00:02:07.760 --> 00:02:08.593
+For example, you say,
+
+58
+00:02:08.593 --> 00:02:11.890
+hey, I want three request per target maximum.
+
+59
+00:02:11.890 --> 00:02:14.420
+So that means that the ASG will try to make sure
+
+60
+00:02:14.420 --> 00:02:16.810
+that any point of time each EC2 instance
+
+61
+00:02:16.810 --> 00:02:18.650
+is replying to three requests.
+
+62
+00:02:18.650 --> 00:02:20.670
+Now in real life, obviously this is more something
+
+63
+00:02:20.670 --> 00:02:23.970
+like 1000 unit sets, average in and out.
+
+64
+00:02:23.970 --> 00:02:26.730
+So for example, if you're application takes a lot of network
+
+65
+00:02:26.730 --> 00:02:30.330
+in or out, for example, if you upload a download video files
+
+66
+00:02:30.330 --> 00:02:32.460
+through your EC2 instances, then you know
+
+67
+00:02:32.460 --> 00:02:34.040
+that your EC2 instance has a limit
+
+68
+00:02:34.040 --> 00:02:36.050
+in terms of how much networking it can allow in,
+
+69
+00:02:36.050 --> 00:02:37.580
+therefore you would use this kind of metric
+
+70
+00:02:37.580 --> 00:02:40.440
+to scale in and out, or you can have any custom metric
+
+71
+00:02:40.440 --> 00:02:41.930
+that you post using CloudWatch
+
+72
+00:02:41.930 --> 00:02:43.750
+and use these metrics to scale on.
+
+73
+00:02:43.750 --> 00:02:46.370
+Okay, some other things that are good to know for your ASG.
+
+74
+00:02:46.370 --> 00:02:48.050
+Well, you have spot fleet support.
+
+75
+00:02:48.050 --> 00:02:50.750
+That means that you can mix, spot and on-demand instances
+
+76
+00:02:50.750 --> 00:02:52.370
+in your auto scaling group.
+
+77
+00:02:52.370 --> 00:02:53.870
+You have lifecycle hooks
+
+78
+00:02:53.870 --> 00:02:55.290
+which allows you to perform action
+
+79
+00:02:55.290 --> 00:02:58.540
+before an instance in service or before it is terminated.
+
+80
+00:02:58.540 --> 00:03:00.440
+For example, if you want to do cleanup
+
+81
+00:03:00.440 --> 00:03:02.470
+of your instance or log extraction,
+
+82
+00:03:02.470 --> 00:03:05.680
+or special health checks before an instance is in service.
+
+83
+00:03:05.680 --> 00:03:07.500
+And finally, if you want to avoid an AMI
+
+84
+00:03:07.500 --> 00:03:08.970
+you have two ways of doing it.
+
+85
+00:03:08.970 --> 00:03:11.520
+First, obviously you must update the underlying
+
+86
+00:03:11.520 --> 00:03:14.170
+launch templates or launch configuration of your ASG,
+
+87
+00:03:14.170 --> 00:03:15.440
+but then you have two ways of doing it.
+
+88
+00:03:15.440 --> 00:03:16.980
+So either you go ahead and you terminate
+
+89
+00:03:16.980 --> 00:03:18.790
+EC2 instances manually,
+
+90
+00:03:18.790 --> 00:03:22.730
+and confirmation can help to automate that rolling upgrade.
+
+91
+00:03:22.730 --> 00:03:25.100
+Or you would use something called EC2 instance refresh
+
+92
+00:03:25.100 --> 00:03:28.010
+for auto scaling, which will terminate instances for you.
+
+93
+00:03:28.010 --> 00:03:30.560
+What happens that when you terminate instances in an ASG
+
+94
+00:03:30.560 --> 00:03:31.910
+then new ones come up
+
+95
+00:03:31.910 --> 00:03:34.950
+and they will have the new AMI by default, because well,
+
+96
+00:03:34.950 --> 00:03:37.470
+your ASG is configured to use the new launch templates
+
+97
+00:03:37.470 --> 00:03:39.110
+or launch configuration.
+
+98
+00:03:39.110 --> 00:03:40.410
+So talking about this feature,
+
+99
+00:03:40.410 --> 00:03:41.870
+Instance Refresh, let's have a look.
+
+100
+00:03:41.870 --> 00:03:44.690
+So the goal is to recreate all EC2 instances
+
+101
+00:03:44.690 --> 00:03:48.070
+from the latest launch templates in your ASG.
+
+102
+00:03:48.070 --> 00:03:49.390
+And so there's our feature.
+
+103
+00:03:49.390 --> 00:03:51.460
+So if you have an ASG, for example, like this
+
+104
+00:03:51.460 --> 00:03:53.980
+that has a couple or many EC2 instances
+
+105
+00:03:53.980 --> 00:03:55.870
+using the old launch templates,
+
+106
+00:03:55.870 --> 00:03:58.720
+then we're going to upload a new launch templates
+
+107
+00:03:58.720 --> 00:04:01.160
+with an updated AMI, for example, in our ASG.
+
+108
+00:04:01.160 --> 00:04:04.030
+And then we'll use the API start instance refresh.
+
+109
+00:04:04.030 --> 00:04:06.840
+We're going to specify a minimum healthy percentage
+
+110
+00:04:06.840 --> 00:04:09.230
+of instances so that not all instances
+
+111
+00:04:09.230 --> 00:04:10.160
+are destroyed at once.
+
+112
+00:04:10.160 --> 00:04:12.650
+So for example, we can say, hey, I want 60%
+
+113
+00:04:12.650 --> 00:04:15.020
+of my instances to be healthy at any point of time.
+
+114
+00:04:15.020 --> 00:04:18.780
+And then the ASG natively, is going to terminate an instance
+
+115
+00:04:18.780 --> 00:04:21.650
+and then create a new one using the new launch templates,
+
+116
+00:04:21.650 --> 00:04:25.470
+and so on until all your instances have been upgraded
+
+117
+00:04:25.470 --> 00:04:27.540
+to the new launch templates.
+
+118
+00:04:27.540 --> 00:04:29.320
+We can also specify a warmup time,
+
+119
+00:04:29.320 --> 00:04:31.600
+which is how long until the instances are ready to use
+
+120
+00:04:31.600 --> 00:04:34.993
+to go and iterate over terminating the old instances.
+
+121
+00:04:36.070 --> 00:04:37.840
+Now let's talk about all the processes
+
+122
+00:04:37.840 --> 00:04:39.880
+that are within your auto scaling group.
+
+123
+00:04:39.880 --> 00:04:41.230
+The first one is a launch process
+
+124
+00:04:41.230 --> 00:04:43.210
+which will add EC2 instances to the group,
+
+125
+00:04:43.210 --> 00:04:44.660
+increasing the capacity.
+
+126
+00:04:44.660 --> 00:04:46.293
+The terminate process that removes
+
+127
+00:04:46.293 --> 00:04:47.570
+an EC2 instance from the group,
+
+128
+00:04:47.570 --> 00:04:49.410
+therefore decreasing its capacity.
+
+129
+00:04:49.410 --> 00:04:51.400
+The health check, the process that's checks the health
+
+130
+00:04:51.400 --> 00:04:54.110
+of your instances, replace unhealthy,
+
+131
+00:04:54.110 --> 00:04:56.940
+which is a process that will terminate unhealthy instances
+
+132
+00:04:56.940 --> 00:04:58.530
+and recreate them.
+
+133
+00:04:58.530 --> 00:05:01.270
+AZ rebalance which is a process that looks at your ASG
+
+134
+00:05:01.270 --> 00:05:03.870
+and making sure that there is an equal or balanced number
+
+135
+00:05:03.870 --> 00:05:07.330
+of EC2 instances across all your ability zones.
+
+136
+00:05:07.330 --> 00:05:10.730
+Alarm notification which is a process that will accept
+
+137
+00:05:10.730 --> 00:05:13.480
+notifications for CloudWatch in terms of scaling.
+
+138
+00:05:13.480 --> 00:05:16.010
+Scheduled actions which is a process that will perform
+
+139
+00:05:16.010 --> 00:05:19.093
+the scheduled actions that you create for your scaling.
+
+140
+00:05:19.970 --> 00:05:21.390
+Then you have add to load balancer,
+
+141
+00:05:21.390 --> 00:05:23.660
+which is a process that will add instances
+
+142
+00:05:23.660 --> 00:05:26.440
+from the ASG to your desired load balancer
+
+143
+00:05:26.440 --> 00:05:29.080
+or the target group of that load balancer.
+
+144
+00:05:29.080 --> 00:05:31.120
+And then instance refresh that we just saw,
+
+145
+00:05:31.120 --> 00:05:33.370
+which is a process that performs an instance refresh
+
+146
+00:05:33.370 --> 00:05:36.770
+in the ASG by terminating all the instances
+
+147
+00:05:36.770 --> 00:05:38.370
+and recreating new one.
+
+148
+00:05:38.370 --> 00:05:39.970
+And the cool thing about ASG is that,
+
+149
+00:05:39.970 --> 00:05:42.280
+all these processes can be suspended.
+
+150
+00:05:42.280 --> 00:05:43.990
+So if you do not want, for example
+
+151
+00:05:43.990 --> 00:05:45.780
+to replace the unhealthy instances
+
+152
+00:05:45.780 --> 00:05:47.670
+because you wanna troubleshoot them for a bit,
+
+153
+00:05:47.670 --> 00:05:50.680
+then you can suspend the replaced unhealthy process
+
+154
+00:05:50.680 --> 00:05:53.973
+and debug while you find an instance to be unhealthy.
+
+155
+00:05:54.930 --> 00:05:57.220
+Next for health checks, extremely important.
+
+156
+00:05:57.220 --> 00:06:00.820
+Your ASG depends on health checks to function correctly
+
+157
+00:06:00.820 --> 00:06:03.160
+and you have different health checks available.
+
+158
+00:06:03.160 --> 00:06:05.370
+The first one is the EC2 status checks, health check,
+
+159
+00:06:05.370 --> 00:06:06.730
+and we've seen this from before.
+
+160
+00:06:06.730 --> 00:06:09.100
+And the second one, if you have an ELB
+
+161
+00:06:09.100 --> 00:06:11.330
+in front of your auto scaling group,
+
+162
+00:06:11.330 --> 00:06:15.120
+then it's an ELB health check and it's HTTP based.
+
+163
+00:06:15.120 --> 00:06:19.290
+The idea is that if your instances is deemed unhealthy
+
+164
+00:06:19.290 --> 00:06:21.390
+because it has a bad EC2 status check
+
+165
+00:06:21.390 --> 00:06:24.100
+or has a bad ELB health check,
+
+166
+00:06:24.100 --> 00:06:27.030
+then your ASG will launch a new instance
+
+167
+00:06:27.030 --> 00:06:29.320
+after terminating an unhealthy one.
+
+168
+00:06:29.320 --> 00:06:31.540
+So the idea is that if you have a bad health check
+
+169
+00:06:31.540 --> 00:06:33.410
+then the ASG will go crazy
+
+170
+00:06:33.410 --> 00:06:35.520
+and start terminating in all your instances.
+
+171
+00:06:35.520 --> 00:06:36.730
+So you need to make sure that the health check
+
+172
+00:06:36.730 --> 00:06:37.830
+is going to you be simple
+
+173
+00:06:37.830 --> 00:06:39.520
+and they will check the correct thing,
+
+174
+00:06:39.520 --> 00:06:42.500
+which is the health of the instance.
+
+175
+00:06:42.500 --> 00:06:44.260
+So let's make an example.
+
+176
+00:06:44.260 --> 00:06:47.000
+So a good health check is when an auto scaling group
+
+177
+00:06:47.000 --> 00:06:49.770
+for example, checks a route on your EC2 instance
+
+178
+00:06:49.770 --> 00:06:51.740
+called slash health server
+
+179
+00:06:51.740 --> 00:06:53.030
+and the server that says,
+
+180
+00:06:53.030 --> 00:06:54.870
+yes I'm alive and I'm functioning correctly.
+
+181
+00:06:54.870 --> 00:06:56.420
+This is a good health check.
+
+182
+00:06:56.420 --> 00:06:58.860
+A bad health check is where an auto scaling group
+
+183
+00:06:58.860 --> 00:07:01.740
+will check a route that does something quite heavy.
+
+184
+00:07:01.740 --> 00:07:04.890
+For example, if we check the slash number of customers route
+
+185
+00:07:04.890 --> 00:07:07.710
+on our EC2 instance, and our EC2 instance has to do
+
+186
+00:07:07.710 --> 00:07:11.050
+a database call to count all the number of customers,
+
+187
+00:07:11.050 --> 00:07:12.750
+wait for the database to respond to us,
+
+188
+00:07:12.750 --> 00:07:14.770
+and then get the answer to the auto scaling group.
+
+189
+00:07:14.770 --> 00:07:16.170
+In case the database fails
+
+190
+00:07:16.170 --> 00:07:18.210
+or in case something takes too long,
+
+191
+00:07:18.210 --> 00:07:19.610
+then the auto scaling group will think
+
+192
+00:07:19.610 --> 00:07:23.030
+that your EC2 instance is unhealthy and will terminate it.
+
+193
+00:07:23.030 --> 00:07:24.910
+So making sure you have the right health check
+
+194
+00:07:24.910 --> 00:07:27.830
+is extremely important in your solution architecture.
+
+195
+00:07:27.830 --> 00:07:29.350
+Okay, so that's it for small reminders
+
+196
+00:07:29.350 --> 00:07:30.390
+on auto scaling group.
+
+197
+00:07:30.390 --> 00:07:31.730
+In the next lecture we'll see
+
+198
+00:07:31.730 --> 00:07:33.790
+how we can properly update an auto scaling group,
+
+199
+00:07:33.790 --> 00:07:36.050
+and what are the different solution architectures around it.
+
+200
+00:07:36.050 --> 00:07:37.600
+So see you in the next lecture.
+

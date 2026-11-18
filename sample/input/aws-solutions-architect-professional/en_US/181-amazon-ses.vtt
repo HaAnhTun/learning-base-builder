@@ -1,0 +1,254 @@
+WEBVTT
+
+1
+00:00:00.330 --> 00:00:03.390
+<v Instructor>So here is a quick lecture about Amazon SES</v>
+
+2
+00:00:03.390 --> 00:00:06.120
+also called Simple Email Service.
+
+3
+00:00:06.120 --> 00:00:08.280
+So it's a fully managed service as the name indicates
+
+4
+00:00:08.280 --> 00:00:10.860
+that will allow you to send email securely,
+
+5
+00:00:10.860 --> 00:00:12.840
+globally, and at scale.
+
+6
+00:00:12.840 --> 00:00:16.830
+So the idea is that your application will use the SES API,
+
+7
+00:00:16.830 --> 00:00:21.030
+or SMTP server, and Amazon SES will then send bulk emails
+
+8
+00:00:21.030 --> 00:00:22.050
+to users.
+
+9
+00:00:22.050 --> 00:00:24.600
+So this allows for outbound and inbound emails,
+
+10
+00:00:24.600 --> 00:00:26.280
+so you can receive replies,
+
+11
+00:00:26.280 --> 00:00:27.990
+and it gives you a reputation dashboard
+
+12
+00:00:27.990 --> 00:00:29.910
+if your emails are open or not,
+
+13
+00:00:29.910 --> 00:00:32.880
+performance insights, as well as anti-spam feedback,
+
+14
+00:00:32.880 --> 00:00:35.430
+so if people write your emails as spam or not.
+
+15
+00:00:35.430 --> 00:00:39.150
+It provides email statistics such as deliveries, bounces,
+
+16
+00:00:39.150 --> 00:00:40.830
+feedback loop results, and whether or not
+
+17
+00:00:40.830 --> 00:00:42.300
+the email was open.
+
+18
+00:00:42.300 --> 00:00:43.920
+And it supports the standard security
+
+19
+00:00:43.920 --> 00:00:45.690
+for email sending of today,
+
+20
+00:00:45.690 --> 00:00:49.053
+so you have DKIAM and you have SPF.
+
+21
+00:00:50.160 --> 00:00:53.460
+There is a flexible deployment, so you can use a shared IP
+
+22
+00:00:53.460 --> 00:00:56.640
+a dedicated IP, or your own customer owned IP,
+
+23
+00:00:56.640 --> 00:01:00.180
+this is to send emails from a specific IP address.
+
+24
+00:01:00.180 --> 00:01:03.900
+And then the APIs are accessible from the console
+
+25
+00:01:03.900 --> 00:01:07.620
+specific AWS APIs, or the SMTP protocol.
+
+26
+00:01:07.620 --> 00:01:10.080
+So the use cases for Amazon SES
+
+27
+00:01:10.080 --> 00:01:12.630
+will be transactional emails, marketing email,
+
+28
+00:01:12.630 --> 00:01:15.540
+and bulk emails communications.
+
+29
+00:01:15.540 --> 00:01:18.060
+The next feature you need to know about for Amazon SES
+
+30
+00:01:18.060 --> 00:01:19.950
+is configuration sets.
+
+31
+00:01:19.950 --> 00:01:22.920
+So it's a way for you to customize and analyze
+
+32
+00:01:22.920 --> 00:01:25.800
+your email send events on Amazon SES.
+
+33
+00:01:25.800 --> 00:01:27.120
+So there are two things you can set,
+
+34
+00:01:27.120 --> 00:01:30.060
+you can set number one, the event destinations
+
+35
+00:01:30.060 --> 00:01:31.020
+and you have two of them,
+
+36
+00:01:31.020 --> 00:01:33.360
+you have Kinesis Data Firehose,
+
+37
+00:01:33.360 --> 00:01:34.920
+so that Firehose receives metrics,
+
+38
+00:01:34.920 --> 00:01:37.830
+such as the number of sends, deliveries, opens, clicks,
+
+39
+00:01:37.830 --> 00:01:40.710
+bounces, and complaints for each email.
+
+40
+00:01:40.710 --> 00:01:43.110
+Or SNS which gives you immediate feedback
+
+41
+00:01:43.110 --> 00:01:45.510
+on bounce and complaint information.
+
+42
+00:01:45.510 --> 00:01:48.570
+So the first part of configuration sets,
+
+43
+00:01:48.570 --> 00:01:51.690
+and the second part if you want to is IP pool management
+
+44
+00:01:51.690 --> 00:01:55.080
+to use IP pools to send particular types of emails,
+
+45
+00:01:55.080 --> 00:01:58.770
+therefore, for example, that you have one IP set
+
+46
+00:01:58.770 --> 00:02:01.890
+for the transactional emails,
+
+47
+00:02:01.890 --> 00:02:04.560
+and one IP set for your marketing emails,
+
+48
+00:02:04.560 --> 00:02:07.740
+therefore creating two types of email reputations.
+
+49
+00:02:07.740 --> 00:02:10.650
+So Amazon and SES can have config sets, as I said,
+
+50
+00:02:10.650 --> 00:02:13.350
+so when you send emails to users,
+
+51
+00:02:13.350 --> 00:02:16.170
+then the analytics will be sent in real time
+
+52
+00:02:16.170 --> 00:02:18.480
+or at least the data behind the analytics
+
+53
+00:02:18.480 --> 00:02:21.990
+will be sent in near real time to Kinesis Data Firehose.
+
+54
+00:02:21.990 --> 00:02:24.360
+And then you will have near real time analytics
+
+55
+00:02:24.360 --> 00:02:26.760
+using Kinesis Data Analytics if you wanted to,
+
+56
+00:02:26.760 --> 00:02:28.890
+or you can set it to Amazon S3,
+
+57
+00:02:28.890 --> 00:02:32.550
+so that you can run queries on it with Amazon Athena.
+
+58
+00:02:32.550 --> 00:02:34.860
+And finally, if you want to have immediate feedback
+
+59
+00:02:34.860 --> 00:02:36.630
+on bounce and complaint information,
+
+60
+00:02:36.630 --> 00:02:39.360
+you could set up an Amazon SNS topic
+
+61
+00:02:39.360 --> 00:02:42.090
+to receive this kind of notifications.
+
+62
+00:02:42.090 --> 00:02:44.460
+Okay, So that's it for Amazon SES,
+
+63
+00:02:44.460 --> 00:02:47.523
+I hope you liked it, and I will see you in the next lecture.
+
