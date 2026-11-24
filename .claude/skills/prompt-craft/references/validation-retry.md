@@ -1,6 +1,6 @@
 # Validation and retry after a failed output
 
-Tool, API or environment failures (classification, backoff, retry-after, silent failures, fallbacks, human pause): skill `agent-orchestration`, `references/error-handling.md`. Choosing hook versus schema versus permission rule: `references/layer-choice.md` there; the rule in this skill is SKILL.md section "Code enforces, prompts guide".
+For a tool, API or environment failure (classification, backoff, retry-after, silent failures, fallbacks, human pause), open `.claude/skills/agent-orchestration/references/error-handling.md`. To choose between hook, schema and permission rule, open `.claude/skills/agent-orchestration/references/layer-choice.md`; the rule in this skill is SKILL.md section "Code enforces, prompts guide".
 
 ## Contents
 

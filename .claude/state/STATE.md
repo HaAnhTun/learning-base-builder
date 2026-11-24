@@ -26,6 +26,8 @@ project-state (hooks + installer) is the active skill; the three knowledge skill
 - A/B test done (40 agents, wf_dc010c64-2df): prompt-craft T1 3W/0L/1T, T2 4W/0L; agent-orchestration T3 2W/2L; context-discipline T4 6,6 vs 5,6 of 7, T5 13/13 both. Only prompt-craft showed benefit; T3 and part of T1 were contaminated by the control worktree (no data/, worktree path in the brief). Tasks T4/T5 were at the ceiling.
 - A/B round 2 (60 agents, objective grading, functional runs, wf_a04a7cb1-977): prompt-craft no gain (P1 20/20 vs 20/20,19/20; P2 control found more real issues: 10,15 vs 7,13); context-discipline C1 10,10 vs 9,10 (wrong 0 vs 1), C2 14/14 both; agent-orchestration O1 6,7 vs 7,6, O3 7,6 vs 6,6, O2 control 4,5 vs treat 2,2 (skill rejects fan-out; arguable ground truth). Round-1 judge preference for prompt-craft did not replicate functionally.
 - User chose to demote: context-discipline, prompt-craft, agent-orchestration now `disable-model-invocation: true` (manual /name only); CLAUDE.md block trimmed to 3 bullets; `tests/test_skills_frontmatter.py` added after an unquoted `: ` in a description broke YAML silently. 126 tests pass.
+- mattpocock upgrade done, uncommitted: 4 mechanisms adopted net-zero (SKILL.md line counts 55/103/81/116 vs 57/103/85/117), defects fixed (project-state Hooks paragraph + hook language, dead pointers), CCA-F domain map in docs/agent-skills.md; 3 verifier layers per skill; 126 tests pass. A docs verifier wrongly claimed hooks ignore the workspace trust dialog; checked the hooks page verbatim (interactive: held back; -p/SDK: run) and corrected project-state.
+- Quiz benchmark closed (docs/quiz-benchmark.md): Sonnet 5.5 and Haiku 5.5, no skills, blind, 3 runs: ~100% on tests 1-3, 59/60 on test 4, one shared stable miss (test 4 Q30). No pattern reaches the 30% rule, so no rules were written and tests 5-6 stayed sealed. Agents audited: one Read each, no cheating.
 - `docs/agent-skills.md` (Vietnamese guide) written.
 - Stop nudge seen live: it fired on agent worktrees under `.claude/worktrees/` (false positive). Fixed with IGNORED_PREFIXES + test; 36 hook/installer tests pass.
 
@@ -40,5 +42,5 @@ project-state (hooks + installer) is the active skill; the three knowledge skill
 - Ask decisions with AskUserQuestion, not chat lists.
 
 ## Last session
-Built the four-skill set and hooks via grilling (Q1-Q20) plus two review workflows. Left: user review and commit.
-First thing next: ask the user to commit `.claude/`, `tests/`, `docs/agent-skills.md`, CLAUDE.md.
+Built the four-skill set and hooks via grilling (Q1-Q20) plus two review workflows. Left: uncommitted skill edits, tests, docs/quiz-benchmark.md, docs/agent-skills.md, state files.
+First thing next: ask the user whether to commit them.

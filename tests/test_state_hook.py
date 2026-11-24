@@ -68,7 +68,9 @@ def test_session_start_injects_state_and_decisions_pointer(repo):
 
 def test_startup_announces_but_compact_does_not(repo):
     write_state(repo)
-    assert "Vietnamese" in ctx(sh.build_session_start({"source": "startup"}, repo, TODAY))
+    startup = ctx(sh.build_session_start({"source": "startup"}, repo, TODAY))
+    assert "2-3 lines in the user's language" in startup
+    assert "Vietnamese" not in startup
     compact = ctx(sh.build_session_start({"source": "compact"}, repo, TODAY))
     assert "do not re-announce" in compact.lower()
 

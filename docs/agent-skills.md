@@ -9,6 +9,18 @@
 | `prompt-craft` | Viết prompt, system prompt, brief cho subagent, output có cấu trúc, retry | Gọi tay: `/prompt-craft` |
 | `agent-orchestration` | Chọn 1 hay nhiều agent, fan-out, xử lý lỗi, duyệt của người, checkpoint, đặt chỉ dẫn vào đúng tầng | Gọi tay: `/agent-orchestration` |
 
+## Ánh xạ domain CCA-F
+
+| Domain CCA-F | Nằm ở đâu | Cơ chế mượn từ mattpocock/skills (MIT) |
+|---|---|---|
+| D1 Agentic Architecture & Orchestration | `agent-orchestration` (mục Review hai trục độc lập, fan-out, lỗi, duyệt của người, checkpoint) | `code-review`: hai reviewer song song ở ngữ cảnh sạch, kiểm đầu vào một lần trước khi tản agent, không gộp kết quả |
+| D2 Tool Design & MCP | Ngoài phạm vi (chỉ áp dụng khi tự xây agent bằng SDK/API) | - |
+| D3 Claude Code Configuration & Workflows | `agent-orchestration/references/layer-choice.md` (đặt chỉ dẫn vào CLAUDE.md, rules, skill, subagent hay hook) | `git-guardrails-claude-code`: ví dụ luật "không bao giờ" thực thi bằng hook PreToolUse fail-closed |
+| D4 Prompt Engineering & Structured Output | `prompt-craft` | - |
+| D5 Context Management & Reliability | `context-discipline` (cây quyết định ở ranh giới phase) và `project-state` (state xuyên phiên) | `ask-matt`: cây quyết định ranh giới phase; `domain-modeling`: cổng 3 điều kiện cho DECISIONS.md; `handoff`: tham chiếu chứ không sao chép |
+
+Mỗi thẻ mượn có nhãn domain `[D1..D5]`, nhãn nguồn `[CCAR NN]` hoặc `[practice]`, và dòng ghi nguồn `(mattpocock/skills, MIT: <skill>)`. Nội dung được viết lại cho khớp skill, không chép nguyên văn.
+
 ## Luồng state
 
 - `.claude/state/STATE.md` (≤80 dòng): mục tiêu, trạng thái, việc đang làm, việc kế tiếp, việc đã xong, câu hỏi mở, ghi chú, tóm tắt phiên trước. Hook SessionStart nạp nguyên văn vào mọi phiên (startup, resume, clear, compact).

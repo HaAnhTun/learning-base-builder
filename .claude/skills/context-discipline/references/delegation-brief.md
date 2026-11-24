@@ -1,6 +1,6 @@
 # Delegation brief for discovery
 
-Brief template and prompt wording: `prompt-craft`. Whether to delegate and the spot-check: SKILL.md step 3.
+Brief template and prompt wording: open `.claude/skills/prompt-craft/SKILL.md` (Subagent brief) when filling the template. Whether to delegate and the spot-check: SKILL.md step 3.
 
 ## Scope and stop inputs
 

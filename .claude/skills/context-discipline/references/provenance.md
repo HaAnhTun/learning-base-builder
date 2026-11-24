@@ -19,7 +19,7 @@ Place the pointer next to the claim. A closing source list says which sources ex
 
 - Check a risk-weighted sample of claims against their pointers; follow the pointer, read the passage, judge whether it supports the claim. [CCAR 19]
 - For high-stakes output, check every citation before finalising. A fabricated citation has a plausible title, author and date; the document either does not support the claim or does not exist.
-- A self-reported confidence is the model's opinion. Trust it only after comparing it with known correct answers; re-check after a prompt or model change.
+- A self-reported confidence is the model's opinion. Trust it only after comparing it with known correct answers; re-check after a prompt or model change. [CCAR 19]
 
 ## Conflicts [CCAR 19]
 
@@ -33,4 +33,4 @@ Place the pointer next to the claim. A closing source list says which sources ex
 
 Where to show it, by stakes: inline beside the claim for high stakes, a footnote or collapsible note for medium, a closing conflict summary for a full-document review.
 
-Repo facts: when a state note or doc disagrees with code, git or config, report the disagreement and apply the project-state precedence (CLAUDE.md, then code, git and config, then state notes) instead of picking silently.
+Repo facts: when a state note or doc disagrees with code, git or config, report the disagreement and apply the precedence in `.claude/skills/project-state/SKILL.md` (What belongs where; CLAUDE.md, then code, git and config, then state notes) instead of picking silently.

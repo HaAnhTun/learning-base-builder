@@ -1,6 +1,6 @@
 # Fact block
 
-The in-session working copy; STATE.md and DECISIONS.md (cross-session) belong to `project-state`, which also owns the secret rule: secrets never go in a block, record where they live. Placement and use: SKILL.md step 4.
+The in-session working copy; STATE.md and DECISIONS.md (cross-session) belong to `.claude/skills/project-state/SKILL.md`, which also owns the secret rule (secrets never go in a block, record where they live); open it when promoting a fact to a state file or when a fact is a secret. Placement and use: SKILL.md step 4.
 
 ## What to capture [CCAR 16]
 

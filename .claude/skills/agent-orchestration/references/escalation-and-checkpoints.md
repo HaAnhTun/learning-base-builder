@@ -39,4 +39,4 @@ Build it for the receiver, as defined fields. [CCAR 17]
 - Contents: phase marker, outputs later phases depend on, original task inputs, timestamp, and an environment fingerprint for version checks (here: the repo head). [CCAR 04]
 - Resume: look for a checkpoint first; verify it (phase marker present, repo head equals `git rev-parse HEAD`); skip completed phases; continue at the first incomplete one. Partial coverage: resume from what it covers and flag the gap. [CCAR 04]
 - When the document, resource or config changed since the save, flag the conflict and wait for a decision. [CCAR 04]
-- State that must survive truncation or session end goes to an external store (here: `.claude/state/`). [CCAR 04] Pruning and hot-versus-cold state: `project-state` and `context-discipline`.
+- State that must survive truncation or session end goes to an external store (here: `.claude/state/`). [CCAR 04] Pruning and hot-versus-cold state: `.claude/skills/project-state/SKILL.md` and `.claude/skills/context-discipline/SKILL.md` (open them when pruning state or splitting it hot from cold).

@@ -1,6 +1,6 @@
 # Multi-turn work
 
-Cross-session carry-forward (decisions, constraints, task state) lives in skill `project-state`. Drift, noise and reset: skill `context-discipline`, section 6. This file covers the prompt side of dialogue inside one session.
+Cross-session carry-forward (decisions, constraints, task state) lives in skill `project-state`. For drift, noise or a reset of the window, open `.claude/skills/context-discipline/SKILL.md` section 6 (Fight drift). This file covers the prompt side of dialogue inside one session.
 
 ## When dialogue beats one prompt
 

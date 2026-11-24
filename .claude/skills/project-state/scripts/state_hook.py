@@ -38,7 +38,7 @@ SECRET_PATTERNS = [
 ]
 
 ANNOUNCE_RULE = (
-    "On your first reply, say in 2-3 lines of Vietnamese what is in progress and what comes next, then do what "
+    "On your first reply, say in 2-3 lines in the user's language what is in progress and what comes next, then do what "
     "the user asks. Ask before proceeding only when the request contradicts this state or a STALE warning applies."
 )
 NO_ANNOUNCE_RULE = (
