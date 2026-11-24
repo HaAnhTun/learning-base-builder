@@ -1,6 +1,7 @@
 ---
 name: prompt-craft
-description: Use when writing or editing a prompt, system prompt, CLAUDE.md-style instruction or subagent brief; adding few-shot examples or step-by-step reasoning; requesting structured or JSON output; refining across turns; when a prompt gives inconsistent or off-target output or needs a validation and retry loop; or when a rule must hold reliably and needs a hook or code instead of wording. Owns the subagent brief template.
+description: Manual reference for writing prompts, system prompts and subagent briefs, structured output and retry.
+disable-model-invocation: true
 ---
 
 Write prompts so Claude returns the same kind of result every run. Session memory lives in skill `project-state`; when to delegate and how to coordinate agents lives in `agent-orchestration`; window management lives in `context-discipline`. This skill owns the prompt text, the subagent brief template, retry after a failed output, and the test of a prompt.

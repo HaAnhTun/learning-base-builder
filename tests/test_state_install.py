@@ -81,7 +81,7 @@ def test_claude_md_block_is_appended_without_touching_existing_text(project):
     assert text.startswith("# Mine\n\nKeep me.\n")
     assert ".claude/state/STATE.md" in text
     for name in ("context-discipline", "prompt-craft", "agent-orchestration"):
-        assert name in text
+        assert name not in text  # user-invoked reference skills are not advertised in CLAUDE.md
 
 
 def test_claude_md_block_is_replaced_in_place_on_reinstall(project):

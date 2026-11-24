@@ -19,6 +19,8 @@ from pathlib import Path
 
 STATE_REL = Path(".claude") / "state"
 STATE_FILE = "STATE.md"
+# Paths that never count as project work: the state files and the scratch worktrees agents create.
+IGNORED_PREFIXES = (STATE_REL.as_posix() + "/", ".claude/worktrees/")
 STATE_LINE_CAP = 80
 STALE_DAYS = 14
 DRIFT_COMMITS = 30
@@ -124,7 +126,7 @@ def find_secrets(text):
 
 
 def _worktree_changes(project_dir):
-    """Paths git reports as changed or untracked, excluding the state directory itself."""
+    """Paths git reports as changed or untracked, excluding IGNORED_PREFIXES."""
     out = _git(project_dir, "status", "--porcelain", "-z", "-uall")
     if not out:
         return []
@@ -138,7 +140,7 @@ def _worktree_changes(project_dir):
         status, path = entry[:2], entry[3:]
         if "R" in status or "C" in status:
             skip = True
-        if path.replace("\\", "/").startswith(STATE_REL.as_posix() + "/"):
+        if path.replace("\\", "/").startswith(IGNORED_PREFIXES):
             continue
         paths.append(path)
     return paths

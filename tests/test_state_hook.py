@@ -178,6 +178,16 @@ def test_state_files_themselves_do_not_count_as_work(repo, tmp_path):
     assert sh.stop_decision({"session_id": "s1"}, repo, tmp_path / "m") is None
 
 
+def test_agent_worktrees_do_not_count_as_work(repo, tmp_path):
+    state = write_state(repo)
+    old = time.time() - 3600
+    os.utime(state, (old, old))
+    wt = repo / ".claude" / "worktrees" / "wf_1-1"
+    wt.mkdir(parents=True)
+    (wt / "f.txt").write_text("x")
+    assert sh.stop_decision({"session_id": "s1"}, repo, tmp_path / "m") is None
+
+
 def test_stop_nudges_when_state_over_line_cap(repo, tmp_path):
     write_state(repo, body="row\n" * 120)
     out = sh.stop_decision({"session_id": "s1"}, repo, tmp_path / "m")

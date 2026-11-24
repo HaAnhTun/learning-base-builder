@@ -1,6 +1,7 @@
 ---
 name: context-discipline
-description: Use when context is large, long or drifting: big tool outputs or documents, a long or noisy session, delegating discovery to a subagent, compacting or resetting a session, citing or reconciling sources. Keeps the window lean through budgeting, trimming, fact blocks, return contracts and provenance.
+description: Manual reference for keeping the context window lean (budget, trim, delegate, fact block, compaction, provenance).
+disable-model-invocation: true
 ---
 
 Treat the context window as a budget. Tags `[CCAR NN]` name the course lesson behind a rule.

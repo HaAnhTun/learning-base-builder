@@ -1,6 +1,7 @@
 ---
 name: agent-orchestration
-description: Use when planning a parallel or multi-step task, spawning a subagent or workflow, handling agent failures, retries or approvals, resuming interrupted work, looping a generator against an evaluator, or choosing where an instruction lives (CLAUDE.md, skill, subagent, slash command, hook). Decides single versus multi-agent work and how to coordinate it.
+description: Manual reference for single versus multi-agent work, fan-out, errors, human approval, checkpoints and where an instruction lives.
+disable-model-invocation: true
 ---
 
 Default to one agent; add agents only when the work earns them. [CCAR 05] Brief text: skill `prompt-craft`. State that survives sessions: skill `project-state`. Window management: skill `context-discipline`.

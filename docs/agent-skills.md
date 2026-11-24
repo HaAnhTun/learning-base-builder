@@ -1,13 +1,13 @@
 # Bộ skill làm việc với AI (agent-skills)
 
-Bốn skill trong `.claude/skills/` giúp Claude nhớ dự án giữa các phiên và làm việc đúng chuẩn về context, prompt, điều phối. Nguồn kiến thức: khóa CCAR (Certified Claude Architect), mỗi quy tắc gắn nhãn `[CCAR NN]` (số bài) hoặc `[practice]` (thực hành tốt nhưng khóa không nói).
+`.claude/skills/` có một skill chạy tự động (`project-state`) và ba skill tham chiếu gọi tay. Hai vòng thử A/B (100 agent) không cho thấy ba skill tham chiếu làm Claude làm việc tốt hơn đáng kể, nên chúng được đặt `disable-model-invocation: true`: không tốn context mỗi phiên, gọi tay khi cần. Nguồn kiến thức: khóa CCAR (Certified Claude Architect), mỗi quy tắc gắn nhãn `[CCAR NN]` (số bài) hoặc `[practice]` (thực hành tốt nhưng khóa không nói).
 
-| Skill | Việc làm | Khi nào kích hoạt |
+| Skill | Việc làm | Cách dùng |
 |---|---|---|
-| `project-state` | Giữ state làm việc trong repo, tự nạp ở đầu phiên, tự cập nhật | Đầu phiên (hook), xong task, chốt quyết định, `/project-state init\|resume\|status` |
-| `context-discipline` | Ngân sách context, cắt tỉa output, giao việc khám phá cho subagent, fact block, nguồn trích dẫn | Phiên dài, output lớn, compact/reset |
-| `prompt-craft` | Viết prompt, system prompt, brief cho subagent, output có cấu trúc, retry | Khi viết hoặc sửa prompt |
-| `agent-orchestration` | Chọn 1 hay nhiều agent, fan-out, xử lý lỗi, duyệt của người, checkpoint, đặt chỉ dẫn vào đúng tầng | Khi lập kế hoạch việc nhiều bước/song song |
+| `project-state` | Giữ state làm việc trong repo, tự nạp ở đầu phiên, tự cập nhật | Tự động: hook đầu phiên, cập nhật khi xong task/chốt quyết định; `/project-state init\|resume\|status` |
+| `context-discipline` | Ngân sách context, cắt tỉa output, giao việc khám phá cho subagent, fact block, nguồn trích dẫn | Gọi tay: `/context-discipline` |
+| `prompt-craft` | Viết prompt, system prompt, brief cho subagent, output có cấu trúc, retry | Gọi tay: `/prompt-craft` |
+| `agent-orchestration` | Chọn 1 hay nhiều agent, fan-out, xử lý lỗi, duyệt của người, checkpoint, đặt chỉ dẫn vào đúng tầng | Gọi tay: `/agent-orchestration` |
 
 ## Luồng state
 
