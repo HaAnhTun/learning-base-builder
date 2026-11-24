@@ -15,8 +15,7 @@ Ask where the failure originated. [CCAR 05]
 ## Caps
 
 State each cap once, here. Defaults apply unless the task states another number and a reason. [practice]
-- Retry budget: 3 attempts with exponential backoff and jitter; honour a retry-after hint. [CCAR 05]
-- Failure ceiling: 3 consecutive failures on the same step, then escalate with a log of attempts. [CCAR 17]
+- Retry cap: 3 attempts per step, the first call counting as attempt 1 [practice]; retries use exponential backoff with jitter and honour a retry-after hint [CCAR 05]; the third consecutive failure stops retrying and escalates with a log of attempts [CCAR 17].
 - Replan cap: 2 replanning cycles per goal. [practice]
 - Evaluator loop cap: 3 iterations, then report the last score. [practice]
 - At any cap, stop and escalate (the evaluator loop instead reports its last score); each cap exists so loops end in a decision. [CCAR 03]
@@ -25,13 +24,13 @@ State each cap once, here. Defaults apply unless the task states another number 
 
 - Abort permanent errors at once (invalid input, permission denied, auth failure, wrong plan) and surface them visibly. [CCAR 05]
 - Ambiguous error (a 500 could be either): one retry after a delay, then treat as permanent. [CCAR 05]
-- Exhausted retry budget: abort and escalate upstream. [CCAR 05]
+- Retry cap reached: abort and escalate upstream. [CCAR 05]
 
 ## Where to catch it
 
 The propagation boundary is a design choice; write it down. [CCAR 17]
 - Recover locally and log it: retryable transients, recoverable validation failures, idempotent refetches. Test: the orchestrator's plan would not change. [CCAR 17]
-- Propagate: scope violations, policy denials, exhausted retry budgets, anything that changes sequencing or allocation. [CCAR 17]
+- Propagate: scope violations, policy denials, retry caps reached, anything that changes sequencing or allocation. [CCAR 17]
 - Unsure: propagate with low severity, since a warning can be dismissed and an unreported failure cannot be acted on. [CCAR 17]
 - Log every local recovery (type, time, retries needed). A subagent retrying on nearly every call signals a degraded dependency. [CCAR 17]
 - Aim between the extremes: report what changes the plan, absorb the rest. [CCAR 17]
@@ -70,4 +69,4 @@ Put a gate at each stage boundary, before the output feeds the next step. [CCAR 
 - Run a check before acting (inputs, permissions) and after (outputs, business rules, anomalies). Runtime limits (cost, iteration cap, scope) catch slow drift. [CCAR 05]
 - Match the response to the risk: hard block for non-negotiable limits, soft warning for advisory concerns, escalation for ambiguous cases. [CCAR 05]
 - Gate failure order: retry with corrected input, then fallback, then human or alert. [CCAR 05]
-- Log inputs and outputs at every boundary, so a silent failure leaves a trace. [CCAR 05]
+- Log inputs and outputs at every boundary, not only on error, in a structured format, so a silent failure leaves a trace. [CCAR 05] For a handoff, record sender, receiver, timestamp, a summary of what was passed, the verification result and any error, so a failure that surfaces downstream is traced from the log. [CCAR 04]

@@ -1,6 +1,6 @@
 # Project state
 updated: 2026-11-24
-head: b3d1495
+head: bec29ea
 
 ## Goal & scope
 Personal Learning Base Builder: Udemy course transcripts, quizzes and attachments become clean Markdown for NotebookLM/LLMs (Python engine, `python -m engine <cmd>`, SQLite). AI extraction (vocab/knowledge) and the Claude-skill exporter were removed on purpose; do not rebuild them unprompted.
@@ -8,28 +8,24 @@ Second track (this session): an agent-productivity skill set under `.claude/skil
 
 ## Current state
 Ingestion pipeline is complete and unchanged this session: login, fetch, import, clean, export notebooklm, stats. CCAR (`certified-claude-architect-masterclass-2026`) is the only dev/test course.
-project-state (hooks + installer) is the active skill; the three knowledge skills (context-discipline, prompt-craft, agent-orchestration) are manual references. All uncommitted. Hooks are wired in `.claude/settings.json`.
+project-state (hooks + installer + structure lint) is the active skill; the three knowledge skills (context-discipline, prompt-craft, agent-orchestration) are manual references. Much of the session's work is uncommitted (see git status). Hooks are wired in `.claude/settings.json`.
 
 ## In progress
 - (none)
 
 ## Next
-1. User reviews and commits `.claude/`, `tests/test_state_*.py`, `docs/agent-skills.md`, the CLAUDE.md block.
+1. User reviews and commits the pending skill edits, tests, docs and state files (git status).
 2. Watch whether `project-state` earns its keep over a few weeks (stale state? Stop nudges useful?).
 3. Later: move the skills to user level or a plugin once audited (user's choice).
 
 ## Done
-- Hook script `state_hook.py` (SessionStart inject, Stop nudge + secret scan, PreCompact) and `install.py`: `python -m pytest tests/test_state_hook.py tests/test_state_install.py` -> 35 passed.
-- Skills context-discipline, prompt-craft, agent-orchestration written from CCAR lessons, then reviewed against the lessons, Anthropic skill best practices and Claude Code docs; source tags `[CCAR NN]` restored after a fixer pass had stripped them.
-- `init` run on this repo: settings.json hooks + CLAUDE.md block installed.
-- Acceptance (b): `claude -p "Hello"` in a fresh session replied in Vietnamese with the in-progress item and next step, from the injected state alone.
-- A/B test done (40 agents, wf_dc010c64-2df): prompt-craft T1 3W/0L/1T, T2 4W/0L; agent-orchestration T3 2W/2L; context-discipline T4 6,6 vs 5,6 of 7, T5 13/13 both. Only prompt-craft showed benefit; T3 and part of T1 were contaminated by the control worktree (no data/, worktree path in the brief). Tasks T4/T5 were at the ceiling.
-- A/B round 2 (60 agents, objective grading, functional runs, wf_a04a7cb1-977): prompt-craft no gain (P1 20/20 vs 20/20,19/20; P2 control found more real issues: 10,15 vs 7,13); context-discipline C1 10,10 vs 9,10 (wrong 0 vs 1), C2 14/14 both; agent-orchestration O1 6,7 vs 7,6, O3 7,6 vs 6,6, O2 control 4,5 vs treat 2,2 (skill rejects fan-out; arguable ground truth). Round-1 judge preference for prompt-craft did not replicate functionally.
-- User chose to demote: context-discipline, prompt-craft, agent-orchestration now `disable-model-invocation: true` (manual /name only); CLAUDE.md block trimmed to 3 bullets; `tests/test_skills_frontmatter.py` added after an unquoted `: ` in a description broke YAML silently. 126 tests pass.
-- mattpocock upgrade done, uncommitted: 4 mechanisms adopted net-zero (SKILL.md line counts 55/103/81/116 vs 57/103/85/117), defects fixed (project-state Hooks paragraph + hook language, dead pointers), CCA-F domain map in docs/agent-skills.md; 3 verifier layers per skill; 126 tests pass. A docs verifier wrongly claimed hooks ignore the workspace trust dialog; checked the hooks page verbatim (interactive: held back; -p/SDK: run) and corrected project-state.
-- Quiz benchmark closed (docs/quiz-benchmark.md): Sonnet 5.5 and Haiku 5.5, no skills, blind, 3 runs: ~100% on tests 1-3, 59/60 on test 4, one shared stable miss (test 4 Q30). No pattern reaches the 30% rule, so no rules were written and tests 5-6 stayed sealed. Agents audited: one Read each, no cheating.
-- `docs/agent-skills.md` (Vietnamese guide) written.
-- Stop nudge seen live: it fired on agent worktrees under `.claude/worktrees/` (false positive). Fixed with IGNORED_PREFIXES + test; 36 hook/installer tests pass.
+- 2026-11-24: Contract spec A/B (wf_da046088-f4e, 80 agents): valid rate 100% in both arms (prose vs JSON Schema + example) on 4 contracts and 2 models, so the locked rule ships no schema files; value correctness was higher with the example (C1 1.0 vs 0.7, C2 0.9 vs 0.6), from the example not the schema (docs: DECISIONS.md).
+- 2026-11-24: Five extensions (wf_ffcf7da6-43f): STATE.md structure lint in the once-per-session Stop nudge + `state_hook.py check`, testing-prompts expansion, subtask criteria, handoff audit log, replan triggers; SKILL.md net-zero; 172 tests pass. Verifiers caught a secret leak in `check` (head: line) and non-UTF-8 crashes; both fixed and reproduced.
+- 2026-11-24: mattpocock mechanisms adopted net-zero (phase-boundary tree, two-axis review, ADR gate, reference-not-copy, fail-closed hook example) + CCA-F domain map in docs/agent-skills.md; docs verifier was wrong once on the hook trust dialog, corrected from the hooks page verbatim.
+- 2026-11-24: Quiz benchmark closed (docs/quiz-benchmark.md): Sonnet and Haiku, no skills, blind, ~100% on tests 1-3 and 59/60 on test 4; no rule passes the 30% rule; tests 5-6 stay sealed.
+- 2026-11-24: Two A/B rounds (100 agents) found no reliable gain from the knowledge skills; context-discipline, prompt-craft, agent-orchestration are now manual (`disable-model-invocation: true`); `tests/test_skills_frontmatter.py` guards YAML (an unquoted `: ` silently drops frontmatter).
+- 2026-11-24: Stop nudge seen live: false positive on `.claude/worktrees/`, fixed with IGNORED_PREFIXES + test.
+- 2026-11-24: `docs/agent-skills.md` (Vietnamese guide, CCA-F domain map) written.
 
 ## Open questions
 - Where the skills should finally live (user-level vs plugin) and when to leave workspace-local.
@@ -38,9 +34,9 @@ project-state (hooks + installer) is the active skill; the three knowledge skill
 ## Constraints & gotchas
 - Code comments English; CLI messages and project docs Vietnamese. Skills are English; replies to the user Vietnamese.
 - `config.local.yaml` holds the Udemy token: never grep or print it.
-- Project hooks run only after the workspace trust dialog is accepted; additionalContext is capped at 10,000 chars.
+- Interactive sessions hold project hooks back until the workspace trust dialog is accepted; `claude -p` and the SDK run them without it. additionalContext is capped at 10,000 chars.
 - Ask decisions with AskUserQuestion, not chat lists.
 
 ## Last session
-Built the four-skill set and hooks via grilling (Q1-Q20) plus two review workflows. Left: uncommitted skill edits, tests, docs/quiz-benchmark.md, docs/agent-skills.md, state files.
-First thing next: ask the user whether to commit them.
+Audited the user's review (34/39 techniques already covered), ran the contract A/B (no schemas), added five small extensions with a hook-side STATE.md lint. Left: user review and commit.
+First thing next: ask the user whether to commit.

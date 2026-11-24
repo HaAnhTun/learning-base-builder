@@ -32,19 +32,18 @@ Done when: one line names the mode and the question that decided it. [practice]
 5. Give each parallel branch that writes files its own copy of the workspace (a worktree). [CCAR 03, 11]
 6. Pick the merge strategy before designing branches, and write the failed-branch policy before dispatch (options in the reference). [CCAR 03]
 7. Stop splitting where coordination costs more than the retry point buys; merge two adjacent levels that would run the same prompt. [CCAR 03]
+8. Check each subtask for single responsibility, defined inputs, bounded scope (a retry does not rerun the workflow) and clean structured output. [CCAR 03]
 
-Done when: the graph is drawn, merge strategy and failed-branch policy are written down. [CCAR 03]
+Done when: the graph is drawn, every subtask meets the four criteria, merge strategy and failed-branch policy are written down. [CCAR 03]
 
 Topology (hub-and-spoke, pipeline, peer-to-peer), merge options, headless runs: [references/topology-and-fanout.md](references/topology-and-fanout.md). Open it when choosing wiring, merging branch results, or running unattended.
 
 ## 3. Dispatch
 
 1. Fill each brief with the Subagent brief template in `.claude/skills/prompt-craft/SKILL.md` (open its Subagent brief section before the first dispatch). Add two orchestration items:
-   - the list of what the subagent does not receive. [CCAR 03]
+   - the list of what the subagent does not receive; withhold by default the parent conversation history, other subagents' outputs, irrelevant system prompts and credentials the task does not need. [CCAR 03, 04]
    - an output schema with a status field and an error shape. [CCAR 11]
-
-   Withhold by default: parent conversation history, other subagents' outputs, irrelevant system prompts, credentials the task does not need. [CCAR 04]
-2. Context is not inherited: pass what the subagent needs. Tools and permissions do come down from the parent, so narrow them: read-only for investigators, one directory for service-scoped work. [CCAR 11]
+2. A non-fork subagent starts with a fresh context and gets only its brief: pass what it needs. [CCAR 11] A fork inherits the parent conversation, and in interactive sessions fork mode is on by default (`CLAUDE_CODE_FORK_SUBAGENT=0` turns it off): check which mode a spawn uses before relying on the withholding list in item 1. [practice] Tools and permissions do come down from the parent, so narrow them: read-only for investigators, one directory for service-scoped work. [CCAR 11]
 3. Test each subagent on its own. A subagent that cannot run alone has too broad a scope or a hidden dependency on orchestrator state. [CCAR 04]
 4. Fan out independent branches at once, or in batches sized to the rate limit; run dependent steps in sequence. [CCAR 03]
 
@@ -60,16 +59,16 @@ Done when: every returned result has a recorded validation verdict and STATE.md 
 
 ## 5. Handle failure
 
-1. Classify where it originated (tool, reasoning, environment), then recover by class from the table in the reference, retrying only inside the retry budget. [CCAR 05]
+1. Classify where it originated (tool, reasoning, environment), then recover by class from the table in the reference, retrying only inside the retry cap. [CCAR 05]
 2. Propagate by the test in the reference; return typed errors, and make retried writes idempotent. [CCAR 17]
 
-Done when: no failure path ends in a silent drop, and every retry has a budget. [CCAR 05]
+Done when: no failure path ends in a silent drop, and every retry counts against the retry cap. [CCAR 05]
 
 Error classes, caps, propagation test, error envelope, empty-vs-failure, fallback chains, validation gates: [references/error-handling.md](references/error-handling.md). Open it when designing recovery, validating a handback, or when a tool returned nothing.
 
 ## 6. Human in the loop
 
-Escalate when a hard trigger fires: a deny-list or out-of-policy action, or the failure ceiling (Caps in the error-handling reference). [CCAR 17]
+Escalate when a hard trigger fires: a deny-list or out-of-policy action, or the retry cap (Caps in the error-handling reference). [CCAR 17]
 
 Place an approval gate before an irreversible action, a high-cost action, at phase boundaries and on anomalies, or when the scope is unclear: a review after the action prevents nothing. For low-stakes reversible work, proceed on an assumption and write it down. Weak or partial results: Fallback chains in [references/error-handling.md](references/error-handling.md). [CCAR 03, 05]
 
@@ -92,7 +91,8 @@ Done when: a fresh session could continue from the checkpoint without repeating 
 - Plan first when work is hard to reverse, spans modules, or is ambiguous; a one-file mechanical fix goes straight to editing. [CCAR 11]
 - Enter plan mode with Shift+Tab, `/plan <request>` or `--permission-mode plan`; no file is written until the plan is approved. Ask for 5-8 numbered steps, each naming real files, with assumptions and risks listed. For complex work, have a read-only investigator subagent explore first and a hook validate steps. [CCAR 11]
 - Before executing, tell the agent to stop and surface any divergence from the plan. This reduces silent improvisation without guaranteeing it: read the diff against the approved plan, and use a hook for a hard stop. [CCAR 11]
-- Replan when a core assumption broke; patch and continue when one step is affected. Check each revised plan against the original goal, kept as a fixed artifact, within the replan cap (Caps in the error-handling reference). [CCAR 03, 11]
+- Four events call for a replan decision: a tool call failed, the output was unexpected, state changed, or a constraint was violated. Replan when a core assumption broke; patch and continue when one step is affected. [CCAR 03, 11]
+- Keep the original goal as a fixed artifact and log each plan revision against it; check each revised plan against that goal within the replan cap (Caps in the error-handling reference). [CCAR 03]
 
 Done when: an approved plan names files, assumptions and the divergence rule. [CCAR 11]
 

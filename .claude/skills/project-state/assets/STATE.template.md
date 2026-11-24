@@ -15,7 +15,7 @@ head: <head>
 1. <ordered next steps, at most 7>
 
 ## Done
-<the 10 most recent finished items, each with its verification evidence; older ones move to archive/YYYY-MM.md>
+<the 10 most recent finished items, one "- " line each that starts with its date (YYYY-MM-DD) and ends with its verification evidence; older ones move to archive/YYYY-MM.md>
 
 ## Open questions
 - (none)

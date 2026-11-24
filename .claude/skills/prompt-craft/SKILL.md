@@ -31,7 +31,7 @@ Rule provenance: tags [CCAR NN] name the course lesson file number that supports
    Done when the prompt asks for reasoning only where an intermediate step matters. [CCAR 14]
 6. **Output format.** State the shape: structure, field names with value types, order, length. When code consumes the output, take the schema-backed route in `references/structured-output.md`. [CCAR 13, 14]
    Done when a parser could be written from the prompt alone. [practice]
-7. **Test.** Run varied phrasings and inputs, including an empty or very long input and one at the edge of the task. After every edit, re-run the earlier cases. Open `references/testing-prompts.md` when comparing versions across a saved suite. [CCAR 13]
+7. **Test.** Run varied phrasings and inputs, including an empty or very long input and one at the edge of the task. After every edit, re-run the earlier cases. Open `references/testing-prompts.md` when comparing versions across a saved suite or checking attribution in a multi-document prompt. [CCAR 13]
    Done when outputs on the varied set are ones you would accept and no earlier case regressed. [CCAR 13]
 
 ## Subagent brief

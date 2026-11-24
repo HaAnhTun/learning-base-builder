@@ -1,11 +1,16 @@
 # Testing prompts
 
-Open when comparing prompt versions across a saved suite. The loop is dataset, run, grade, compare against the previous version's baseline. [CCAR 15]
+Open when comparing prompt versions across a saved suite, or checking attribution in a multi-document prompt. The loop is dataset, run, grade, compare against the previous version's baseline. [CCAR 15]
 
 Done when the comparison is written down and the change is promoted or reverted on that evidence. [CCAR 15] A small saved file of inputs, each with the property its output must have, is enough to start. [practice]
 
-- Cover typical, edge (unusual, ambiguous, at the limit of scope) and adversarial inputs, with enough cases that one failure does not swing the pass rate. [CCAR 15]
+- Source the dataset from three kinds of case: handcrafted (precise, slow at volume), synthetic (generated from seed topics or example inputs, then reviewed by a person for low-quality and redundant cases) and sampled from production logs (labeled after the fact, the most real-world validity). Start handcrafted, add synthetic, add production samples once the system is live. [CCAR 15]
+- Split the dataset once into a tuning part and a held-out part. Every rerun, regression check and edit below uses the tuning part only, and new cases made from failures go to the tuning part. Score the held-out part once, on the final candidate; a held-out pass rate below the tuning pass rate by more than one case's swing means overfit: do not promote, and replace the spent held-out cases with fresh ones. [practice]
+- Cover typical, edge (unusual, ambiguous, at the limit of scope) and adversarial inputs, with enough cases that one failure does not swing the pass rate; a very small set is a weak statistical basis for a deploy decision (the course's example: 15 cases, 85% pass rate, two failures). [CCAR 15]
 - Prefer code-based grading when correctness is a rule (exact match, regex, schema validation, assertions). Use model-based grading for subjective output, giving the grader the input, the output and a specific rubric. [CCAR 15]
 - Calibrate a model grader: have humans label a sample, run the grader on it, track the agreement rate, and adjust the rubric where they disagree. Version the grading prompt and test it like any prompt. [CCAR 15]
-- Track regression rate (previously passing, now failing; zero or falling). [CCAR 15]
-- Run the full suite on every prompt change, however small, and also on a regular schedule, since model behaviour can shift under an unchanged prompt. [CCAR 15]
+- Track four metrics per run and compare each with the previous version: pass rate (share of cases meeting the criteria), regression rate (previously passing, now failing; zero before promotion, each regressed case listed in the written comparison), latency (average response time per case), cost per evaluation (token spend divided by cases). [CCAR 15]
+- Rerun the whole tuning part after every prompt change, however small, after every dataset update (run the previous version again on the updated set so both scores share a baseline), and on a regular schedule, since model behaviour can shift under an unchanged prompt. [CCAR 15]
+- Rerun the whole tuning part after a model change, the same as after a prompt change. [practice]
+- Test a multi-document prompt for attribution before production: ask the model to cite the document behind each claim, and include a case whose documents conflict; the output should say which document states what even where they disagree. Ask for JSON so attribution is machine-checkable; when attribution fails, rework the structure (SKILL.md step 3). [CCAR 13]
+- Standing prompts add their own cases (`references/system-prompts.md`, Testing a standing prompt); the schema, business-rule and semantic checks that grade a single output are in `references/validation-retry.md`.

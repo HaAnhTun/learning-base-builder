@@ -8,7 +8,7 @@ argument-hint: "init | resume | status"
 - `.claude/state/DECISIONS.md`: cold log, append-only. Read it when a past decision matters.
 - `.claude/state/archive/YYYY-MM.md`: Done items that aged out of STATE.md.
 
-Hooks (`scripts/state_hook.py`): SessionStart injects the state and flags it STALE when older than 14 days or 30+ commits behind. Stop blocks once per session when STATE.md is over 80 lines or project files changed after it (the state directory and `.claude/worktrees` are ignored), and blocks on every stop while a state file holds a secret. Hooks fail open: when the hook errors or times out, the stop proceeds, so keep secrets out of state files yourself. PreCompact tells the summary to keep the state.
+Hooks (`scripts/state_hook.py`): SessionStart injects the state and flags it STALE when older than 14 days or 30+ commits behind. Stop blocks once per session when STATE.md is over 80 lines, fails the structure check (`python ${CLAUDE_SKILL_DIR}/scripts/state_hook.py check` runs it on demand), or project files changed after it (the state directory and `.claude/worktrees` are ignored), and blocks at the end of every turn while a state file holds a secret, but only once per chain of stop-hook continuations (`stop_hook_active` ends the chain), so remove the value at the first block. Hooks fail open: an erroring or timed-out hook lets the stop proceed, so keep secrets out of state files yourself. PreCompact tells the summary to keep the state.
 
 Map the user's argument to one mode. No argument: run **update**.
 
@@ -40,7 +40,7 @@ Run at each milestone: a task finished, a decision made, a plan changed, before 
 1. Re-read STATE.md immediately before writing; another session may have changed it.
 2. Rewrite the affected blocks in place instead of appending; stale lines are worse than missing ones.
 3. Set `updated:` to today and `head:` to `git rev-parse --short HEAD`.
-4. Move finished work to Done with its evidence (the command run and its result). Move Done items beyond the 10 newest to `archive/YYYY-MM.md`. Keep Next ordered, at most 7.
+4. Move finished work to Done as a line that starts with its date [CCAR 18] in YYYY-MM-DD form [practice] and ends with its evidence (the command run and its result). [Anthropic harness article] Move Done items beyond the 10 newest to `archive/YYYY-MM.md`. [CCAR 18] Keep Next ordered, at most 7; the 10 and the 7 are defaults. [practice]
 5. Append a decision to DECISIONS.md only when it is costly to reverse, would surprise a newcomer without its context, and was chosen over real alternatives; record date, decision, why, alternatives rejected. [D5] [CCAR 18] (mattpocock/skills, MIT: domain-modeling)
 6. Write the Last session block: done, left half-done, first thing to do next.
 

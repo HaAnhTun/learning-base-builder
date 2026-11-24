@@ -59,9 +59,12 @@ Failed-branch policy (decided before dispatch): fail the whole run when every br
 - Use structured schemas with required fields, types and nullability at every boundary, so a mismatch fails loudly instead of defaulting to null. [CCAR 03]
 - Design against an interface, so receivers are interchangeable. [CCAR 04]
 - Confirm the receiver has what it needs before letting go of control. [CCAR 04]
+- Every structured handoff payload carries a schema version field the receiver can inspect. [CCAR 04]
+- A handoff is a stage boundary: log it per Validation gates in [error-handling.md](error-handling.md). [CCAR 04]
 
 ## Headless runs
 
 A workflow that runs without a human (CI, scheduled job) takes one atomic task per invocation, a fully self-contained prompt, structured output, idempotent effects, scoped permissions and a timeout. [CCAR 12]
 - Run every unattended invocation with `claude -p` (print mode), which runs the prompt non-interactively and exits. [CCAR 12]
-- Pair it with `--output-format json` and a scoped allowed-tools list, capture stdout, fail the step on a non-zero exit, and set a step timeout. [CCAR 12]
+- Pair it with `--output-format json`, capture stdout, fail the step on a non-zero exit, and set a step timeout. [CCAR 12]
+- `--allowedTools` pre-approves the listed tools; it does not block others. To deny calls that would prompt, add `--permission-mode dontAsk` (read-only actions still run) and `permissions.deny` rules for anything that must never run. [practice]

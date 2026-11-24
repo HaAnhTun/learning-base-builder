@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """Hook entry point for the project-state skill (stdlib only).
 
-Subcommands, each reads the hook payload as JSON on stdin:
+Subcommands, each reads the hook payload as JSON on stdin (except check):
   session-start  inject .claude/state/STATE.md into the model context
-  stop           block the stop once when STATE.md is outdated, over its line cap, or holds a secret
+  stop           block the stop once when STATE.md is outdated, over its line cap, off the template
+                 structure, or holds a secret
   pre-compact    print instructions that make the compaction summary keep the state
+  check          run by hand: print the line cap, structure, freshness and secret findings; always exits 0
 
 A hook must never break the session, so every failure path exits 0 silently.
 """
+import codecs
 import json
 import os
 import re
@@ -22,6 +25,11 @@ STATE_FILE = "STATE.md"
 # Paths that never count as project work: the state files and the scratch worktrees agents create.
 IGNORED_PREFIXES = (STATE_REL.as_posix() + "/", ".claude/worktrees/")
 STATE_LINE_CAP = 80
+REQUIRED_SECTIONS = ("Goal & scope", "Current state", "In progress", "Next", "Done", "Open questions",
+                     "Constraints & gotchas", "Last session")  # the "## " headings of assets/STATE.template.md
+DONE_CAP = 10
+NEXT_CAP = 7
+HEAD_PATTERN = re.compile(r"[0-9a-fA-F]{4,40}|unknown")  # install.py writes "unknown" outside git
 STALE_DAYS = 14
 DRIFT_COMMITS = 30
 MAX_INJECT_CHARS = 8000  # additionalContext is capped at 10,000 chars; leave room for the header and warnings
@@ -55,12 +63,20 @@ def _git(project_dir, *args):
     return proc.stdout if proc.returncode == 0 else None
 
 
-def load_state(project_dir):
-    path = Path(project_dir) / STATE_REL / STATE_FILE
+def _read_text(path):
+    """Text of a state file, or None when unreadable. Undecodable bytes become U+FFFD, so a stray cp1252 byte or a
+    UTF-16 file (PowerShell redirection) never hides the check report or a secret."""
     try:
-        return path.read_text(encoding="utf-8")
+        data = Path(path).read_bytes()
     except OSError:
         return None
+    if data.startswith((codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE)):
+        return data.decode("utf-16", errors="replace")
+    return data.decode("utf-8", errors="replace")
+
+
+def load_state(project_dir):
+    return _read_text(Path(project_dir) / STATE_REL / STATE_FILE)
 
 
 def parse_meta(text):
@@ -73,6 +89,32 @@ def parse_meta(text):
     return meta
 
 
+def structure_problems(text):
+    """Short messages for where STATE.md departs from the template; [] when it follows it."""
+    sections, current = {}, None
+    for raw in text.splitlines():
+        line = raw.rstrip()
+        if line.startswith("## "):
+            current = sections.setdefault(line[3:].strip(), [])
+        elif current is not None:
+            current.append(line)
+    problems = [f"missing section `## {name}`" for name in REQUIRED_SECTIONS if name not in sections]
+    meta = parse_meta(text)
+    try:
+        datetime.strptime(meta["updated"], "%Y-%m-%d")
+    except (KeyError, ValueError):
+        problems.append("`updated:` line missing or not YYYY-MM-DD")
+    if not HEAD_PATTERN.fullmatch(meta.get("head", "")):
+        problems.append("`head:` line missing or not a short git sha")
+    done = sum(1 for line in sections.get("Done", []) if line.startswith("- ") and line != "- (none)")
+    if done > DONE_CAP:
+        problems.append(f"Done has {done} items (max {DONE_CAP}); archive the oldest in .claude/state/archive/YYYY-MM.md")
+    steps = sum(1 for line in sections.get("Next", []) if re.match(r"\d+\.(\s|$)", line))
+    if steps > NEXT_CAP:
+        problems.append(f"Next has {steps} items (max {NEXT_CAP}); cut or merge the lowest priority")
+    return problems
+
+
 def staleness_warnings(meta, project_dir, today, drift_threshold=DRIFT_COMMITS):
     warnings = []
     try:
@@ -82,7 +124,9 @@ def staleness_warnings(meta, project_dir, today, drift_threshold=DRIFT_COMMITS):
     except (KeyError, ValueError):
         warnings.append("STALE: STATE.md has no valid `updated: YYYY-MM-DD` line.")
     sha = meta.get("head")
-    if sha and _git(project_dir, "rev-parse", "--git-dir") is not None:
+    if sha and not HEAD_PATTERN.fullmatch(sha):  # never echo or pass to git an unvalidated value: it may be a secret
+        warnings.append("STALE: recorded head is not a valid sha.")
+    elif sha and _git(project_dir, "rev-parse", "--git-dir") is not None:
         if _git(project_dir, "cat-file", "-e", f"{sha}^{{commit}}") is None:
             warnings.append(f"STALE: recorded head {sha} is not in this repo's history.")
         else:
@@ -125,6 +169,17 @@ def find_secrets(text):
     return hits
 
 
+def _secret_hits(project_dir):
+    """[(file name, line number, pattern name)] across the state files; never the matched value."""
+    hits = []
+    for name in (STATE_FILE, "DECISIONS.md"):
+        text = _read_text(Path(project_dir) / STATE_REL / name)
+        if text is None:
+            continue
+        hits +=[(name, n, kind) for n, kind in find_secrets(text)]
+    return hits
+
+
 def _worktree_changes(project_dir):
     """Paths git reports as changed or untracked, excluding IGNORED_PREFIXES."""
     out = _git(project_dir, "status", "--porcelain", "-z", "-uall")
@@ -160,16 +215,11 @@ def stop_decision(payload, project_dir, marker_dir):
     if payload.get("stop_hook_active"):
         return None
     state_path = Path(project_dir) / STATE_REL / STATE_FILE
-    if not state_path.exists():
+    state_text = load_state(project_dir)
+    if state_text is None:
         return None
 
-    leaks = []
-    for name in (STATE_FILE, "DECISIONS.md"):
-        try:
-            text = (Path(project_dir) / STATE_REL / name).read_text(encoding="utf-8")
-        except OSError:
-            continue
-        leaks += [f"{name}:{n} ({kind})" for n, kind in find_secrets(text)]
+    leaks = [f"{name}:{n} ({kind})" for name, n, kind in _secret_hits(project_dir)]
     if leaks:
         return {"decision": "block", "reason": (
             "Possible secret in the committed state files: " + ", ".join(leaks) +
@@ -181,10 +231,13 @@ def stop_decision(payload, project_dir, marker_dir):
         return None
 
     problems = []
-    line_count = len(state_path.read_text(encoding="utf-8").splitlines())
+    line_count = len(state_text.splitlines())
     if line_count > STATE_LINE_CAP:
         problems.append(f"STATE.md has {line_count} lines (cap {STATE_LINE_CAP}): move the oldest Done items "
                         "to .claude/state/archive/YYYY-MM.md.")
+    structure = structure_problems(state_text)
+    if structure:
+        problems.append("STATE.md structure: " + "; ".join(structure) + ".")
     if _work_newer_than(project_dir, state_path.stat().st_mtime):
         problems.append("Files changed after STATE.md was last written: update .claude/state/STATE.md "
                         "(in progress, next, done, open questions, last session, `updated:` and `head:` lines) "
@@ -199,6 +252,19 @@ def stop_decision(payload, project_dir, marker_dir):
     return {"decision": "block", "reason": " ".join(problems)}
 
 
+def check_report(project_dir, today):
+    """The `check` subcommand's report: line cap, structure, freshness, secret locations."""
+    text = load_state(project_dir)
+    if text is None:
+        return "No .claude/state/STATE.md found. Run `/project-state init` to create it.\n"
+    count = len(text.splitlines())
+    lines = [f"STATE.md: {count} lines (cap {STATE_LINE_CAP})" + (" - OVER" if count > STATE_LINE_CAP else "")]
+    lines += [f"Structure: {p}" for p in structure_problems(text)] or ["Structure: ok"]
+    lines += staleness_warnings(parse_meta(text), project_dir, today) or ["Freshness: ok"]
+    lines += [f"Secret: {name}:{n}" for name, n, _kind in _secret_hits(project_dir)] or ["Secrets: none"]
+    return "\n".join(lines) + "\n"
+
+
 def pre_compact_text():
     return ("When summarizing, keep verbatim: the current goal, the task in progress, the next steps, and any "
             "decision made this session. .claude/state/STATE.md is the source of truth and is reloaded after "
@@ -208,6 +274,9 @@ def pre_compact_text():
 def main(argv, stdin, stdout):
     try:
         sub = argv[0] if argv else ""
+        if sub == "check":  # run by hand: no hook payload, so never wait on stdin
+            stdout.write(check_report(os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd(), date.today()))
+            return 0
         try:
             payload = json.loads(stdin.read() or "{}")
             if not isinstance(payload, dict):

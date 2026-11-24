@@ -27,6 +27,7 @@ Mỗi thẻ mượn có nhãn domain `[D1..D5]`, nhãn nguồn `[CCAR NN]` hoặ
 - `.claude/state/DECISIONS.md`: nhật ký quyết định (ngày, quyết định, lý do, phương án bỏ). Chỉ thêm mục, đọc khi cần.
 - `.claude/state/archive/`: phần Done đã cũ.
 - Hook Stop chặn dừng đúng một lần nếu file làm việc đổi mà STATE.md chưa cập nhật, hoặc STATE.md quá 80 dòng. Nếu state chứa chuỗi giống secret thì chặn mỗi lần, không in giá trị ra.
+- Hook Stop còn kiểm **cấu trúc** STATE.md (đủ 8 mục bắt buộc, có `updated:` và `head:`, Done ≤10 mục, Next ≤7 mục) trong cùng lần nhắc một-lần-mỗi-phiên. Chạy tay: `python .claude/skills/project-state/scripts/state_hook.py check` in báo cáo (số dòng, cấu trúc, độ tươi, vị trí secret, không bao giờ in giá trị secret).
 - Cảnh báo `STALE` khi state quá 14 ngày hoặc repo đã đi quá 30 commit so với `head:` đã ghi.
 - Agent không tự commit state; bạn quyết định khi nào commit.
 
